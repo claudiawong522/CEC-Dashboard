@@ -6,10 +6,12 @@ import { Plus } from "lucide-react";
 
 export default async function CalendarPage() {
   const supabase = await createClient();
-  const { data: events } = await supabase
+  const { data: events, error } = await supabase
     .from("events")
     .select("id, name, event_date, event_time, event_end_time, venue, is_complete")
     .order("event_date", { ascending: true });
+
+  if (error) console.error("[calendar] failed to load events:", error.message);
 
   return (
     <div className="flex flex-col gap-6">

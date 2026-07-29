@@ -8,7 +8,7 @@ type DoneRow = { event_id: string; done: boolean };
 export default async function TodoPage() {
   const supabase = await createClient();
 
-  const { data: events } = await supabase
+  const { data: events, error } = await supabase
     .from("events")
     .select(
       "id, name, event_date, event_time, event_end_time, venue, venue_done, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media, media_done, has_recurring",
@@ -16,6 +16,8 @@ export default async function TodoPage() {
     .eq("is_complete", false)
     .order("event_date", { ascending: true })
     .order("event_time", { ascending: true });
+
+  if (error) console.error("[todo] failed to load events:", error.message);
 
   const eventIds = (events ?? []).map((e) => e.id);
 

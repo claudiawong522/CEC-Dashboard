@@ -5,12 +5,14 @@ import { publicFileUrl } from "@/lib/utils/storage";
 export default async function PastEventsPage() {
   const supabase = await createClient();
 
-  const { data: events } = await supabase
+  const { data: events, error } = await supabase
     .from("events")
     .select("id, name, event_date, event_time, event_end_time, venue, has_speaker")
     .eq("is_complete", true)
     .order("event_date", { ascending: false })
     .order("event_time", { ascending: false });
+
+  if (error) console.error("[past-events] failed to load events:", error.message);
 
   // This route is always dynamically rendered (createClient() reads
   // cookies()), so reading the current time per-request is safe — the
