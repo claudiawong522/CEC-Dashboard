@@ -1,13 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
+@import "../design/brand-tokens.css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-hanken-grotesk);
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-sans);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -46,6 +47,112 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* CEC brand kit — from design/tailwind.brand.js, values sourced from design/brand-tokens.css */
+  --color-paper: var(--paper);
+  --color-page: var(--page);
+  --color-wash: var(--hover);
+  --color-line: var(--hairline);
+  --color-line-soft: var(--hairline-soft);
+  --color-line-input: var(--hairline-input);
+  --color-line-strong: var(--line-strong);
+  --color-faint: var(--faint);
+  --color-body: var(--body);
+  --color-strong: var(--strong);
+  --color-ink: var(--ink);
+  --color-coral: var(--coral);
+  --color-amber: var(--amber);
+  --color-teal: var(--teal);
+  --color-blue: var(--blue);
+  /* named brand-destructive, not destructive: shadcn's --color-destructive already maps to
+     the app's existing error color (--destructive in :root/.dark) — remapping that key here
+     would silently recolor every existing destructive button/alert. Value hardcoded (not
+     var(--destructive)) because brand-tokens.css's own --destructive is shadowed by the
+     shadcn :root block declared later in this file. */
+  --color-brand-destructive: #b4472f;
+
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+
+  --radius-chip: 6px;
+  --radius-input: 8px;
+  --radius-btn: 9px;
+  --radius-card: 11px;
+  --radius-pill: 20px;
+  --radius-login: 24px;
+
+  --background-image-cent: var(--cent);
+  --background-image-cent-tint: var(--cent-tint);
+  --background-image-cent-pastel: var(--cent-pastel);
+
+  --shadow-primary: 0 9px 20px -10px rgba(232, 88, 61, 0.9);
+  --shadow-menu: 0 12px 28px -16px rgba(35, 32, 28, 0.5);
+
+  --ease-brand: var(--e-default);
+  --ease-indicator: var(--e-indicator);
+  --ease-spring: var(--e-spring);
+  --ease-draw: var(--e-draw);
+  --ease-pop: var(--e-pop);
+
+  --animate-riseIn: riseIn 500ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-fadeUp: fadeUp 340ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  --animate-float1: float1 13s ease-in-out infinite;
+  --animate-float2: float2 15s ease-in-out infinite;
+  --animate-pop: pop 620ms cubic-bezier(0.34, 1.5, 0.4, 1) both;
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes float1 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+  50% {
+    transform: translate(9px, -14px) rotate(6deg);
+  }
+}
+@keyframes float2 {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(0);
+  }
+  50% {
+    transform: translate(-11px, -9px) rotate(-7deg);
+  }
+}
+@keyframes pop {
+  0% {
+    transform: scale(1) rotate(0);
+  }
+  35% {
+    transform: scale(1.28) rotate(14deg);
+  }
+  70% {
+    transform: scale(0.94) rotate(-6deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
 }
 
 :root {

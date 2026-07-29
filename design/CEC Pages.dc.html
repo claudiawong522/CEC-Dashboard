@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EFEBE2;font-family:Hanken Grotesk,system-ui,sans-serif;color:#23201C}
+*{box-sizing:border-box}
+a{color:#23201C;text-decoration:none;border-bottom:1px solid rgba(35,32,28,.3)}
+a:hover{border-bottom-color:#E8583D}
+@keyframes riseIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+@keyframes fadeA{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes fadeB{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes float1{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(9px,-14px) rotate(6deg)}}
+@keyframes float2{0%,100%{transform:translate(0,0) rotate(0)}50%{transform:translate(-11px,-9px) rotate(-7deg)}}
+@keyframes float3{0%,100%{transform:translate(0,0)}50%{transform:translate(6px,11px)}}
+@keyframes popA{0%{transform:scale(1) rotate(0)}35%{transform:scale(1.28) rotate(14deg)}70%{transform:scale(.94) rotate(-6deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes popB{0%{transform:scale(1) rotate(0)}35%{transform:scale(1.28) rotate(14deg)}70%{transform:scale(.94) rotate(-6deg)}100%{transform:scale(1) rotate(0)}}
+@keyframes twinkle{0%,100%{opacity:.5;transform:scale(.92)}50%{opacity:1;transform:scale(1.06)}}
+</style>
+</helmet>
+
+<div style="padding:44px 48px 90px;display:flex;flex-direction:column;gap:44px">
+
+  <header style="display:flex;flex-direction:column;gap:9px;max-width:760px">
+    <span style="font:400 10px Geist Mono,monospace;letter-spacing:.16em;text-transform:uppercase;color:#9A9184">cec dashboard · page mockups on brand kit v1</span>
+    <div style="font:500 26px/1.25 Hanken Grotesk,sans-serif;letter-spacing:-.022em">Nine screens, one system</div>
+    <div style="font:400 14px/1.75 Hanken Grotesk,sans-serif;color:#6E675C">Static mockups with the kit's live micro-interactions: hover any row or button, click the toggles on <b style="font-weight:500;color:#23201C">New event</b>, switch tabs and tick <b style="font-weight:500;color:#23201C">Mark as done</b> on the details page.</div>
+  </header>
+
+  <!-- ============================= LOGIN ============================= -->
+  <div style="display:flex;flex-direction:column;gap:9px">
+    <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">01 · login</span>
+    <div style="width:1180px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;overflow:hidden;position:relative;height:520px;display:flex;align-items:center;justify-content:center">
+      <div style="position:absolute;inset:0;pointer-events:none;background:radial-gradient(320px 190px at 34% 116%,rgba(232,88,61,.22),transparent 70%),radial-gradient(320px 190px at 68% 122%,rgba(59,111,194,.2),transparent 70%),radial-gradient(240px 150px at 52% 128%,rgba(224,185,74,.18),transparent 70%);filter:blur(8px)"></div>
+      <div style="position:absolute;inset:0;pointer-events:none">
+        <div style="position:absolute;left:11%;top:22%;animation:float1 11s ease-in-out infinite">
+          <div onClick="{{ popS1 }}" style="cursor:pointer;pointer-events:auto;position:relative;width:78px;height:78px;opacity:.85;animation:{{ animS1 }}">
+            <div style="position:absolute;left:24px;top:2px;width:30px;height:42px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle at 50% 64%,#E8583D,rgba(232,88,61,.28) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(0deg)"></div>
+            <div style="position:absolute;left:24px;top:2px;width:30px;height:42px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle at 50% 64%,#E8583D,rgba(232,88,61,.28) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(72deg)"></div>
+            <div style="position:absolute;left:24px;top:2px;width:30px;height:42px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle at 50% 64%,#E8583D,rgba(232,88,61,.28) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(144deg)"></div>
+            <div style="position:absolute;left:24px;top:2px;width:30px;height:42px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle at 50% 64%,#E8583D,rgba(232,88,61,.28) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(216deg)"></div>
+            <div style="position:absolute;left:24px;top:2px;width:30px;height:42px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle at 50% 64%,#E8583D,rgba(232,88,61,.28) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(288deg)"></div>
+            <div style="position:absolute;left:33px;top:33px;width:11px;height:11px;border-radius:50%;background:#E0B94A;filter:blur(2px)"></div>
+          </div>
+        </div>
+        <div style="position:absolute;right:13%;top:17%;animation:float2 13s ease-in-out infinite">
+          <div onClick="{{ popS2 }}" style="cursor:pointer;pointer-events:auto;width:34px;height:34px;opacity:.7;background:linear-gradient(140deg,#E0B94A,#E8583D);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%);animation:{{ animS2 }}"></div>
+        </div>
+        <div style="position:absolute;left:22%;bottom:16%;animation:float3 15s ease-in-out infinite">
+          <div onClick="{{ popS3 }}" style="cursor:pointer;pointer-events:auto;position:relative;width:44px;height:44px;opacity:.75;animation:{{ animS3 }}">
+            <div style="position:absolute;left:8px;top:2px;width:27px;height:38px;background:#3B6FC2;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);animation:twinkle 2.8s ease-in-out infinite"></div>
+            <div style="position:absolute;left:27px;top:24px;width:15px;height:19px;background:#E0B94A;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);animation:twinkle 2.8s ease-in-out infinite;animation-delay:.7s"></div>
+          </div>
+        </div>
+        <div style="position:absolute;right:19%;bottom:21%;animation:float1 12s ease-in-out infinite;animation-delay:1.4s">
+          <div onClick="{{ popS4 }}" style="cursor:pointer;pointer-events:auto;position:relative;width:38px;height:38px;opacity:.65;animation:{{ animS4 }}">
+            <div style="position:absolute;left:6px;top:5px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F0836B,#E8583D 70%);filter:blur(2px)"></div>
+            <div style="position:absolute;left:16px;top:5px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F0836B,#E8583D 70%);filter:blur(2px)"></div>
+            <div style="position:absolute;left:9px;top:13px;width:22px;height:22px;background:#E8583D;filter:blur(2px);clip-path:polygon(0 0,100% 0,50% 100%)"></div>
+          </div>
+        </div>
+        <div style="position:absolute;left:38%;top:11%;animation:float2 17s ease-in-out infinite">
+          <div onClick="{{ popS5 }}" style="cursor:pointer;pointer-events:auto;position:relative;width:66px;height:66px;opacity:.6;animation:{{ animS5 }}">
+            <div style="position:absolute;left:32px;top:14px;width:1.5px;height:46px;background:linear-gradient(180deg,rgba(63,167,137,.65),rgba(63,167,137,.06))"></div>
+            <div style="position:absolute;left:12px;top:20px;width:24px;height:12px;border-radius:50%;filter:blur(5px);background:radial-gradient(circle at 70% 50%,#3FA789,transparent 74%);transform:rotate(-18deg)"></div>
+            <div style="position:absolute;left:31px;top:32px;width:24px;height:12px;border-radius:50%;filter:blur(5px);background:radial-gradient(circle at 30% 50%,#3FA789,transparent 74%);transform:rotate(18deg)"></div>
+            <div style="position:absolute;left:26px;top:2px;width:13px;height:16px;border-radius:50% 50% 45% 45%;filter:blur(4px);background:radial-gradient(circle at 50% 70%,#E8583D,transparent 76%)"></div>
+          </div>
+        </div>
+        <div style="position:absolute;right:31%;top:38%;animation:float3 14s ease-in-out infinite;animation-delay:.8s">
+          <div onClick="{{ popS6 }}" style="cursor:pointer;pointer-events:auto;position:relative;width:32px;height:32px;opacity:.55;animation:{{ animS6 }}">
+            <div style="position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 35%,#E0B94A,rgba(224,185,74,.5) 75%)"></div>
+            <div style="position:absolute;left:9px;top:-3px;width:29px;height:29px;border-radius:50%;background:#FDFAF4"></div>
+          </div>
+        </div>
+        <div style="position:absolute;left:8%;bottom:34%;animation:float2 16s ease-in-out infinite;animation-delay:2s">
+          <div onClick="{{ popS7 }}" style="cursor:pointer;pointer-events:auto;display:flex;gap:4px;opacity:.5;animation:{{ animS7 }}">
+            <div style="width:9px;height:9px;border-radius:50%;background:#E8583D"></div>
+            <div style="width:9px;height:9px;border-radius:50%;background:#E0B94A"></div>
+            <div style="width:9px;height:9px;border-radius:50%;background:#3FA789"></div>
+            <div style="width:9px;height:9px;border-radius:50%;background:#3B6FC2"></div>
+          </div>
+        </div>
+      </div>
+      <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:19px;pointer-events:none">
+        <div onClick="{{ popMark }}" style="width:34px;height:30px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);clip-path:polygon(50% 0,100% 100%,0 100%);cursor:pointer;pointer-events:auto;animation:{{ animMark }}"></div>
+        <div style="font:500 27px/1.2 Hanken Grotesk,sans-serif;letter-spacing:-.022em">CEC Dashboard</div>
+        <div style="font:400 14px Hanken Grotesk,sans-serif;color:#6E675C">Sign in with your @cornell.edu account</div>
+        <button style="display:flex;align-items:center;gap:10px;border:0;padding:11px 22px;border-radius:24px;background:#23201C;color:#FDFAF4;font:500 13.5px Hanken Grotesk,sans-serif;cursor:pointer;pointer-events:auto;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease" style-hover="transform:translateY(-2px);box-shadow:0 10px 22px -10px rgba(232,88,61,.9)" style-active="transform:scale(.975) translateY(0)">
+          <span style="width:19px;height:19px;border-radius:50%;background:#FDFAF4;display:flex;align-items:center;justify-content:center;font:500 11px Geist Mono,monospace;color:#23201C">G</span>
+          Sign in with Google
+        </button>
+        <span style="font:400 12px Hanken Grotesk,sans-serif;color:#B4472F">That account isn't a cornell.edu address.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= CALENDAR ============================= -->
+  <div style="display:flex;flex-direction:column;gap:9px">
+    <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">02 · calendar · month (home)</span>
+    <div style="width:1180px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;overflow:hidden">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:15px 26px 0">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:20px;height:18px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);clip-path:polygon(50% 0,100% 100%,0 100%)"></div>
+          <span style="font:500 14.5px Hanken Grotesk,sans-serif;letter-spacing:-.012em">CEC Dashboard</span>
+        </div>
+        <div onClick="{{ toggleMenu }}" style="position:relative;cursor:pointer">
+          <div style="width:32px;height:32px;border-radius:50%;background:#F5F0E5;display:flex;align-items:center;justify-content:center;font:500 11.5px Hanken Grotesk,sans-serif;color:#4A443C;transition:background-color .2s ease" style-hover="background-color:#E2DACB">CW</div>
+          <div style="position:absolute;right:0;top:40px;width:212px;padding:12px 14px;border-radius:10px;background:#FFFDF9;border:1px solid rgba(35,32,28,.1);box-shadow:0 12px 28px -16px rgba(35,32,28,.5);z-index:5;transition:opacity .2s ease,transform .24s cubic-bezier(.2,.8,.2,1);opacity:{{ menuOpacity }};transform:translateY({{ menuY }}px);pointer-events:{{ menuEvents }}">
+            <div style="font:500 13px Hanken Grotesk,sans-serif">Claudia Wong</div>
+            <div style="font:400 11.5px Hanken Grotesk,sans-serif;color:#B0A899;margin-top:2px">cw2252@cornell.edu</div>
+            <div style="height:1px;background:rgba(35,32,28,.09);margin:10px -14px"></div>
+            <div style="font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;padding:5px 6px;margin:0 -6px;border-radius:6px;transition:background-color .18s ease,color .18s ease" style-hover="background-color:#F5F0E5;color:#23201C">Sign out</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:4px;padding:14px 26px 0">
+        <div style="position:relative;padding:7px 12px 11px;font:500 13px Hanken Grotesk,sans-serif;color:#23201C;cursor:pointer">Calendar
+          <div style="position:absolute;left:12px;right:12px;bottom:5px;height:2px;border-radius:1px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2)"></div>
+        </div>
+        <div style="padding:7px 12px 11px;font:400 13px Hanken Grotesk,sans-serif;color:#B0A899;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C">Todo</div>
+        <div style="padding:7px 12px 11px;font:400 13px Hanken Grotesk,sans-serif;color:#B0A899;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C">Past Events</div>
+        <div style="padding:7px 12px 11px;font:400 13px Hanken Grotesk,sans-serif;color:#B0A899;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C">Photos</div>
+        <div style="padding:7px 12px 11px;font:400 13px Hanken Grotesk,sans-serif;color:#B0A899;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C">Notes</div>
+        <div style="padding:7px 12px 11px;font:400 13px Hanken Grotesk,sans-serif;color:#B0A899;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C">Admin</div>
+      </div>
+      <div style="height:1px;background:rgba(35,32,28,.09)"></div>
+
+      <div style="padding:26px;display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font:500 25px/1.2 Hanken Grotesk,sans-serif;letter-spacing:-.022em">Calendar</div>
+          <button style="border:0;padding:10px 18px;border-radius:9px;background:#23201C;color:#FDFAF4;font:500 13px Hanken Grotesk,sans-serif;cursor:pointer;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease" style-hover="transform:translateY(-2px);box-shadow:0 9px 20px -10px rgba(232,88,61,.9)" style-active="transform:scale(.975) translateY(0)">+ New event</button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:8px">
+            <button style="width:31px;height:31px;border:1px solid rgba(35,32,28,.13);border-radius:8px;background:#FFFDF9;color:#6E675C;font:400 13px Hanken Grotesk,sans-serif;cursor:pointer;transition:background-color .18s ease,color .18s ease" style-hover="background-color:#F5F0E5;color:#23201C">‹</button>
+            <button style="width:31px;height:31px;border:1px solid rgba(35,32,28,.13);border-radius:8px;background:#FFFDF9;color:#6E675C;font:400 13px Hanken Grotesk,sans-serif;cursor:pointer;transition:background-color .18s ease,color .18s ease" style-hover="background-color:#F5F0E5;color:#23201C">›</button>
+            <button style="border:1px solid rgba(35,32,28,.13);padding:7px 13px;border-radius:8px;background:#FFFDF9;font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:background-color .2s ease,color .2s ease" style-hover="background-color:#F5F0E5;color:#23201C">Today</button>
+          </div>
+          <div style="font:400 17px Hanken Grotesk,sans-serif;letter-spacing:-.012em">September 2026</div>
+          <div style="display:flex;border:1px solid rgba(35,32,28,.13);border-radius:8px;overflow:hidden;background:#FFFDF9">
+            <span style="font:400 10px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;padding:8px 13px;background:#23201C;color:#FDFAF4">month</span>
+            <span style="font:400 10px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;padding:8px 13px;color:#B0A899;cursor:pointer;transition:background-color .18s ease,color .18s ease" style-hover="background-color:#F5F0E5;color:#23201C">week</span>
+            <span style="font:400 10px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;padding:8px 13px;color:#B0A899;cursor:pointer;transition:background-color .18s ease,color .18s ease" style-hover="background-color:#F5F0E5;color:#23201C">year</span>
+          </div>
+        </div>
+
+        <div style="position:relative;border:1px solid rgba(35,32,28,.09);border-radius:10px;overflow:hidden;background:#FDFAF4">
+          <div style="position:absolute;inset:0;z-index:2;pointer-events:none">
+            <div style="position:absolute;left:2.5%;bottom:14%;animation:float1 15s ease-in-out infinite">
+              <div onClick="{{ popS8 }}" style="position:relative;width:52px;height:52px;opacity:.5;pointer-events:auto;cursor:pointer;animation:{{ animS8 }}">
+                <div style="position:absolute;left:16px;top:1px;width:20px;height:29px;border-radius:50%;filter:blur(6px);background:radial-gradient(circle at 50% 64%,#3FA789,rgba(63,167,137,.25) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(0deg)"></div>
+                <div style="position:absolute;left:16px;top:1px;width:20px;height:29px;border-radius:50%;filter:blur(6px);background:radial-gradient(circle at 50% 64%,#3FA789,rgba(63,167,137,.25) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(90deg)"></div>
+                <div style="position:absolute;left:16px;top:1px;width:20px;height:29px;border-radius:50%;filter:blur(6px);background:radial-gradient(circle at 50% 64%,#3FA789,rgba(63,167,137,.25) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(180deg)"></div>
+                <div style="position:absolute;left:16px;top:1px;width:20px;height:29px;border-radius:50%;filter:blur(6px);background:radial-gradient(circle at 50% 64%,#3FA789,rgba(63,167,137,.25) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(270deg)"></div>
+                <div style="position:absolute;left:22px;top:22px;width:8px;height:8px;border-radius:50%;background:#E0B94A;filter:blur(2px)"></div>
+              </div>
+            </div>
+            <div style="position:absolute;right:3%;top:26%;animation:float2 18s ease-in-out infinite">
+              <div onClick="{{ popS9 }}" style="width:26px;height:26px;opacity:.42;pointer-events:auto;cursor:pointer;background:linear-gradient(140deg,#E0B94A,#E8583D);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%);animation:{{ animS9 }}"></div>
+            </div>
+            <div style="position:absolute;left:34%;bottom:3%;animation:float3 16s ease-in-out infinite;animation-delay:1.2s">
+              <div onClick="{{ popS10 }}" style="position:relative;width:30px;height:30px;opacity:.45;pointer-events:auto;cursor:pointer;animation:{{ animS10 }}">
+                <div style="position:absolute;left:5px;top:1px;width:19px;height:27px;background:#3B6FC2;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);animation:twinkle 3s ease-in-out infinite"></div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;inset:0;pointer-events:none;opacity:.45">
+            <div style="position:absolute;left:5%;top:22%;width:150px;height:150px;border-radius:50%;filter:blur(32px);background:radial-gradient(circle,rgba(232,88,61,.5),transparent 72%)"></div>
+            <div style="position:absolute;left:46%;top:56%;width:190px;height:190px;border-radius:50%;filter:blur(38px);background:radial-gradient(circle,rgba(63,167,137,.45),transparent 72%)"></div>
+            <div style="position:absolute;right:6%;top:6%;width:170px;height:170px;border-radius:50%;filter:blur(34px);background:radial-gradient(circle,rgba(59,111,194,.4),transparent 72%)"></div>
+            <div style="position:absolute;right:28%;bottom:-8%;width:160px;height:160px;border-radius:50%;filter:blur(32px);background:radial-gradient(circle,rgba(224,185,74,.5),transparent 72%)"></div>
+          </div>
+          <div style="position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:rgba(35,32,28,.07)">
+            <div style="padding:9px 11px;font:400 9.5px Geist Mono,monospace;letter-spacing:.13em;text-transform:uppercase;color:#B0A899">sun</div>
+            <div style="padding:9px 11px;font:400 9.5px Geist Mono,monospace;letter-spacing:.13em;text-transform:uppercase;color:#B0A899">mon</div>
+            <div style="padding:9px 11px;font:400 9.5px Geist Mono,monospace;letter-spacing:.13em;text-transform:uppercase;color:#B0A899">tue</div>
+            <div style="padding:9px 11px;font:400 9.5px Geist Mono,monospace;letter-spacing:.13em;text-transform:uppercase;color:#B0A899">wed</div>
+            <div style="padding:9px 11px;font:400 9.5px Geist Mono,monospace;letter-spacing:.13em;text-transform:uppercase;color:#B0A899">thu</div>
+            <div style="padding:9px 11px;font:400 9.5px Geist Mono,monospace;letter-spacing:.13em;text-transform:uppercase;color:#B0A899">fri</div>
+            <div style="padding:9px 11px;font:400 9.5px Geist Mono,monospace;letter-spacing:.13em;text-transform:uppercase;color:#B0A899">sat</div>
+
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#C9C4B6">30</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#C9C4B6">31</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">1</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">2</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">3
+              <div style="margin-top:7px;display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;background:rgba(255,253,249,.95);border:1px solid rgba(35,32,28,.08);font:400 10.5px Hanken Grotesk,sans-serif;cursor:pointer;transition:transform .18s ease,border-color .18s ease" style-hover="transform:translateY(-1px);border-color:rgba(35,32,28,.2)"><span style="width:7px;height:6px;background:#3FA789;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>5:00p Info session</div>
+            </div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">4</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">5</div>
+
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">6</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">7</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">8</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">9
+              <div style="margin-top:7px;display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;background:rgba(255,253,249,.95);border:1px solid rgba(35,32,28,.08);font:400 10.5px Hanken Grotesk,sans-serif;cursor:pointer;transition:transform .18s ease,border-color .18s ease" style-hover="transform:translateY(-1px);border-color:rgba(35,32,28,.2)"><span style="width:7px;height:6px;background:#E0B94A;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>6:00p Bagel social</div>
+            </div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">10</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">11</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">12</div>
+
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">13</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">14</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">15</div>
+            <div style="position:relative;background:rgba(255,253,249,.6);height:94px;padding:8px 10px;font:500 11.5px Hanken Grotesk,sans-serif;color:#23201C">16
+              <div style="position:absolute;right:9px;top:8px;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#E0B94A,rgba(232,88,61,.75) 70%,transparent);filter:blur(1.5px)"></div>
+            </div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">17</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">18
+              <div style="margin-top:7px;display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;background:rgba(255,253,249,.95);border:1px solid rgba(35,32,28,.08);font:400 10.5px Hanken Grotesk,sans-serif;cursor:pointer;transition:transform .18s ease,border-color .18s ease" style-hover="transform:translateY(-1px);border-color:rgba(35,32,28,.2)"><span style="width:7px;height:6px;background:#E8583D;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>5:30p Founders Fireside</div>
+            </div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">19</div>
+
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">20</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">21</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">22</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">23
+              <div style="margin-top:7px;display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;background:rgba(255,253,249,.95);border:1px solid rgba(35,32,28,.08);font:400 10.5px Hanken Grotesk,sans-serif;cursor:pointer;transition:transform .18s ease,border-color .18s ease" style-hover="transform:translateY(-1px);border-color:rgba(35,32,28,.2)"><span style="width:7px;height:6px;background:#3B6FC2;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>6:00p Pitch Night</div>
+            </div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">24</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">25</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">26</div>
+
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">27</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">28</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">29</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">30
+              <div style="margin-top:7px;display:flex;align-items:center;gap:5px;padding:4px 7px;border-radius:6px;background:rgba(255,253,249,.95);border:1px solid rgba(35,32,28,.08);font:400 10.5px Hanken Grotesk,sans-serif;cursor:pointer;transition:transform .18s ease,border-color .18s ease" style-hover="transform:translateY(-1px);border-color:rgba(35,32,28,.2)"><span style="width:7px;height:6px;background:#3FA789;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>5:00p Officer sync</div>
+            </div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#C9C4B6">1</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#C9C4B6">2</div>
+            <div style="background:rgba(255,253,249,.74);height:94px;padding:8px 10px;font:400 11.5px Hanken Grotesk,sans-serif;color:#C9C4B6">3</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= WEEK + YEAR ============================= -->
+  <div style="display:flex;gap:20px;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">02b · week view</span>
+      <div style="width:700px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;padding:20px;display:flex;flex-direction:column;gap:13px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font:400 15px Hanken Grotesk,sans-serif">Sep 13 — 19</span>
+          <div style="display:flex;border:1px solid rgba(35,32,28,.13);border-radius:8px;overflow:hidden;background:#FFFDF9">
+            <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;color:#B0A899;cursor:pointer;transition:background-color .18s ease,color .18s ease" style-hover="background-color:#F5F0E5;color:#23201C">month</span>
+            <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;background:#23201C;color:#FDFAF4">week</span>
+            <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;color:#B0A899;cursor:pointer;transition:background-color .18s ease,color .18s ease" style-hover="background-color:#F5F0E5;color:#23201C">year</span>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:44px repeat(7,1fr);gap:1px;background:rgba(35,32,28,.07);border-radius:8px;overflow:hidden">
+          <div style="background:#FDFAF4;height:26px"></div>
+          <div style="background:#FDFAF4;height:26px;padding:6px;font:400 9px Geist Mono,monospace;color:#B0A899">sun 13</div>
+          <div style="background:#FDFAF4;height:26px;padding:6px;font:400 9px Geist Mono,monospace;color:#B0A899">mon 14</div>
+          <div style="background:#FDFAF4;height:26px;padding:6px;font:400 9px Geist Mono,monospace;color:#B0A899">tue 15</div>
+          <div style="background:#FDFAF4;height:26px;padding:6px;font:500 9px Geist Mono,monospace;color:#23201C">wed 16</div>
+          <div style="background:#FDFAF4;height:26px;padding:6px;font:400 9px Geist Mono,monospace;color:#B0A899">thu 17</div>
+          <div style="background:#FDFAF4;height:26px;padding:6px;font:400 9px Geist Mono,monospace;color:#B0A899">fri 18</div>
+          <div style="background:#FDFAF4;height:26px;padding:6px;font:400 9px Geist Mono,monospace;color:#B0A899">sat 19</div>
+          <div style="background:#FDFAF4;padding:6px;font:400 9px Geist Mono,monospace;color:#B0A899">4p</div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="position:relative;background:rgba(255,253,249,.55);height:52px;overflow:hidden"><div style="position:absolute;left:-30%;top:-30px;width:160%;height:80px;filter:blur(15px);opacity:.5;background:radial-gradient(50px 32px at 45% 75%,rgba(232,88,61,.7),transparent 72%),radial-gradient(50px 32px at 72% 85%,rgba(224,185,74,.6),transparent 72%)"></div></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:#FDFAF4;padding:6px;font:400 9px Geist Mono,monospace;color:#B0A899">5p</div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.55);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px;padding:4px">
+            <div style="height:100%;border-radius:5px;background:linear-gradient(160deg,rgba(232,88,61,.14),rgba(232,88,61,.08));border-left:2px solid #E8583D;padding:4px 6px;font:400 9.5px Hanken Grotesk,sans-serif;color:#23201C">5:30p Fireside</div>
+          </div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:#FDFAF4;padding:6px;font:400 9px Geist Mono,monospace;color:#B0A899">6p</div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.55);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+          <div style="background:rgba(255,253,249,.8);height:52px"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">02c · year view</span>
+      <div style="width:440px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;padding:20px;display:flex;flex-direction:column;gap:13px">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <span style="font:400 15px Hanken Grotesk,sans-serif">2026</span>
+          <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;padding:7px 11px;border-radius:8px;background:#23201C;color:#FDFAF4">year</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:9px">
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);transition:transform .2s ease,border-color .2s ease" style-hover="transform:translateY(-2px);border-color:rgba(35,32,28,.18)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">jan</div><div style="margin-top:6px;display:flex;gap:2px"><span style="width:5px;height:5px;border-radius:50%;background:#E2DACB"></span></div></div>
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);transition:transform .2s ease,border-color .2s ease" style-hover="transform:translateY(-2px);border-color:rgba(35,32,28,.18)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">feb</div><div style="margin-top:6px;display:flex;gap:2px"><span style="width:5px;height:5px;border-radius:50%;background:#3FA789"></span><span style="width:5px;height:5px;border-radius:50%;background:#E0B94A"></span></div></div>
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);transition:transform .2s ease,border-color .2s ease" style-hover="transform:translateY(-2px);border-color:rgba(35,32,28,.18)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">mar</div><div style="margin-top:6px;display:flex;gap:2px"><span style="width:5px;height:5px;border-radius:50%;background:#3B6FC2"></span></div></div>
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);transition:transform .2s ease,border-color .2s ease" style-hover="transform:translateY(-2px);border-color:rgba(35,32,28,.18)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">apr</div><div style="margin-top:6px;display:flex;gap:2px"><span style="width:5px;height:5px;border-radius:50%;background:#E8583D"></span><span style="width:5px;height:5px;border-radius:50%;background:#3FA789"></span></div></div>
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">may</div><div style="margin-top:6px;height:5px"></div></div>
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">jun</div><div style="margin-top:6px;height:5px"></div></div>
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">jul</div><div style="margin-top:6px;height:5px"></div></div>
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">aug</div><div style="margin-top:6px;height:5px"></div></div>
+          <div style="position:relative;padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.18);overflow:hidden"><div style="position:absolute;right:-8px;top:-8px;width:34px;height:34px;border-radius:50%;filter:blur(7px);background:radial-gradient(circle,rgba(224,185,74,.8),transparent 72%)"></div><div style="position:relative;font:500 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#23201C">sep</div><div style="position:relative;margin-top:6px;display:flex;gap:2px"><span style="width:5px;height:5px;border-radius:50%;background:#3FA789"></span><span style="width:5px;height:5px;border-radius:50%;background:#E0B94A"></span><span style="width:5px;height:5px;border-radius:50%;background:#E8583D"></span><span style="width:5px;height:5px;border-radius:50%;background:#3B6FC2"></span></div></div>
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">oct</div><div style="margin-top:6px;display:flex;gap:2px"><span style="width:5px;height:5px;border-radius:50%;background:#3B6FC2"></span><span style="width:5px;height:5px;border-radius:50%;background:#E8583D"></span></div></div>
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">nov</div><div style="margin-top:6px;display:flex;gap:2px"><span style="width:5px;height:5px;border-radius:50%;background:#E0B94A"></span></div></div>
+          <div style="padding:8px;border-radius:7px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07)"><div style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">dec</div><div style="margin-top:6px;height:5px"></div></div>
+        </div>
+        <span style="font:400 11.5px/1.6 Hanken Grotesk,sans-serif;color:#B0A899">A bead per event, coloured by its first prep section. Current month gets the sun.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= NEW EVENT STEP 1 ============================= -->
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">03 · new event · step 1 — click the switches</span>
+      <div style="width:580px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;padding:26px;display:flex;flex-direction:column;gap:19px">
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="font:500 24px/1.2 Hanken Grotesk,sans-serif;letter-spacing:-.022em">New event</div>
+          <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">step 1 of 2</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">Event name</span>
+          <input value="Founders Fireside" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FFFDF9;font:400 13.5px Hanken Grotesk,sans-serif;color:#23201C;outline:none;transition:border-color .22s ease,box-shadow .22s ease" style-focus="border-color:#4A443C;box-shadow:0 0 0 3px rgba(35,32,28,.05)">
+        </div>
+        <div style="display:flex;gap:11px">
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+            <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">Date</span>
+            <input value="18/09/2026" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FFFDF9;font:400 13px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+            <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">Start time</span>
+            <input value="05:30 PM" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FFFDF9;font:400 13px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+            <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">End time</span>
+            <input value="07:00 PM" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FFFDF9;font:400 13px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">Venue</span>
+          <input value="Statler Hall 265" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FFFDF9;font:400 13.5px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px">
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <span style="font:500 14px Hanken Grotesk,sans-serif">What does this event need?</span>
+            <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#B0A899">Each one you turn on becomes a section to prep in step 2.</span>
+          </div>
+          <div style="border:1px solid rgba(35,32,28,.1);border-radius:10px;background:#FFFDF9;overflow:hidden">
+            <div onClick="{{ tSpeaker }}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid rgba(35,32,28,.07);cursor:pointer;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+              <span style="display:flex;align-items:center;gap:9px;font:400 13.5px Hanken Grotesk,sans-serif"><span style="width:9px;height:8px;background:#E8583D;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Speaker</span>
+              <div style="width:38px;height:21px;border-radius:12px;padding:2px;transition:background .32s ease;background:{{ trSpeaker }}"><div style="width:17px;height:17px;border-radius:50%;background:#FFFDF9;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .36s cubic-bezier(.34,1.6,.4,1);transform:translateX({{ knSpeaker }}px)"></div></div>
+            </div>
+            <div onClick="{{ tAttendees }}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid rgba(35,32,28,.07);cursor:pointer;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+              <span style="display:flex;align-items:center;gap:9px;font:400 13.5px Hanken Grotesk,sans-serif"><span style="width:9px;height:8px;background:#3FA789;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Attendees</span>
+              <div style="width:38px;height:21px;border-radius:12px;padding:2px;transition:background .32s ease;background:{{ trAttendees }}"><div style="width:17px;height:17px;border-radius:50%;background:#FFFDF9;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .36s cubic-bezier(.34,1.6,.4,1);transform:translateX({{ knAttendees }}px)"></div></div>
+            </div>
+            <div onClick="{{ tMoney }}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid rgba(35,32,28,.07);cursor:pointer;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+              <span style="display:flex;align-items:center;gap:9px;font:400 13.5px Hanken Grotesk,sans-serif"><span style="width:9px;height:8px;background:#3B6FC2;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Money</span>
+              <div style="width:38px;height:21px;border-radius:12px;padding:2px;transition:background .32s ease;background:{{ trMoney }}"><div style="width:17px;height:17px;border-radius:50%;background:#FFFDF9;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .36s cubic-bezier(.34,1.6,.4,1);transform:translateX({{ knMoney }}px)"></div></div>
+            </div>
+            <div onClick="{{ tFood }}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid rgba(35,32,28,.07);cursor:pointer;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+              <span style="display:flex;align-items:center;gap:9px;font:400 13.5px Hanken Grotesk,sans-serif"><span style="width:9px;height:8px;background:#E0B94A;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Food</span>
+              <div style="width:38px;height:21px;border-radius:12px;padding:2px;transition:background .32s ease;background:{{ trFood }}"><div style="width:17px;height:17px;border-radius:50%;background:#FFFDF9;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .36s cubic-bezier(.34,1.6,.4,1);transform:translateX({{ knFood }}px)"></div></div>
+            </div>
+            <div onClick="{{ tMarketing }}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid rgba(35,32,28,.07);cursor:pointer;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+              <span style="display:flex;align-items:center;gap:9px;font:400 13.5px Hanken Grotesk,sans-serif"><span style="width:9px;height:8px;background:#E8583D;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Marketing</span>
+              <div style="width:38px;height:21px;border-radius:12px;padding:2px;transition:background .32s ease;background:{{ trMarketing }}"><div style="width:17px;height:17px;border-radius:50%;background:#FFFDF9;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .36s cubic-bezier(.34,1.6,.4,1);transform:translateX({{ knMarketing }}px)"></div></div>
+            </div>
+            <div onClick="{{ tMedia }}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 15px;border-bottom:1px solid rgba(35,32,28,.07);cursor:pointer;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+              <span style="display:flex;align-items:center;gap:9px;font:400 13.5px Hanken Grotesk,sans-serif"><span style="width:9px;height:8px;background:#3FA789;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Media</span>
+              <div style="width:38px;height:21px;border-radius:12px;padding:2px;transition:background .32s ease;background:{{ trMedia }}"><div style="width:17px;height:17px;border-radius:50%;background:#FFFDF9;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .36s cubic-bezier(.34,1.6,.4,1);transform:translateX({{ knMedia }}px)"></div></div>
+            </div>
+            <div onClick="{{ tRecurring }}" style="display:flex;align-items:center;justify-content:space-between;padding:12px 15px;cursor:pointer;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+              <span style="display:flex;align-items:center;gap:9px;font:400 13.5px Hanken Grotesk,sans-serif"><span style="width:9px;height:8px;background:#3B6FC2;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Recurring</span>
+              <div style="width:38px;height:21px;border-radius:12px;padding:2px;transition:background .32s ease;background:{{ trRecurring }}"><div style="width:17px;height:17px;border-radius:50%;background:#FFFDF9;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .36s cubic-bezier(.34,1.6,.4,1);transform:translateX({{ knRecurring }}px)"></div></div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px">
+          <button style="border:0;padding:10px 20px;border-radius:9px;background:#23201C;color:#FDFAF4;font:500 13px Hanken Grotesk,sans-serif;cursor:pointer;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease" style-hover="transform:translateY(-2px);box-shadow:0 9px 20px -10px rgba(232,88,61,.9)" style-active="transform:scale(.975) translateY(0)">Continue</button>
+          <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#B0A899">{{ onCount }} sections selected</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">05 · todo</span>
+      <div style="width:560px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;padding:26px;display:flex;flex-direction:column;gap:17px">
+        <div style="font:500 24px/1.2 Hanken Grotesk,sans-serif;letter-spacing:-.022em">Todo</div>
+        <div style="border:1px solid rgba(35,32,28,.1);border-radius:10px;background:#FFFDF9;overflow:hidden">
+          <div style="padding:14px 16px;border-bottom:1px solid rgba(35,32,28,.07);cursor:pointer;display:flex;flex-direction:column;gap:9px;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.05s;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <span style="font:500 14px Hanken Grotesk,sans-serif">Founders Fireside</span>
+              <span style="font:400 10px Geist Mono,monospace;letter-spacing:.11em;text-transform:uppercase;color:#B0A899">sep 18 · 5:30–7:00p</span>
+            </div>
+            <div style="display:flex;gap:6px">
+              <span style="display:flex;align-items:center;gap:6px;font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border:1px solid rgba(35,32,28,.12);border-radius:20px;color:#6E675C"><span style="width:6px;height:6px;border-radius:50%;background:#E0B94A"></span>food</span>
+              <span style="display:flex;align-items:center;gap:6px;font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border:1px solid rgba(35,32,28,.12);border-radius:20px;color:#6E675C"><span style="width:6px;height:6px;border-radius:50%;background:#E8583D"></span>marketing</span>
+              <span style="display:flex;align-items:center;gap:6px;font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border:1px solid rgba(35,32,28,.12);border-radius:20px;color:#6E675C"><span style="width:6px;height:6px;border-radius:50%;background:#3FA789"></span>media</span>
+            </div>
+          </div>
+          <div style="padding:14px 16px;border-bottom:1px solid rgba(35,32,28,.07);cursor:pointer;display:flex;flex-direction:column;gap:9px;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.12s;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <span style="font:500 14px Hanken Grotesk,sans-serif">Pitch Night Kickoff</span>
+              <span style="font:400 10px Geist Mono,monospace;letter-spacing:.11em;text-transform:uppercase;color:#B0A899">sep 23 · 6:00–8:30p</span>
+            </div>
+            <div style="display:flex;gap:6px">
+              <span style="display:flex;align-items:center;gap:6px;font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border:1px solid rgba(35,32,28,.12);border-radius:20px;color:#6E675C"><span style="width:6px;height:6px;border-radius:50%;background:#3B6FC2"></span>money</span>
+              <span style="display:flex;align-items:center;gap:6px;font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border:1px solid rgba(35,32,28,.12);border-radius:20px;color:#6E675C"><span style="width:6px;height:6px;border-radius:50%;background:#3FA789"></span>attendees</span>
+            </div>
+          </div>
+          <div style="padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:9px;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.19s;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+            <div style="display:flex;align-items:baseline;justify-content:space-between">
+              <span style="font:500 14px Hanken Grotesk,sans-serif">Officer sync</span>
+              <span style="font:400 10px Geist Mono,monospace;letter-spacing:.11em;text-transform:uppercase;color:#B0A899">sep 30 · 5:00–6:00p</span>
+            </div>
+            <div style="display:flex;gap:6px">
+              <span style="display:flex;align-items:center;gap:6px;font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:4px 9px;border:1px solid rgba(35,32,28,.12);border-radius:20px;color:#6E675C"><span style="width:6px;height:6px;border-radius:50%;background:#3FA789"></span>venue</span>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border:1px dashed rgba(35,32,28,.14);border-radius:10px">
+          <div style="position:relative;width:46px;height:46px;flex:none">
+            <div style="position:absolute;left:22px;top:11px;width:1.5px;height:30px;background:linear-gradient(180deg,rgba(63,167,137,.7),rgba(63,167,137,.1))"></div>
+            <div style="position:absolute;left:7px;top:14px;width:20px;height:11px;border-radius:50%;filter:blur(4px);background:radial-gradient(circle at 70% 50%,#3FA789,transparent 74%);transform:rotate(-16deg)"></div>
+            <div style="position:absolute;left:21px;top:24px;width:20px;height:11px;border-radius:50%;filter:blur(4px);background:radial-gradient(circle at 30% 50%,#3FA789,transparent 74%);transform:rotate(16deg)"></div>
+            <div style="position:absolute;left:18px;top:2px;width:12px;height:15px;border-radius:50% 50% 45% 45%;filter:blur(3px);background:radial-gradient(circle at 50% 70%,#E8583D,transparent 76%)"></div>
+          </div>
+          <span style="font:400 12.5px/1.6 Hanken Grotesk,sans-serif;color:#B0A899">Empty state — “Nothing outstanding, every event is fully prepped.”</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= EVENT DETAILS ============================= -->
+  <div style="display:flex;flex-direction:column;gap:9px">
+    <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">04 · event details · step 2 — switch tabs, tick “mark as done”</span>
+    <div style="width:1180px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;padding:26px;display:flex;flex-direction:column;gap:19px">
+      <div style="display:flex;align-items:center;gap:12px">
+        <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">step 2 of 2</span>
+        <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;color:#23201C;background:linear-gradient(95deg,rgba(232,88,61,.2),rgba(224,185,74,.2),rgba(63,167,137,.2),rgba(59,111,194,.2))">{{ doneCount }} of 9 done</span>
+      </div>
+
+      <div style="position:relative;border:1px solid rgba(35,32,28,.1);border-radius:11px;background:#FFFDF9;padding:19px 20px;display:flex;gap:12px;align-items:flex-end;overflow:hidden">
+        <div style="position:absolute;right:22px;top:-8px;width:60px;height:76px;opacity:.7;pointer-events:none">
+          <div style="position:absolute;left:29px;top:14px;width:1.5px;height:52px;background:linear-gradient(180deg,rgba(63,167,137,.6),rgba(63,167,137,.05))"></div>
+          <div style="position:absolute;left:9px;top:22px;width:24px;height:12px;border-radius:50%;filter:blur(5px);background:radial-gradient(circle at 70% 50%,rgba(63,167,137,.9),transparent 74%);transform:rotate(-18deg)"></div>
+          <div style="position:absolute;left:28px;top:35px;width:24px;height:12px;border-radius:50%;filter:blur(5px);background:radial-gradient(circle at 30% 50%,rgba(63,167,137,.9),transparent 74%);transform:rotate(18deg)"></div>
+          <div style="position:absolute;left:23px;top:2px;width:13px;height:16px;border-radius:50% 50% 45% 45%;filter:blur(4px);background:radial-gradient(circle at 50% 70%,rgba(232,88,61,.9),transparent 76%)"></div>
+        </div>
+        <div style="flex:2;display:flex;flex-direction:column;gap:6px">
+          <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">Event name</span>
+          <input value="Founders Fireside" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 13.5px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">Date</span>
+          <input value="18/09/2026" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 13px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">Start</span>
+          <input value="05:30 PM" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 13px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+          <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">End</span>
+          <input value="07:00 PM" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 13px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+        </div>
+        <button style="border:1px solid rgba(35,32,28,.14);padding:10px 18px;border-radius:9px;background:transparent;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:background-color .26s ease,border-color .26s ease,color .26s ease" style-hover="background-color:#F5F0E5;border-color:rgba(35,32,28,.24);color:#23201C" style-active="transform:scale(.975)">Save</button>
+      </div>
+
+      <div style="display:flex;gap:24px">
+        <div style="width:184px;position:relative;display:flex;flex-direction:column;flex:none">
+          <div style="position:absolute;left:0;right:0;height:36px;border-radius:9px;background:linear-gradient(95deg,rgba(232,88,61,.15),rgba(224,185,74,.15),rgba(63,167,137,.15),rgba(59,111,194,.15));transition:top .34s cubic-bezier(.2,.9,.2,1);top:{{ tabY }}px"></div>
+          <div onClick="{{ setTab0 }}" style="position:relative;height:36px;display:flex;align-items:center;gap:9px;padding:0 13px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#3FA789;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Venue<span style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:#3FA789;opacity:{{ dot0 }};transition:opacity .3s ease"></span></div>
+          <div onClick="{{ setTab1 }}" style="position:relative;height:36px;display:flex;align-items:center;gap:9px;padding:0 13px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#E8583D;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Speaker<span style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:#3FA789;opacity:{{ dot1 }};transition:opacity .3s ease"></span></div>
+          <div onClick="{{ setTab2 }}" style="position:relative;height:36px;display:flex;align-items:center;gap:9px;padding:0 13px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#3FA789;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Attendees<span style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:#3FA789;opacity:{{ dot2 }};transition:opacity .3s ease"></span></div>
+          <div onClick="{{ setTab3 }}" style="position:relative;height:36px;display:flex;align-items:center;gap:9px;padding:0 13px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#3B6FC2;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Money<span style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:#3FA789;opacity:{{ dot3 }};transition:opacity .3s ease"></span></div>
+          <div onClick="{{ setTab4 }}" style="position:relative;height:36px;display:flex;align-items:center;gap:9px;padding:0 13px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#E0B94A;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Food<span style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:#3FA789;opacity:{{ dot4 }};transition:opacity .3s ease"></span></div>
+          <div onClick="{{ setTab5 }}" style="position:relative;height:36px;display:flex;align-items:center;gap:9px;padding:0 13px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#E8583D;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Marketing<span style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:#3FA789;opacity:{{ dot5 }};transition:opacity .3s ease"></span></div>
+          <div onClick="{{ setTab6 }}" style="position:relative;height:36px;display:flex;align-items:center;gap:9px;padding:0 13px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#3FA789;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Media<span style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:#3FA789;opacity:{{ dot6 }};transition:opacity .3s ease"></span></div>
+          <div onClick="{{ setTab7 }}" style="position:relative;height:36px;display:flex;align-items:center;gap:9px;padding:0 13px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#3B6FC2;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Recurring<span style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:#3FA789;opacity:{{ dot7 }};transition:opacity .3s ease"></span></div>
+          <div onClick="{{ setTab8 }}" style="position:relative;height:36px;display:flex;align-items:center;gap:9px;padding:0 13px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .18s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#E0B94A;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Notes<span style="margin-left:auto;width:6px;height:6px;border-radius:50%;background:#3FA789;opacity:{{ dot8 }};transition:opacity .3s ease"></span></div>
+        </div>
+
+        <div style="flex:1;border:1px solid rgba(35,32,28,.1);border-radius:11px;background:#FFFDF9;padding:20px 22px;min-height:352px">
+          <div style="display:flex;flex-direction:column;gap:16px;animation:{{ panelAnim }}">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font:400 19px/1.25 Hanken Grotesk,sans-serif;letter-spacing:-.014em">{{ tabName }}</span>
+              <div onClick="{{ toggleDone }}" style="display:inline-flex;align-items:center;gap:9px;cursor:pointer;padding:6px 12px 6px 6px;border-radius:20px;transition:background-color .2s ease" style-hover="background-color:#F5F0E5">
+                <div style="width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .26s cubic-bezier(.2,.8,.2,1),border-color .26s ease;border:1px solid {{ boxBorder }};background:{{ box }}">
+                  <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><polyline points="2,6.4 4.6,9 10,3.2" stroke="#FFFDF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="14" stroke-dashoffset="{{ dash }}" style="transition:stroke-dashoffset .36s cubic-bezier(.4,0,.2,1) .04s"></polyline></svg>
+                </div>
+                <span style="position:relative;display:inline-block;font:400 13px Hanken Grotesk,sans-serif;transition:color .3s ease;color:{{ doneText }}">Mark as done
+                  <span style="position:absolute;left:0;top:53%;height:1px;background:#B0A899;transition:width .34s cubic-bezier(.4,0,.2,1);width:{{ strike }}"></span>
+                </span>
+              </div>
+            </div>
+
+            <sc-if value="{{ showPair }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;gap:12px">
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                  <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">{{ pairA }}</span>
+                  <input value="{{ pairAVal }}" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 13px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                  <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">{{ pairB }}</span>
+                  <input value="{{ pairBVal }}" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 13px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showText }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">{{ textLabel }}</span>
+                <input value="{{ textVal }}" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 13.5px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showArea }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:6px">
+                <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">{{ areaLabel }}</span>
+                <div style="min-height:74px;padding:11px 13px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 13px/1.65 Hanken Grotesk,sans-serif;color:#4A443C">{{ areaVal }}</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showChannels }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px 20px">
+                <div style="display:flex;align-items:center;gap:9px;font:400 13px Hanken Grotesk,sans-serif;color:#23201C"><span style="width:17px;height:17px;border-radius:5px;background:#23201C;display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2,6.4 4.6,9 10,3.2" stroke="#FFFDF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></span>Instagram post</div>
+                <div style="display:flex;align-items:center;gap:9px;font:400 13px Hanken Grotesk,sans-serif;color:#23201C"><span style="width:17px;height:17px;border-radius:5px;background:#23201C;display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2,6.4 4.6,9 10,3.2" stroke="#FFFDF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></span>Eship listserve</div>
+                <div style="display:flex;align-items:center;gap:9px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C"><span style="width:17px;height:17px;border-radius:5px;border:1px solid rgba(35,32,28,.2)"></span>Story shoutout 1</div>
+                <div style="display:flex;align-items:center;gap:9px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C"><span style="width:17px;height:17px;border-radius:5px;border:1px solid rgba(35,32,28,.2)"></span>Story shoutout 2</div>
+                <div style="display:flex;align-items:center;gap:9px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C"><span style="width:17px;height:17px;border-radius:5px;border:1px solid rgba(35,32,28,.2)"></span>Story shoutout 3</div>
+                <div style="display:flex;align-items:center;gap:9px;font:400 13px Hanken Grotesk,sans-serif;color:#23201C"><span style="width:17px;height:17px;border-radius:5px;background:#23201C;display:flex;align-items:center;justify-content:center"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><polyline points="2,6.4 4.6,9 10,3.2" stroke="#FFFDF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></polyline></svg></span>Posters</div>
+                <div style="display:flex;align-items:center;gap:9px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C"><span style="width:17px;height:17px;border-radius:5px;border:1px solid rgba(35,32,28,.2)"></span>Reel</div>
+                <div style="display:flex;align-items:center;gap:9px;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C"><span style="width:17px;height:17px;border-radius:5px;border:1px solid rgba(35,32,28,.2)"></span>Slope Day table<span style="font:400 12px Hanken Grotesk,sans-serif;color:#C9C4B6;cursor:pointer;transition:color .18s ease" style-hover="color:#B4472F">×</span></div>
+              </div>
+              <div style="display:flex;gap:9px;align-items:center">
+                <input placeholder="Add a custom channel…" style="flex:1;max-width:260px;padding:8px 11px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 12.5px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+                <button style="border:1px solid rgba(35,32,28,.14);padding:8px 15px;border-radius:8px;background:transparent;font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:background-color .24s ease,color .24s ease" style-hover="background-color:#F5F0E5;color:#23201C">Add</button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showHalal }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div style="width:38px;height:21px;border-radius:12px;padding:2px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2)"><div style="width:17px;height:17px;border-radius:50%;background:#FFFDF9;transform:translateX(17px)"></div></div>
+                <span style="font:400 13px Hanken Grotesk,sans-serif;color:#6E675C">Halal options — reveals a second field</span>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showSelect }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;gap:12px;align-items:flex-end">
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                  <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">Frequency</span>
+                  <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 13px Hanken Grotesk,sans-serif;cursor:pointer;transition:border-color .22s ease" style-hover="border-color:rgba(35,32,28,.3)">Weekly<span style="color:#B0A899">⌄</span></div>
+                </div>
+                <div style="flex:1;display:flex;flex-direction:column;gap:6px">
+                  <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">Ends on</span>
+                  <input value="11/12/2026" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FDFAF4;font:400 13px Hanken Grotesk,sans-serif;outline:none;transition:border-color .22s ease" style-focus="border-color:#4A443C">
+                </div>
+                <button style="border:1px solid rgba(35,32,28,.14);padding:10px 17px;border-radius:9px;background:transparent;font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:background-color .24s ease,color .24s ease" style-hover="background-color:#F5F0E5;color:#23201C">Generate series</button>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ showDrop }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <span style="font:400 10px Geist Mono,monospace;letter-spacing:.13em;text-transform:uppercase;color:#B0A899">{{ dropLabel }}</span>
+                <div style="position:relative;border:1px dashed rgba(35,32,28,.16);border-radius:10px;padding:24px;text-align:center;cursor:pointer;overflow:hidden;transition:border-color .26s ease" style-hover="border-color:rgba(232,88,61,.5)">
+                  <div style="position:absolute;left:50%;top:120%;width:260px;height:150px;transform:translate(-50%,0);border-radius:50%;filter:blur(30px);opacity:0;background:radial-gradient(circle,#E8583D,rgba(224,185,74,.7) 40%,rgba(63,167,137,.4) 70%,transparent 80%);transition:opacity .4s ease,transform .5s cubic-bezier(.2,.8,.2,1);pointer-events:none" style-hover="opacity:.3;transform:translate(-50%,-56%)"></div>
+                  <span style="position:relative;font:400 12px Hanken Grotesk,sans-serif;color:#B0A899">{{ dropHint }}</span>
+                </div>
+                <div style="display:flex;gap:9px">
+                  <div style="position:relative;width:58px;height:58px;border-radius:8px;background:repeating-linear-gradient(135deg,#EFEBE1 0 6px,#F6F2E9 6px 12px);border:1px solid rgba(35,32,28,.07);cursor:pointer;transition:transform .22s ease" style-hover="transform:translateY(-2px)"></div>
+                  <div style="position:relative;width:58px;height:58px;border-radius:8px;background:repeating-linear-gradient(135deg,#EAEDE8 0 6px,#F2F4EF 6px 12px);border:1px solid rgba(35,32,28,.07);cursor:pointer;transition:transform .22s ease" style-hover="transform:translateY(-2px)"></div>
+                  <div style="position:relative;width:58px;height:58px;border-radius:8px;background:repeating-linear-gradient(135deg,#F0EAE6 0 6px,#F7F2EE 6px 12px);border:1px solid rgba(35,32,28,.07);cursor:pointer;transition:transform .22s ease" style-hover="transform:translateY(-2px)"></div>
+                </div>
+              </div>
+            </sc-if>
+
+            <button style="align-self:start;border:1px solid rgba(35,32,28,.14);padding:9px 17px;border-radius:9px;background:transparent;font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:background-color .26s ease,border-color .26s ease,color .26s ease" style-hover="background-color:#F5F0E5;border-color:rgba(35,32,28,.24);color:#23201C" style-active="transform:scale(.975)">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= PAST EVENTS + PHOTOS ============================= -->
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">06 · past events</span>
+      <div style="width:580px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;padding:26px;display:flex;flex-direction:column;gap:17px">
+        <div style="display:flex;align-items:baseline;justify-content:space-between">
+          <div style="font:500 24px/1.2 Hanken Grotesk,sans-serif;letter-spacing:-.022em">Past Events</div>
+          <div style="display:flex;gap:8px">
+            <div style="width:36px;height:36px;border-radius:8px;border:1px solid rgba(232,88,61,.5);display:flex;align-items:center;justify-content:center;font:500 9px Geist Mono,monospace;color:#E8583D;cursor:pointer;transition:background-color .24s ease" style-hover="background-color:rgba(232,88,61,.08)">F25</div>
+            <div style="width:36px;height:36px;border-radius:8px;border:1px solid rgba(63,167,137,.5);display:flex;align-items:center;justify-content:center;font:500 9px Geist Mono,monospace;color:#3FA789;cursor:pointer;transition:background-color .24s ease" style-hover="background-color:rgba(63,167,137,.08)">S26</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="display:flex;align-items:center;gap:13px;padding:14px;border:1px solid rgba(35,32,28,.09);border-radius:10px;background:#FFFDF9;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.05s;transition:transform .22s cubic-bezier(.2,.8,.2,1),border-color .22s ease" style-hover="transform:translateY(-2px);border-color:rgba(35,32,28,.2)">
+            <div style="width:48px;height:48px;border-radius:50%;flex:none;background:repeating-linear-gradient(135deg,#EFEBE1 0 5px,#F6F2E9 5px 10px);border:1px solid rgba(35,32,28,.07)"></div>
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <span style="font:500 13.5px Hanken Grotesk,sans-serif">Nina Alvarez</span>
+              <span style="font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">Apr 4 · 5:30–7:00p</span>
+              <span style="font:400 11px Hanken Grotesk,sans-serif;color:#B0A899">Statler 265</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:13px;padding:14px;border:1px solid rgba(35,32,28,.09);border-radius:10px;background:#FFFDF9;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.12s;transition:transform .22s cubic-bezier(.2,.8,.2,1),border-color .22s ease" style-hover="transform:translateY(-2px);border-color:rgba(35,32,28,.2)">
+            <div style="width:48px;height:48px;border-radius:50%;flex:none;background:repeating-linear-gradient(135deg,#EAEDE8 0 5px,#F2F4EF 5px 10px);border:1px solid rgba(35,32,28,.07)"></div>
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <span style="font:500 13.5px Hanken Grotesk,sans-serif">Dev Rao</span>
+              <span style="font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">Mar 12 · 6:00–8:00p</span>
+              <span style="font:400 11px Hanken Grotesk,sans-serif;color:#B0A899">Klarman Auditorium</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:13px;padding:14px;border:1px solid rgba(35,32,28,.09);border-radius:10px;background:#FFFDF9;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.19s;transition:transform .22s cubic-bezier(.2,.8,.2,1),border-color .22s ease" style-hover="transform:translateY(-2px);border-color:rgba(35,32,28,.2)">
+            <div style="width:48px;height:48px;border-radius:50%;flex:none;background:#F0EDE4;border:1px solid rgba(35,32,28,.07)"></div>
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <span style="font:500 13.5px Hanken Grotesk,sans-serif">Spring mixer</span>
+              <span style="font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">Feb 27 · 7:00–9:00p</span>
+              <span style="font:400 11px Hanken Grotesk,sans-serif;color:#B0A899">No speaker</span>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:13px;padding:14px;border:1px solid rgba(35,32,28,.09);border-radius:10px;background:#FFFDF9;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.26s;transition:transform .22s cubic-bezier(.2,.8,.2,1),border-color .22s ease" style-hover="transform:translateY(-2px);border-color:rgba(35,32,28,.2)">
+            <div style="width:48px;height:48px;border-radius:50%;flex:none;background:repeating-linear-gradient(135deg,#F0EAE6 0 5px,#F7F2EE 5px 10px);border:1px solid rgba(35,32,28,.07)"></div>
+            <div style="display:flex;flex-direction:column;gap:3px">
+              <span style="font:500 13.5px Hanken Grotesk,sans-serif">Priya Nandakumar</span>
+              <span style="font:400 11.5px Hanken Grotesk,sans-serif;color:#6E675C">Feb 6 · 5:00–6:30p</span>
+              <span style="font:400 11px Hanken Grotesk,sans-serif;color:#B0A899">Physical Sciences 401</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">07 · photos</span>
+      <div style="width:580px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;padding:26px;display:flex;flex-direction:column;gap:17px">
+        <div style="font:500 24px/1.2 Hanken Grotesk,sans-serif;letter-spacing:-.022em">Photos</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+          <div style="display:flex;flex-direction:column;gap:6px;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.05s">
+            <div style="aspect-ratio:1;border-radius:9px;overflow:hidden;border:1px solid rgba(35,32,28,.07);background:repeating-linear-gradient(135deg,#EFEBE1 0 7px,#F6F2E9 7px 14px);transition:transform .38s cubic-bezier(.2,.8,.2,1)" style-hover="transform:scale(1.04)"></div>
+            <span style="font:400 10px Hanken Grotesk,sans-serif;color:#B0A899">Founders Fireside</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.11s">
+            <div style="aspect-ratio:1;border-radius:9px;overflow:hidden;border:1px solid rgba(35,32,28,.07);background:repeating-linear-gradient(135deg,#EAEDE8 0 7px,#F2F4EF 7px 14px);transition:transform .38s cubic-bezier(.2,.8,.2,1)" style-hover="transform:scale(1.04)"></div>
+            <span style="font:400 10px Hanken Grotesk,sans-serif;color:#B0A899">Pitch Night</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.17s">
+            <div style="aspect-ratio:1;border-radius:9px;overflow:hidden;border:1px solid rgba(35,32,28,.07);background:repeating-linear-gradient(135deg,#F0EAE6 0 7px,#F7F2EE 7px 14px);transition:transform .38s cubic-bezier(.2,.8,.2,1)" style-hover="transform:scale(1.04)"></div>
+            <span style="font:400 10px Hanken Grotesk,sans-serif;color:#B0A899">Bagel social</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.23s">
+            <div style="aspect-ratio:1;border-radius:9px;overflow:hidden;border:1px solid rgba(35,32,28,.07);background:repeating-linear-gradient(135deg,#EDEBE5 0 7px,#F5F3ED 7px 14px);display:flex;align-items:center;justify-content:center;font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899;transition:transform .38s cubic-bezier(.2,.8,.2,1)" style-hover="transform:scale(1.04)">zip</div>
+            <span style="font:400 10px Hanken Grotesk,sans-serif;color:#B0A899">Fireside · raws</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.29s">
+            <div style="aspect-ratio:1;border-radius:9px;overflow:hidden;border:1px solid rgba(35,32,28,.07);background:repeating-linear-gradient(135deg,#ECEFEA 0 7px,#F4F6F1 7px 14px);transition:transform .38s cubic-bezier(.2,.8,.2,1)" style-hover="transform:scale(1.04)"></div>
+            <span style="font:400 10px Hanken Grotesk,sans-serif;color:#B0A899">Info session</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.35s">
+            <div style="aspect-ratio:1;border-radius:9px;overflow:hidden;border:1px solid rgba(35,32,28,.07);background:repeating-linear-gradient(135deg,#F1EBE4 0 7px,#F8F3EC 7px 14px);transition:transform .38s cubic-bezier(.2,.8,.2,1)" style-hover="transform:scale(1.04)"></div>
+            <span style="font:400 10px Hanken Grotesk,sans-serif;color:#B0A899">Officer sync</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;cursor:pointer;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.41s">
+            <div style="aspect-ratio:1;border-radius:9px;overflow:hidden;border:1px solid rgba(35,32,28,.07);background:repeating-linear-gradient(135deg,#EEECE6 0 7px,#F6F4EE 7px 14px);transition:transform .38s cubic-bezier(.2,.8,.2,1)" style-hover="transform:scale(1.04)"></div>
+            <span style="font:400 10px Hanken Grotesk,sans-serif;color:#B0A899">Spring mixer</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px;animation:riseIn .5s cubic-bezier(.2,.8,.2,1) both;animation-delay:.47s">
+            <div style="position:relative;aspect-ratio:1;border-radius:9px;border:1px dashed rgba(35,32,28,.14);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;overflow:hidden">
+              <div style="position:relative;width:44px;height:34px">
+                <div style="position:absolute;left:0;top:5px;width:22px;height:22px;border-radius:50%;filter:blur(6px);background:radial-gradient(circle,rgba(232,88,61,.8),transparent 72%)"></div>
+                <div style="position:absolute;left:13px;top:0;width:20px;height:20px;border-radius:50%;filter:blur(6px);background:radial-gradient(circle,rgba(224,185,74,.8),transparent 72%)"></div>
+                <div style="position:absolute;left:24px;top:11px;width:20px;height:20px;border-radius:50%;filter:blur(6px);background:radial-gradient(circle,rgba(63,167,137,.7),transparent 72%)"></div>
+              </div>
+              <span style="font:400 10px Hanken Grotesk,sans-serif;color:#B0A899">No media yet</span>
+            </div>
+            <span style="font:400 10px Hanken Grotesk,sans-serif;color:#C9C4B6">empty state</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================= NOTES + ADMIN ============================= -->
+  <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">08 · notes · block editor</span>
+      <div style="width:660px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;padding:26px;display:flex;flex-direction:column;gap:17px">
+        <div style="font:500 24px/1.2 Hanken Grotesk,sans-serif;letter-spacing:-.022em">Notes</div>
+        <div style="border:1px solid rgba(35,32,28,.1);border-radius:11px;background:#FFFDF9;padding:22px 24px;display:flex;flex-direction:column;gap:4px">
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;margin-left:-22px">
+            <span style="width:14px;font:400 12px Hanken Grotesk,sans-serif;color:#E2DACB;opacity:0;transition:opacity .16s ease" style-hover="opacity:1">⠿</span>
+            <span style="font:500 18px/1.4 Hanken Grotesk,sans-serif">Fall 2026 playbook</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;margin-left:-22px;border-radius:6px;transition:background-color .16s ease" style-hover="background-color:#FDFAF4">
+            <span style="width:14px;font:400 12px Hanken Grotesk,sans-serif;color:#E2DACB;opacity:0;transition:opacity .16s ease" style-hover="opacity:1">⠿</span>
+            <span style="font:400 13.5px/1.75 Hanken Grotesk,sans-serif;color:#4A443C">Doors open thirty minutes early. Two officers on check-in, one on <span style="background:linear-gradient(95deg,rgba(232,88,61,.26),rgba(224,185,74,.26));padding:1px 3px">AV and the slide deck</span>.</span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;margin-left:-22px;border-radius:6px;transition:background-color .16s ease" style-hover="background-color:#FDFAF4">
+            <span style="width:14px;font:400 12px Hanken Grotesk,sans-serif;color:#E2DACB;opacity:0;transition:opacity .16s ease" style-hover="opacity:1">⠿</span>
+            <span style="display:flex;gap:9px;align-items:flex-start">
+              <span style="width:13px;height:13px;margin-top:4px;flex:none;background:linear-gradient(140deg,#E0B94A,#E8583D);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%)"></span>
+              <span style="font:400 13.5px/1.75 Hanken Grotesk,sans-serif;color:#4A443C">Never book Statler 265 on a Thursday — the acoustics fight the hallway.</span>
+            </span>
+          </div>
+          <div style="display:flex;align-items:flex-start;gap:8px;padding:4px 0;margin-left:-22px;border-radius:6px;transition:background-color .16s ease" style-hover="background-color:#FDFAF4">
+            <span style="width:14px;font:400 12px Hanken Grotesk,sans-serif;color:#E2DACB;opacity:0;transition:opacity .16s ease" style-hover="opacity:1">⠿</span>
+            <span style="font:400 13.5px/1.75 Hanken Grotesk,sans-serif;color:#4A443C">— Trillium platters need 48 hours notice<br>— Halal option: ask for the second tray</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:13px;margin-left:-8px;padding:6px 0">
+            <span style="font:400 13.5px Hanken Grotesk,sans-serif;color:#C9C4B6">Type ‘/’ for commands</span>
+            <span style="display:inline-block;width:1.5px;height:16px;background:#E8583D"></span>
+          </div>
+          <div style="width:246px;margin-top:6px;padding:8px;border-radius:10px;background:#FFFDF9;border:1px solid rgba(35,32,28,.1);box-shadow:0 14px 30px -18px rgba(35,32,28,.55);display:flex;flex-direction:column;gap:2px">
+            <span style="font:400 9px Geist Mono,monospace;letter-spacing:.13em;text-transform:uppercase;color:#B0A899;padding:4px 8px">blocks</span>
+            <span style="font:400 12.5px Hanken Grotesk,sans-serif;padding:7px 8px;border-radius:6px;background:#F5F0E5">Heading 2</span>
+            <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;padding:7px 8px;border-radius:6px;transition:background-color .16s ease,color .16s ease" style-hover="background-color:#F5F0E5;color:#23201C">Bulleted list</span>
+            <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;padding:7px 8px;border-radius:6px;transition:background-color .16s ease,color .16s ease" style-hover="background-color:#F5F0E5;color:#23201C">To-do</span>
+            <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;padding:7px 8px;border-radius:6px;transition:background-color .16s ease,color .16s ease" style-hover="background-color:#F5F0E5;color:#23201C">Divider</span>
+          </div>
+        </div>
+        <span style="font:400 11.5px Hanken Grotesk,sans-serif;color:#B0A899">Autosaves. View-role members see the same page read-only, with no handles or slash menu.</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#9A9184">09 · admin</span>
+      <div style="width:500px;border:1px solid rgba(35,32,28,.1);border-radius:12px;background:#FDFAF4;padding:26px;display:flex;flex-direction:column;gap:17px">
+        <div style="display:flex;flex-direction:column;gap:5px">
+          <div style="font:500 24px/1.2 Hanken Grotesk,sans-serif;letter-spacing:-.022em">Admin</div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="position:relative;width:26px;height:26px;display:flex;align-items:center;justify-content:center">
+              <div style="position:absolute;inset:-2px;border-radius:50%;background:conic-gradient(from 200deg,#E8583D,#E0B94A,#3FA789,#3B6FC2,#E8583D);filter:blur(2px);opacity:.75"></div>
+              <div style="position:relative;width:26px;height:26px;border-radius:50%;background:#F5F0E5;display:flex;align-items:center;justify-content:center;font:500 9.5px Hanken Grotesk,sans-serif;color:#4A443C">CW</div>
+            </div>
+            <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C">Signed in as Claudia Wong · cw2252@cornell.edu</span>
+          </div>
+        </div>
+        <div style="border:1px solid rgba(35,32,28,.1);border-radius:10px;background:#FFFDF9;overflow:hidden">
+          <div style="display:grid;grid-template-columns:1.3fr 1.6fr .9fr;gap:12px;padding:10px 15px;border-bottom:1px solid rgba(35,32,28,.08);font:400 9px Geist Mono,monospace;letter-spacing:.13em;text-transform:uppercase;color:#B0A899">
+            <span>name</span><span>email</span><span>access</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1.3fr 1.6fr .9fr;gap:12px;align-items:center;padding:12px 15px;border-bottom:1px solid rgba(35,32,28,.07);transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+            <span style="font:500 12.5px Hanken Grotesk,sans-serif">Claudia Wong</span>
+            <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">cw2252@cornell.edu</span>
+            <span style="display:flex;align-items:center;justify-content:space-between;gap:6px;font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;border-radius:20px;color:#23201C;background:linear-gradient(95deg,rgba(232,88,61,.2),rgba(224,185,74,.2),rgba(63,167,137,.2),rgba(59,111,194,.2))">admin</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1.3fr 1.6fr .9fr;gap:12px;align-items:center;padding:12px 15px;border-bottom:1px solid rgba(35,32,28,.07);transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+            <span style="font:400 12.5px Hanken Grotesk,sans-serif">Jonah Liu</span>
+            <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">jl884@cornell.edu</span>
+            <span style="display:flex;align-items:center;justify-content:space-between;gap:6px;font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;border:1px solid rgba(35,32,28,.14);border-radius:20px;color:#6E675C;background:#FDFAF4;cursor:pointer;transition:border-color .2s ease,color .2s ease" style-hover="border-color:rgba(35,32,28,.32);color:#23201C">edit <span style="color:#B0A899">⌄</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1.3fr 1.6fr .9fr;gap:12px;align-items:center;padding:12px 15px;border-bottom:1px solid rgba(35,32,28,.07);transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+            <span style="font:400 12.5px Hanken Grotesk,sans-serif">Rhea Patel</span>
+            <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">rp71@cornell.edu</span>
+            <span style="display:flex;align-items:center;justify-content:space-between;gap:6px;font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;border:1px solid rgba(35,32,28,.14);border-radius:20px;color:#6E675C;background:#FDFAF4;cursor:pointer;transition:border-color .2s ease,color .2s ease" style-hover="border-color:rgba(35,32,28,.32);color:#23201C">view <span style="color:#B0A899">⌄</span></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1.3fr 1.6fr .9fr;gap:12px;align-items:center;padding:12px 15px;transition:background-color .18s ease" style-hover="background-color:#F5F0E5">
+            <span style="font:400 12.5px Hanken Grotesk,sans-serif">Sam Okafor</span>
+            <span style="font:400 12px Hanken Grotesk,sans-serif;color:#6E675C">so223@cornell.edu</span>
+            <span style="display:flex;align-items:center;justify-content:space-between;gap:6px;font:400 9.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;padding:5px 9px;border:1px solid rgba(35,32,28,.14);border-radius:20px;color:#6E675C;background:#FDFAF4;cursor:pointer;transition:border-color .2s ease,color .2s ease" style-hover="border-color:rgba(35,32,28,.32);color:#23201C">edit <span style="color:#B0A899">⌄</span></span>
+          </div>
+        </div>
+        <span style="font:400 11.5px Hanken Grotesk,sans-serif;color:#B0A899">Non-admins see the same table with static role badges.</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1300,&quot;height&quot;:1700}}">
+class Component extends DCLogic {
+  state = {
+    tab:3, flip:false, menu:false, pops:{},
+    done:{0:true,1:true,2:false,3:false,4:false,5:false,6:false,7:false,8:true},
+    sw:{Speaker:true,Attendees:true,Money:true,Food:true,Marketing:true,Media:false,Recurring:true}
+  };
+  setTab(i){ this.setState(s=>({tab:i, flip:!s.flip})); }
+  renderVals(){
+    const grad='linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2)';
+    const t=this.state.tab, d=this.state.done, sw=this.state.sw;
+    const spec=[
+      {name:'Venue',text:'Room',textVal:'Statler Hall 265',drop:'photo evidence',hint:'Drop a photo of the booking confirmation'},
+      {name:'Speaker',area:'Details',areaVal:'Nina Alvarez — founder, Rill. Bio and headshot received; needs a 5-minute intro.',drop:'portrait',hint:'Drop the speaker portrait (one image)'},
+      {name:'Attendees',text:'Luma link',textVal:'lu.ma/cec-fireside',area:'Notes',areaVal:'42 RSVPs, cap 60. Check-in list printed the morning of.',drop:'photo evidence',hint:'Drop a screenshot of the RSVP list'},
+      {name:'Money',pair:['Budgeted','Actual spent'],pairVals:['$420','$386'],area:'Notes',areaVal:'Catering $260, printing $95, misc $31. Reimbursement filed Sep 20.',drop:'receipts',hint:'Drop receipts here'},
+      {name:'Food',area:'Usual',areaVal:'Two Trillium platters, 60 servings, pickup 4:30p.',halal:true,drop:'photo evidence',hint:'Drop a photo of the food table'},
+      {name:'Marketing',channels:true,drop:'photo evidence',hint:'Drop screenshots of the posts'},
+      {name:'Media',area:'What goes here',areaVal:'Everything shot at the event — images, video, or a zip of raws.',drop:'event media',hint:'Drop images, video or .zip — multiple files welcome'},
+      {name:'Recurring',select:true,drop:'photo evidence',hint:'Drop a photo of the series confirmation'},
+      {name:'Notes',area:'Optional notes',areaVal:'Debrief: start on time next term; the Q&A ran long and people left mid-answer.'}
+    ];
+    const s=spec[t];
+    const out={
+      tabY:t*36, tabName:s.name,
+      panelAnim:(this.state.flip?'fadeA':'fadeB')+' .34s cubic-bezier(.2,.8,.2,1) both',
+      doneCount:Object.values(d).filter(Boolean).length,
+      toggleMenu:()=>this.setState(x=>({menu:!x.menu})),
+      menuOpacity:this.state.menu?1:0, menuY:this.state.menu?0:-6, menuEvents:this.state.menu?'auto':'none',
+      toggleDone:()=>this.setState(x=>({done:{...x.done,[t]:!x.done[t]}})),
+      dash:d[t]?0:14, box:d[t]?grad:'transparent',
+      boxBorder:d[t]?'transparent':'rgba(35,32,28,.2)',
+      doneText:d[t]?'#B0A899':'#23201C', strike:d[t]?'100%':'0%',
+      showPair:!!s.pair, pairA:s.pair?s.pair[0]:'', pairB:s.pair?s.pair[1]:'',
+      pairAVal:s.pairVals?s.pairVals[0]:'', pairBVal:s.pairVals?s.pairVals[1]:'',
+      showText:!!s.text, textLabel:s.text||'', textVal:s.textVal||'',
+      showArea:!!s.area, areaLabel:s.area||'', areaVal:s.areaVal||'',
+      showChannels:!!s.channels, showHalal:!!s.halal, showSelect:!!s.select,
+      showDrop:!!s.drop, dropLabel:s.drop||'', dropHint:s.hint||'',
+      onCount:Object.values(sw).filter(Boolean).length + 2,
+    };
+    const pops=this.state.pops||{};
+    const mk=k=>{
+      out['pop'+k]=()=>this.setState(x=>({pops:{...(x.pops||{}),[k]:!(x.pops||{})[k]}}));
+      out['anim'+k]=(pops[k]?'popA':'popB')+' .62s cubic-bezier(.34,1.5,.4,1) both';
+    };
+    for(let i=1;i<=10;i++) mk('S'+i);
+    mk('Mark');
+    for(let i=0;i<9;i++) out['dot'+i]=d[i]?1:0;
+    for(let i=0;i<9;i++) out['setTab'+i]=()=>this.setTab(i);
+    ['Speaker','Attendees','Money','Food','Marketing','Media','Recurring'].forEach(k=>{
+      out['t'+k]=()=>this.setState(x=>({sw:{...x.sw,[k]:!x.sw[k]}}));
+      out['tr'+k]=sw[k]?'linear-gradient(95deg,#F3B5A6,#EFDCA8,#AEDACA,#B7CBEB)':'#EAE4D7';
+      out['kn'+k]=sw[k]?17:0;
+    });
+    return out;
+  }
+}
+</script>
+</body>
+</html>

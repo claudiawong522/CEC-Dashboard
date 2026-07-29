@@ -1,0 +1,142 @@
+# CEC Dashboard — brand kit v1
+
+Source of truth: `CEC Brand Kit.dc.html`. This file is the text version; keep both in sync.
+
+## Voice of the design
+Cream paper, grey text, one bright thing. Hierarchy comes from size and grey value, **not** weight —
+500 is the heaviest weight anywhere. Colour is spent only where it means something: the mark, a done
+state, a section flag, today. Everything else is neutral.
+
+## Colour
+
+### Neutrals (warm)
+| Token | Hex | Use |
+| --- | --- | --- |
+| `paper` | #FFFDF9 | cards, inputs, table bodies |
+| `page` | #FDFAF4 | page ground |
+| `hover` | #F5F0E5 | row / ghost hover wash |
+| `line-strong` | #E2DACB | switch off-track, dividers that must read |
+| `faint` | #B0A899 | muted labels, placeholders, captions |
+| `body` | #6E675C | body copy, secondary labels |
+| `strong` | #4A443C | emphasis inside prose, editor text |
+| `ink` | #23201C | titles, primary button ground, active tab |
+| hairline | rgba(35,32,28,.07–.14) | borders (.07 cards, .09 rules, .14 inputs) |
+
+### Accents (the CENT gradient stops)
+| Token | Hex | Section |
+| --- | --- | --- |
+| `coral` | #E8583D | Speaker, Marketing |
+| `amber` | #E0B94A | Food, Notes |
+| `teal` | #3FA789 | Venue, Attendees, Media, done-dot |
+| `blue` | #3B6FC2 | Money, Recurring |
+| `destructive` | #B4472F | delete text |
+
+### The gradient
+`linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2)`
+- **Full strength:** the mark, progress fills, the active-tab underline, a checked checkbox, the avatar
+  bloom ring (as a conic variant from 200deg).
+- **Tint 10–24%:** done states, active section pill (15%), "done" badges (20%), highlighter (26%).
+- **Pastel:** switches use `linear-gradient(95deg,#F3B5A6,#EFDCA8,#AEDACA,#B7CBEB)` when on;
+  `#EAE4D7` when off.
+- Never a full-bleed background, never behind body text at full strength.
+
+## Type
+- **Hanken Grotesk** — 300 / 400 / 500 only. No 600, no italics.
+- **Geist Mono** — time, dates, section tags, ids, micro-labels. Uppercase, letter-spacing .10–.16em.
+
+| Role | Spec |
+| --- | --- |
+| Page title | 500 / 24–27px / 1.2 / −0.022em |
+| Section title | 400 / 19–20px / 1.25 / −0.014em |
+| Subhead | 500 / 14–15px / 1.4 |
+| Body | 400 / 13.5–14.5px / 1.75, colour `body` |
+| UI label | 400 / 12–13px / 1.4 |
+| Muted | 400 / 11.5–12.5px, colour `faint` |
+| Mono micro | 400 / 9–10px, uppercase, tracking .13em, colour `faint` |
+
+Emphasis = one 500-weight word in `ink`, or a 1px underlined link. Never a bold block.
+
+## Mark & lockups
+- Triangle: `clip-path: polygon(50% 0,100% 100%,0 100%)` filled with the gradient. Aspect ≈ 1.14:1.
+- Primary lockup: 24×21px mark + "CEC Dashboard" 500/17px, 11px gap. Header uses 20×18px + 14.5px.
+- Stacked: 34×30px mark over "CEC" 500/12px uppercase tracking .1em — login, favicon ≥32px.
+- Outline: gradient triangle with a paper triangle inset equally, 3px bottom rule remaining — favicon 16px,
+  print. **The inner triangle must be centred**, or the mark reads as a chevron.
+- Mark on wash: mark over the bottom-anchored cloud wash — login only.
+- Minimum mark size 15px wide. No Cornell red anywhere.
+
+## Radii & elevation
+6px chips/rows · 8px inputs, seals, tiles · 9px buttons, sticker cards · 10–11px cards and panels ·
+20px pills/tags · 24px the login button · 50% avatars and checkboxes.
+Only two shadows: primary-button hover glow `0 9px 20px -10px rgba(232,88,61,.9)` and floating menus
+`0 12–14px 28–30px -16/-18px rgba(35,32,28,.5)`. No resting shadows on cards.
+
+## Buttons
+| Variant | Resting | Hover | Press |
+| --- | --- | --- | --- |
+| Primary | `ink` ground, `page` text, 10/19px, r9 | translateY(−2px) + coral glow | scale(.975) |
+| Secondary | transparent, 1px .14 border, `body` text | ground `hover`, border .24, text `ink` | scale(.975) |
+| Utility (mono) | `paper`, 1px .16 border, tracking .1em | tracking .22em, text `ink` | — |
+| Icon 36px | `paper`, 1px .14 border | rotate(90deg) + ground `hover` | rotate + scale(.94) |
+| Ghost | transparent, `faint` text | ground `hover`, text `ink` | — |
+| Destructive | transparent, `#B4472F` text | ground coral 10%, border coral 30% | scale(.975) |
+
+## Controls
+- **Input:** 10/12px, r8, 1px .14 border, `paper` ground, 13.5px text; focus border `strong` + 3px
+  `rgba(35,32,28,.05)` ring, 220ms.
+- **Checkbox:** 19px circle, gradient fill when checked, white 1.8px check drawn by `stroke-dashoffset`
+  14→0, 360ms; label → `faint` + 1px strike sweep 340ms.
+- **Switch:** 38×21px, r12, pastel gradient on / `#EAE4D7` off, 17px white knob, 360ms spring.
+- **Tag:** mono 10px uppercase, 5/10px, r20, 1px .12 border, `body` text, 7px section dot; the "done" tag
+  drops the border and sits on the 20% gradient tint.
+- **Vertical tabs:** 36px rows, absolute 15%-tint pill animated via `top`; done rows show a 6px teal dot.
+- **Segmented control:** 1px .13 border, r8, active segment `ink`/`page`, mono 10px uppercase.
+
+## Sticker library — ten in use
+| Sticker | Placement |
+| --- | --- |
+| flower (coral) | decorative fields, page corners |
+| sprig | Todo empty state, event-details header margin |
+| sun | today's calendar cell, current month in year view |
+| flags (4 triangles) | one per prep section, in nav rows, chips and tags |
+| beads (4 dots) | per-event progress, role dots, divider ornament |
+| highlighter | Notes — highlighted text |
+| star | flagged Notes block, pinned items |
+| confetti | all-sections-done banner |
+| seal | Past Events term filters, archive marks |
+| cloud wash | login art, week-view today column, header grounds |
+
+**Reserve (not wired to any screen):** heart, sparkle, cherries, bow — seasonal or one-off use.
+
+### Sticker rules
+- Built from blurred radial gradients (petals), clip-path polygons (triangle, star, sparkle) and conic
+  gradients (ring, pinwheel). Keep them CSS — no bitmap exports.
+- **Functional** stickers (flags, beads, sun, confetti, seal, highlighter) render at full strength.
+- **Decorative** stickers render at 6–12% effective opacity, always blurred, always *behind* content, and
+  content sits on ≥70%-opaque paper above them.
+- One decor moment per screen. Forms, Admin and the Notes editor body get none.
+- Floating decor drifts 11–18s ease-in-out infinite, ±6–14px, and each sticker owns its own 620ms
+  `cubic-bezier(.34,1.5,.4,1)` pop on click. Never trigger all of them from one click.
+
+## Motion
+| Duration | Applies to |
+| --- | --- |
+| 160–180ms | hover washes, handles fading in, ghost buttons |
+| 200–260ms | lifts, tints, borders, presses (scale .975) |
+| 340–360ms | tab indicator, check stroke, panel fade-up, switch knob |
+| 400–500ms | drop-zone bloom, stagger items |
+| 620ms | sticker pop |
+| 11–18s | ambient sticker drift |
+
+Easings: `cubic-bezier(.2,.8,.2,1)` default · `cubic-bezier(.2,.9,.2,1)` tab indicator ·
+`cubic-bezier(.34,1.6,.4,1)` switches (only spring) · `cubic-bezier(.4,0,.2,1)` check draw ·
+`cubic-bezier(.34,1.5,.4,1)` sticker pop.
+No motion on calendar cells. Respect `prefers-reduced-motion`.
+
+## Implementation gotchas learned while prototyping
+1. Animate the tab indicator with `top`, not `transform`.
+2. Put `stroke-dashoffset` on the SVG **attribute** and transition it there; a CSS string with a
+   hyphenated property in a style object silently drops.
+3. A strikethrough overlay needs `display:inline-block` on the label so the absolute rule resolves.
+4. Give the lightest swatches a hairline border or they vanish on cream.
+5. The outline mark's inner triangle must be centred with a visible bottom rule.

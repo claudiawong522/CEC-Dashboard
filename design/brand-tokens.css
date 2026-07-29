@@ -1,0 +1,51 @@
+/* CEC Dashboard brand tokens — import once from your global stylesheet */
+:root{
+  /* neutrals (warm) */
+  --paper:#FFFDF9;
+  --page:#FDFAF4;
+  --hover:#F5F0E5;
+  --line-strong:#E2DACB;
+  --faint:#B0A899;
+  --body:#6E675C;
+  --strong:#4A443C;
+  --ink:#23201C;
+  --hairline:rgba(35,32,28,.09);
+  --hairline-soft:rgba(35,32,28,.07);
+  --hairline-input:rgba(35,32,28,.14);
+
+  /* accents */
+  --coral:#E8583D;
+  --amber:#E0B94A;
+  --teal:#3FA789;
+  --blue:#3B6FC2;
+  --destructive:#B4472F;
+
+  /* gradient */
+  --cent:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);
+  --cent-tint:linear-gradient(95deg,rgba(232,88,61,.15),rgba(224,185,74,.15),rgba(63,167,137,.15),rgba(59,111,194,.15));
+  --cent-pastel:linear-gradient(95deg,#F3B5A6,#EFDCA8,#AEDACA,#B7CBEB);
+  --switch-off:#EAE4D7;
+
+  /* radii */
+  --r-chip:6px; --r-input:8px; --r-btn:9px; --r-card:11px; --r-pill:20px; --r-login:24px;
+
+  /* elevation */
+  --glow-primary:0 9px 20px -10px rgba(232,88,61,.9);
+  --shadow-menu:0 12px 28px -16px rgba(35,32,28,.5);
+
+  /* type */
+  --font-sans:"Hanken Grotesk",system-ui,sans-serif;
+  --font-mono:"Geist Mono",ui-monospace,monospace;
+
+  /* motion */
+  --t-hover:180ms; --t-state:240ms; --t-move:340ms; --t-bloom:460ms; --t-pop:620ms;
+  --e-default:cubic-bezier(.2,.8,.2,1);
+  --e-indicator:cubic-bezier(.2,.9,.2,1);
+  --e-spring:cubic-bezier(.34,1.6,.4,1);
+  --e-draw:cubic-bezier(.4,0,.2,1);
+  --e-pop:cubic-bezier(.34,1.5,.4,1);
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:120ms !important}
+}

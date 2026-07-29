@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#FDFAF4;font-family:Hanken Grotesk,system-ui,sans-serif;color:#23201C}
+*{box-sizing:border-box}
+a{color:#23201C;text-decoration:none;border-bottom:1px solid rgba(35,32,28,.3)}
+a:hover{border-bottom-color:#E8583D}
+@keyframes twinkle{0%,100%{opacity:.55;transform:scale(.92)}50%{opacity:1;transform:scale(1.06)}}
+@keyframes bloomDrift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(7px,-6px) scale(1.05)}}
+@keyframes fadeA{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+@keyframes fadeB{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+
+<div style="max-width:1120px;margin:0 auto;padding:64px 56px 96px;display:flex;flex-direction:column;gap:74px">
+
+  <header style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="width:24px;height:21px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);clip-path:polygon(50% 0,100% 100%,0 100%)"></div>
+        <span style="font:500 17px/1 Hanken Grotesk,sans-serif;letter-spacing:-.015em">CEC Dashboard</span>
+      </div>
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.16em;text-transform:uppercase;color:#B0A899">brand kit · v1</span>
+    </div>
+    <div style="font:500 34px/1.22 Hanken Grotesk,sans-serif;letter-spacing:-.024em;max-width:640px">A quiet internal tool with one bright thing in it</div>
+    <div style="font:400 14.5px/1.78 Hanken Grotesk,sans-serif;color:#6E675C;max-width:620px">Cream paper, grey text, and colour spent only where it means something — the mark, a done state, a section flag. Hierarchy comes from size and grey, not weight; nothing shouts.</div>
+  </header>
+
+  <section style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid rgba(35,32,28,.09);padding-bottom:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.16em;text-transform:uppercase;color:#B0A899">01</span>
+      <span style="font:500 16px Hanken Grotesk,sans-serif">Mark &amp; lockups</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <div style="height:150px;border:1px solid rgba(35,32,28,.08);border-radius:10px;background:#FFFDF9;display:flex;align-items:center;justify-content:center;gap:11px">
+        <div style="width:26px;height:23px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);clip-path:polygon(50% 0,100% 100%,0 100%)"></div>
+        <span style="font:500 17px Hanken Grotesk,sans-serif;letter-spacing:-.015em">CEC Dashboard</span>
+      </div>
+      <div style="height:150px;border:1px solid rgba(35,32,28,.08);border-radius:10px;background:#FFFDF9;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
+        <div style="width:34px;height:30px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);clip-path:polygon(50% 0,100% 100%,0 100%)"></div>
+        <span style="font:500 12px Hanken Grotesk,sans-serif;letter-spacing:.1em;text-transform:uppercase">cec</span>
+      </div>
+      <div style="height:150px;border:1px solid rgba(35,32,28,.08);border-radius:10px;background:#FFFDF9;display:flex;align-items:center;justify-content:center">
+        <div style="width:46px;height:40px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);clip-path:polygon(50% 0,100% 100%,0 100%);position:relative">
+          <div style="position:absolute;left:50%;bottom:3px;transform:translateX(-50%);width:32px;height:28px;background:#FFFDF9;clip-path:polygon(50% 0,100% 100%,0 100%)"></div>
+        </div>
+      </div>
+      <div style="position:relative;height:150px;border:1px solid rgba(35,32,28,.08);border-radius:10px;background:#FFFDF9;display:flex;align-items:center;justify-content:center;overflow:hidden">
+        <div style="position:absolute;inset:0;background:radial-gradient(130px 80px at 28% 118%,rgba(232,88,61,.3),transparent 70%),radial-gradient(130px 80px at 74% 122%,rgba(59,111,194,.26),transparent 70%);filter:blur(7px);animation:bloomDrift 15s ease-in-out infinite"></div>
+        <div style="position:relative;width:30px;height:26px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);clip-path:polygon(50% 0,100% 100%,0 100%)"></div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;font:400 9.5px Geist Mono,monospace;letter-spacing:.11em;text-transform:uppercase;color:#B0A899">
+      <span>primary lockup · header</span><span>stacked · login, favicon 32+</span><span>outline · favicon 16, print</span><span>mark on wash · login art</span>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid rgba(35,32,28,.09);padding-bottom:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.16em;text-transform:uppercase;color:#B0A899">02</span>
+      <span style="font:500 16px Hanken Grotesk,sans-serif">Colour</span>
+    </div>
+    <div style="display:flex;border:1px solid rgba(35,32,28,.09);border-radius:8px;overflow:hidden">
+      <div style="flex:1;height:64px;background:#FFFDF9;border-right:1px solid rgba(35,32,28,.09)"></div>
+      <div style="flex:1;height:64px;background:#FDFAF4;border-right:1px solid rgba(35,32,28,.09)"></div>
+      <div style="flex:1;height:64px;background:#F5F0E5;border-right:1px solid rgba(35,32,28,.09)"></div>
+      <div style="flex:1;height:64px;background:#E2DACB;border-right:1px solid rgba(35,32,28,.09)"></div>
+      <div style="flex:1;height:64px;background:#B0A899"></div>
+      <div style="flex:1;height:64px;background:#6E675C"></div>
+      <div style="flex:1;height:64px;background:#4A443C"></div>
+      <div style="flex:1;height:64px;background:#23201C"></div>
+    </div>
+    <div style="display:flex;font:400 9px Geist Mono,monospace;letter-spacing:.08em;text-transform:uppercase;color:#B0A899">
+      <span style="flex:1">FFFDF9 card</span><span style="flex:1">FDFAF4 page</span><span style="flex:1">F5F0E5 hover</span><span style="flex:1">E2DACB line+</span><span style="flex:1">B0A899 faint</span><span style="flex:1">6E675C body</span><span style="flex:1">4A443C strong</span><span style="flex:1">23201C ink</span>
+    </div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:22px;margin-top:6px">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="height:6px;border-radius:3px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2)"></div>
+        <div style="display:flex;gap:10px">
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px"><div style="height:34px;border-radius:5px;background:#E8583D"></div><span style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;color:#B0A899">E8583D speaker</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px"><div style="height:34px;border-radius:5px;background:#E0B94A"></div><span style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;color:#B0A899">E0B94A food</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px"><div style="height:34px;border-radius:5px;background:#3FA789"></div><span style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;color:#B0A899">3FA789 venue</span></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px"><div style="height:34px;border-radius:5px;background:#3B6FC2"></div><span style="font:400 9px Geist Mono,monospace;letter-spacing:.1em;color:#B0A899">3B6FC2 money</span></div>
+        </div>
+        <div style="font:400 13.5px/1.75 Hanken Grotesk,sans-serif;color:#6E675C">Full-strength gradient: the mark and progress only. At <b style="font-weight:500;color:#23201C">10–24% opacity</b> it becomes a tint — done states, today's cell, an active tab. Single stops label the eight prep sections. Coral <b style="font-weight:500;color:#23201C">#B4472F</b> is the only destructive colour.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div style="padding:11px 13px;border-radius:6px;background:linear-gradient(95deg,rgba(232,88,61,.12),rgba(224,185,74,.12),rgba(63,167,137,.12),rgba(59,111,194,.12));font:400 12.5px Hanken Grotesk,sans-serif">Tint · all sections done</div>
+        <div style="padding:11px 13px;border-radius:6px;background:#F5F0E5;font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C">Hover wash · rows, ghost buttons</div>
+        <div style="display:flex;align-items:center;gap:9px;padding:11px 13px;border:1px solid rgba(35,32,28,.08);border-radius:6px;background:#FFFDF9">
+          <div style="flex:1;height:4px;border-radius:2px;background:#E2DACB;overflow:hidden"><div style="width:64%;height:100%;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2)"></div></div>
+          <span style="font:400 9.5px Geist Mono,monospace;color:#B0A899">5/8</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid rgba(35,32,28,.09);padding-bottom:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.16em;text-transform:uppercase;color:#B0A899">03</span>
+      <span style="font:500 16px Hanken Grotesk,sans-serif">Type · Hanken Grotesk + Geist Mono</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:34px">
+      <div style="display:flex;flex-direction:column;gap:15px">
+        <div style="font:500 32px/1.22 Hanken Grotesk,sans-serif;letter-spacing:-.024em">Founders Fireside</div>
+        <div style="font:400 20px/1.4 Hanken Grotesk,sans-serif;letter-spacing:-.012em;color:#4A443C">Section title · 20/400</div>
+        <div style="font:500 15px/1.4 Hanken Grotesk,sans-serif">Subhead · 15/500 — the heaviest weight in the app</div>
+        <div style="font:400 14.5px/1.78 Hanken Grotesk,sans-serif;color:#6E675C">Body · 14.5/1.78 in grey. Emphasis is one <b style="font-weight:500;color:#23201C">medium word</b> or a hairline <a href="#">underlined link</a> — never bold blocks.</div>
+        <div style="font:400 12.5px/1.6 Hanken Grotesk,sans-serif;color:#B0A899">Muted · 12.5 — helper text, counts, placeholders</div>
+        <div style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">mono 10 · 2026-09-18 · 17:30 · venue</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;font:400 12.5px/1.7 Hanken Grotesk,sans-serif;color:#6E675C">
+        <div style="padding:12px 14px;background:#FFFDF9;border:1px solid rgba(35,32,28,.08);border-radius:8px">Weights: <b style="font-weight:500;color:#23201C">300 / 400 / 500</b> only. No 600, no italics.</div>
+        <div style="padding:12px 14px;background:#FFFDF9;border:1px solid rgba(35,32,28,.08);border-radius:8px">Leading 1.75 for prose, 1.4 for UI labels, 1.22 for titles.</div>
+        <div style="padding:12px 14px;background:#FFFDF9;border:1px solid rgba(35,32,28,.08);border-radius:8px">Mono is for time, dates, section tags and ids — nothing else.</div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid rgba(35,32,28,.09);padding-bottom:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.16em;text-transform:uppercase;color:#B0A899">04</span>
+      <span style="font:500 16px Hanken Grotesk,sans-serif">Buttons</span>
+      <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#B0A899">hover and press each</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px">
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">primary · lift + warm glow</span>
+        <button style="align-self:start;border:0;padding:10px 19px;border-radius:9px;background:#23201C;color:#FDFAF4;font:500 13px Hanken Grotesk,sans-serif;cursor:pointer;transition:transform .2s cubic-bezier(.2,.8,.2,1),box-shadow .3s ease" style-hover="transform:translateY(-2px);box-shadow:0 9px 20px -10px rgba(232,88,61,.9)" style-active="transform:scale(.975) translateY(0)">New event</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">secondary · tint fade</span>
+        <button style="align-self:start;border:1px solid rgba(35,32,28,.14);padding:10px 19px;border-radius:9px;background:transparent;font:400 13px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:background-color .26s ease,border-color .26s ease,color .26s ease" style-hover="background-color:#F5F0E5;border-color:rgba(35,32,28,.24);color:#23201C" style-active="transform:scale(.975)">Generate series</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">utility · tracking settles</span>
+        <button style="align-self:start;border:1px solid rgba(35,32,28,.16);padding:10px 19px;border-radius:9px;background:#FFFDF9;font:400 10px Geist Mono,monospace;text-transform:uppercase;letter-spacing:.1em;color:#6E675C;cursor:pointer;transition:letter-spacing .32s cubic-bezier(.2,.8,.2,1),color .26s ease,border-color .26s ease" style-hover="letter-spacing:.22em;color:#23201C;border-color:rgba(35,32,28,.34)">upload</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">icon · rotates 90°</span>
+        <button style="align-self:start;width:36px;height:36px;border:1px solid rgba(35,32,28,.14);border-radius:9px;background:#FFFDF9;font:400 16px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:transform .34s cubic-bezier(.2,.8,.2,1),background-color .24s ease" style-hover="transform:rotate(90deg);background-color:#F5F0E5" style-active="transform:rotate(90deg) scale(.94)">+</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">destructive · restrained</span>
+        <button style="align-self:start;border:1px solid transparent;padding:10px 18px;border-radius:9px;background:transparent;font:400 13px Hanken Grotesk,sans-serif;color:#B4472F;cursor:pointer;transition:background-color .24s ease,border-color .24s ease" style-hover="background-color:rgba(232,88,61,.10);border-color:rgba(232,88,61,.3)" style-active="transform:scale(.975)">Delete event</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">ghost · row action</span>
+        <button style="align-self:start;border:0;padding:8px 12px;border-radius:7px;background:transparent;font:400 13px Hanken Grotesk,sans-serif;color:#B0A899;cursor:pointer;transition:background-color .18s ease,color .18s ease" style-hover="background-color:#F5F0E5;color:#23201C">Duplicate</button>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid rgba(35,32,28,.09);padding-bottom:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.16em;text-transform:uppercase;color:#B0A899">05</span>
+      <span style="font:500 16px Hanken Grotesk,sans-serif">Controls</span>
+      <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#B0A899">live — click them</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:26px">
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <span style="font:400 12px Hanken Grotesk,sans-serif;color:#B0A899">Input</span>
+          <input placeholder="Event name" style="padding:10px 12px;border:1px solid rgba(35,32,28,.14);border-radius:8px;background:#FFFDF9;font:400 13.5px Hanken Grotesk,sans-serif;color:#23201C;outline:none;transition:border-color .22s ease,box-shadow .22s ease" style-focus="border-color:#4A443C;box-shadow:0 0 0 3px rgba(35,32,28,.05)">
+        </div>
+        <div onClick="{{ toggleDone }}" style="display:inline-flex;align-items:center;gap:10px;cursor:pointer;width:fit-content;padding:6px 13px 6px 6px;border-radius:20px;transition:background-color .2s ease" style-hover="background-color:#F5F0E5">
+          <div style="width:19px;height:19px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .26s cubic-bezier(.2,.8,.2,1),border-color .26s ease;border:1px solid {{ boxBorder }};background:{{ box }}">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none"><polyline points="2,6.4 4.6,9 10,3.2" stroke="#FFFDF9" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="14" stroke-dashoffset="{{ dash }}" style="transition:stroke-dashoffset .36s cubic-bezier(.4,0,.2,1) .04s"></polyline></svg>
+          </div>
+          <span style="position:relative;display:inline-block;font:400 13.5px Hanken Grotesk,sans-serif;transition:color .3s ease;color:{{ doneText }}">Mark as done
+            <span style="position:absolute;left:0;top:53%;height:1px;background:#B0A899;transition:width .34s cubic-bezier(.4,0,.2,1);width:{{ strike }}"></span>
+          </span>
+        </div>
+        <div onClick="{{ toggleSwitch }}" style="cursor:pointer;display:flex;align-items:center;gap:11px;width:fit-content">
+          <div style="width:38px;height:21px;border-radius:12px;padding:2px;transition:background .32s ease;background:{{ track }}">
+            <div style="width:17px;height:17px;border-radius:50%;background:#FFFDF9;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .36s cubic-bezier(.34,1.6,.4,1);transform:translateX({{ knob }}px)"></div>
+          </div>
+          <span style="font:400 13px Hanken Grotesk,sans-serif;color:#6E675C">Recurring</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <span style="font:400 12px Hanken Grotesk,sans-serif;color:#B0A899">Tags · mono, one per prep section</span>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <span style="display:flex;align-items:center;gap:6px;font:400 10px Geist Mono,monospace;letter-spacing:.09em;text-transform:uppercase;padding:5px 10px;border:1px solid rgba(35,32,28,.12);border-radius:20px;color:#6E675C;background:#FFFDF9;transition:border-color .2s ease,color .2s ease" style-hover="border-color:rgba(35,32,28,.3);color:#23201C"><span style="width:7px;height:7px;border-radius:50%;background:#3FA789"></span>venue</span>
+            <span style="display:flex;align-items:center;gap:6px;font:400 10px Geist Mono,monospace;letter-spacing:.09em;text-transform:uppercase;padding:5px 10px;border:1px solid rgba(35,32,28,.12);border-radius:20px;color:#6E675C;background:#FFFDF9;transition:border-color .2s ease,color .2s ease" style-hover="border-color:rgba(35,32,28,.3);color:#23201C"><span style="width:7px;height:7px;border-radius:50%;background:#E8583D"></span>speaker</span>
+            <span style="display:flex;align-items:center;gap:6px;font:400 10px Geist Mono,monospace;letter-spacing:.09em;text-transform:uppercase;padding:5px 10px;border:1px solid rgba(35,32,28,.12);border-radius:20px;color:#6E675C;background:#FFFDF9;transition:border-color .2s ease,color .2s ease" style-hover="border-color:rgba(35,32,28,.3);color:#23201C"><span style="width:7px;height:7px;border-radius:50%;background:#3B6FC2"></span>money</span>
+            <span style="font:400 10px Geist Mono,monospace;letter-spacing:.09em;text-transform:uppercase;padding:5px 10px;border-radius:20px;color:#23201C;background:linear-gradient(95deg,rgba(232,88,61,.2),rgba(224,185,74,.2),rgba(63,167,137,.2),rgba(59,111,194,.2))">done</span>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:22px">
+        <div style="width:124px;position:relative;display:flex;flex-direction:column">
+          <div style="position:absolute;left:0;right:0;height:33px;border-radius:9px;background:linear-gradient(95deg,rgba(232,88,61,.15),rgba(224,185,74,.15),rgba(63,167,137,.15),rgba(59,111,194,.15));transition:top .34s cubic-bezier(.2,.9,.2,1);top:{{ tabY }}px"></div>
+          <div onClick="{{ setTab0 }}" style="position:relative;height:33px;display:flex;align-items:center;gap:8px;padding:0 12px;font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .2s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#3FA789;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Venue</div>
+          <div onClick="{{ setTab1 }}" style="position:relative;height:33px;display:flex;align-items:center;gap:8px;padding:0 12px;font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .2s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#E8583D;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Speaker</div>
+          <div onClick="{{ setTab2 }}" style="position:relative;height:33px;display:flex;align-items:center;gap:8px;padding:0 12px;font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .2s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#3B6FC2;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Money</div>
+          <div onClick="{{ setTab3 }}" style="position:relative;height:33px;display:flex;align-items:center;gap:8px;padding:0 12px;font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C;cursor:pointer;transition:color .2s ease" style-hover="color:#23201C"><span style="width:9px;height:8px;background:#E0B94A;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>Food</div>
+        </div>
+        <div style="flex:1;border:1px solid rgba(35,32,28,.08);border-radius:10px;background:#FFFDF9;padding:17px 19px;min-height:145px">
+          <div style="display:flex;flex-direction:column;gap:10px;animation:{{ panelAnim }}">
+            <div style="font:400 17px/1.3 Hanken Grotesk,sans-serif;letter-spacing:-.012em">{{ tabName }}</div>
+            <div style="font:400 13px/1.7 Hanken Grotesk,sans-serif;color:#6E675C">{{ tabBody }}</div>
+            <div style="position:relative;border:1px dashed rgba(35,32,28,.16);border-radius:9px;padding:16px;text-align:center;cursor:pointer;overflow:hidden;transition:border-color .26s ease" style-hover="border-color:rgba(232,88,61,.5)">
+              <div style="position:absolute;left:50%;top:120%;width:200px;height:130px;transform:translate(-50%,0);border-radius:50%;filter:blur(28px);opacity:0;background:radial-gradient(circle,#E8583D,rgba(224,185,74,.7) 40%,rgba(63,167,137,.4) 70%,transparent 80%);transition:opacity .4s ease,transform .5s cubic-bezier(.2,.8,.2,1);pointer-events:none" style-hover="opacity:.3;transform:translate(-50%,-56%)"></div>
+              <span style="position:relative;font:400 11.5px Hanken Grotesk,sans-serif;color:#B0A899">Drop evidence here</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid rgba(35,32,28,.09);padding-bottom:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.16em;text-transform:uppercase;color:#B0A899">06</span>
+      <span style="font:500 16px Hanken Grotesk,sans-serif">Sticker library</span>
+      <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#B0A899">ten working stickers plus four in reserve · hover each</span>
+    </div>
+
+    <div style="display:flex;align-items:baseline;gap:10px;margin-top:6px"><span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">core · ten in use</span><span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C">every one has a fixed placement in section 07</span></div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px">
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="position:relative;width:88px;height:88px;transition:transform .6s cubic-bezier(.2,.8,.2,1)" style-hover="transform:scale(1.08) rotate(7deg)">
+            <div style="position:absolute;left:28px;top:2px;width:32px;height:46px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle at 50% 64%,#E8583D,rgba(232,88,61,.3) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(0deg)"></div>
+            <div style="position:absolute;left:28px;top:2px;width:32px;height:46px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle at 50% 64%,#E8583D,rgba(232,88,61,.3) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(72deg)"></div>
+            <div style="position:absolute;left:28px;top:2px;width:32px;height:46px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle at 50% 64%,#E8583D,rgba(232,88,61,.3) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(144deg)"></div>
+            <div style="position:absolute;left:28px;top:2px;width:32px;height:46px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle at 50% 64%,#E8583D,rgba(232,88,61,.3) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(216deg)"></div>
+            <div style="position:absolute;left:28px;top:2px;width:32px;height:46px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle at 50% 64%,#E8583D,rgba(232,88,61,.3) 60%,transparent 76%);transform-origin:50% 96%;transform:rotate(288deg)"></div>
+            <div style="position:absolute;left:39px;top:39px;width:11px;height:11px;border-radius:50%;background:#E0B94A;filter:blur(2px)"></div>
+          </div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">flower · coral</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="position:relative;width:88px;height:88px;transition:transform .6s cubic-bezier(.2,.8,.2,1)" style-hover="transform:rotate(-13deg)">
+            <div style="position:absolute;left:43px;top:18px;width:1.5px;height:60px;background:linear-gradient(180deg,rgba(63,167,137,.7),rgba(63,167,137,.12))"></div>
+            <div style="position:absolute;left:19px;top:24px;width:28px;height:15px;border-radius:50%;filter:blur(5px);background:radial-gradient(circle at 70% 50%,#3FA789,transparent 74%);transform:rotate(-18deg)"></div>
+            <div style="position:absolute;left:42px;top:38px;width:28px;height:15px;border-radius:50%;filter:blur(5px);background:radial-gradient(circle at 30% 50%,#3FA789,transparent 74%);transform:rotate(18deg)"></div>
+            <div style="position:absolute;left:23px;top:50px;width:24px;height:13px;border-radius:50%;filter:blur(5px);background:radial-gradient(circle at 70% 50%,rgba(63,167,137,.8),transparent 74%);transform:rotate(-14deg)"></div>
+            <div style="position:absolute;left:36px;top:6px;width:15px;height:19px;border-radius:50% 50% 45% 45%;filter:blur(4px);background:radial-gradient(circle at 50% 70%,#E8583D,transparent 76%)"></div>
+          </div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">sprig · empty</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="position:relative;width:44px;height:44px;transition:transform .8s ease" style-hover="transform:rotate(20deg)">
+            <div style="position:absolute;left:11px;top:11px;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 40% 38%,#E0B94A,rgba(232,88,61,.75) 65%,transparent 78%);filter:blur(4px)"></div>
+            <div style="position:absolute;left:2px;top:2px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(224,185,74,.45)"></div>
+          </div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">sun · today</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden;gap:6px">
+          <div style="width:15px;height:13px;background:#E8583D;clip-path:polygon(50% 0,100% 100%,0 100%);opacity:.9;transition:transform .4s ease" style-hover="transform:translateY(-5px)"></div>
+          <div style="width:15px;height:13px;background:#E0B94A;clip-path:polygon(50% 0,100% 100%,0 100%);opacity:.9;transform:translateY(8px)"></div>
+          <div style="width:15px;height:13px;background:#3FA789;clip-path:polygon(50% 0,100% 100%,0 100%);opacity:.9"></div>
+          <div style="width:15px;height:13px;background:#3B6FC2;clip-path:polygon(50% 0,100% 100%,0 100%);opacity:.9;transform:translateY(8px)"></div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">flags · sections</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="display:flex;gap:3px;align-items:center;transition:gap .4s ease" style-hover="gap:9px">
+            <div style="width:11px;height:11px;border-radius:50%;background:#E8583D"></div>
+            <div style="width:11px;height:11px;border-radius:50%;background:#E0B94A"></div>
+            <div style="width:11px;height:11px;border-radius:50%;background:#3FA789"></div>
+            <div style="width:11px;height:11px;border-radius:50%;background:#3B6FC2"></div>
+          </div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">beads · steps</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="width:72px;height:22px;border-radius:13px;background:linear-gradient(95deg,rgba(232,88,61,.35),rgba(224,185,74,.35),rgba(63,167,137,.35),rgba(59,111,194,.35));filter:blur(3px);transition:width .5s cubic-bezier(.2,.8,.2,1)" style-hover="width:52px"></div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">highlighter · notes</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="width:40px;height:40px;background:linear-gradient(140deg,#E0B94A,#E8583D);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%);transition:transform .5s cubic-bezier(.34,1.6,.4,1)" style-hover="transform:rotate(72deg) scale(1.1)"></div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">star · pinned</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="position:relative;width:80px;height:80px">
+            <div style="position:absolute;left:10px;top:16px;width:8px;height:8px;border-radius:50%;background:#E8583D;filter:blur(1px)"></div>
+            <div style="position:absolute;left:34px;top:8px;width:6px;height:6px;border-radius:50%;background:#E0B94A;filter:blur(1px)"></div>
+            <div style="position:absolute;left:58px;top:24px;width:9px;height:9px;border-radius:50%;background:#3FA789;filter:blur(1px)"></div>
+            <div style="position:absolute;left:22px;top:48px;width:7px;height:7px;border-radius:50%;background:#3B6FC2;filter:blur(1px)"></div>
+            <div style="position:absolute;left:50px;top:58px;width:6px;height:6px;border-radius:50%;background:#E8583D;filter:blur(1px)"></div>
+            <div style="position:absolute;left:38px;top:32px;width:5px;height:5px;border-radius:50%;background:#E0B94A;filter:blur(1px)"></div>
+          </div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">confetti · complete</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="width:44px;height:44px;border-radius:8px;border:1px solid rgba(232,88,61,.55);display:flex;align-items:center;justify-content:center;font:500 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#E8583D;text-align:center;line-height:1.25;transition:background-color .3s ease,transform .3s ease" style-hover="background-color:rgba(232,88,61,.08);transform:rotate(-6deg)">cec<br>26</div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">seal · archive</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="position:relative;width:84px;height:84px">
+            <div style="position:absolute;left:16px;top:20px;width:52px;height:32px;border-radius:50%;filter:blur(11px);background:radial-gradient(circle at 30% 50%,#3B6FC2,transparent 72%)"></div>
+            <div style="position:absolute;left:24px;top:38px;width:52px;height:28px;border-radius:50%;filter:blur(11px);background:radial-gradient(circle at 70% 50%,#3FA789,transparent 72%)"></div>
+            <div style="position:absolute;left:20px;top:12px;width:42px;height:24px;border-radius:50%;filter:blur(11px);background:radial-gradient(circle at 50% 50%,rgba(232,88,61,.85),transparent 72%)"></div>
+          </div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">cloud wash · headers</span></div>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:10px;margin-top:6px"><span style="font:400 9.5px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">reserve · four</span><span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C">seasonal or one-off use — socials, a food event, a late-night note; not wired into any screen</span></div>
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px">
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="position:relative;width:44px;height:44px;transition:transform .4s cubic-bezier(.34,1.6,.4,1)" style-hover="transform:scale(1.18)">
+            <div style="position:absolute;left:7px;top:6px;width:25px;height:25px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F0836B,#E8583D 70%);filter:blur(2px)"></div>
+            <div style="position:absolute;left:19px;top:6px;width:25px;height:25px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F0836B,#E8583D 70%);filter:blur(2px)"></div>
+            <div style="position:absolute;left:11px;top:15px;width:25px;height:25px;background:#E8583D;filter:blur(2px);clip-path:polygon(0 0,100% 0,50% 100%)"></div>
+          </div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">heart · favourite</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="position:relative;width:46px;height:46px">
+            <div style="position:absolute;left:8px;top:2px;width:29px;height:42px;background:#3B6FC2;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);animation:twinkle 2.6s ease-in-out infinite"></div>
+            <div style="position:absolute;left:29px;top:25px;width:16px;height:21px;background:#E0B94A;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);animation:twinkle 2.6s ease-in-out infinite;animation-delay:.6s"></div>
+          </div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">sparkle · new</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="position:relative;width:44px;height:44px;transition:transform .5s ease" style-hover="transform:rotate(8deg)">
+            <div style="position:absolute;left:17px;top:2px;width:15px;height:15px;border-left:2px solid #3FA789;border-bottom:2px solid #3FA789;border-radius:0 0 0 14px"></div>
+            <div style="position:absolute;left:5px;top:21px;width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#F0836B,#E8583D 72%)"></div>
+            <div style="position:absolute;left:23px;top:25px;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#F0836B,#D8492F 72%)"></div>
+          </div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">cherries · food</span></div>
+      <div style="display:flex;flex-direction:column;gap:7px;align-items:center">
+        <div style="width:100%;height:104px;border-radius:9px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);display:flex;align-items:center;justify-content:center;overflow:hidden">
+          <div style="position:relative;width:50px;height:32px;transition:transform .45s cubic-bezier(.34,1.6,.4,1)" style-hover="transform:scale(1.14)">
+            <div style="position:absolute;left:0;top:4px;width:21px;height:23px;background:linear-gradient(140deg,#F0836B,#E8583D);clip-path:polygon(100% 0,100% 100%,0 78%,0 22%);border-radius:4px"></div>
+            <div style="position:absolute;right:0;top:4px;width:21px;height:23px;background:linear-gradient(220deg,#F0836B,#E8583D);clip-path:polygon(0 0,0 100%,100% 78%,100% 22%);border-radius:4px"></div>
+            <div style="position:absolute;left:20px;top:9px;width:10px;height:13px;border-radius:4px;background:#E0B94A"></div>
+          </div>
+        </div>
+        <span style="font:400 8.5px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899">bow · social</span></div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid rgba(35,32,28,.09);padding-bottom:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.16em;text-transform:uppercase;color:#B0A899">07</span>
+      <span style="font:500 16px Hanken Grotesk,sans-serif">Where stickers live</span>
+      <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#B0A899">functional placements, plus decorative fields behind the calendar and headers</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">calendar · today = sun</span>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(35,32,28,.07)">
+          <div style="background:#FFFDF9;height:48px;padding:6px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">15</div>
+          <div style="position:relative;background:#FFFDF9;height:48px;padding:6px;font:500 10.5px Hanken Grotesk,sans-serif;color:#23201C">16
+            <div style="position:absolute;right:6px;top:6px;width:15px;height:15px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#E0B94A,rgba(232,88,61,.75) 70%,transparent);filter:blur(1.5px)"></div>
+          </div>
+          <div style="background:#FFFDF9;height:48px;padding:6px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">17<div style="margin-top:4px;font:400 8px Geist Mono,monospace;color:#3B6FC2">5:30p fireside</div></div>
+          <div style="background:#FFFDF9;height:48px;padding:6px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">18</div>
+        </div>
+      </div>
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">todo empty · sprig</span>
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="position:relative;width:52px;height:52px">
+            <div style="position:absolute;left:25px;top:12px;width:1.5px;height:34px;background:linear-gradient(180deg,rgba(63,167,137,.7),rgba(63,167,137,.1))"></div>
+            <div style="position:absolute;left:8px;top:16px;width:22px;height:12px;border-radius:50%;filter:blur(4px);background:radial-gradient(circle at 70% 50%,#3FA789,transparent 74%);transform:rotate(-16deg)"></div>
+            <div style="position:absolute;left:24px;top:26px;width:22px;height:12px;border-radius:50%;filter:blur(4px);background:radial-gradient(circle at 30% 50%,#3FA789,transparent 74%);transform:rotate(16deg)"></div>
+            <div style="position:absolute;left:20px;top:2px;width:13px;height:16px;border-radius:50% 50% 45% 45%;filter:blur(3px);background:radial-gradient(circle at 50% 70%,#E8583D,transparent 76%)"></div>
+          </div>
+          <span style="font:400 12.5px/1.6 Hanken Grotesk,sans-serif;color:#B0A899">Nothing outstanding.<br>Everything's prepped.</span>
+        </div>
+      </div>
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">all done · confetti</span>
+        <div style="position:relative;padding:11px 13px;border-radius:7px;background:linear-gradient(95deg,rgba(232,88,61,.10),rgba(224,185,74,.10),rgba(63,167,137,.10),rgba(59,111,194,.10));font:400 12.5px Hanken Grotesk,sans-serif;overflow:hidden">
+          All eight sections done
+          <div style="position:absolute;right:9px;top:7px;width:6px;height:6px;border-radius:50%;background:#E8583D"></div>
+          <div style="position:absolute;right:21px;top:16px;width:5px;height:5px;border-radius:50%;background:#3FA789"></div>
+          <div style="position:absolute;right:33px;top:5px;width:4px;height:4px;border-radius:50%;background:#3B6FC2"></div>
+        </div>
+      </div>
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">notes · star + highlighter</span>
+        <div style="display:flex;gap:9px;align-items:flex-start;font:400 12.5px/1.7 Hanken Grotesk,sans-serif;color:#4A443C">
+          <div style="width:13px;height:13px;margin-top:4px;flex:none;background:linear-gradient(140deg,#E0B94A,#E8583D);clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%)"></div>
+          <span>Doors 5:00, <span style="background:linear-gradient(95deg,rgba(232,88,61,.26),rgba(224,185,74,.26));padding:1px 3px">panel starts 5:30</span>, close 7:00.</span>
+        </div>
+      </div>
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">login · mark on cloud wash</span>
+        <div style="position:relative;height:76px;border-radius:7px;overflow:hidden;display:flex;align-items:center;justify-content:center">
+          <div style="position:absolute;inset:0;background:radial-gradient(110px 66px at 30% 120%,rgba(232,88,61,.3),transparent 70%),radial-gradient(110px 66px at 72% 125%,rgba(59,111,194,.28),transparent 70%);filter:blur(6px)"></div>
+          <div style="position:relative;display:flex;flex-direction:column;align-items:center;gap:8px">
+            <div style="width:26px;height:23px;background:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);clip-path:polygon(50% 0,100% 100%,0 100%)"></div>
+            <span style="font:400 11px Hanken Grotesk,sans-serif;color:#B0A899">cornell.edu only</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">admin · role beads</span>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between;font:400 12px Hanken Grotesk,sans-serif">cw2252@cornell.edu<span style="display:flex;align-items:center;gap:5px;font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899"><span style="width:8px;height:8px;border-radius:50%;background:#E8583D"></span>admin</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font:400 12px Hanken Grotesk,sans-serif">jl884@cornell.edu<span style="display:flex;align-items:center;gap:5px;font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899"><span style="width:8px;height:8px;border-radius:50%;background:#3FA789"></span>edit</span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between;font:400 12px Hanken Grotesk,sans-serif">rp71@cornell.edu<span style="display:flex;align-items:center;gap:5px;font:400 9px Geist Mono,monospace;letter-spacing:.1em;text-transform:uppercase;color:#B0A899"><span style="width:8px;height:8px;border-radius:50%;background:#C9C4B6"></span>view</span></div>
+        </div>
+      </div>
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">todo rows · bead progress</span>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font:400 12px Hanken Grotesk,sans-serif">Pitch Night</span><span style="display:flex;gap:3px"><span style="width:9px;height:9px;border-radius:50%;background:#E8583D"></span><span style="width:9px;height:9px;border-radius:50%;background:#E0B94A"></span><span style="width:9px;height:9px;border-radius:50%;background:#3FA789"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(35,32,28,.1)"></span></span></div>
+          <div style="display:flex;align-items:center;justify-content:space-between"><span style="font:400 12px Hanken Grotesk,sans-serif">Fireside</span><span style="display:flex;gap:3px"><span style="width:9px;height:9px;border-radius:50%;background:#E8583D"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(35,32,28,.1)"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(35,32,28,.1)"></span><span style="width:9px;height:9px;border-radius:50%;background:rgba(35,32,28,.1)"></span></span></div>
+        </div>
+      </div>
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">past events · term seals</span>
+        <div style="display:flex;gap:9px">
+          <div style="width:40px;height:40px;border-radius:8px;border:1px solid rgba(232,88,61,.5);display:flex;align-items:center;justify-content:center;font:500 9px Geist Mono,monospace;color:#E8583D">F25</div>
+          <div style="width:40px;height:40px;border-radius:8px;border:1px solid rgba(63,167,137,.5);display:flex;align-items:center;justify-content:center;font:500 9px Geist Mono,monospace;color:#3FA789">S26</div>
+          <div style="width:40px;height:40px;border-radius:8px;background:rgba(59,111,194,.1);display:flex;align-items:center;justify-content:center;font:500 9px Geist Mono,monospace;color:#3B6FC2">F26</div>
+        </div>
+      </div>
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">avatar · bloom ring = you</span>
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="position:relative;width:36px;height:36px;display:flex;align-items:center;justify-content:center">
+            <div style="position:absolute;inset:-3px;border-radius:50%;background:conic-gradient(from 200deg,#E8583D,#E0B94A,#3FA789,#3B6FC2,#E8583D);filter:blur(2px);opacity:.75"></div>
+            <div style="position:relative;width:36px;height:36px;border-radius:50%;background:#F5F0E5;display:flex;align-items:center;justify-content:center;font:500 12px Hanken Grotesk,sans-serif;color:#4A443C">CW</div>
+          </div>
+          <span style="font:400 12px/1.5 Hanken Grotesk,sans-serif;color:#B0A899">You · Admin</span>
+        </div>
+      </div>
+
+      <div style="grid-column:span 3;padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">calendar month · decor field behind the grid, 8% opacity</span>
+        <div style="position:relative;border-radius:8px;overflow:hidden;background:#FDFAF4">
+          <div style="position:absolute;inset:0;pointer-events:none;opacity:.5">
+            <div style="position:absolute;left:6%;top:18%;width:120px;height:120px;border-radius:50%;filter:blur(26px);background:radial-gradient(circle,rgba(232,88,61,.5),transparent 72%)"></div>
+            <div style="position:absolute;left:44%;top:52%;width:150px;height:150px;border-radius:50%;filter:blur(30px);background:radial-gradient(circle,rgba(63,167,137,.45),transparent 72%)"></div>
+            <div style="position:absolute;right:5%;top:8%;width:130px;height:130px;border-radius:50%;filter:blur(28px);background:radial-gradient(circle,rgba(59,111,194,.4),transparent 72%)"></div>
+            <div style="position:absolute;right:26%;bottom:-6%;width:120px;height:120px;border-radius:50%;filter:blur(26px);background:radial-gradient(circle,rgba(224,185,74,.5),transparent 72%)"></div>
+          </div>
+          <div style="position:relative;display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:rgba(35,32,28,.06)">
+            <div style="background:transparent;padding:6px 8px;font:400 9px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:#B0A899">sun</div>
+            <div style="background:transparent;padding:6px 8px;font:400 9px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:#B0A899">mon</div>
+            <div style="background:transparent;padding:6px 8px;font:400 9px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:#B0A899">tue</div>
+            <div style="background:transparent;padding:6px 8px;font:400 9px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:#B0A899">wed</div>
+            <div style="background:transparent;padding:6px 8px;font:400 9px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:#B0A899">thu</div>
+            <div style="background:transparent;padding:6px 8px;font:400 9px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:#B0A899">fri</div>
+            <div style="background:transparent;padding:6px 8px;font:400 9px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:#B0A899">sat</div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">13</div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">14</div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">15</div>
+            <div style="position:relative;background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:500 10.5px Hanken Grotesk,sans-serif;color:#23201C">16
+              <div style="position:absolute;right:7px;top:7px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 38% 35%,#E0B94A,rgba(232,88,61,.75) 70%,transparent);filter:blur(1.5px)"></div>
+            </div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">17
+              <div style="margin-top:5px;display:flex;align-items:center;gap:4px;font:400 8px Geist Mono,monospace;color:#3B6FC2"><span style="width:7px;height:6px;background:#E8583D;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>5:30p fireside</div>
+            </div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">18</div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">19</div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">20</div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">21</div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">22</div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">23
+              <div style="margin-top:5px;display:flex;align-items:center;gap:4px;font:400 8px Geist Mono,monospace;color:#3FA789"><span style="width:7px;height:6px;background:#3FA789;clip-path:polygon(50% 0,100% 100%,0 100%)"></span>6p pitch night</div>
+            </div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">24</div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">25</div>
+            <div style="background:rgba(255,253,249,.72);height:58px;padding:6px 8px;font:400 10.5px Hanken Grotesk,sans-serif;color:#B0A899">26</div>
+          </div>
+        </div>
+        <span style="font:400 12.5px/1.7 Hanken Grotesk,sans-serif;color:#6E675C">Blooms sit <b style="font-weight:500;color:#23201C">under</b> the cells — day numbers stay on 72%-opaque paper so contrast never drops. Colour placement is fixed per month, not random.</span>
+      </div>
+
+      <div style="grid-column:span 2;padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">week view · cloud wash at the top of today's column</span>
+        <div style="position:relative;height:126px;border-radius:8px;overflow:hidden;background:#FDFAF4;display:grid;grid-template-columns:repeat(5,1fr);gap:1px">
+          <div style="background:rgba(255,253,249,.8);padding:7px;font:400 9.5px Geist Mono,monospace;color:#B0A899">mon</div>
+          <div style="background:rgba(255,253,249,.8);padding:7px;font:400 9.5px Geist Mono,monospace;color:#B0A899">tue</div>
+          <div style="position:relative;background:rgba(255,253,249,.55);padding:7px;font:500 9.5px Geist Mono,monospace;color:#23201C;overflow:hidden">wed
+            <div style="position:absolute;left:-20%;top:-40px;width:160%;height:110px;filter:blur(16px);opacity:.5;background:radial-gradient(60px 40px at 40% 70%,rgba(232,88,61,.7),transparent 72%),radial-gradient(60px 40px at 70% 80%,rgba(224,185,74,.6),transparent 72%);pointer-events:none"></div>
+            <div style="position:relative;margin-top:26px;padding:5px 6px;border-radius:5px;background:rgba(255,253,249,.9);border:1px solid rgba(35,32,28,.07);font:400 9px Hanken Grotesk,sans-serif;color:#23201C">5:30p fireside</div>
+          </div>
+          <div style="background:rgba(255,253,249,.8);padding:7px;font:400 9.5px Geist Mono,monospace;color:#B0A899">thu</div>
+          <div style="background:rgba(255,253,249,.8);padding:7px;font:400 9.5px Geist Mono,monospace;color:#B0A899">fri</div>
+        </div>
+      </div>
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">photos empty · flower cluster</span>
+        <div style="position:relative;height:126px;border-radius:8px;background:#FDFAF4;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:9px;overflow:hidden">
+          <div style="position:relative;width:70px;height:56px">
+            <div style="position:absolute;left:0;top:8px;width:34px;height:34px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle,rgba(232,88,61,.8),transparent 72%)"></div>
+            <div style="position:absolute;left:22px;top:0;width:32px;height:32px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle,rgba(224,185,74,.8),transparent 72%)"></div>
+            <div style="position:absolute;left:38px;top:18px;width:32px;height:32px;border-radius:50%;filter:blur(8px);background:radial-gradient(circle,rgba(63,167,137,.7),transparent 72%)"></div>
+          </div>
+          <span style="font:400 12px Hanken Grotesk,sans-serif;color:#B0A899">No photos yet</span>
+        </div>
+      </div>
+
+      <div style="grid-column:span 2;padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">page header · sprig in the outer margin</span>
+        <div style="position:relative;padding:18px 20px;border-radius:8px;background:#FDFAF4;overflow:hidden">
+          <div style="position:absolute;right:16px;top:-6px;width:64px;height:80px;opacity:.75">
+            <div style="position:absolute;left:31px;top:14px;width:1.5px;height:56px;background:linear-gradient(180deg,rgba(63,167,137,.6),rgba(63,167,137,.05))"></div>
+            <div style="position:absolute;left:10px;top:22px;width:26px;height:13px;border-radius:50%;filter:blur(5px);background:radial-gradient(circle at 70% 50%,rgba(63,167,137,.9),transparent 74%);transform:rotate(-18deg)"></div>
+            <div style="position:absolute;left:30px;top:36px;width:26px;height:13px;border-radius:50%;filter:blur(5px);background:radial-gradient(circle at 30% 50%,rgba(63,167,137,.9),transparent 74%);transform:rotate(18deg)"></div>
+            <div style="position:absolute;left:25px;top:2px;width:14px;height:17px;border-radius:50% 50% 45% 45%;filter:blur(4px);background:radial-gradient(circle at 50% 70%,rgba(232,88,61,.9),transparent 76%)"></div>
+          </div>
+          <div style="position:relative;display:flex;flex-direction:column;gap:6px">
+            <span style="font:400 10px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">events / fireside</span>
+            <span style="font:500 24px/1.2 Hanken Grotesk,sans-serif;letter-spacing:-.022em">Founders Fireside</span>
+            <span style="font:400 13px Hanken Grotesk,sans-serif;color:#6E675C">Sep 18 · 5:30p · Statler 265</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="padding:15px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-direction:column;gap:11px">
+        <span style="font:400 9px Geist Mono,monospace;letter-spacing:.14em;text-transform:uppercase;color:#B0A899">divider · beads in the rule</span>
+        <div style="display:flex;flex-direction:column;gap:13px;padding:6px 0">
+          <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C">Run of show</span>
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="flex:1;height:1px;background:rgba(35,32,28,.1)"></div>
+            <div style="display:flex;gap:3px"><span style="width:5px;height:5px;border-radius:50%;background:#E8583D"></span><span style="width:5px;height:5px;border-radius:50%;background:#E0B94A"></span><span style="width:5px;height:5px;border-radius:50%;background:#3FA789"></span><span style="width:5px;height:5px;border-radius:50%;background:#3B6FC2"></span></div>
+            <div style="flex:1;height:1px;background:rgba(35,32,28,.1)"></div>
+          </div>
+          <span style="font:400 12.5px Hanken Grotesk,sans-serif;color:#6E675C">Debrief</span>
+        </div>
+      </div>
+
+      <div style="grid-column:span 3;padding:15px 17px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px;display:flex;flex-wrap:wrap;gap:8px 26px;font:400 12.5px/1.7 Hanken Grotesk,sans-serif;color:#6E675C">
+        <span><b style="font-weight:500;color:#23201C">Decor rules</b> — background stickers live at 6–12% effective opacity, always blurred, never behind body text at less than 70% paper cover.</span>
+        <span>One decor moment per screen. Forms, Admin and the Notes editor body get none.</span>
+        <span>Functional stickers (flags, beads, sun, confetti) stay at full strength — they carry meaning.</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:baseline;gap:12px;border-bottom:1px solid rgba(35,32,28,.09);padding-bottom:9px">
+      <span style="font:400 10px Geist Mono,monospace;letter-spacing:.16em;text-transform:uppercase;color:#B0A899">08</span>
+      <span style="font:500 16px Hanken Grotesk,sans-serif">Motion</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;font:400 12.5px/1.7 Hanken Grotesk,sans-serif;color:#6E675C">
+      <div style="padding:14px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px"><b style="font-weight:500;color:#23201C">180ms</b><br>hover washes, ghost buttons, row grounds</div>
+      <div style="padding:14px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px"><b style="font-weight:500;color:#23201C">200–260ms</b><br>lifts, tints, borders, presses (0.975 scale)</div>
+      <div style="padding:14px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px"><b style="font-weight:500;color:#23201C">340ms</b><br>tab indicator, check stroke, panel fade-up 5px</div>
+      <div style="padding:14px;background:#FFFDF9;border:1px solid rgba(35,32,28,.07);border-radius:9px"><b style="font-weight:500;color:#23201C">70ms stagger</b><br>list mounts, max 6 items, then instant</div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:22px;font:400 10px Geist Mono,monospace;letter-spacing:.12em;text-transform:uppercase;color:#B0A899">
+      <span>ease · cubic-bezier(.2,.8,.2,1)</span><span>spring · cubic-bezier(.34,1.6,.4,1) — switches only</span><span>draw · cubic-bezier(.4,0,.2,1)</span><span>no motion on the calendar grid</span>
+    </div>
+  </section>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1240,&quot;height&quot;:1600}}">
+class Component extends DCLogic {
+  state = { tab:0, flip:false, done:false, sw:false };
+  setTab(i){ this.setState(s=>({tab:i, flip:!s.flip})); }
+  renderVals(){
+    const names=['Venue','Speaker','Money','Food'];
+    const bodies=['Statler 265 held, AV confirmed, doors unlocked at 5:00p.','Six alumni confirmed; bios and headshots collected.','$420 approved — catering $260, printing $95, misc $65.','Trillium platters for 60, pickup at 4:30p.'];
+    const grad='linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2)';
+    return {
+      tabY:this.state.tab*33, tabName:names[this.state.tab], tabBody:bodies[this.state.tab],
+      panelAnim:(this.state.flip?'fadeA':'fadeB')+' .34s cubic-bezier(.2,.8,.2,1) both',
+      setTab0:()=>this.setTab(0), setTab1:()=>this.setTab(1), setTab2:()=>this.setTab(2), setTab3:()=>this.setTab(3),
+      toggleDone:()=>this.setState(s=>({done:!s.done})),
+      dash:this.state.done?0:14,
+      box:this.state.done?grad:'transparent',
+      boxBorder:this.state.done?'transparent':'rgba(35,32,28,.2)',
+      doneText:this.state.done?'#B0A899':'#23201C',
+      strike:this.state.done?'100%':'0%',
+      toggleSwitch:()=>this.setState(s=>({sw:!s.sw})),
+      track:this.state.sw?grad:'#E2DACB', knob:this.state.sw?17:0
+    };
+  }
+}
+</script>
+</body>
+</html>
