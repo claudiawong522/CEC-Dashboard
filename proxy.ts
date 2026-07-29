@@ -3,7 +3,19 @@ import { createServerClient } from "@supabase/ssr";
 
 const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/signout"];
 
+// Belt-and-suspenders alongside proxyConfig.matcher below: static asset
+// requests (CSS/JS chunks, images, fonts) must never hit the auth check —
+// if they do, an unauthenticated request gets redirected to /login instead
+// of returning the asset, and the whole app renders unstyled.
+const ASSET_PATH_PREFIXES = ["/_next/", "/favicon.ico"];
+const ASSET_EXTENSIONS = /\.(css|js|map|png|jpg|jpeg|svg|gif|webp|ico|woff2?|ttf)$/;
+
 export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+  if (ASSET_PATH_PREFIXES.some((p) => pathname.startsWith(p)) || ASSET_EXTENSIONS.test(pathname)) {
+    return NextResponse.next({ request });
+  }
+
   let response = NextResponse.next({ request });
 
   const supabase = createServerClient(
