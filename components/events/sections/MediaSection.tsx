@@ -1,0 +1,33 @@
+import { SectionCard } from "@/components/events/SectionCard";
+import { EvidenceUploader, type UploadedFile } from "@/components/events/EvidenceUploader";
+
+export function MediaSection({
+  eventId,
+  done,
+  files,
+}: {
+  eventId: string;
+  done: boolean;
+  files: UploadedFile[];
+}) {
+  return (
+    <SectionCard title="Media" eventId={eventId} section="media" done={done}>
+      <p className="text-xs text-muted-foreground">
+        Photos, videos, and zip files dropped here also show up in the Photos gallery.
+      </p>
+      <EvidenceUploader
+        eventId={eventId}
+        section="media"
+        bucket="media"
+        initialFiles={files}
+        accept={{
+          "image/*": [],
+          "video/*": [],
+          "application/zip": [".zip"],
+          "application/x-zip-compressed": [".zip"],
+        }}
+        label="Drop photos, videos, or zip files here"
+      />
+    </SectionCard>
+  );
+}
