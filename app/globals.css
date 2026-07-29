@@ -128,3 +128,41 @@
     @apply font-sans;
   }
 }
+
+/* Minimal, Notion-like FullCalendar theme: thin neutral borders, no
+   shadows, muted event chips instead of FullCalendar's default blue. */
+.fc-cec {
+  --fc-border-color: var(--border);
+  --fc-page-bg-color: var(--background);
+  --fc-neutral-bg-color: var(--muted);
+  --fc-today-bg-color: var(--muted);
+  --fc-event-bg-color: var(--secondary);
+  --fc-event-border-color: var(--border);
+  --fc-event-text-color: var(--foreground);
+  --fc-button-bg-color: var(--background);
+  --fc-button-border-color: var(--border);
+  --fc-button-text-color: var(--foreground);
+  --fc-button-hover-bg-color: var(--muted);
+  --fc-button-hover-border-color: var(--border);
+  --fc-button-active-bg-color: var(--secondary);
+  --fc-button-active-border-color: var(--border);
+  font-size: 0.875rem;
+}
+.fc-cec .fc-toolbar-title {
+  font-size: 1rem;
+  font-weight: 500;
+}
+.fc-cec .fc-button {
+  box-shadow: none !important;
+  text-transform: none;
+  padding: 0.3rem 0.6rem;
+}
+.fc-cec .fc-event {
+  border-radius: 0.35rem;
+  padding: 1px 4px;
+  font-size: 0.75rem;
+}
+.fc-cec .fc-daygrid-day-number,
+.fc-cec .fc-col-header-cell-cushion {
+  color: var(--foreground);
+}
