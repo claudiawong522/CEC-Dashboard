@@ -13,13 +13,11 @@ export function SpeakerSection({
   eventId,
   description,
   done,
-  evidenceFiles,
   portraitFiles,
 }: {
   eventId: string;
   description: string | null;
   done: boolean;
-  evidenceFiles: UploadedFile[];
   portraitFiles: UploadedFile[];
 }) {
   const [value, setValue] = useState(description ?? "");
@@ -55,17 +53,6 @@ export function SpeakerSection({
         >
           Save
         </Button>
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <Label>Evidence</Label>
-        <EvidenceUploader
-          eventId={eventId}
-          section="speaker"
-          bucket="evidence"
-          initialFiles={evidenceFiles}
-          accept={{ "image/*": [] }}
-        />
       </div>
 
       <div className="flex flex-col gap-1.5">

@@ -3,7 +3,8 @@ import { z } from "zod";
 export const toggleFormSchema = z.object({
   name: z.string().min(1, "Required"),
   eventDate: z.string().min(1, "Required"),
-  eventTime: z.string().min(1, "Required"),
+  eventStartTime: z.string().min(1, "Required"),
+  eventEndTime: z.string().min(1, "Required"),
   venue: z.string().min(1, "Required"),
   hasSpeaker: z.boolean(),
   hasAttendees: z.boolean(),
@@ -18,7 +19,8 @@ export type ToggleFormValues = z.infer<typeof toggleFormSchema>;
 export const eventCoreSchema = z.object({
   name: z.string().min(1, "Required"),
   eventDate: z.string().min(1, "Required"),
-  eventTime: z.string().min(1, "Required"),
+  eventStartTime: z.string().min(1, "Required"),
+  eventEndTime: z.string().min(1, "Required"),
   venue: z.string().min(1, "Required"),
   notes: z.string().optional(),
 });
@@ -59,6 +61,11 @@ export const marketingSchema = z.object({
   reel: z.boolean(),
 });
 export type MarketingValues = z.infer<typeof marketingSchema>;
+
+export const customMarketingItemSchema = z.object({
+  label: z.string().min(1, "Required"),
+});
+export type CustomMarketingItemValues = z.infer<typeof customMarketingItemSchema>;
 
 export const recurringSchema = z.object({
   frequency: z.enum(["weekly", "biweekly", "monthly"]),

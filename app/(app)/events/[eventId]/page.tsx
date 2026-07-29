@@ -8,6 +8,7 @@ import type {
   MoneyRow,
   FoodRow,
   MarketingRow,
+  MarketingCustomItemRow,
   RecurringRow,
   EventFileRow,
 } from "@/lib/types/events";
@@ -29,6 +30,7 @@ export default async function EventDetailsPage({
     { data: marketing },
     { data: recurring },
     { data: files },
+    { data: marketingCustomItems },
   ] = await Promise.all([
     supabase.from("events").select("*").eq("id", eventId).maybeSingle<EventRow>(),
     supabase.from("event_speaker").select("*").eq("event_id", eventId).maybeSingle<SpeakerRow>(),
@@ -50,6 +52,12 @@ export default async function EventDetailsPage({
       .eq("event_id", eventId)
       .maybeSingle<RecurringRow>(),
     supabase.from("event_files").select("*").eq("event_id", eventId).returns<EventFileRow[]>(),
+    supabase
+      .from("event_marketing_custom_items")
+      .select("*")
+      .eq("event_id", eventId)
+      .order("created_at", { ascending: true })
+      .returns<MarketingCustomItemRow[]>(),
   ]);
 
   if (!event) notFound();
@@ -64,6 +72,7 @@ export default async function EventDetailsPage({
       marketing={marketing}
       recurring={recurring}
       files={files ?? []}
+      marketingCustomItems={marketingCustomItems ?? []}
     />
   );
 }

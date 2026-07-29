@@ -11,7 +11,7 @@ export default async function TodoPage() {
   const { data: events } = await supabase
     .from("events")
     .select(
-      "id, name, event_date, event_time, venue, venue_done, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media, media_done, has_recurring",
+      "id, name, event_date, event_time, event_end_time, venue, venue_done, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media, media_done, has_recurring",
     )
     .eq("is_complete", false)
     .order("event_date", { ascending: true })
@@ -80,6 +80,7 @@ export default async function TodoPage() {
                   <span className="text-sm font-medium">{event.name}</span>
                   <span className="text-xs text-muted-foreground">
                     {event.event_date} · {event.event_time.slice(0, 5)}
+                    {event.event_end_time ? `–${event.event_end_time.slice(0, 5)}` : ""}
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-1.5">

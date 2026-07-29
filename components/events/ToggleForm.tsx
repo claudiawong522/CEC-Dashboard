@@ -33,7 +33,8 @@ export function ToggleForm() {
     defaultValues: {
       name: "",
       eventDate: "",
-      eventTime: "",
+      eventStartTime: "",
+      eventEndTime: "",
       venue: "",
       hasSpeaker: false,
       hasAttendees: false,
@@ -65,7 +66,7 @@ export function ToggleForm() {
           {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-3 gap-4">
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="eventDate">Date</Label>
             <Input id="eventDate" type="date" {...register("eventDate")} />
@@ -74,10 +75,17 @@ export function ToggleForm() {
             )}
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="eventTime">Time</Label>
-            <Input id="eventTime" type="time" {...register("eventTime")} />
-            {errors.eventTime && (
-              <p className="text-xs text-destructive">{errors.eventTime.message}</p>
+            <Label htmlFor="eventStartTime">Start time</Label>
+            <Input id="eventStartTime" type="time" {...register("eventStartTime")} />
+            {errors.eventStartTime && (
+              <p className="text-xs text-destructive">{errors.eventStartTime.message}</p>
+            )}
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="eventEndTime">End time</Label>
+            <Input id="eventEndTime" type="time" {...register("eventEndTime")} />
+            {errors.eventEndTime && (
+              <p className="text-xs text-destructive">{errors.eventEndTime.message}</p>
             )}
           </div>
         </div>

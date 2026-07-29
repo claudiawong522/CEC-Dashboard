@@ -3,6 +3,7 @@ export type EventRow = {
   name: string;
   event_date: string;
   event_time: string;
+  event_end_time: string | null;
   venue: string;
   venue_done: boolean;
   notes: string | null;
@@ -58,6 +59,13 @@ export type MarketingRow = {
   story_shoutout_3: boolean;
   posters: boolean;
   reel: boolean;
+  done: boolean;
+};
+
+export type MarketingCustomItemRow = {
+  id: string;
+  event_id: string;
+  label: string;
   done: boolean;
 };
 

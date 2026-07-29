@@ -57,7 +57,8 @@ export async function createEvent(values: ToggleFormValues) {
     .insert({
       name: parsed.name,
       event_date: parsed.eventDate,
-      event_time: parsed.eventTime,
+      event_time: parsed.eventStartTime,
+      event_end_time: parsed.eventEndTime,
       venue: parsed.venue,
       has_speaker: parsed.hasSpeaker,
       has_attendees: parsed.hasAttendees,
@@ -82,17 +83,22 @@ export async function createEvent(values: ToggleFormValues) {
 
 export async function updateEventHeader(
   eventId: string,
-  values: Pick<EventCoreValues, "name" | "eventDate" | "eventTime">,
+  values: Pick<EventCoreValues, "name" | "eventDate" | "eventStartTime" | "eventEndTime">,
 ) {
   await requireRole("edit");
   const parsed = eventCoreSchema
-    .pick({ name: true, eventDate: true, eventTime: true })
+    .pick({ name: true, eventDate: true, eventStartTime: true, eventEndTime: true })
     .parse(values);
   const supabase = await createClient();
 
   const { error } = await supabase
     .from("events")
-    .update({ name: parsed.name, event_date: parsed.eventDate, event_time: parsed.eventTime })
+    .update({
+      name: parsed.name,
+      event_date: parsed.eventDate,
+      event_time: parsed.eventStartTime,
+      event_end_time: parsed.eventEndTime,
+    })
     .eq("id", eventId);
 
   if (error) throw new Error(error.message);
@@ -249,7 +255,7 @@ export async function generateRecurringOccurrences(
   const { data: parent, error: parentError } = await supabase
     .from("events")
     .select(
-      "id, name, event_date, event_time, venue, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media",
+      "id, name, event_date, event_time, event_end_time, venue, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media",
     )
     .eq("id", eventId)
     .single();
@@ -287,6 +293,7 @@ export async function generateRecurringOccurrences(
         name: parent.name,
         event_date: formatISO(cursor, { representation: "date" }),
         event_time: parent.event_time,
+        event_end_time: parent.event_end_time,
         venue: parent.venue,
         has_speaker: parent.has_speaker,
         has_attendees: parent.has_attendees,

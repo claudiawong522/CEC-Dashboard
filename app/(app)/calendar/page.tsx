@@ -8,7 +8,7 @@ export default async function CalendarPage() {
   const supabase = await createClient();
   const { data: events } = await supabase
     .from("events")
-    .select("id, name, event_date, event_time, venue, is_complete")
+    .select("id, name, event_date, event_time, event_end_time, venue, is_complete")
     .order("event_date", { ascending: true });
 
   return (

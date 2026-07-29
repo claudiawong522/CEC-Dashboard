@@ -7,7 +7,7 @@ export default async function PastEventsPage() {
 
   const { data: events } = await supabase
     .from("events")
-    .select("id, name, event_date, event_time, venue, has_speaker")
+    .select("id, name, event_date, event_time, event_end_time, venue, has_speaker")
     .eq("is_complete", true)
     .order("event_date", { ascending: false })
     .order("event_time", { ascending: false });
@@ -18,7 +18,7 @@ export default async function PastEventsPage() {
   // eslint-disable-next-line react-hooks/purity
   const now = Date.now();
   const past = (events ?? []).filter(
-    (e) => new Date(`${e.event_date}T${e.event_time}`).getTime() < now,
+    (e) => new Date(`${e.event_date}T${e.event_end_time ?? e.event_time}`).getTime() < now,
   );
 
   const speakerEventIds = past.filter((e) => e.has_speaker).map((e) => e.id);
@@ -76,7 +76,9 @@ export default async function PastEventsPage() {
               <div className="flex flex-col overflow-hidden">
                 <span className="truncate text-sm font-medium">{event.name}</span>
                 <span className="truncate text-xs text-muted-foreground">
-                  {event.event_date} · {event.venue}
+                  {event.event_date} · {event.event_time.slice(0, 5)}
+                  {event.event_end_time ? `–${event.event_end_time.slice(0, 5)}` : ""} ·{" "}
+                  {event.venue}
                 </span>
               </div>
             </li>

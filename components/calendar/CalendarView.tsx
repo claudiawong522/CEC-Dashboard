@@ -20,6 +20,7 @@ export type CalendarEvent = {
   name: string;
   event_date: string;
   event_time: string;
+  event_end_time: string | null;
   venue: string;
   is_complete: boolean;
 };
@@ -31,6 +32,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
     id: event.id,
     title: event.name,
     start: `${event.event_date}T${event.event_time}`,
+    end: event.event_end_time ? `${event.event_date}T${event.event_end_time}` : undefined,
     extendedProps: { venue: event.venue, isComplete: event.is_complete },
   }));
 
