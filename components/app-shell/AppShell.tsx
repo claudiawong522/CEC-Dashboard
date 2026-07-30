@@ -68,7 +68,7 @@ export function AppShell({
             <DropdownMenuContent
               align="end"
               sideOffset={8}
-              className="w-[212px] rounded-card border-line bg-paper p-3.5 shadow-menu ring-0"
+              className="w-[212px] rounded-card border border-line bg-paper p-3.5 shadow-menu ring-0"
             >
               <DropdownMenuGroup>
                 <DropdownMenuLabel className="flex flex-col gap-0.5 p-0">
