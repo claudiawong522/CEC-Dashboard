@@ -142,8 +142,11 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
 5. The outline mark's inner triangle must be centred with a visible bottom rule.
 
 ## Changelog
-- **Shell scaled up past the literal header lockup.** The header's documented "Header" lockup
-  (20×18px mark, 14.5px/500 wordmark) and the 32px avatar/13px tab-row sizes read as too small at
-  real full-bleed viewport widths — the mockup was proportioned for a 1180px preview card. Shipped
-  sizes: mark 26×30px, wordmark 19px/500/−0.018em, avatar 36px circle (12.5px initials), tab row
-  14.5px. Colours, radii, motion and the primary/stacked lockups elsewhere are unchanged.
+- **Shell reverted to the literal header lockup.** A prior pass scaled the header mark/wordmark
+  (to 26×30px/19px), avatar (36px) and tab-row text (14.5px) up past the kit's documented "Header"
+  lockup, reasoning the mockup's 20×18px/14.5px/32px/13px values were tuned for a 1180px preview
+  card and read too small at real full-bleed viewport widths. A CHECKLIST.md § Shell audit
+  reinstated the literal spec values (mark 20×18px, wordmark 500/14.5px/−0.012em, avatar 32px,
+  tab-row 400/500 13px) for exact fidelity. The same proportion argument still applies to the
+  Calendar view (day numbers, weekday header, toolbar, event chips remain sized up per commit
+  `88d4f17`) — that screen wasn't in scope for this pass and is unchanged.
