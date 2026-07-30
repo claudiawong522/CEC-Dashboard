@@ -140,3 +140,10 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
 3. A strikethrough overlay needs `display:inline-block` on the label so the absolute rule resolves.
 4. Give the lightest swatches a hairline border or they vanish on cream.
 5. The outline mark's inner triangle must be centred with a visible bottom rule.
+
+## Changelog
+- **Shell scaled up past the literal header lockup.** The header's documented "Header" lockup
+  (20×18px mark, 14.5px/500 wordmark) and the 32px avatar/13px tab-row sizes read as too small at
+  real full-bleed viewport widths — the mockup was proportioned for a 1180px preview card. Shipped
+  sizes: mark 26×30px, wordmark 19px/500/−0.018em, avatar 36px circle (12.5px initials), tab row
+  14.5px. Colours, radii, motion and the primary/stacked lockups elsewhere are unchanged.
