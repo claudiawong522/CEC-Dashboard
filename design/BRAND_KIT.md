@@ -21,6 +21,7 @@ state, a section flag, today. Everything else is neutral.
 | `strong` | #4A443C | emphasis inside prose, editor text |
 | `ink` | #23201C | titles, primary button ground, active tab |
 | `faded` | #C9C4B6 | adjacent-month calendar days, disabled dots/placeholders |
+| `portrait-placeholder` | #F0EDE4 | Past Events avatar circle when there's no speaker |
 | hairline | rgba(35,32,28,.07–.14) | borders (.07 cards, .09 rules, .14 inputs) |
 
 ### Accents (the CENT gradient stops)
@@ -210,3 +211,12 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   added the "capped at six, then instant" stagger rule the checklist calls for — rows past the 6th
   previously kept extending the `riseIn` delay indefinitely instead of appearing immediately — and
   converted the empty-state sprig sticker's raw hex to tokens.
+- **Past Events — built the term-seal filter from scratch.** It was entirely missing (no F25/S26
+  UI at all), the previously-noted deferred gap since there's no stored "term" column. Added
+  `lib/utils/terms.ts`: derives a term from `event_date` (Aug-Dec is Fall of that year, Jan-Jul is
+  Spring — CEC doesn't run summer programming, so the spring/summer boundary doesn't need its own
+  bucket), fixed Fall→coral / Spring→teal. Rebuilt the page as a server component (data fetch) +
+  new `components/past-events/PastEventsGrid.tsx` (client, holds the active-term filter state) —
+  clicking a seal toggles filtering to that term, clicking again clears it. Also fixed the same
+  raw-ISO-date-string bug Todo had, and added `portrait-placeholder` (#F0EDE4, the no-speaker
+  avatar circle) as a token instead of a raw hex literal.

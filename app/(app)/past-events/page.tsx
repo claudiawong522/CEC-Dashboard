@@ -1,6 +1,6 @@
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { publicFileUrl } from "@/lib/utils/storage";
+import { PastEventsGrid } from "@/components/past-events/PastEventsGrid";
 
 export default async function PastEventsPage() {
   const supabase = await createClient();
@@ -49,49 +49,15 @@ export default async function PastEventsPage() {
     }
   }
 
-  return (
-    <div className="flex flex-col gap-[17px]">
-      <h1 className="font-sans text-2xl leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-        Past Events
-      </h1>
+  const gridEvents = past.map((event) => ({
+    id: event.id,
+    name: event.name,
+    event_date: event.event_date,
+    event_time: event.event_time,
+    event_end_time: event.event_end_time,
+    venue: event.venue,
+    portraitUrl: portraitByEvent.get(event.id) ?? null,
+  }));
 
-      {past.length === 0 ? (
-        <p className="font-sans text-sm text-faint">No completed past events yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {past.map((event, i) => (
-            <div
-              key={event.id}
-              style={{ animationDelay: `${0.05 + i * 0.07}s` }}
-              className="flex items-center gap-[13px] rounded-[10px] border border-[rgba(35,32,28,0.09)] bg-paper p-3.5 transition-[transform,border-color] duration-200 ease-brand animate-riseIn hover:-translate-y-0.5 hover:border-[rgba(35,32,28,0.2)]"
-            >
-              {portraitByEvent.has(event.id) ? (
-                <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
-                  <Image
-                    src={portraitByEvent.get(event.id)!}
-                    alt={event.name}
-                    fill
-                    sizes="48px"
-                    className="object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="size-12 shrink-0 rounded-full bg-[#F0EDE4]" />
-              )}
-              <div className="flex flex-col gap-[3px] overflow-hidden">
-                <span className="truncate font-sans text-[13.5px] font-medium text-ink">
-                  {event.name}
-                </span>
-                <span className="truncate font-sans text-[11.5px] text-body">
-                  {event.event_date} · {event.event_time.slice(0, 5)}
-                  {event.event_end_time ? `–${event.event_end_time.slice(0, 5)}` : ""}
-                </span>
-                <span className="truncate font-sans text-[11px] text-faint">{event.venue}</span>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+  return <PastEventsGrid events={gridEvents} />;
 }

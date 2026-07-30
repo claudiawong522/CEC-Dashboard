@@ -21,6 +21,7 @@
   --blue:#3B6FC2;
   --destructive:#B4472F;
   --coral-bloom:#F0836B; /* login sticker S4's inner highlight — lighter/warmer than --coral */
+  --portrait-placeholder:#F0EDE4; /* Past Events: circular avatar when there's no speaker */
 
   /* gradient */
   --cent:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);
