@@ -76,54 +76,54 @@ export function ToggleForm() {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex max-w-[580px] flex-col gap-[19px]">
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="name" className="font-sans text-xs font-normal text-body">
+        <Label htmlFor="name" className="font-sans text-[12px] font-normal text-body">
           Event name
         </Label>
         <Input id="name" {...register("name")} />
-        {errors.name && <p className="font-sans text-xs text-destructive">{errors.name.message}</p>}
+        {errors.name && <p className="font-sans text-[12px] text-destructive">{errors.name.message}</p>}
       </div>
 
       <div className="flex gap-[11px]">
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="eventDate" className="font-sans text-xs font-normal text-body">
+          <Label htmlFor="eventDate" className="font-sans text-[12px] font-normal text-body">
             Date
           </Label>
           <Input id="eventDate" type="date" {...register("eventDate")} />
           {errors.eventDate && (
-            <p className="font-sans text-xs text-destructive">{errors.eventDate.message}</p>
+            <p className="font-sans text-[12px] text-destructive">{errors.eventDate.message}</p>
           )}
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="eventStartTime" className="font-sans text-xs font-normal text-body">
+          <Label htmlFor="eventStartTime" className="font-sans text-[12px] font-normal text-body">
             Start time
           </Label>
           <Input id="eventStartTime" type="time" {...register("eventStartTime")} />
           {errors.eventStartTime && (
-            <p className="font-sans text-xs text-destructive">{errors.eventStartTime.message}</p>
+            <p className="font-sans text-[12px] text-destructive">{errors.eventStartTime.message}</p>
           )}
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="eventEndTime" className="font-sans text-xs font-normal text-body">
+          <Label htmlFor="eventEndTime" className="font-sans text-[12px] font-normal text-body">
             End time
           </Label>
           <Input id="eventEndTime" type="time" {...register("eventEndTime")} />
           {errors.eventEndTime && (
-            <p className="font-sans text-xs text-destructive">{errors.eventEndTime.message}</p>
+            <p className="font-sans text-[12px] text-destructive">{errors.eventEndTime.message}</p>
           )}
         </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="venue" className="font-sans text-xs font-normal text-body">
+        <Label htmlFor="venue" className="font-sans text-[12px] font-normal text-body">
           Venue
         </Label>
         <Input id="venue" {...register("venue")} />
-        {errors.venue && <p className="font-sans text-xs text-destructive">{errors.venue.message}</p>}
+        {errors.venue && <p className="font-sans text-[12px] text-destructive">{errors.venue.message}</p>}
       </div>
 
       <div className="flex flex-col gap-[9px]">
         <div className="flex flex-col gap-[3px]">
-          <p className="font-sans text-sm font-medium text-ink">What does this event need?</p>
+          <p className="font-sans text-[14px] font-medium text-ink">What does this event need?</p>
           <p className="font-sans text-[12.5px] text-faint">
             Each one you turn on becomes a section to prep in step 2.
           </p>
