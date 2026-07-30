@@ -49,23 +49,21 @@ export function AppShell({
     .toUpperCase();
 
   return (
-    <div className="min-h-svh bg-canvas">
-      <div className="mx-auto flex min-h-svh w-full max-w-[1360px] items-stretch bg-background">
-        <aside className="relative flex w-[228px] shrink-0 flex-col justify-between overflow-hidden border-r border-line bg-paper p-3.5">
+    <div className="h-svh overflow-hidden bg-canvas">
+      <div className="mx-auto flex h-full w-full max-w-[1360px] items-stretch bg-background">
+        <aside className="relative flex w-[272px] shrink-0 flex-col justify-between overflow-hidden border-r border-line bg-paper p-4">
           <CloudPuff
             size={260}
             className="pointer-events-none absolute -top-16 -left-20 opacity-[0.14] blur-[2px]"
           />
 
-          <div className="relative flex flex-col gap-7">
+          <div className="relative flex flex-col gap-8">
             <Link href="/calendar" className="flex items-center gap-2.5 px-2">
               <Sticker floatVariant="none" wrapperClassName="shrink-0">
-                <BrandMark className="h-[21px] w-6" />
+                <BrandMark className="h-[22px] w-6" />
               </Sticker>
-              <span className="font-sans text-[16px] leading-[1.15] font-medium tracking-[-0.014em] text-ink">
-                CEC
-                <br />
-                Dashboard
+              <span className="font-sans text-[17px] font-medium tracking-[-0.014em] text-ink">
+                CEC Dashboard
               </span>
             </Link>
 
@@ -78,7 +76,7 @@ export function AppShell({
                     key={item.href}
                     href={item.href}
                     className={cn(
-                      "relative flex h-[38px] items-center rounded-btn px-3 font-sans text-[13px] transition-colors duration-200 ease-brand",
+                      "relative flex h-[42px] items-center rounded-btn px-3.5 font-sans text-[14px] transition-colors duration-200 ease-brand",
                       active
                         ? "bg-cent-tint font-medium text-ink"
                         : "font-normal text-faint hover:text-ink",
@@ -145,7 +143,7 @@ export function AppShell({
           />
         </aside>
 
-        <main className="min-w-0 flex-1 px-8 py-8">{children}</main>
+        <main className="min-w-0 flex-1 overflow-y-auto px-8 py-8">{children}</main>
       </div>
     </div>
   );
