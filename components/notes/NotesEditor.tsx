@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import type { PartialBlock } from "@blocknote/core";
+import { en } from "@blocknote/core/locales";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 import { saveNotesDoc } from "@/lib/actions/notes";
@@ -12,21 +13,28 @@ import { saveNotesDoc } from "@/lib/actions/notes";
 // the library's own customization surface, not a fork of its internals.
 const brandTheme = {
   colors: {
-    editor: { text: "#23201C", background: "#FFFDF9" },
-    menu: { text: "#23201C", background: "#FFFDF9" },
-    tooltip: { text: "#FDFAF4", background: "#23201C" },
-    hovered: { text: "#23201C", background: "#F5F0E5" },
-    selected: { text: "#23201C", background: "#F5F0E5" },
-    disabled: { text: "#B0A899", background: "#FFFDF9" },
+    editor: { text: "var(--ink)", background: "var(--paper)" },
+    menu: { text: "var(--ink)", background: "var(--paper)" },
+    tooltip: { text: "var(--page)", background: "var(--ink)" },
+    hovered: { text: "var(--ink)", background: "var(--hover)" },
+    selected: { text: "var(--ink)", background: "var(--hover)" },
+    disabled: { text: "var(--faint)", background: "var(--paper)" },
     shadow: "rgba(35,32,28,.5)",
     border: "rgba(35,32,28,.1)",
-    sideMenu: "#E2DACB",
+    sideMenu: "var(--line-strong)",
     highlights: {
-      orange: { text: "#23201C", background: "rgba(232,88,61,.26)" },
+      orange: { text: "var(--ink)", background: "rgba(232,88,61,.26)" },
     },
   },
   borderRadius: 10,
   fontFamily: "var(--font-hanken-grotesk), system-ui, sans-serif",
+};
+
+// design/README.md's exact copy — BlockNote's own default is
+// "Enter text or type '/' for commands".
+const dictionary = {
+  ...en,
+  placeholders: { ...en.placeholders, default: "Type '/' for commands" },
 };
 
 export function NotesEditor({
@@ -38,6 +46,7 @@ export function NotesEditor({
 }) {
   const editor = useCreateBlockNote({
     initialContent: initialContent.length > 0 ? initialContent : undefined,
+    dictionary,
   });
   const saveTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 

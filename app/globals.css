@@ -381,3 +381,54 @@
   font-size: 9px;
   color: var(--faint);
 }
+
+/* Notes' text caret — BlockNote's theme API doesn't expose caret-color. */
+.bn-editor {
+  caret-color: var(--coral);
+}
+
+/* Notes' BlockNote slash menu — the theme API (NotesEditor.tsx) covers colors,
+   but the default Mantine menu's icon/subtitle/shortcut-badge layout is its
+   own component, not exposed via theme. Restyled here to the kit's compact
+   single-line spec instead of forking BlockNote's internals. */
+.bn-suggestion-menu {
+  width: 246px;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px solid rgba(35, 32, 28, 0.1);
+  /* Mantine's own Stack shadow, injected via its runtime CSS-in-JS, otherwise
+     wins the cascade over this plain class rule regardless of source order. */
+  box-shadow: var(--shadow-menu) !important;
+  background: var(--paper);
+}
+.bn-suggestion-menu-label {
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.bn-suggestion-menu-item {
+  padding: 7px 8px;
+  border-radius: 6px;
+  transition: background-color 160ms ease;
+}
+.bn-suggestion-menu-item[aria-selected="true"],
+.bn-suggestion-menu-item:hover {
+  background: var(--hover);
+}
+.bn-suggestion-menu-item .bn-mt-suggestion-menu-item-section {
+  display: none;
+}
+.bn-suggestion-menu-item .bn-mt-suggestion-menu-item-subtitle {
+  display: none;
+}
+.bn-suggestion-menu-item .bn-mt-suggestion-menu-item-title {
+  font-size: 12.5px;
+  color: var(--body);
+}
+.bn-suggestion-menu-item[aria-selected="true"] .bn-mt-suggestion-menu-item-title,
+.bn-suggestion-menu-item:hover .bn-mt-suggestion-menu-item-title {
+  color: var(--ink);
+}

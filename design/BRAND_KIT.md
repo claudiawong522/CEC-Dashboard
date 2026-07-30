@@ -225,3 +225,14 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   file extension (falling back to mime-type/`file`). Also moved the hover-scale transition from the
   `<Image>` itself onto the tile wrapper (`group-hover`) so non-image tiles scale on hover too,
   matching the mockup's uniform tile treatment — previously only image tiles had the effect.
+- **Notes — the slash menu was BlockNote/Mantine's rich default, not the kit's minimal spec.**
+  It rendered icons, subtitles and keyboard-shortcut badges in grouped sections (a much busier
+  layout than the mockup's plain single-line rows). BlockNote's theme API only covers colours, not
+  this layout, so restyled it via its documented, stable class hooks (`bn-suggestion-menu`,
+  `bn-mt-suggestion-menu-item-*`) in `globals.css` instead — hid the icon/subtitle/badge elements,
+  sized the card to 246px/r10, and had to `!important` the box-shadow since Mantine's own
+  runtime-injected shadow otherwise wins the cascade regardless of source order. Also: the
+  placeholder was BlockNote's default "Enter text or type '/' for commands", not the kit's copy —
+  overridden via the (non-deprecated) `dictionary` option — and `caret-color` (not exposed by the
+  theme API either) was the default ink instead of coral. Converted the theme object's remaining
+  raw hex to tokens.
