@@ -27,7 +27,7 @@ export function NotesField({ eventId, notes }: { eventId: string; notes: string 
   return (
     <SectionCard title="Notes" eventId={eventId} section="notes" done={false} hideDone>
       <div className="flex flex-col gap-1.5">
-        <Label className="font-sans text-xs font-normal text-body">Optional notes</Label>
+        <Label className="font-sans text-[12px] font-normal text-body">Optional notes</Label>
         <Textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}

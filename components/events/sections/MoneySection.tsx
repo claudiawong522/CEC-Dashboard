@@ -51,7 +51,7 @@ export function MoneySection({
 
   return (
     <SectionCard title="Money" eventId={eventId} section="money" done={done}>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-[12px]">
         <div className="flex flex-col gap-1.5">
           <Label>Budgeted</Label>
           <Input

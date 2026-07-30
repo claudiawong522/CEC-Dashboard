@@ -50,12 +50,12 @@ export function RecurringSection({
   return (
     <SectionCard title="Recurring" eventId={eventId} section="recurring" done={done}>
       {alreadyLinked ? (
-        <p className="text-xs text-muted-foreground">
+        <p className="font-sans text-[12.5px] text-faint">
           This series has already been generated.
         </p>
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-[12px]">
             <div className="flex flex-col gap-1.5">
               <Label>Frequency</Label>
               <Select value={frequency} onValueChange={(v) => setFrequency(v as RecurringValues["frequency"])}>

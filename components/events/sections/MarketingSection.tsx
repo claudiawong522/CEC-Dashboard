@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import { X, Plus } from "lucide-react";
+import { X } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -97,9 +98,15 @@ export function MarketingSection({
 
   return (
     <SectionCard title="Marketing" eventId={eventId} section="marketing" done={done}>
-      <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+      <div className="grid grid-cols-2 gap-x-5 gap-y-[9px]">
         {ITEMS.map((item) => (
-          <label key={item.key} className="flex items-center gap-2 text-sm">
+          <label
+            key={item.key}
+            className={cn(
+              "flex items-center gap-[9px] font-sans text-[13px]",
+              state[item.key] ? "text-ink" : "text-body",
+            )}
+          >
             <Checkbox
               checked={state[item.key]}
               onCheckedChange={(checked) => handleToggle(item.key, checked)}
@@ -108,7 +115,13 @@ export function MarketingSection({
           </label>
         ))}
         {items.map((item) => (
-          <div key={item.id} className="group flex items-center gap-2 text-sm">
+          <div
+            key={item.id}
+            className={cn(
+              "group flex items-center gap-[9px] font-sans text-[13px]",
+              item.done ? "text-ink" : "text-body",
+            )}
+          >
             <Checkbox
               checked={item.done}
               onCheckedChange={(checked) => handleToggleCustom(item.id, checked)}
@@ -117,15 +130,15 @@ export function MarketingSection({
             <button
               type="button"
               onClick={() => handleDeleteCustom(item.id)}
-              className="opacity-0 transition-opacity group-hover:opacity-100"
+              className="font-sans text-[12px] text-faded opacity-0 transition-opacity group-hover:opacity-100 hover:text-destructive"
             >
-              <X className="size-3.5 text-muted-foreground" />
+              <X className="size-3.5" />
             </button>
           </div>
         ))}
       </div>
 
-      <div className="flex gap-2">
+      <div className="flex items-center gap-[9px]">
         <Input
           value={newLabel}
           onChange={(e) => setNewLabel(e.target.value)}
@@ -135,11 +148,10 @@ export function MarketingSection({
               handleAddCustom();
             }
           }}
-          placeholder="Add a custom channel..."
-          className="h-8"
+          placeholder="Add a custom channel…"
+          className="max-w-[260px] px-[11px] py-2 text-[12.5px]"
         />
         <Button size="sm" variant="outline" onClick={handleAddCustom} disabled={!newLabel.trim()}>
-          <Plus className="size-3.5" />
           Add
         </Button>
       </div>

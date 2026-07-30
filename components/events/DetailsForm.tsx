@@ -188,19 +188,19 @@ export function DetailsForm({
         </div>
 
         <div className="flex flex-[2] flex-col gap-1.5">
-          <Label className="font-sans text-xs font-normal text-body">Event name</Label>
+          <Label className="font-sans text-[12px] font-normal text-body">Event name</Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label className="font-sans text-xs font-normal text-body">Date</Label>
+          <Label className="font-sans text-[12px] font-normal text-body">Date</Label>
           <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label className="font-sans text-xs font-normal text-body">Start</Label>
+          <Label className="font-sans text-[12px] font-normal text-body">Start</Label>
           <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label className="font-sans text-xs font-normal text-body">End</Label>
+          <Label className="font-sans text-[12px] font-normal text-body">End</Label>
           <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
         </div>
         <Button

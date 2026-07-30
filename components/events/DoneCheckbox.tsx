@@ -46,7 +46,7 @@ export function DoneCheckbox({
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
           <polyline
             points="2,6.4 4.6,9 10,3.2"
-            stroke="#FFFDF9"
+            stroke="var(--paper)"
             strokeWidth="1.8"
             strokeLinecap="round"
             strokeLinejoin="round"

@@ -187,3 +187,19 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
 - **Week/Year view dimensions corrected to the mockup** (44px gutter not 56px, 52px rows not 60px,
   26px header not 32px) and their hardcoded `bg-teal`/`border-teal` replaced with the same
   `firstPrepSection()` colour used in month view.
+- **Event details, step 2 — this screen was already very close to spec** (header card, left-rail
+  tabs, the animated pill, the done-checkbox's stroke-draw, and every section's field list all
+  already matched CHECKLIST.md § "Event details · step 2" exactly). Fixes:
+  - Marketing's channel checkboxes were the shared `ui/checkbox.tsx` primitive at 16px/r4 instead
+    of the mockup's 17px/r5, with a `.14`-opacity border instead of `.2`; also added the
+    checked→ink / unchecked→body label colour the mockup uses to distinguish selected channels
+    (previously no colour change at all), and removed the "Add" button's icon and the "Add a
+    custom channel…" input's oversized styling to match the mockup's plain-text, compact version.
+  - Two raw hex literals: the done-checkbox's SVG stroke (`#FFFDF9` → `var(--paper)`) and the
+    drop-zone hover bloom's first gradient stop (`#E8583D` → `var(--coral)`).
+  - Drop zone radius was `rounded-input` (8px); the kit specifies 10px for this component
+    specifically (distinct from the 58px thumbnail tiles, which correctly stay at 8px).
+  - Money's and Recurring's two-field row gap was 16px (Tailwind's `gap-4`); the kit's "pair"
+    template uses 12px.
+  - Tightened remaining `text-xs`/`text-sm`/`text-muted-foreground` instances across the section
+    files to explicit pixel values and `text-faint`, matching the fidelity pass applied elsewhere.
