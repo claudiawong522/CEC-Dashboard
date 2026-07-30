@@ -10,8 +10,9 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { createEvent } from "@/lib/actions/events";
 import { toggleFormSchema, type ToggleFormValues } from "@/lib/validation/event-schemas";
+import { SECTION_COLORS } from "@/lib/utils/section-colors";
 
-const TOGGLE_ITEMS: { key: keyof ToggleFormValues; label: string }[] = [
+const TOGGLE_ITEMS: { key: keyof ToggleFormValues; label: keyof typeof SECTION_COLORS }[] = [
   { key: "hasSpeaker", label: "Speaker" },
   { key: "hasAttendees", label: "Attendees" },
   { key: "hasMoney", label: "Money" },
@@ -21,12 +22,22 @@ const TOGGLE_ITEMS: { key: keyof ToggleFormValues; label: string }[] = [
   { key: "hasRecurring", label: "Recurring" },
 ];
 
+function SectionFlag({ color }: { color: string }) {
+  return (
+    <span
+      className="inline-block h-2 w-[9px] shrink-0"
+      style={{ background: color, clipPath: "polygon(50% 0,100% 100%,0 100%)" }}
+    />
+  );
+}
+
 export function ToggleForm() {
   const [isPending, startTransition] = useTransition();
   const {
     register,
     control,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<ToggleFormValues>({
     resolver: zodResolver(toggleFormSchema),
@@ -46,6 +57,11 @@ export function ToggleForm() {
     },
   });
 
+  const values = watch();
+  // Venue and Notes are always prepped sections regardless of the switches.
+  const sectionsSelected =
+    TOGGLE_ITEMS.filter((item) => values[item.key]).length + 2;
+
   function onSubmit(values: ToggleFormValues) {
     startTransition(async () => {
       try {
@@ -58,54 +74,73 @@ export function ToggleForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex max-w-lg flex-col gap-6">
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="name">Event name</Label>
-          <Input id="name" {...register("name")} />
-          {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
-        </div>
+    <form onSubmit={handleSubmit(onSubmit)} className="flex max-w-[580px] flex-col gap-[19px]">
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="name" className="font-sans text-xs font-normal text-body">
+          Event name
+        </Label>
+        <Input id="name" {...register("name")} />
+        {errors.name && <p className="font-sans text-xs text-destructive">{errors.name.message}</p>}
+      </div>
 
-        <div className="grid grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="eventDate">Date</Label>
-            <Input id="eventDate" type="date" {...register("eventDate")} />
-            {errors.eventDate && (
-              <p className="text-xs text-destructive">{errors.eventDate.message}</p>
-            )}
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="eventStartTime">Start time</Label>
-            <Input id="eventStartTime" type="time" {...register("eventStartTime")} />
-            {errors.eventStartTime && (
-              <p className="text-xs text-destructive">{errors.eventStartTime.message}</p>
-            )}
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="eventEndTime">End time</Label>
-            <Input id="eventEndTime" type="time" {...register("eventEndTime")} />
-            {errors.eventEndTime && (
-              <p className="text-xs text-destructive">{errors.eventEndTime.message}</p>
-            )}
-          </div>
+      <div className="flex gap-[11px]">
+        <div className="flex flex-1 flex-col gap-1.5">
+          <Label htmlFor="eventDate" className="font-sans text-xs font-normal text-body">
+            Date
+          </Label>
+          <Input id="eventDate" type="date" {...register("eventDate")} />
+          {errors.eventDate && (
+            <p className="font-sans text-xs text-destructive">{errors.eventDate.message}</p>
+          )}
         </div>
-
-        <div className="flex flex-col gap-1.5">
-          <Label htmlFor="venue">Venue</Label>
-          <Input id="venue" {...register("venue")} />
-          {errors.venue && <p className="text-xs text-destructive">{errors.venue.message}</p>}
+        <div className="flex flex-1 flex-col gap-1.5">
+          <Label htmlFor="eventStartTime" className="font-sans text-xs font-normal text-body">
+            Start time
+          </Label>
+          <Input id="eventStartTime" type="time" {...register("eventStartTime")} />
+          {errors.eventStartTime && (
+            <p className="font-sans text-xs text-destructive">{errors.eventStartTime.message}</p>
+          )}
+        </div>
+        <div className="flex flex-1 flex-col gap-1.5">
+          <Label htmlFor="eventEndTime" className="font-sans text-xs font-normal text-body">
+            End time
+          </Label>
+          <Input id="eventEndTime" type="time" {...register("eventEndTime")} />
+          {errors.eventEndTime && (
+            <p className="font-sans text-xs text-destructive">{errors.eventEndTime.message}</p>
+          )}
         </div>
       </div>
 
-      <div className="flex flex-col gap-1">
-        <p className="text-sm font-medium">What does this event need?</p>
-        <p className="text-xs text-muted-foreground">
-          Toggle on whichever sections apply — you&rsquo;ll fill in the details next.
-        </p>
-        <div className="mt-2 flex flex-col divide-y divide-stone-100 rounded-lg border border-stone-200">
-          {TOGGLE_ITEMS.map((item) => (
-            <div key={item.key} className="flex items-center justify-between px-3 py-2.5">
-              <Label htmlFor={item.key} className="text-sm font-normal">
+      <div className="flex flex-col gap-1.5">
+        <Label htmlFor="venue" className="font-sans text-xs font-normal text-body">
+          Venue
+        </Label>
+        <Input id="venue" {...register("venue")} />
+        {errors.venue && <p className="font-sans text-xs text-destructive">{errors.venue.message}</p>}
+      </div>
+
+      <div className="flex flex-col gap-[9px]">
+        <div className="flex flex-col gap-[3px]">
+          <p className="font-sans text-sm font-medium text-ink">What does this event need?</p>
+          <p className="font-sans text-[12.5px] text-faint">
+            Each one you turn on becomes a section to prep in step 2.
+          </p>
+        </div>
+        <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+          {TOGGLE_ITEMS.map((item, i) => (
+            <div
+              key={item.key}
+              className={`flex items-center justify-between px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
+                i < TOGGLE_ITEMS.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+              }`}
+            >
+              <Label
+                htmlFor={item.key}
+                className="gap-[9px] font-sans text-[13.5px] font-normal text-ink"
+              >
+                <SectionFlag color={SECTION_COLORS[item.label]} />
                 {item.label}
               </Label>
               <Controller
@@ -124,9 +159,14 @@ export function ToggleForm() {
         </div>
       </div>
 
-      <Button type="submit" disabled={isPending} className="self-start">
-        {isPending ? "Creating..." : "Continue"}
-      </Button>
+      <div className="flex items-center gap-[14px]">
+        <Button type="submit" disabled={isPending} className="px-5 py-2.5 text-[13px]">
+          {isPending ? "Creating..." : "Continue"}
+        </Button>
+        <span className="font-sans text-[12.5px] text-faint">
+          {sectionsSelected} sections selected
+        </span>
+      </div>
     </form>
   );
 }

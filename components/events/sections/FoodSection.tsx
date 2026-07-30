@@ -71,6 +71,8 @@ export function FoodSection({
         eventId={eventId}
         section="food"
         bucket="evidence"
+        dropLabel="photo evidence"
+        label="Drop a photo of the food table"
         initialFiles={files}
         accept={{ "image/*": [] }}
       />

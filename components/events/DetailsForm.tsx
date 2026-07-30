@@ -5,7 +5,6 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import { updateEventHeader } from "@/lib/actions/events";
 import { NotesField } from "@/components/events/NotesField";
 import { VenueSection } from "@/components/events/sections/VenueSection";
@@ -16,7 +15,7 @@ import { FoodSection } from "@/components/events/sections/FoodSection";
 import { MarketingSection } from "@/components/events/sections/MarketingSection";
 import { MediaSection } from "@/components/events/sections/MediaSection";
 import { RecurringSection } from "@/components/events/sections/RecurringSection";
-import { cn } from "@/lib/utils";
+import { SECTION_COLORS, type SectionLabel } from "@/lib/utils/section-colors";
 import type {
   EventRow,
   SpeakerRow,
@@ -106,58 +105,107 @@ export function DetailsForm({
     });
   }
 
-  const tabs: { key: TabKey; label: string; done: boolean }[] = [
+  const tabs: { key: TabKey; label: SectionLabel | "Notes"; done: boolean }[] = [
     { key: "venue", label: "Venue", done: event.venue_done },
     ...(event.has_speaker
-      ? [{ key: "speaker" as const, label: "Speaker", done: speaker?.done ?? false }]
+      ? [{ key: "speaker" as const, label: "Speaker" as const, done: speaker?.done ?? false }]
       : []),
     ...(event.has_attendees
-      ? [{ key: "attendees" as const, label: "Attendees", done: attendees?.done ?? false }]
+      ? [{ key: "attendees" as const, label: "Attendees" as const, done: attendees?.done ?? false }]
       : []),
-    ...(event.has_money ? [{ key: "money" as const, label: "Money", done: money?.done ?? false }] : []),
-    ...(event.has_food ? [{ key: "food" as const, label: "Food", done: food?.done ?? false }] : []),
+    ...(event.has_money
+      ? [{ key: "money" as const, label: "Money" as const, done: money?.done ?? false }]
+      : []),
+    ...(event.has_food
+      ? [{ key: "food" as const, label: "Food" as const, done: food?.done ?? false }]
+      : []),
     ...(event.has_marketing
-      ? [{ key: "marketing" as const, label: "Marketing", done: marketing?.done ?? false }]
+      ? [{ key: "marketing" as const, label: "Marketing" as const, done: marketing?.done ?? false }]
       : []),
     ...(event.has_media
-      ? [{ key: "media" as const, label: "Media", done: event.media_done }]
+      ? [{ key: "media" as const, label: "Media" as const, done: event.media_done }]
       : []),
     ...(event.has_recurring
-      ? [{ key: "recurring" as const, label: "Recurring", done: recurring?.done ?? false }]
+      ? [{ key: "recurring" as const, label: "Recurring" as const, done: recurring?.done ?? false }]
       : []),
     { key: "notes", label: "Notes", done: false },
   ];
 
+  const doneable = tabs.filter((t) => t.key !== "notes");
+  const doneCount = doneable.filter((t) => t.done).length;
+  const activeIndex = tabs.findIndex((t) => t.key === activeTab);
+
   return (
-    <div className="flex max-w-4xl flex-col gap-6">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-muted-foreground">Step 2 of 2</p>
-        {event.is_complete && <Badge variant="secondary">Complete</Badge>}
+    <div className="flex max-w-[1180px] flex-col gap-[19px]">
+      <div className="flex items-center gap-3">
+        <span className="font-mono text-[10px] tracking-[0.14em] text-faint uppercase">
+          Step 2 of 2
+        </span>
+        <span
+          className="rounded-[20px] px-2.5 py-1 font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"
+          style={{
+            background:
+              "linear-gradient(95deg, rgba(232,88,61,.2), rgba(224,185,74,.2), rgba(63,167,137,.2), rgba(59,111,194,.2))",
+          }}
+        >
+          {doneCount} of {doneable.length} done
+        </span>
       </div>
 
-      <div className="flex flex-col gap-4 rounded-lg border border-stone-200 p-4">
-        <div className="flex flex-col gap-1.5">
-          <Label>Event name</Label>
+      <div
+        className="relative flex items-end gap-3 overflow-hidden rounded-card border border-[rgba(35,32,28,0.1)] bg-paper px-5 py-[19px]"
+        style={{ "--input-ground": "var(--page)" } as React.CSSProperties}
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-[-8px] right-[22px] h-[76px] w-[60px] opacity-70"
+        >
+          <div
+            className="absolute top-[14px] left-[29px] h-[52px] w-[1.5px]"
+            style={{ background: "linear-gradient(180deg, rgba(63,167,137,.6), rgba(63,167,137,.05))" }}
+          />
+          <div
+            className="absolute top-[22px] left-[9px] h-3 w-6 rounded-full blur-[5px]"
+            style={{
+              background: "radial-gradient(circle at 70% 50%, rgba(63,167,137,.9), transparent 74%)",
+              transform: "rotate(-18deg)",
+            }}
+          />
+          <div
+            className="absolute top-[35px] left-[28px] h-3 w-6 rounded-full blur-[5px]"
+            style={{
+              background: "radial-gradient(circle at 30% 50%, rgba(63,167,137,.9), transparent 74%)",
+              transform: "rotate(18deg)",
+            }}
+          />
+          <div
+            className="absolute top-[2px] left-[23px] h-4 w-[13px] blur-[4px]"
+            style={{
+              background: "radial-gradient(circle at 50% 70%, rgba(232,88,61,.9), transparent 76%)",
+              borderRadius: "50% 50% 45% 45%",
+            }}
+          />
+        </div>
+
+        <div className="flex flex-[2] flex-col gap-1.5">
+          <Label className="font-sans text-xs font-normal text-body">Event name</Label>
           <Input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label>Date</Label>
-            <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label>Start time</Label>
-            <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label>End time</Label>
-            <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
-          </div>
+        <div className="flex flex-1 flex-col gap-1.5">
+          <Label className="font-sans text-xs font-normal text-body">Date</Label>
+          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+        </div>
+        <div className="flex flex-1 flex-col gap-1.5">
+          <Label className="font-sans text-xs font-normal text-body">Start</Label>
+          <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+        </div>
+        <div className="flex flex-1 flex-col gap-1.5">
+          <Label className="font-sans text-xs font-normal text-body">End</Label>
+          <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
         </div>
         <Button
-          size="sm"
           variant="outline"
-          className="self-start"
+          className="px-[18px] py-2.5 text-[13px]"
           disabled={!dirty || isPending}
           onClick={handleSaveHeader}
         >
@@ -166,21 +214,36 @@ export function DetailsForm({
       </div>
 
       <div className="flex gap-6">
-        <nav className="flex w-40 shrink-0 flex-col gap-1">
+        <nav className="relative flex w-[184px] shrink-0 flex-col">
+          <div
+            className="absolute inset-x-0 h-9 rounded-btn transition-[top] duration-[340ms] ease-indicator"
+            style={{
+              top: activeIndex * 36,
+              background:
+                "linear-gradient(95deg, rgba(232,88,61,.15), rgba(224,185,74,.15), rgba(63,167,137,.15), rgba(59,111,194,.15))",
+            }}
+          />
           {tabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className={cn(
-                "flex items-center justify-between rounded-md px-3 py-2 text-left text-sm transition-colors",
-                activeTab === tab.key
-                  ? "bg-stone-100 font-medium text-foreground"
-                  : "text-muted-foreground hover:bg-stone-50 hover:text-foreground",
-              )}
+              className="relative flex h-9 items-center gap-[9px] px-[13px] font-sans text-[13px] text-body transition-colors duration-200 hover:text-ink"
             >
+              <span
+                className="inline-block h-2 w-[9px] shrink-0"
+                style={{
+                  background: tab.label === "Notes" ? "var(--amber)" : SECTION_COLORS[tab.label],
+                  clipPath: "polygon(50% 0,100% 100%,0 100%)",
+                }}
+              />
               {tab.label}
-              {tab.done && <span className="size-1.5 rounded-full bg-emerald-500" />}
+              {tab.key !== "notes" && (
+                <span
+                  className="ml-auto size-1.5 rounded-full bg-teal transition-opacity duration-300"
+                  style={{ opacity: tab.done ? 1 : 0 }}
+                />
+              )}
             </button>
           ))}
         </nav>

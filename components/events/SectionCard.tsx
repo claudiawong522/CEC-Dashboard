@@ -1,9 +1,3 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { DoneCheckbox } from "@/components/events/DoneCheckbox";
 
 export function SectionCard({
@@ -22,14 +16,21 @@ export function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card className="border-stone-200 shadow-none">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {!hideDone && (
-          <DoneCheckbox eventId={eventId} section={section} initialDone={done} />
-        )}
-      </CardHeader>
-      <CardContent className="flex flex-col gap-4">{children}</CardContent>
-    </Card>
+    <div
+      className="min-h-[352px] rounded-card border border-[rgba(35,32,28,0.1)] bg-paper px-[22px] py-5"
+      style={{ "--input-ground": "var(--page)" } as React.CSSProperties}
+    >
+      <div className="flex animate-fadeUp flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <span className="font-sans text-[19px] leading-[1.25] tracking-[-0.014em] text-ink">
+            {title}
+          </span>
+          {!hideDone && (
+            <DoneCheckbox eventId={eventId} section={section} initialDone={done} />
+          )}
+        </div>
+        {children}
+      </div>
+    </div>
   );
 }

@@ -46,6 +46,8 @@ export function VenueSection({
         eventId={eventId}
         section="venue"
         bucket="evidence"
+        dropLabel="photo evidence"
+        label="Drop a photo of the booking confirmation"
         initialFiles={files}
         accept={{ "image/*": [] }}
       />

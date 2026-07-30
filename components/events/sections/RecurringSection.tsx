@@ -83,6 +83,8 @@ export function RecurringSection({
         eventId={eventId}
         section="recurring"
         bucket="evidence"
+        dropLabel="photo evidence"
+        label="Drop a photo of the series confirmation"
         initialFiles={files}
         accept={{ "image/*": [] }}
       />

@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import { useDropzone } from "react-dropzone";
 import { toast } from "sonner";
-import { X, UploadCloud, FileIcon } from "lucide-react";
+import { X, FileIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { recordFileMetadata, deleteFile } from "@/lib/actions/files";
 import type { Section } from "@/lib/validation/event-schemas";
@@ -26,6 +26,7 @@ export function EvidenceUploader({
   initialFiles,
   multiple = true,
   accept,
+  dropLabel = "photo evidence",
   label = "Drop a screenshot here, or click to upload",
 }: {
   eventId: string;
@@ -34,6 +35,7 @@ export function EvidenceUploader({
   initialFiles: UploadedFile[];
   multiple?: boolean;
   accept?: Record<string, string[]>;
+  dropLabel?: string;
   label?: string;
 }) {
   const [files, setFiles] = useState(initialFiles);
@@ -91,47 +93,60 @@ export function EvidenceUploader({
   });
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2.5">
+      <span className="font-mono text-[10px] tracking-[0.13em] text-faint uppercase">
+        {dropLabel}
+      </span>
+
       <div
         {...getRootProps()}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-stone-300 px-4 py-6 text-center text-xs text-muted-foreground transition-colors hover:bg-stone-50",
-          isDragActive && "border-stone-400 bg-stone-50",
+          "group relative cursor-pointer overflow-hidden rounded-input border border-dashed border-[rgba(35,32,28,0.16)] px-6 py-6 text-center transition-colors duration-[260ms]",
+          isDragActive && "border-coral/50",
         )}
       >
         <input {...getInputProps()} />
-        <UploadCloud className="size-4" />
-        <span>{uploading ? "Uploading..." : label}</span>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute top-[120%] left-1/2 h-[150px] w-[260px] -translate-x-1/2 rounded-full opacity-0 blur-[30px] transition-[opacity,transform] duration-500 ease-brand group-hover:-translate-y-[56%] group-hover:opacity-30"
+          style={{
+            background:
+              "radial-gradient(circle, #E8583D, rgba(224,185,74,.7) 40%, rgba(63,167,137,.4) 70%, transparent 80%)",
+          }}
+        />
+        <span className="relative font-sans text-xs text-faint">
+          {uploading ? "Uploading..." : label}
+        </span>
       </div>
 
       {files.length > 0 && (
-        <ul className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-[9px]">
           {files.map((file) => (
-            <li
+            <div
               key={file.id}
-              className="group relative flex size-16 items-center justify-center overflow-hidden rounded-md border border-stone-200 bg-stone-50"
+              className="group/thumb relative flex size-[58px] items-center justify-center overflow-hidden rounded-input border border-[rgba(35,32,28,0.07)] transition-transform duration-[220ms] hover:-translate-y-0.5"
             >
               {file.mime_type?.startsWith("image/") ? (
                 <Image
                   src={publicFileUrl(file.bucket, file.storage_path)}
                   alt={file.file_name ?? "evidence"}
                   fill
-                  sizes="64px"
+                  sizes="58px"
                   className="object-cover"
                 />
               ) : (
-                <FileIcon className="size-5 text-muted-foreground" />
+                <FileIcon className="size-4 text-faint" />
               )}
               <button
                 type="button"
                 onClick={() => handleDelete(file.id)}
-                className="absolute right-0.5 top-0.5 rounded-full bg-white/90 p-0.5 opacity-0 shadow-sm transition-opacity group-hover:opacity-100"
+                className="absolute top-0.5 right-0.5 rounded-full bg-paper/90 p-0.5 opacity-0 shadow-sm transition-opacity group-hover/thumb:opacity-100"
               >
                 <X className="size-3" />
               </button>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

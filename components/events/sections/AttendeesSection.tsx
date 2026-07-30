@@ -66,6 +66,8 @@ export function AttendeesSection({
         eventId={eventId}
         section="attendees"
         bucket="evidence"
+        dropLabel="photo evidence"
+        label="Drop a screenshot of the RSVP list"
         initialFiles={files}
         accept={{ "image/*": [] }}
       />

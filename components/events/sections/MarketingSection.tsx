@@ -148,6 +148,8 @@ export function MarketingSection({
         eventId={eventId}
         section="marketing"
         bucket="evidence"
+        dropLabel="photo evidence"
+        label="Drop screenshots of the posts"
         initialFiles={files}
         accept={{ "image/*": [] }}
       />

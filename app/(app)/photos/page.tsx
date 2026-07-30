@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileIcon } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
 import { publicFileUrl } from "@/lib/utils/storage";
 
@@ -25,41 +24,59 @@ export default async function PhotosPage() {
     .returns<MediaFile[]>();
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-lg font-medium tracking-tight">Photos</h1>
+    <div className="flex flex-col gap-[17px]">
+      <h1 className="font-sans text-2xl leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+        Photos
+      </h1>
 
       {!files || files.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No media uploaded yet.</p>
+        <div className="relative flex aspect-square max-w-[220px] flex-col items-center justify-center gap-[7px] overflow-hidden rounded-[9px] border border-dashed border-[rgba(35,32,28,0.14)]">
+          <div className="relative h-[34px] w-11">
+            <div
+              className="absolute top-[5px] left-0 size-[22px] rounded-full blur-[6px]"
+              style={{ background: "radial-gradient(circle, rgba(232,88,61,.8), transparent 72%)" }}
+            />
+            <div
+              className="absolute top-0 left-[13px] size-5 rounded-full blur-[6px]"
+              style={{ background: "radial-gradient(circle, rgba(224,185,74,.8), transparent 72%)" }}
+            />
+            <div
+              className="absolute top-[11px] left-6 size-5 rounded-full blur-[6px]"
+              style={{ background: "radial-gradient(circle, rgba(63,167,137,.7), transparent 72%)" }}
+            />
+          </div>
+          <span className="font-sans text-[10px] text-faint">No media uploaded yet.</span>
+        </div>
       ) : (
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {files.map((file) => (
-            <li key={file.id}>
-              <Link
-                href={`/events/${file.event_id}`}
-                className="group flex flex-col gap-1.5"
-              >
-                <div className="relative aspect-square overflow-hidden rounded-lg border border-stone-200 bg-stone-50">
-                  {file.mime_type?.startsWith("image/") ? (
-                    <Image
-                      src={publicFileUrl(file.bucket, file.storage_path)}
-                      alt={file.file_name ?? "media"}
-                      fill
-                      sizes="(min-width: 768px) 25vw, 50vw"
-                      className="object-cover transition-transform group-hover:scale-[1.02]"
-                    />
-                  ) : (
-                    <div className="flex size-full items-center justify-center">
-                      <FileIcon className="size-6 text-muted-foreground" />
-                    </div>
-                  )}
-                </div>
-                <span className="truncate text-xs text-muted-foreground">
-                  {file.events?.name ?? "Untitled event"}
-                </span>
-              </Link>
-            </li>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+          {files.map((file, i) => (
+            <Link
+              key={file.id}
+              href={`/events/${file.event_id}`}
+              style={{ animationDelay: `${0.05 + i * 0.06}s` }}
+              className="flex flex-col gap-1.5 animate-riseIn"
+            >
+              <div className="relative aspect-square overflow-hidden rounded-[9px] border border-[rgba(35,32,28,0.07)]">
+                {file.mime_type?.startsWith("image/") ? (
+                  <Image
+                    src={publicFileUrl(file.bucket, file.storage_path)}
+                    alt={file.file_name ?? "media"}
+                    fill
+                    sizes="(min-width: 768px) 25vw, 50vw"
+                    className="object-cover transition-transform duration-[380ms] ease-brand hover:scale-[1.04]"
+                  />
+                ) : (
+                  <div className="flex size-full items-center justify-center font-mono text-[9px] tracking-[0.1em] text-faint uppercase">
+                    zip
+                  </div>
+                )}
+              </div>
+              <span className="truncate font-sans text-[10px] text-faint">
+                {file.events?.name ?? "Untitled event"}
+              </span>
+            </Link>
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

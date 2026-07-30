@@ -96,6 +96,8 @@ export function MoneySection({
           eventId={eventId}
           section="money"
           bucket="receipts"
+        dropLabel="receipts"
+        label="Drop receipts here"
           initialFiles={files}
           accept={{ "image/*": [] }}
         />

@@ -46,36 +46,151 @@ export default function LoginPage() {
         }}
       />
 
-      {/* Ambient stickers — non-interactive, drift only */}
+      {/* Ambient stickers — non-interactive, drift only. Matches
+          design/CEC Pages.dc.html "01 · login" stickers S1–S7 exactly. */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
-        <div className="absolute top-[20%] left-[14%] flex gap-1 opacity-50 animate-float2">
-          <span className="size-2 rounded-full bg-coral" />
-          <span className="size-2 rounded-full bg-amber" />
-          <span className="size-2 rounded-full bg-teal" />
-          <span className="size-2 rounded-full bg-blue" />
-        </div>
+        {/* S1 — flower (5 blurred coral petals + amber center) */}
         <div
-          className="absolute top-[16%] right-[15%] size-8 opacity-70 animate-float1"
+          className="absolute top-[22%] left-[11%] size-[78px] opacity-85"
+          style={{ animation: "float1 11s ease-in-out infinite" }}
+        >
+          {[0, 72, 144, 216, 288].map((deg) => (
+            <div
+              key={deg}
+              className="absolute top-[2px] left-[24px] h-[42px] w-[30px] rounded-full blur-[8px]"
+              style={{
+                background:
+                  "radial-gradient(circle at 50% 64%, #E8583D, rgba(232,88,61,.28) 60%, transparent 76%)",
+                transformOrigin: "50% 96%",
+                transform: `rotate(${deg}deg)`,
+              }}
+            />
+          ))}
+          <div
+            className="absolute top-[33px] left-[33px] size-[11px] rounded-full blur-[2px]"
+            style={{ background: "#E0B94A" }}
+          />
+        </div>
+
+        {/* S2 — sparkle/star (10-point polygon) */}
+        <div
+          className="absolute top-[17%] right-[13%] size-[34px] opacity-70"
           style={{
             background: "linear-gradient(140deg,#E0B94A,#E8583D)",
             clipPath:
               "polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%)",
+            animation: "float2 13s ease-in-out infinite",
           }}
         />
+
+        {/* S3 — twinkling diamond pair (blue + gold) */}
         <div
-          className="absolute bottom-[22%] left-[20%] size-11 rounded-full opacity-60 blur-[8px] animate-float2"
-          style={{
-            background:
-              "radial-gradient(circle at 40% 35%, #F0836B, #E8583D 70%)",
-          }}
-        />
+          className="absolute bottom-[16%] left-[22%] size-11 opacity-75"
+          style={{ animation: "float3 15s ease-in-out infinite" }}
+        >
+          <div
+            className="absolute top-[2px] left-[8px] h-[38px] w-[27px]"
+            style={{
+              background: "#3B6FC2",
+              clipPath: "polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)",
+              animation: "twinkle 2.8s ease-in-out infinite",
+            }}
+          />
+          <div
+            className="absolute top-[24px] left-[27px] h-[19px] w-[15px]"
+            style={{
+              background: "#E0B94A",
+              clipPath: "polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)",
+              animation: "twinkle 2.8s ease-in-out infinite",
+              animationDelay: "0.7s",
+            }}
+          />
+        </div>
+
+        {/* S4 — coral blob (heart-ish: two circles + triangle) */}
         <div
-          className="absolute right-[18%] bottom-[18%] size-7 rounded-full opacity-55 blur-[2px] animate-float1"
-          style={{
-            background:
-              "radial-gradient(circle at 35% 35%, #E0B94A, rgba(224,185,74,.5) 75%)",
-          }}
-        />
+          className="absolute right-[19%] bottom-[21%] size-[38px] opacity-65"
+          style={{ animation: "float1 12s ease-in-out infinite", animationDelay: "1.4s" }}
+        >
+          <div
+            className="absolute top-[5px] left-[6px] size-[22px] rounded-full blur-[2px]"
+            style={{
+              background: "radial-gradient(circle at 40% 35%, #F0836B, #E8583D 70%)",
+            }}
+          />
+          <div
+            className="absolute top-[5px] left-[16px] size-[22px] rounded-full blur-[2px]"
+            style={{
+              background: "radial-gradient(circle at 40% 35%, #F0836B, #E8583D 70%)",
+            }}
+          />
+          <div
+            className="absolute top-[13px] left-[9px] size-[22px] blur-[2px]"
+            style={{
+              background: "#E8583D",
+              clipPath: "polygon(0 0,100% 0,50% 100%)",
+            }}
+          />
+        </div>
+
+        {/* S5 — sprig (teal stem + leaves + coral bud) */}
+        <div
+          className="absolute top-[11%] left-[38%] size-[66px] opacity-60"
+          style={{ animation: "float2 17s ease-in-out infinite" }}
+        >
+          <div
+            className="absolute top-[14px] left-[32px] h-[46px] w-[1.5px]"
+            style={{
+              background: "linear-gradient(180deg, rgba(63,167,137,.65), rgba(63,167,137,.06))",
+            }}
+          />
+          <div
+            className="absolute top-[20px] left-[12px] h-3 w-6 rounded-full blur-[5px]"
+            style={{
+              background: "radial-gradient(circle at 70% 50%, #3FA789, transparent 74%)",
+              transform: "rotate(-18deg)",
+            }}
+          />
+          <div
+            className="absolute top-[32px] left-[31px] h-3 w-6 rounded-full blur-[5px]"
+            style={{
+              background: "radial-gradient(circle at 30% 50%, #3FA789, transparent 74%)",
+              transform: "rotate(18deg)",
+            }}
+          />
+          <div
+            className="absolute top-[2px] left-[26px] h-4 w-[13px] blur-[4px]"
+            style={{
+              background: "radial-gradient(circle at 50% 70%, #E8583D, transparent 76%)",
+              borderRadius: "50% 50% 45% 45%",
+            }}
+          />
+        </div>
+
+        {/* S6 — crescent moon (circle with page-colored offset cutout) */}
+        <div
+          className="absolute top-[38%] right-[31%] size-8 opacity-55"
+          style={{ animation: "float3 14s ease-in-out infinite", animationDelay: "0.8s" }}
+        >
+          <div
+            className="absolute inset-0 rounded-full"
+            style={{
+              background: "radial-gradient(circle at 35% 35%, #E0B94A, rgba(224,185,74,.5) 75%)",
+            }}
+          />
+          <div className="absolute top-[-3px] left-[9px] size-[29px] rounded-full bg-page" />
+        </div>
+
+        {/* S7 — bead row (four section-colored dots) */}
+        <div
+          className="absolute bottom-[34%] left-[8%] flex gap-1 opacity-50"
+          style={{ animation: "float2 16s ease-in-out infinite", animationDelay: "2s" }}
+        >
+          <span className="size-[9px] rounded-full bg-coral" />
+          <span className="size-[9px] rounded-full bg-amber" />
+          <span className="size-[9px] rounded-full bg-teal" />
+          <span className="size-[9px] rounded-full bg-blue" />
+        </div>
       </div>
 
       <div className="relative flex flex-col items-center gap-[19px]">

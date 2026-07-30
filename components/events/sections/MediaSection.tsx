@@ -19,6 +19,8 @@ export function MediaSection({
         eventId={eventId}
         section="media"
         bucket="media"
+        dropLabel="event media"
+        label="Drop images, video or .zip — multiple files welcome"
         initialFiles={files}
         accept={{
           "image/*": [],
@@ -26,7 +28,6 @@ export function MediaSection({
           "application/zip": [".zip"],
           "application/x-zip-compressed": [".zip"],
         }}
-        label="Drop photos, videos, or zip files here"
       />
     </SectionCard>
   );

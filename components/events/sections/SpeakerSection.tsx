@@ -61,10 +61,11 @@ export function SpeakerSection({
           eventId={eventId}
           section="speaker_portrait"
           bucket="portraits"
+          dropLabel="portrait"
+          label="Drop the speaker portrait (one image)"
           initialFiles={portraitFiles}
           multiple={false}
           accept={{ "image/*": [] }}
-          label="Drop the speaker's portrait photo here"
         />
       </div>
     </SectionCard>
