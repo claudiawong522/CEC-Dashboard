@@ -2,6 +2,9 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { incompleteSections } from "@/lib/utils/completion";
 import { SECTION_COLORS, type SectionLabel } from "@/lib/utils/section-colors";
+import { formatEventDate, formatEventTime } from "@/lib/utils/format-event-time";
+
+const STAGGER_CAP = 6;
 
 type DoneRow = { event_id: string; done: boolean };
 
@@ -66,7 +69,7 @@ export default async function TodoPage() {
 
   return (
     <div className="flex flex-col gap-[17px]">
-      <h1 className="font-sans text-2xl leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+      <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
         Todo
       </h1>
 
@@ -82,21 +85,21 @@ export default async function TodoPage() {
             <div
               className="absolute top-[14px] left-[7px] h-[11px] w-5 rounded-full blur-[4px]"
               style={{
-                background: "radial-gradient(circle at 70% 50%, #3FA789, transparent 74%)",
+                background: "radial-gradient(circle at 70% 50%, var(--teal), transparent 74%)",
                 transform: "rotate(-16deg)",
               }}
             />
             <div
               className="absolute top-[24px] left-[21px] h-[11px] w-5 rounded-full blur-[4px]"
               style={{
-                background: "radial-gradient(circle at 30% 50%, #3FA789, transparent 74%)",
+                background: "radial-gradient(circle at 30% 50%, var(--teal), transparent 74%)",
                 transform: "rotate(16deg)",
               }}
             />
             <div
               className="absolute top-[2px] left-[18px] h-[15px] w-3 blur-[3px]"
               style={{
-                background: "radial-gradient(circle at 50% 70%, #E8583D, transparent 76%)",
+                background: "radial-gradient(circle at 50% 70%, var(--coral), transparent 76%)",
                 borderRadius: "50% 50% 45% 45%",
               }}
             />
@@ -111,16 +114,16 @@ export default async function TodoPage() {
             <Link
               key={event.id}
               href={`/events/${event.id}`}
-              style={{ animationDelay: `${0.05 + i * 0.07}s` }}
-              className={`flex flex-col gap-[9px] px-4 py-3.5 transition-colors duration-200 hover:bg-wash animate-riseIn ${
-                i < rows.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
-              }`}
+              style={i < STAGGER_CAP ? { animationDelay: `${0.05 + i * 0.07}s` } : undefined}
+              className={`flex flex-col gap-[9px] px-4 py-3.5 transition-colors duration-200 hover:bg-wash ${
+                i < STAGGER_CAP ? "animate-riseIn" : ""
+              } ${i < rows.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""}`}
             >
               <div className="flex items-baseline justify-between">
-                <span className="font-sans text-sm font-medium text-ink">{event.name}</span>
+                <span className="font-sans text-[14px] font-medium text-ink">{event.name}</span>
                 <span className="font-mono text-[10px] tracking-[0.11em] text-faint uppercase">
-                  {event.event_date} · {event.event_time.slice(0, 5)}
-                  {event.event_end_time ? `–${event.event_end_time.slice(0, 5)}` : ""}
+                  {formatEventDate(event.event_date)} · {formatEventTime(event.event_time)}
+                  {event.event_end_time ? `–${formatEventTime(event.event_end_time)}` : ""}
                 </span>
               </div>
               <div className="flex flex-wrap gap-1.5">

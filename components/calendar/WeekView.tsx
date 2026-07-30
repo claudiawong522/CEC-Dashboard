@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { addDays, format, isSameDay, startOfWeek } from "date-fns";
 import { cn } from "@/lib/utils";
 import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
+import { formatEventTime } from "@/lib/utils/format-event-time";
 import type { CalendarEvent } from "./CalendarView";
 
 // design/CEC Pages.dc.html "02b · week view" — recreated directly (not via
@@ -15,13 +16,6 @@ const END_HOUR = 21; // exclusive of the trailing label row
 function hourLabel(hour: number) {
   const h = hour % 12 === 0 ? 12 : hour % 12;
   return `${h}${hour < 12 ? "a" : "p"}`;
-}
-
-function eventTimeLabel(time: string) {
-  const [hStr, mStr] = time.split(":");
-  const h = Number(hStr);
-  const displayH = h % 12 === 0 ? 12 : h % 12;
-  return `${displayH}:${mStr}${h < 12 ? "a" : "p"}`;
 }
 
 export function WeekView({
@@ -107,7 +101,7 @@ export function WeekView({
                           background: `linear-gradient(160deg, color-mix(in srgb, ${sectionColor} 14%, transparent), color-mix(in srgb, ${sectionColor} 8%, transparent))`,
                         }}
                       >
-                        {eventTimeLabel(event.event_time)} {event.name}
+                        {formatEventTime(event.event_time)} {event.name}
                       </button>
                     );
                   })}

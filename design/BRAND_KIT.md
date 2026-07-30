@@ -203,3 +203,10 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
     template uses 12px.
   - Tightened remaining `text-xs`/`text-sm`/`text-muted-foreground` instances across the section
     files to explicit pixel values and `text-faint`, matching the fidelity pass applied elsewhere.
+- **Todo — fixed a real formatting bug, not just styling.** The date/time column was rendering the
+  raw ISO strings (`2026-07-24` · `17:43`) instead of the kit's `sep 18 · 5:30–7:00p` format. Added
+  `lib/utils/format-event-time.ts` (shared with the calendar week view, which had its own
+  never-exported copy of the same time-label logic) rather than duplicating it a third time. Also
+  added the "capped at six, then instant" stagger rule the checklist calls for — rows past the 6th
+  previously kept extending the `riseIn` delay indefinitely instead of appearing immediately — and
+  converted the empty-state sprig sticker's raw hex to tokens.
