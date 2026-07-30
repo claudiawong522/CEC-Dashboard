@@ -220,3 +220,8 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   clicking a seal toggles filtering to that term, clicking again clears it. Also fixed the same
   raw-ISO-date-string bug Todo had, and added `portrait-placeholder` (#F0EDE4, the no-speaker
   avatar circle) as a token instead of a raw hex literal.
+- **Photos.** Non-image tiles were unconditionally labelled `zip` regardless of actual file type —
+  wrong for the `video/*` uploads Media also accepts. Added `fileTypeLabel()` to derive it from the
+  file extension (falling back to mime-type/`file`). Also moved the hover-scale transition from the
+  `<Image>` itself onto the tile wrapper (`group-hover`) so non-image tiles scale on hover too,
+  matching the mockup's uniform tile treatment — previously only image tiles had the effect.

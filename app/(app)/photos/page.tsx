@@ -13,6 +13,13 @@ type MediaFile = {
   events: { name: string; event_date: string } | null;
 };
 
+function fileTypeLabel(file: MediaFile) {
+  const ext = file.file_name?.split(".").pop();
+  if (ext) return ext.toLowerCase();
+  if (file.mime_type?.startsWith("video/")) return "video";
+  return "file";
+}
+
 export default async function PhotosPage() {
   const supabase = await createClient();
 
@@ -25,7 +32,7 @@ export default async function PhotosPage() {
 
   return (
     <div className="flex flex-col gap-[17px]">
-      <h1 className="font-sans text-2xl leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+      <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
         Photos
       </h1>
 
@@ -56,18 +63,18 @@ export default async function PhotosPage() {
               style={{ animationDelay: `${0.05 + i * 0.06}s` }}
               className="flex flex-col gap-1.5 animate-riseIn"
             >
-              <div className="relative aspect-square overflow-hidden rounded-[9px] border border-[rgba(35,32,28,0.07)]">
+              <div className="group relative aspect-square overflow-hidden rounded-[9px] border border-[rgba(35,32,28,0.07)]">
                 {file.mime_type?.startsWith("image/") ? (
                   <Image
                     src={publicFileUrl(file.bucket, file.storage_path)}
                     alt={file.file_name ?? "media"}
                     fill
                     sizes="(min-width: 768px) 25vw, 50vw"
-                    className="object-cover transition-transform duration-[380ms] ease-brand hover:scale-[1.04]"
+                    className="object-cover transition-transform duration-[380ms] ease-brand group-hover:scale-[1.04]"
                   />
                 ) : (
-                  <div className="flex size-full items-center justify-center font-mono text-[9px] tracking-[0.1em] text-faint uppercase">
-                    zip
+                  <div className="flex size-full items-center justify-center font-mono text-[9px] tracking-[0.1em] text-faint uppercase transition-transform duration-[380ms] ease-brand group-hover:scale-[1.04]">
+                    {fileTypeLabel(file)}
                   </div>
                 )}
               </div>
