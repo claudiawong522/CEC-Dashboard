@@ -28,7 +28,7 @@ export function YearView({
   );
 
   return (
-    <div className="grid max-w-[620px] grid-cols-4 gap-[9px]">
+    <div className="grid max-w-[900px] grid-cols-4 gap-3">
       {MONTH_LABELS.map((label, i) => {
         const isCurrentMonth = today.getFullYear() === year && today.getMonth() === i;
         const monthEvents = eventsByMonth[i];
@@ -37,7 +37,7 @@ export function YearView({
           <div
             key={label}
             className={cn(
-              "relative overflow-hidden rounded-[7px] border bg-paper p-2 transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5",
+              "relative overflow-hidden rounded-[7px] border bg-paper p-3 transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5",
               isCurrentMonth
                 ? "border-[rgba(35,32,28,0.18)]"
                 : "border-[rgba(35,32,28,0.07)] hover:border-[rgba(35,32,28,0.18)]",
@@ -46,7 +46,7 @@ export function YearView({
             {isCurrentMonth && (
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -right-2 -top-2 size-[34px] rounded-full opacity-80 blur-[7px]"
+                className="pointer-events-none absolute -right-2 -top-2 size-11 rounded-full opacity-80 blur-[7px]"
                 style={{
                   background: "radial-gradient(circle, rgba(224,185,74,.8), transparent 72%)",
                 }}
@@ -54,15 +54,15 @@ export function YearView({
             )}
             <div
               className={cn(
-                "relative font-mono text-[9px] tracking-[0.1em] uppercase",
-                isCurrentMonth ? "font-medium text-ink" : "text-faint",
+                "relative font-mono text-[12px] tracking-[0.1em] uppercase",
+                isCurrentMonth ? "font-medium text-ink" : "text-body",
               )}
             >
               {label}
             </div>
-            <div className="relative mt-1.5 flex h-[5px] gap-0.5">
+            <div className="relative mt-2 flex h-[7px] gap-1">
               {monthEvents.map((event) => (
-                <span key={event.id} className="size-[5px] shrink-0 rounded-full bg-teal" />
+                <span key={event.id} className="size-[7px] shrink-0 rounded-full bg-teal" />
               ))}
             </div>
           </div>

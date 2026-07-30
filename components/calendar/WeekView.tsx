@@ -49,16 +49,16 @@ export function WeekView({
 
   return (
     <div className="overflow-hidden rounded-[8px] bg-[rgba(35,32,28,0.07)]">
-      <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-px">
-        <div className="h-[26px] bg-page" />
+      <div className="grid grid-cols-[56px_repeat(7,1fr)] gap-px">
+        <div className="h-8 bg-page" />
         {days.map((day) => {
           const today = isSameDay(day, new Date());
           return (
             <div
               key={day.toISOString()}
               className={cn(
-                "h-[26px] bg-page px-1.5 py-1.5 font-mono text-[9px]",
-                today ? "font-medium text-ink" : "font-normal text-faint",
+                "h-8 bg-page px-2 py-2 font-mono text-[11px]",
+                today ? "font-medium text-ink" : "font-normal text-body",
               )}
             >
               {format(day, "EEE d").toLowerCase()}
@@ -68,7 +68,7 @@ export function WeekView({
 
         {hours.map((hour, rowIndex) => (
           <div key={hour} className="contents">
-            <div className="flex items-start bg-page px-1.5 py-1.5 font-mono text-[9px] text-faint">
+            <div className="flex items-start bg-page px-2 py-2 font-mono text-[11px] text-body">
               {hourLabel(hour)}
             </div>
             {days.map((day) => {
@@ -78,9 +78,9 @@ export function WeekView({
                 <div
                   key={day.toISOString()}
                   className={cn(
-                    "relative h-[52px] overflow-hidden",
+                    "relative h-[60px] overflow-hidden",
                     today ? "bg-[rgba(255,253,249,0.55)]" : "bg-[rgba(255,253,249,0.8)]",
-                    dayEvents.length > 0 && "p-1",
+                    dayEvents.length > 0 && "p-1.5",
                   )}
                 >
                   {today && rowIndex === 0 && (
@@ -98,7 +98,7 @@ export function WeekView({
                       key={event.id}
                       type="button"
                       onClick={() => router.push(`/events/${event.id}`)}
-                      className="relative h-full w-full rounded-[5px] border-l-2 border-teal px-1.5 py-1 text-left font-sans text-[9.5px] text-ink"
+                      className="relative h-full w-full rounded-[5px] border-l-2 border-teal px-2 py-1.5 text-left font-sans text-[11.5px] text-ink"
                       style={{
                         background:
                           "linear-gradient(160deg, rgba(63,167,137,.14), rgba(63,167,137,.08))",

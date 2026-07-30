@@ -49,18 +49,18 @@ export function AppShell({
   return (
     <div className="flex min-h-svh flex-col bg-background">
       <header>
-        <div className="flex items-center justify-between px-[26px] pt-[15px]">
-          <div className="flex items-center gap-2.5">
-            <BrandMark className="h-[18px] w-5" />
-            <span className="font-sans text-[14.5px] font-medium tracking-[-0.012em] text-ink">
+        <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-[26px] pt-5">
+          <div className="flex items-center gap-3">
+            <BrandMark className="h-[26px] w-[30px]" />
+            <span className="font-sans text-[19px] font-medium tracking-[-0.018em] text-ink">
               CEC Dashboard
             </span>
           </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger className="rounded-full outline-none">
-              <Avatar className="size-8">
-                <AvatarFallback className="bg-wash text-[11.5px] font-medium text-strong transition-colors duration-200 hover:bg-line-strong">
+              <Avatar className="size-9">
+                <AvatarFallback className="bg-wash text-[12.5px] font-medium text-strong transition-colors duration-200 hover:bg-line-strong">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -97,7 +97,7 @@ export function AppShell({
           />
         </div>
 
-        <nav className="flex gap-1 px-[26px] pt-[14px]">
+        <nav className="mx-auto flex w-full max-w-[1400px] gap-2 px-[26px] pt-4">
           {NAV_ITEMS.map((item) => {
             const active =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -106,7 +106,7 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative px-3 pt-[7px] pb-[11px] font-sans text-[13px] transition-colors duration-200 ease-brand",
+                  "relative px-3 pt-2 pb-3 font-sans text-[14.5px] transition-colors duration-200 ease-brand",
                   active
                     ? "font-medium text-ink"
                     : "font-normal text-faint hover:text-ink",
@@ -123,7 +123,7 @@ export function AppShell({
         <div className="h-px bg-line" />
       </header>
 
-      <main className="flex-1 px-[26px] py-8">{children}</main>
+      <main className="mx-auto w-full max-w-[1400px] flex-1 px-[26px] py-8">{children}</main>
     </div>
   );
 }

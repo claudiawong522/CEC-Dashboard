@@ -16,13 +16,13 @@ export default async function CalendarPage() {
   return (
     <div className="flex flex-col gap-[18px]">
       <div className="flex items-center justify-between">
-        <h1 className="font-sans text-[25px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+        <h1 className="font-sans text-[32px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
           Calendar
         </h1>
         <Button
           render={<Link href="/events/new" />}
           nativeButton={false}
-          className="gap-1.5 rounded-btn px-[18px] py-[10px] text-[13px] font-medium"
+          className="gap-2 rounded-btn px-5 py-3 text-[15px] font-medium"
         >
           <Plus className="size-4" />
           New event

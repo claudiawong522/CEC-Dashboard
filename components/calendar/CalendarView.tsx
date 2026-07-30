@@ -96,7 +96,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
             type="button"
             aria-label="Previous"
             onClick={goPrev}
-            className="flex size-[31px] items-center justify-center rounded-input border border-line-input bg-paper font-sans text-[13px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+            className="flex size-9 items-center justify-center rounded-input border border-line-input bg-paper font-sans text-base text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
           >
             ‹
           </button>
@@ -104,20 +104,20 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
             type="button"
             aria-label="Next"
             onClick={goNext}
-            className="flex size-[31px] items-center justify-center rounded-input border border-line-input bg-paper font-sans text-[13px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+            className="flex size-9 items-center justify-center rounded-input border border-line-input bg-paper font-sans text-base text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
           >
             ›
           </button>
           <button
             type="button"
             onClick={goToday}
-            className="rounded-input border border-line-input bg-paper px-[13px] py-[7px] font-sans text-[12.5px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+            className="rounded-input border border-line-input bg-paper px-4 py-2 font-sans text-sm text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
           >
             Today
           </button>
         </div>
 
-        <div className="font-sans text-[17px] tracking-[-0.012em] text-ink">
+        <div className="font-sans text-[21px] tracking-[-0.014em] text-ink">
           {title}
         </div>
 
@@ -128,7 +128,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
               type="button"
               onClick={() => setViewType(v.key)}
               className={cn(
-                "px-[13px] py-2 font-mono text-[10px] tracking-[0.12em] uppercase transition-colors duration-200",
+                "px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
                 viewType === v.key
                   ? "bg-ink text-page"
                   : "text-faint hover:bg-wash hover:text-ink",
@@ -144,30 +144,30 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
         <div className="relative overflow-hidden rounded-[10px] border border-line bg-page">
           <div
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0 opacity-45"
+            className="pointer-events-none absolute inset-0 z-0 opacity-70"
           >
             <div
-              className="absolute top-[8%] left-[3%] size-[150px] rounded-full blur-[32px]"
+              className="absolute top-[8%] left-[3%] size-[190px] rounded-full blur-[32px]"
               style={{
-                background: "radial-gradient(circle, rgba(232,88,61,.5), transparent 72%)",
+                background: "radial-gradient(circle, rgba(232,88,61,.6), transparent 72%)",
               }}
             />
             <div
-              className="absolute top-[40%] left-[42%] size-[190px] rounded-full blur-[38px]"
+              className="absolute top-[40%] left-[42%] size-[230px] rounded-full blur-[38px]"
               style={{
-                background: "radial-gradient(circle, rgba(63,167,137,.45), transparent 72%)",
+                background: "radial-gradient(circle, rgba(63,167,137,.55), transparent 72%)",
               }}
             />
             <div
-              className="absolute top-[3%] right-[4%] size-[170px] rounded-full blur-[34px]"
+              className="absolute top-[3%] right-[4%] size-[210px] rounded-full blur-[34px]"
               style={{
-                background: "radial-gradient(circle, rgba(59,111,194,.4), transparent 72%)",
+                background: "radial-gradient(circle, rgba(59,111,194,.5), transparent 72%)",
               }}
             />
             <div
-              className="absolute right-[16%] bottom-[-6%] size-[160px] rounded-full blur-[32px]"
+              className="absolute right-[16%] bottom-[-6%] size-[200px] rounded-full blur-[32px]"
               style={{
-                background: "radial-gradient(circle, rgba(224,185,74,.5), transparent 72%)",
+                background: "radial-gradient(circle, rgba(224,185,74,.6), transparent 72%)",
               }}
             />
           </div>
