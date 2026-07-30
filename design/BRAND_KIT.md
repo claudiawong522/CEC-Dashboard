@@ -30,6 +30,7 @@ state, a section flag, today. Everything else is neutral.
 | `teal` | #3FA789 | Venue, Attendees, Media, done-dot |
 | `blue` | #3B6FC2 | Money, Recurring |
 | `destructive` | #B4472F | delete text |
+| `coral-bloom` | #F0836B | login sticker S4's inner radial highlight only |
 
 ### The gradient
 `linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2)`
@@ -150,3 +151,12 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   tab-row 400/500 13px) for exact fidelity. The same proportion argument still applies to the
   Calendar view (day numbers, weekday header, toolbar, event chips remain sized up per commit
   `88d4f17`) — that screen wasn't in scope for this pass and is unchanged.
+- **Added `coral-bloom` (#F0836B).** The mockup's S4 sticker used this lighter/warmer coral shade
+  for its inner radial highlight but it was never promoted to a token — it shipped as a raw hex
+  literal in the Login page. Documented it here and in `brand-tokens.css` instead of approximating
+  it away, since it's a real, intentional design decision, not an accident.
+- **Wired up click-to-pop on the Login stickers.** All 7 background stickers plus the mark were
+  rendering drift-only; the mockup wires `onClick` + a one-shot 620ms pop (scale/rotate) on each,
+  matching CHECKLIST.md § Login and the kit's sticker rule ("each sticker animates on its own
+  click"). The `--animate-pop` utility already existed in `globals.css` but had zero usages
+  anywhere in the app before this.

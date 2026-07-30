@@ -64,6 +64,7 @@
   --color-amber: var(--amber);
   --color-teal: var(--teal);
   --color-blue: var(--blue);
+  --color-coral-bloom: var(--coral-bloom);
   /* shadcn's --color-destructive (below, via --destructive in :root) is now the brand's
      #B4472F, so components using bg-destructive/text-destructive already match the kit. */
 
