@@ -247,12 +247,14 @@
   }
 }
 
-/* CEC brand kit — FullCalendar restyled per design/BRAND_KIT.md. Toolbar is
-   custom-built in CalendarView.tsx (headerToolbar={false}); this only covers
-   the grid itself. Month (dayGridMonth) gets full fidelity as the "home"
-   view; week/year get the palette, type and radii but not bespoke per-cell
-   decor. Event chips use a flat teal flag (no per-event prep-section color
-   is available at the calendar layer yet). */
+/* CEC brand kit — FullCalendar restyled per design/CEC Pages.dc.html "02 ·
+   calendar · month". Toolbar is custom-built in CalendarView.tsx
+   (headerToolbar={false}); this only covers the month grid itself. Week and
+   year are NOT rendered through FullCalendar — its timeGrid/multiMonth
+   plugins don't reproduce the kit's compact grid/tile proportions, so those
+   two views are bespoke components (WeekView.tsx, YearView.tsx) instead.
+   Event chips use a flat teal flag (no per-event prep-section color is
+   available at the calendar layer yet). */
 .fc-cec {
   --fc-border-color: rgba(35, 32, 28, 0.07);
   --fc-page-bg-color: transparent;
@@ -281,10 +283,8 @@
   background: transparent;
 }
 
-/* day cells — scoped to the month grid itself (dayGridMonth-view) so these
-   don't leak into week view's all-day row or year view's mini-months, which
-   both also render via the daygrid plugin internally. */
-.fc-cec .fc-dayGridMonth-view .fc-daygrid-day-frame {
+/* day cells */
+.fc-cec .fc-daygrid-day-frame {
   position: relative;
   min-height: 94px;
   background: rgba(255, 253, 249, 0.74);
@@ -301,14 +301,14 @@
 .fc-cec .fc-day-other .fc-daygrid-day-number {
   color: #c9c4b6;
 }
-.fc-cec .fc-dayGridMonth-view .fc-day-today .fc-daygrid-day-frame {
+.fc-cec .fc-day-today .fc-daygrid-day-frame {
   background: rgba(255, 253, 249, 0.6);
 }
 .fc-cec .fc-day-today .fc-daygrid-day-number {
   font-weight: 500;
   color: var(--ink);
 }
-.fc-cec .fc-dayGridMonth-view .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame::after {
+.fc-cec .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame::after {
   content: "";
   position: absolute;
   right: 9px;
@@ -352,50 +352,6 @@
 }
 .fc-cec .fc-daygrid-more-link {
   font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--faint);
-}
-
-/* week view */
-.fc-cec .fc-timegrid-axis-cushion,
-.fc-cec .fc-timegrid-slot-label-cushion {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  color: var(--faint);
-}
-.fc-cec .fc-timegrid-col-frame {
-  background: rgba(255, 253, 249, 0.8);
-}
-.fc-cec .fc-timegrid-event {
-  border-radius: 5px;
-  border: none;
-  border-left: 2px solid var(--coral);
-  background: linear-gradient(160deg, rgba(232, 88, 61, 0.14), rgba(232, 88, 61, 0.08));
-  padding: 4px 6px;
-  font-size: 9.5px;
-}
-
-/* year view */
-.fc-cec .fc-multimonth-title {
-  padding: 8px 8px 0;
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--faint);
-}
-.fc-cec .fc-multimonth-month {
-  border-radius: 7px;
-  border: 1px solid rgba(35, 32, 28, 0.07);
-  background: var(--paper);
-  transition: border-color 200ms ease;
-}
-.fc-cec .fc-multimonth-daygrid-table .fc-daygrid-day-frame {
-  min-height: 0;
-  background: transparent;
-  padding: 2px;
-}
-.fc-cec .fc-multimonth-daygrid-table .fc-daygrid-day-number {
   font-size: 9px;
   color: var(--faint);
 }

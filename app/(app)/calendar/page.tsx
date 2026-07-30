@@ -21,6 +21,7 @@ export default async function CalendarPage() {
         </h1>
         <Button
           render={<Link href="/events/new" />}
+          nativeButton={false}
           className="gap-1.5 rounded-btn px-[18px] py-[10px] text-[13px] font-medium"
         >
           <Plus className="size-4" />
