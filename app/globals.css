@@ -57,6 +57,7 @@
   --color-line-input: var(--hairline-input);
   --color-line-strong: var(--line-strong);
   --color-faint: var(--faint);
+  --color-faded: var(--faded);
   --color-body: var(--body);
   --color-strong: var(--strong);
   --color-ink: var(--ink);
@@ -292,9 +293,9 @@
 
 /* weekday header row */
 .fc-cec .fc-col-header-cell-cushion {
-  padding: 10px 11px;
+  padding: 9px 11px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 9.5px;
   font-weight: 500;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -316,11 +317,11 @@
 }
 .fc-cec .fc-daygrid-day-number {
   padding: 0;
-  font-size: 13px;
+  font-size: 11.5px;
   color: var(--body);
 }
 .fc-cec .fc-day-other .fc-daygrid-day-number {
-  color: #c9c4b6;
+  color: var(--faded);
 }
 .fc-cec .fc-day-today .fc-daygrid-day-frame {
   background: rgba(255, 253, 249, 0.6);
@@ -332,10 +333,10 @@
 .fc-cec .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame::after {
   content: "";
   position: absolute;
-  right: 8px;
-  top: 7px;
-  width: 20px;
-  height: 20px;
+  right: 9px;
+  top: 8px;
+  width: 15px;
+  height: 15px;
   border-radius: 50%;
   filter: blur(1.5px);
   background: radial-gradient(
@@ -352,8 +353,8 @@
   border-radius: var(--r-chip);
   border: 1px solid rgba(35, 32, 28, 0.08);
   background: rgba(255, 253, 249, 0.95);
-  padding: 5px 8px;
-  font-size: 12px;
+  padding: 4px 7px;
+  font-size: 10.5px;
   font-weight: 400;
   transition:
     transform 180ms ease,
@@ -363,12 +364,15 @@
   transform: translateY(-1px);
   border-color: rgba(35, 32, 28, 0.2);
 }
+.fc-cec .fc-event-title {
+  font-weight: 400;
+}
 .fc-cec .fc-daygrid-event-dot {
   border: none;
   width: 7px;
   height: 6px;
   border-radius: 0;
-  background: var(--teal);
+  background: var(--event-dot-color, var(--teal));
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 .fc-cec .fc-daygrid-more-link {

@@ -9,6 +9,7 @@
   --body:#6E675C;
   --strong:#4A443C;
   --ink:#23201C;
+  --faded:#C9C4B6; /* adjacent-month days, disabled-looking dots/placeholders */
   --hairline:rgba(35,32,28,.09);
   --hairline-soft:rgba(35,32,28,.07);
   --hairline-input:rgba(35,32,28,.14);

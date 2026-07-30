@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { addDays, format, isSameDay, startOfWeek } from "date-fns";
 import { cn } from "@/lib/utils";
+import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
 import type { CalendarEvent } from "./CalendarView";
 
 // design/CEC Pages.dc.html "02b · week view" — recreated directly (not via
@@ -49,15 +50,15 @@ export function WeekView({
 
   return (
     <div className="overflow-hidden rounded-[8px] bg-[rgba(35,32,28,0.07)]">
-      <div className="grid grid-cols-[56px_repeat(7,1fr)] gap-px">
-        <div className="h-8 bg-page" />
+      <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-px">
+        <div className="h-[26px] bg-page" />
         {days.map((day) => {
           const today = isSameDay(day, new Date());
           return (
             <div
               key={day.toISOString()}
               className={cn(
-                "h-8 bg-page px-2 py-2 font-mono text-[11px]",
+                "h-[26px] bg-page px-1.5 py-1.5 font-mono text-[9px]",
                 today ? "font-medium text-ink" : "font-normal text-body",
               )}
             >
@@ -68,7 +69,7 @@ export function WeekView({
 
         {hours.map((hour, rowIndex) => (
           <div key={hour} className="contents">
-            <div className="flex items-start bg-page px-2 py-2 font-mono text-[11px] text-body">
+            <div className="flex items-start bg-page px-1.5 py-1.5 font-mono text-[9px] text-body">
               {hourLabel(hour)}
             </div>
             {days.map((day) => {
@@ -78,9 +79,9 @@ export function WeekView({
                 <div
                   key={day.toISOString()}
                   className={cn(
-                    "relative h-[60px] overflow-hidden",
+                    "relative h-[52px] overflow-hidden",
                     today ? "bg-[rgba(255,253,249,0.55)]" : "bg-[rgba(255,253,249,0.8)]",
-                    dayEvents.length > 0 && "p-1.5",
+                    dayEvents.length > 0 && "p-1",
                   )}
                 >
                   {today && rowIndex === 0 && (
@@ -93,20 +94,23 @@ export function WeekView({
                       }}
                     />
                   )}
-                  {dayEvents.map((event) => (
-                    <button
-                      key={event.id}
-                      type="button"
-                      onClick={() => router.push(`/events/${event.id}`)}
-                      className="relative h-full w-full rounded-[5px] border-l-2 border-teal px-2 py-1.5 text-left font-sans text-[11.5px] text-ink"
-                      style={{
-                        background:
-                          "linear-gradient(160deg, rgba(63,167,137,.14), rgba(63,167,137,.08))",
-                      }}
-                    >
-                      {eventTimeLabel(event.event_time)} {event.name}
-                    </button>
-                  ))}
+                  {dayEvents.map((event) => {
+                    const sectionColor = SECTION_COLORS[firstPrepSection(event)];
+                    return (
+                      <button
+                        key={event.id}
+                        type="button"
+                        onClick={() => router.push(`/events/${event.id}`)}
+                        className="relative h-full w-full rounded-[5px] border-l-2 px-1.5 py-1 text-left font-sans text-[9.5px] text-ink"
+                        style={{
+                          borderLeftColor: sectionColor,
+                          background: `linear-gradient(160deg, color-mix(in srgb, ${sectionColor} 14%, transparent), color-mix(in srgb, ${sectionColor} 8%, transparent))`,
+                        }}
+                      >
+                        {eventTimeLabel(event.event_time)} {event.name}
+                      </button>
+                    );
+                  })}
                 </div>
               );
             })}

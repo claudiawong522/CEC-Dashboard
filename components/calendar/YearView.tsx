@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
 import type { CalendarEvent } from "./CalendarView";
 
 // design/CEC Pages.dc.html "02c · year view" — recreated directly (not via
@@ -62,7 +63,11 @@ export function YearView({
             </div>
             <div className="relative mt-2 flex h-[7px] gap-1">
               {monthEvents.map((event) => (
-                <span key={event.id} className="size-[7px] shrink-0 rounded-full bg-teal" />
+                <span
+                  key={event.id}
+                  className="size-[7px] shrink-0 rounded-full"
+                  style={{ background: SECTION_COLORS[firstPrepSection(event)] }}
+                />
               ))}
             </div>
           </div>

@@ -20,6 +20,7 @@ state, a section flag, today. Everything else is neutral.
 | `body` | #6E675C | body copy, secondary labels |
 | `strong` | #4A443C | emphasis inside prose, editor text |
 | `ink` | #23201C | titles, primary button ground, active tab |
+| `faded` | #C9C4B6 | adjacent-month calendar days, disabled dots/placeholders |
 | hairline | rgba(35,32,28,.07–.14) | borders (.07 cards, .09 rules, .14 inputs) |
 
 ### Accents (the CENT gradient stops)
@@ -160,3 +161,29 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   matching CHECKLIST.md § Login and the kit's sticker rule ("each sticker animates on its own
   click"). The `--animate-pop` utility already existed in `globals.css` but had zero usages
   anywhere in the app before this.
+- **Added `faded` (#C9C4B6).** Recurring across Calendar (adjacent-month days), Notes (placeholder/
+  caret) and Admin (view-role dot) but never promoted to a token — shipped as a raw hex literal
+  each time. Documented once here.
+- **Calendar reverted to the literal kit spec.** Toolbar (31px prev/next, 17px title, 10px
+  segmented-control text), day numbers (11.5px), event chips (4/7px padding, 10.5px text) and the
+  today sun-sticker (15px) all carried the same real-viewport scale-up as the shell; reverted to
+  the literal values per the established shell precedent. The decor bloom field's positions/sizes/
+  alphas were also scaled up (and the container opacity bumped from .45 to .70) — reverted to the
+  mockup's exact values.
+- **Fixed: event-chip section triangle was always teal.** `firstPrepSection()` (new helper in
+  `lib/utils/section-colors.ts`) picks the first *optional* prep section enabled on an event
+  (speaker → attendees → money → food → marketing → media → recurring), falling back to Venue only
+  if none are set — Venue itself is excluded from the priority order since it's unconditional on
+  every event and would otherwise make every chip read as teal regardless. Threaded through to the
+  month view's event-dot, the week view's tinted block, and the year view's bead — this was the
+  "defaults to teal" gap noted from the original restyle pass.
+- **Fixed: the month-view chip triangle never rendered at all**, independent of the colour bug.
+  `eventDisplay="block"` (FullCalendar) suppresses the dot element entirely; switched to
+  `"list-item"` so `.fc-daygrid-event-dot` has something to attach to. Also caught FullCalendar's
+  own default `font-weight: bold` on `.fc-event-title`, which slipped past the "no weights above
+  500" rule until this switch made the title visible enough to notice.
+- **Added the S8-S10 calendar stickers** (teal flower, sparkle, twinkle diamond) present in the
+  mockup's calendar frame but not yet built — same click-to-pop pattern as Login.
+- **Week/Year view dimensions corrected to the mockup** (44px gutter not 56px, 52px rows not 60px,
+  26px header not 32px) and their hardcoded `bg-teal`/`border-teal` replaced with the same
+  `firstPrepSection()` colour used in month view.

@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import type { EventClickArg, DatesSetArg } from "@fullcalendar/core";
+import type { EventClickArg, DatesSetArg, EventMountArg } from "@fullcalendar/core";
 import type FullCalendarType from "@fullcalendar/react";
 import { addDays, addYears, format, isSameMonth, startOfWeek, subYears } from "date-fns";
 import { cn } from "@/lib/utils";
+import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
 import { WeekView } from "./WeekView";
 import { YearView } from "./YearView";
 
@@ -30,6 +31,13 @@ export type CalendarEvent = {
   event_end_time: string | null;
   venue: string;
   is_complete: boolean;
+  has_speaker: boolean;
+  has_attendees: boolean;
+  has_money: boolean;
+  has_food: boolean;
+  has_marketing: boolean;
+  has_media: boolean;
+  has_recurring: boolean;
 };
 
 type ViewKey = "month" | "week" | "year";
@@ -39,23 +47,38 @@ const VIEWS: { key: ViewKey; label: string }[] = [
   { key: "year", label: "year" },
 ];
 
+type StickerKey = "s8" | "s9" | "s10";
+
 export function CalendarView({ events }: { events: CalendarEvent[] }) {
   const router = useRouter();
   const calendarRef = useRef<FullCalendarType>(null);
   const [monthTitle, setMonthTitle] = useState("");
   const [viewType, setViewType] = useState<ViewKey>("month");
   const [currentDate, setCurrentDate] = useState(() => new Date());
+  const [pops, setPops] = useState<Record<StickerKey, number>>({ s8: 0, s9: 0, s10: 0 });
+  function pop(key: StickerKey) {
+    setPops((prev) => ({ ...prev, [key]: prev[key] + 1 }));
+  }
 
   const fcEvents = events.map((event) => ({
     id: event.id,
     title: event.name,
     start: `${event.event_date}T${event.event_time}`,
     end: event.event_end_time ? `${event.event_date}T${event.event_end_time}` : undefined,
-    extendedProps: { venue: event.venue, isComplete: event.is_complete },
+    extendedProps: {
+      venue: event.venue,
+      isComplete: event.is_complete,
+      sectionColor: SECTION_COLORS[firstPrepSection(event)],
+    },
   }));
 
   function handleEventClick(info: EventClickArg) {
     router.push(`/events/${info.event.id}`);
+  }
+
+  function handleEventDidMount(info: EventMountArg) {
+    const sectionColor = info.event.extendedProps.sectionColor as string | undefined;
+    if (sectionColor) info.el.style.setProperty("--event-dot-color", sectionColor);
   }
 
   function handleDatesSet(arg: DatesSetArg) {
@@ -96,7 +119,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
             type="button"
             aria-label="Previous"
             onClick={goPrev}
-            className="flex size-9 items-center justify-center rounded-input border border-line-input bg-paper font-sans text-base text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+            className="flex size-[31px] items-center justify-center rounded-input border border-line-input bg-paper font-sans text-[13px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
           >
             ‹
           </button>
@@ -104,20 +127,20 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
             type="button"
             aria-label="Next"
             onClick={goNext}
-            className="flex size-9 items-center justify-center rounded-input border border-line-input bg-paper font-sans text-base text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+            className="flex size-[31px] items-center justify-center rounded-input border border-line-input bg-paper font-sans text-[13px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
           >
             ›
           </button>
           <button
             type="button"
             onClick={goToday}
-            className="rounded-input border border-line-input bg-paper px-4 py-2 font-sans text-sm text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+            className="rounded-input border border-line-input bg-paper px-[13px] py-[7px] font-sans text-[12.5px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
           >
             Today
           </button>
         </div>
 
-        <div className="font-sans text-[21px] tracking-[-0.014em] text-ink">
+        <div className="font-sans text-[17px] tracking-[-0.012em] text-ink">
           {title}
         </div>
 
@@ -128,7 +151,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
               type="button"
               onClick={() => setViewType(v.key)}
               className={cn(
-                "px-4 py-2.5 font-mono text-[11px] tracking-[0.12em] uppercase transition-colors duration-200",
+                "px-[13px] py-2 font-mono text-[10px] tracking-[0.12em] uppercase transition-colors duration-200",
                 viewType === v.key
                   ? "bg-ink text-page"
                   : "text-faint hover:bg-wash hover:text-ink",
@@ -142,32 +165,105 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
 
       {viewType === "month" && (
         <div className="relative overflow-hidden rounded-[10px] border border-line bg-page">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 z-0 opacity-70"
-          >
+          {/* S8-S10 — ambient stickers, above the grid; each pops on its own click */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20">
             <div
-              className="absolute top-[8%] left-[3%] size-[190px] rounded-full blur-[32px]"
+              className="absolute left-[2.5%] bottom-[14%]"
+              style={{ animation: "float1 15s ease-in-out infinite" }}
+            >
+              <div
+                key={pops.s8}
+                onClick={() => pop("s8")}
+                className={cn(
+                  "relative size-[52px] cursor-pointer pointer-events-auto opacity-50",
+                  pops.s8 > 0 && "animate-pop"
+                )}
+              >
+                {[0, 90, 180, 270].map((deg) => (
+                  <div
+                    key={deg}
+                    className="absolute top-[1px] left-[16px] h-[29px] w-[20px] rounded-full blur-[6px]"
+                    style={{
+                      background:
+                        "radial-gradient(circle at 50% 64%, var(--teal), rgba(63,167,137,.25) 60%, transparent 76%)",
+                      transformOrigin: "50% 96%",
+                      transform: `rotate(${deg}deg)`,
+                    }}
+                  />
+                ))}
+                <div
+                  className="absolute top-[22px] left-[22px] size-2 rounded-full blur-[2px]"
+                  style={{ background: "var(--amber)" }}
+                />
+              </div>
+            </div>
+
+            <div
+              className="absolute right-[3%] top-[26%]"
+              style={{ animation: "float2 18s ease-in-out infinite" }}
+            >
+              <div
+                key={pops.s9}
+                onClick={() => pop("s9")}
+                className={cn(
+                  "size-[26px] cursor-pointer pointer-events-auto opacity-[.42]",
+                  pops.s9 > 0 && "animate-pop"
+                )}
+                style={{
+                  background: "linear-gradient(140deg, var(--amber), var(--coral))",
+                  clipPath:
+                    "polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%)",
+                }}
+              />
+            </div>
+
+            <div
+              className="absolute left-[34%] bottom-[3%]"
+              style={{ animation: "float3 16s ease-in-out infinite", animationDelay: "1.2s" }}
+            >
+              <div
+                key={pops.s10}
+                onClick={() => pop("s10")}
+                className={cn(
+                  "relative size-[30px] cursor-pointer pointer-events-auto opacity-45",
+                  pops.s10 > 0 && "animate-pop"
+                )}
+              >
+                <div
+                  className="absolute top-[1px] left-[5px] h-[27px] w-[19px]"
+                  style={{
+                    background: "var(--blue)",
+                    clipPath: "polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)",
+                    animation: "twinkle 3s ease-in-out infinite",
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 opacity-45">
+            <div
+              className="absolute top-[22%] left-[5%] size-[150px] rounded-full blur-[32px]"
               style={{
-                background: "radial-gradient(circle, rgba(232,88,61,.6), transparent 72%)",
+                background: "radial-gradient(circle, rgba(232,88,61,.5), transparent 72%)",
               }}
             />
             <div
-              className="absolute top-[40%] left-[42%] size-[230px] rounded-full blur-[38px]"
+              className="absolute top-[56%] left-[46%] size-[190px] rounded-full blur-[38px]"
               style={{
-                background: "radial-gradient(circle, rgba(63,167,137,.55), transparent 72%)",
+                background: "radial-gradient(circle, rgba(63,167,137,.45), transparent 72%)",
               }}
             />
             <div
-              className="absolute top-[3%] right-[4%] size-[210px] rounded-full blur-[34px]"
+              className="absolute top-[6%] right-[6%] size-[170px] rounded-full blur-[34px]"
               style={{
-                background: "radial-gradient(circle, rgba(59,111,194,.5), transparent 72%)",
+                background: "radial-gradient(circle, rgba(59,111,194,.4), transparent 72%)",
               }}
             />
             <div
-              className="absolute right-[16%] bottom-[-6%] size-[200px] rounded-full blur-[32px]"
+              className="absolute right-[28%] bottom-[-8%] size-[160px] rounded-full blur-[32px]"
               style={{
-                background: "radial-gradient(circle, rgba(224,185,74,.6), transparent 72%)",
+                background: "radial-gradient(circle, rgba(224,185,74,.5), transparent 72%)",
               }}
             />
           </div>
@@ -182,7 +278,8 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
               height="auto"
               events={fcEvents}
               eventClick={handleEventClick}
-              eventDisplay="block"
+              eventDidMount={handleEventDidMount}
+              eventDisplay="list-item"
               dayMaxEventRows={3}
             />
           </div>
