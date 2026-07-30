@@ -12,6 +12,7 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -46,35 +47,46 @@ export function AppShell({
     .toUpperCase();
 
   return (
-    <div className="flex min-h-svh flex-col">
-      <header className="border-b border-stone-200">
-        <div className="flex items-center justify-between px-6 py-3">
-          <div className="flex items-center gap-2">
-            <BrandMark className="size-5" />
-            <span className="text-sm font-medium tracking-tight">
+    <div className="flex min-h-svh flex-col bg-background">
+      <header>
+        <div className="flex items-center justify-between px-[26px] pt-[15px]">
+          <div className="flex items-center gap-2.5">
+            <BrandMark className="h-[18px] w-5" />
+            <span className="font-sans text-[14.5px] font-medium tracking-[-0.012em] text-ink">
               CEC Dashboard
             </span>
           </div>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="flex items-center gap-2 rounded-full outline-none">
-              <Avatar className="size-7">
-                <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+            <DropdownMenuTrigger className="rounded-full outline-none">
+              <Avatar className="size-8">
+                <AvatarFallback className="bg-wash text-[11.5px] font-medium text-strong transition-colors duration-200 hover:bg-line-strong">
+                  {initials}
+                </AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel className="flex flex-col">
-                <span className="font-medium">
-                  {profile.full_name ?? profile.email}
-                </span>
-                <span className="text-xs font-normal text-muted-foreground">
-                  {profile.email}
-                </span>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => signOutFormRef.current?.requestSubmit()}>
-                Sign out
-              </DropdownMenuItem>
+            <DropdownMenuContent
+              align="end"
+              sideOffset={8}
+              className="w-[212px] rounded-card border-line bg-paper p-3.5 shadow-menu ring-0"
+            >
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="flex flex-col gap-0.5 p-0">
+                  <span className="font-sans text-[13px] font-medium text-ink">
+                    {profile.full_name ?? profile.email}
+                  </span>
+                  <span className="font-sans text-[11.5px] font-normal text-faint">
+                    {profile.email}
+                  </span>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="-mx-3.5 my-2.5 bg-line" />
+                <DropdownMenuItem
+                  className="-mx-1.5 rounded-chip px-1.5 py-1.5 font-sans text-[12.5px] text-body focus:bg-wash focus:text-ink"
+                  onClick={() => signOutFormRef.current?.requestSubmit()}
+                >
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
             </DropdownMenuContent>
           </DropdownMenu>
           <form
@@ -85,7 +97,7 @@ export function AppShell({
           />
         </div>
 
-        <nav className="flex gap-1 px-6">
+        <nav className="flex gap-1 px-[26px] pt-[14px]">
           {NAV_ITEMS.map((item) => {
             const active =
               pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -94,29 +106,24 @@ export function AppShell({
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "relative px-3 py-2 text-sm transition-colors",
+                  "relative px-3 pt-[7px] pb-[11px] font-sans text-[13px] transition-colors duration-200 ease-brand",
                   active
-                    ? "text-foreground"
-                    : "text-muted-foreground hover:text-foreground",
+                    ? "font-medium text-ink"
+                    : "font-normal text-faint hover:text-ink",
                 )}
               >
                 {item.label}
                 {active && (
-                  <span
-                    className="absolute inset-x-3 -bottom-px h-0.5 rounded-full"
-                    style={{
-                      background:
-                        "linear-gradient(90deg, #E8583D, #E0B94A, #3FA789, #3B6FC2)",
-                    }}
-                  />
+                  <span className="absolute inset-x-3 bottom-[5px] h-0.5 rounded-full bg-cent" />
                 )}
               </Link>
             );
           })}
         </nav>
+        <div className="h-px bg-line" />
       </header>
 
-      <main className="flex-1 px-6 py-8">{children}</main>
+      <main className="flex-1 px-[26px] py-8">{children}</main>
     </div>
   );
 }

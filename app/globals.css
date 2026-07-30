@@ -64,12 +64,8 @@
   --color-amber: var(--amber);
   --color-teal: var(--teal);
   --color-blue: var(--blue);
-  /* named brand-destructive, not destructive: shadcn's --color-destructive already maps to
-     the app's existing error color (--destructive in :root/.dark) — remapping that key here
-     would silently recolor every existing destructive button/alert. Value hardcoded (not
-     var(--destructive)) because brand-tokens.css's own --destructive is shadowed by the
-     shadcn :root block declared later in this file. */
-  --color-brand-destructive: #b4472f;
+  /* shadcn's --color-destructive (below, via --destructive in :root) is now the brand's
+     #B4472F, so components using bg-destructive/text-destructive already match the kit. */
 
   --font-weight-light: 300;
   --font-weight-normal: 400;
@@ -156,24 +152,39 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  /* CEC brand kit — shadcn semantic tokens repointed to the brand palette
+     (design/BRAND_KIT.md) so every primitive restyles through its existing
+     bg-background/bg-card/bg-primary/etc classes, with no component forks. */
+
+  /* design/brand-tokens.css also declares --font-sans/--font-mono (generic
+     literal font stacks for copy-paste use outside Next.js). Its :root is
+     unlayered, same as this one, so without this override its later import
+     position would beat the @theme block's var(--font-hanken-grotesk)/
+     var(--font-geist-mono) refs (Tailwind's @theme lives in a cascade layer,
+     which always loses to unlayered rules regardless of source order) —
+     redeclaring them here, unlayered, keeps every var(--font-sans) /
+     var(--font-mono) lookup pointed at the actual loaded next/font vars. */
+  --font-sans: var(--font-hanken-grotesk);
+  --font-mono: var(--font-geist-mono);
+
+  --background: var(--page);
+  --foreground: var(--ink);
+  --card: var(--paper);
+  --card-foreground: var(--ink);
+  --popover: var(--paper);
+  --popover-foreground: var(--ink);
+  --primary: var(--ink);
+  --primary-foreground: var(--page);
+  --secondary: var(--hover);
+  --secondary-foreground: var(--ink);
+  --muted: var(--hover);
+  --muted-foreground: var(--body);
+  --accent: var(--hover);
+  --accent-foreground: var(--ink);
+  --destructive: #b4472f;
+  --border: var(--hairline);
+  --input: var(--hairline-input);
+  --ring: rgba(35, 32, 28, 0.12);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -236,40 +247,155 @@
   }
 }
 
-/* Minimal, Notion-like FullCalendar theme: thin neutral borders, no
-   shadows, muted event chips instead of FullCalendar's default blue. */
+/* CEC brand kit — FullCalendar restyled per design/BRAND_KIT.md. Toolbar is
+   custom-built in CalendarView.tsx (headerToolbar={false}); this only covers
+   the grid itself. Month (dayGridMonth) gets full fidelity as the "home"
+   view; week/year get the palette, type and radii but not bespoke per-cell
+   decor. Event chips use a flat teal flag (no per-event prep-section color
+   is available at the calendar layer yet). */
 .fc-cec {
-  --fc-border-color: var(--border);
-  --fc-page-bg-color: var(--background);
-  --fc-neutral-bg-color: var(--muted);
-  --fc-today-bg-color: var(--muted);
-  --fc-event-bg-color: var(--secondary);
-  --fc-event-border-color: var(--border);
-  --fc-event-text-color: var(--foreground);
-  --fc-button-bg-color: var(--background);
-  --fc-button-border-color: var(--border);
-  --fc-button-text-color: var(--foreground);
-  --fc-button-hover-bg-color: var(--muted);
-  --fc-button-hover-border-color: var(--border);
-  --fc-button-active-bg-color: var(--secondary);
-  --fc-button-active-border-color: var(--border);
-  font-size: 0.875rem;
+  --fc-border-color: rgba(35, 32, 28, 0.07);
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: var(--hover);
+  --fc-today-bg-color: rgba(255, 253, 249, 0.6);
+  --fc-event-bg-color: var(--paper);
+  --fc-event-border-color: rgba(35, 32, 28, 0.08);
+  --fc-event-text-color: var(--ink);
+  --fc-now-indicator-color: var(--coral);
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  color: var(--body);
 }
-.fc-cec .fc-toolbar-title {
-  font-size: 1rem;
-  font-weight: 500;
-}
-.fc-cec .fc-button {
-  box-shadow: none !important;
-  text-transform: none;
-  padding: 0.3rem 0.6rem;
-}
-.fc-cec .fc-event {
-  border-radius: 0.35rem;
-  padding: 1px 4px;
-  font-size: 0.75rem;
-}
-.fc-cec .fc-daygrid-day-number,
+
+/* weekday header row */
 .fc-cec .fc-col-header-cell-cushion {
-  color: var(--foreground);
+  padding: 9px 11px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.fc-cec .fc-col-header-cell {
+  background: transparent;
+}
+
+/* day cells — scoped to the month grid itself (dayGridMonth-view) so these
+   don't leak into week view's all-day row or year view's mini-months, which
+   both also render via the daygrid plugin internally. */
+.fc-cec .fc-dayGridMonth-view .fc-daygrid-day-frame {
+  position: relative;
+  min-height: 94px;
+  background: rgba(255, 253, 249, 0.74);
+  padding: 8px 10px;
+}
+.fc-cec .fc-daygrid-day-top {
+  padding: 0;
+}
+.fc-cec .fc-daygrid-day-number {
+  padding: 0;
+  font-size: 11.5px;
+  color: var(--body);
+}
+.fc-cec .fc-day-other .fc-daygrid-day-number {
+  color: #c9c4b6;
+}
+.fc-cec .fc-dayGridMonth-view .fc-day-today .fc-daygrid-day-frame {
+  background: rgba(255, 253, 249, 0.6);
+}
+.fc-cec .fc-day-today .fc-daygrid-day-number {
+  font-weight: 500;
+  color: var(--ink);
+}
+.fc-cec .fc-dayGridMonth-view .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame::after {
+  content: "";
+  position: absolute;
+  right: 9px;
+  top: 8px;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  filter: blur(1.5px);
+  background: radial-gradient(
+    circle at 38% 35%,
+    var(--amber),
+    rgba(232, 88, 61, 0.75) 70%,
+    transparent
+  );
+}
+
+/* event chips */
+.fc-cec .fc-daygrid-event {
+  margin-top: 7px;
+  border-radius: var(--r-chip);
+  border: 1px solid rgba(35, 32, 28, 0.08);
+  background: rgba(255, 253, 249, 0.95);
+  padding: 4px 7px;
+  font-size: 10.5px;
+  font-weight: 400;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease;
+}
+.fc-cec .fc-daygrid-event:hover {
+  transform: translateY(-1px);
+  border-color: rgba(35, 32, 28, 0.2);
+}
+.fc-cec .fc-daygrid-event-dot {
+  border: none;
+  width: 7px;
+  height: 6px;
+  border-radius: 0;
+  background: var(--teal);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+.fc-cec .fc-daygrid-more-link {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--faint);
+}
+
+/* week view */
+.fc-cec .fc-timegrid-axis-cushion,
+.fc-cec .fc-timegrid-slot-label-cushion {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--faint);
+}
+.fc-cec .fc-timegrid-col-frame {
+  background: rgba(255, 253, 249, 0.8);
+}
+.fc-cec .fc-timegrid-event {
+  border-radius: 5px;
+  border: none;
+  border-left: 2px solid var(--coral);
+  background: linear-gradient(160deg, rgba(232, 88, 61, 0.14), rgba(232, 88, 61, 0.08));
+  padding: 4px 6px;
+  font-size: 9.5px;
+}
+
+/* year view */
+.fc-cec .fc-multimonth-title {
+  padding: 8px 8px 0;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.fc-cec .fc-multimonth-month {
+  border-radius: 7px;
+  border: 1px solid rgba(35, 32, 28, 0.07);
+  background: var(--paper);
+  transition: border-color 200ms ease;
+}
+.fc-cec .fc-multimonth-daygrid-table .fc-daygrid-day-frame {
+  min-height: 0;
+  background: transparent;
+  padding: 2px;
+}
+.fc-cec .fc-multimonth-daygrid-table .fc-daygrid-day-number {
+  font-size: 9px;
+  color: var(--faint);
 }

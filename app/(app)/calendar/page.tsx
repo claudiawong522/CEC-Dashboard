@@ -14,16 +14,17 @@ export default async function CalendarPage() {
   if (error) console.error("[calendar] failed to load events:", error.message);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-[18px]">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-medium tracking-tight">Calendar</h1>
+        <h1 className="font-sans text-[25px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+          Calendar
+        </h1>
         <Button
           render={<Link href="/events/new" />}
-          size="sm"
-          className="gap-1.5"
+          className="gap-1.5 rounded-btn px-[18px] py-[10px] text-[13px] font-medium"
         >
           <Plus className="size-4" />
-          New Event
+          New event
         </Button>
       </div>
 
