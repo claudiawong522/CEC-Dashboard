@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { incompleteSections } from "@/lib/utils/completion";
 import { SECTION_COLORS, type SectionLabel } from "@/lib/utils/section-colors";
 import { formatEventDate, formatEventTime } from "@/lib/utils/format-event-time";
+import { Sticker } from "@/components/stickers/Sticker";
+import { Sprig } from "@/components/stickers/shapes";
+import { TodoDecor } from "@/components/todo/TodoDecor";
 
 const STAGGER_CAP = 6;
 
@@ -68,48 +71,23 @@ export default async function TodoPage() {
   }));
 
   return (
-    <div className="flex flex-col gap-[17px]">
-      <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+    <div className="relative flex flex-col gap-[17px]">
+      <TodoDecor />
+      <h1 className="relative z-10 font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
         Todo
       </h1>
 
       {rows.length === 0 ? (
-        <div className="flex items-center gap-[14px] rounded-[10px] border border-dashed border-[rgba(35,32,28,0.14)] px-4 py-3.5">
-          <div className="relative size-[46px] shrink-0">
-            <div
-              className="absolute top-[11px] left-[22px] h-[30px] w-[1.5px]"
-              style={{
-                background: "linear-gradient(180deg, rgba(63,167,137,.7), rgba(63,167,137,.1))",
-              }}
-            />
-            <div
-              className="absolute top-[14px] left-[7px] h-[11px] w-5 rounded-full blur-[4px]"
-              style={{
-                background: "radial-gradient(circle at 70% 50%, var(--teal), transparent 74%)",
-                transform: "rotate(-16deg)",
-              }}
-            />
-            <div
-              className="absolute top-[24px] left-[21px] h-[11px] w-5 rounded-full blur-[4px]"
-              style={{
-                background: "radial-gradient(circle at 30% 50%, var(--teal), transparent 74%)",
-                transform: "rotate(16deg)",
-              }}
-            />
-            <div
-              className="absolute top-[2px] left-[18px] h-[15px] w-3 blur-[3px]"
-              style={{
-                background: "radial-gradient(circle at 50% 70%, var(--coral), transparent 76%)",
-                borderRadius: "50% 50% 45% 45%",
-              }}
-            />
-          </div>
+        <div className="relative z-10 flex items-center gap-[14px] rounded-[10px] border border-dashed border-[rgba(35,32,28,0.14)] px-4 py-3.5">
+          <Sticker floatVariant="none" wrapperClassName="shrink-0">
+            <Sprig size={46} />
+          </Sticker>
           <span className="font-sans text-[12.5px] leading-[1.6] text-faint">
             Nothing outstanding, every event is fully prepped.
           </span>
         </div>
       ) : (
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+        <div className="relative z-10 overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
           {rows.map(({ event, missing }, i) => (
             <Link
               key={event.id}

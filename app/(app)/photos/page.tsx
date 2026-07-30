@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { publicFileUrl } from "@/lib/utils/storage";
+import { Sticker } from "@/components/stickers/Sticker";
+import { PhotosDecor } from "@/components/photos/PhotosDecor";
 
 type MediaFile = {
   id: string;
@@ -31,14 +33,15 @@ export default async function PhotosPage() {
     .returns<MediaFile[]>();
 
   return (
-    <div className="flex flex-col gap-[17px]">
-      <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+    <div className="relative flex flex-col gap-[17px]">
+      <PhotosDecor />
+      <h1 className="relative z-10 font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
         Photos
       </h1>
 
       {!files || files.length === 0 ? (
         <div className="relative flex aspect-square max-w-[220px] flex-col items-center justify-center gap-[7px] overflow-hidden rounded-[9px] border border-dashed border-[rgba(35,32,28,0.14)]">
-          <div className="relative h-[34px] w-11">
+          <Sticker floatVariant="none" className="relative block h-[34px] w-11">
             <div
               className="absolute top-[5px] left-0 size-[22px] rounded-full blur-[6px]"
               style={{ background: "radial-gradient(circle, rgba(232,88,61,.8), transparent 72%)" }}
@@ -51,11 +54,11 @@ export default async function PhotosPage() {
               className="absolute top-[11px] left-6 size-5 rounded-full blur-[6px]"
               style={{ background: "radial-gradient(circle, rgba(63,167,137,.7), transparent 72%)" }}
             />
-          </div>
+          </Sticker>
           <span className="font-sans text-[10px] text-faint">No media uploaded yet.</span>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+        <div className="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {files.map((file, i) => (
             <Link
               key={file.id}

@@ -16,6 +16,8 @@ import { MarketingSection } from "@/components/events/sections/MarketingSection"
 import { MediaSection } from "@/components/events/sections/MediaSection";
 import { RecurringSection } from "@/components/events/sections/RecurringSection";
 import { SECTION_COLORS, type SectionLabel } from "@/lib/utils/section-colors";
+import { Sticker } from "@/components/stickers/Sticker";
+import { Sprig, Confetti } from "@/components/stickers/shapes";
 import type {
   EventRow,
   SpeakerRow,
@@ -142,13 +144,19 @@ export function DetailsForm({
           Step 2 of 2
         </span>
         <span
-          className="rounded-[20px] px-2.5 py-1 font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"
+          className="relative overflow-hidden rounded-[20px] px-2.5 py-1 font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"
           style={{
             background:
               "linear-gradient(95deg, rgba(232,88,61,.2), rgba(224,185,74,.2), rgba(63,167,137,.2), rgba(59,111,194,.2))",
           }}
         >
           {doneCount} of {doneable.length} done
+          {doneCount === doneable.length && (
+            <Confetti
+              size={28}
+              className="pointer-events-none absolute -top-1.5 -right-1.5 opacity-90"
+            />
+          )}
         </span>
       </div>
 
@@ -156,36 +164,14 @@ export function DetailsForm({
         className="relative flex items-end gap-3 overflow-hidden rounded-card border border-[rgba(35,32,28,0.1)] bg-paper px-5 py-[19px]"
         style={{ "--input-ground": "var(--page)" } as React.CSSProperties}
       >
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-[-8px] right-[22px] h-[76px] w-[60px] opacity-70"
+        <Sticker
+          floatVariant="float3"
+          floatDuration="14s"
+          wrapperClassName="pointer-events-none absolute top-1 right-[120px] z-0"
+          className="pointer-events-none opacity-70"
         >
-          <div
-            className="absolute top-[14px] left-[29px] h-[52px] w-[1.5px]"
-            style={{ background: "linear-gradient(180deg, rgba(63,167,137,.6), rgba(63,167,137,.05))" }}
-          />
-          <div
-            className="absolute top-[22px] left-[9px] h-3 w-6 rounded-full blur-[5px]"
-            style={{
-              background: "radial-gradient(circle at 70% 50%, rgba(63,167,137,.9), transparent 74%)",
-              transform: "rotate(-18deg)",
-            }}
-          />
-          <div
-            className="absolute top-[35px] left-[28px] h-3 w-6 rounded-full blur-[5px]"
-            style={{
-              background: "radial-gradient(circle at 30% 50%, rgba(63,167,137,.9), transparent 74%)",
-              transform: "rotate(18deg)",
-            }}
-          />
-          <div
-            className="absolute top-[2px] left-[23px] h-4 w-[13px] blur-[4px]"
-            style={{
-              background: "radial-gradient(circle at 50% 70%, rgba(232,88,61,.9), transparent 76%)",
-              borderRadius: "50% 50% 45% 45%",
-            }}
-          />
-        </div>
+          <Sprig size={44} />
+        </Sticker>
 
         <div className="flex flex-[2] flex-col gap-1.5">
           <Label className="font-sans text-[12px] font-normal text-body">Event name</Label>

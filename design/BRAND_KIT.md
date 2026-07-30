@@ -62,7 +62,9 @@ Emphasis = one 500-weight word in `ink`, or a 1px underlined link. Never a bold 
 ## Mark & lockups
 - Triangle: `clip-path: polygon(50% 0,100% 100%,0 100%)` filled with the gradient. Aspect ≈ 1.14:1.
 - Primary lockup: 24×21px mark + "CEC Dashboard" 500/17px, 11px gap. Header uses 20×18px + 14.5px.
-- Stacked: 34×30px mark over "CEC" 500/12px uppercase tracking .1em — login, favicon ≥32px.
+- Stacked: 34×30px mark over "CEC" 500/12px uppercase tracking .1em — login, favicon ≥32px. The header now
+  uses the mark at this same 34×30px size (up from the old 20×18px primary lockup) beside a 20px/−0.016em
+  wordmark, and both are click-poppable, per 2026-07-30's "logo + header" pass — see changelog.
 - Outline: gradient triangle with a paper triangle inset equally, 3px bottom rule remaining — favicon 16px,
   print. **The inner triangle must be centred**, or the mark reads as a chevron.
 - Mark on wash: mark over the bottom-anchored cloud wash — login only.
@@ -109,17 +111,28 @@ Only two shadows: primary-button hover glow `0 9px 20px -10px rgba(232,88,61,.9)
 | seal | Past Events term filters, archive marks |
 | cloud wash | login art, week-view today column, header grounds |
 
-**Reserve (not wired to any screen):** heart, sparkle, cherries, bow — seasonal or one-off use.
+**Former reserve, now wired in (2026-07-30):** heart, sparkle, cherries, bow — see changelog.
 
 ### Sticker rules
 - Built from blurred radial gradients (petals), clip-path polygons (triangle, star, sparkle) and conic
   gradients (ring, pinwheel). Keep them CSS — no bitmap exports.
 - **Functional** stickers (flags, beads, sun, confetti, seal, highlighter) render at full strength.
-- **Decorative** stickers render at 6–12% effective opacity, always blurred, always *behind* content, and
-  content sits on ≥70%-opaque paper above them.
-- One decor moment per screen. Forms, Admin and the Notes editor body get none.
+- **Decorative** stickers render at low opacity (roughly 6–12%, looser than before — judge by feel against
+  the paper ground), always *behind* or clearly subordinate to content, on ≥70%-opaque paper.
+- **Every screen gets decor, no exceptions** — as of 2026-07-30 this includes forms (New Event, Event
+  Details), Admin and the Notes editor. Multiple decor moments per screen are fine; keep them light enough
+  that they read as texture, not clutter, and never let one sit over text a user needs to click through
+  (see the Notes implementation note below).
 - Floating decor drifts 11–18s ease-in-out infinite, ±6–14px, and each sticker owns its own 620ms
-  `cubic-bezier(.34,1.5,.4,1)` pop on click. Never trigger all of them from one click.
+  `cubic-bezier(.34,1.5,.4,1)` pop on click. Never trigger all of them from one click. Where the kit's
+  reference swatch also shows a hover micro-transition (rotate, scale, width/gap change), wire that too —
+  stickers should react to both hover and click, not click alone.
+- Shared implementation: `components/stickers/Sticker.tsx` (the float+pop wrapper) and
+  `components/stickers/shapes.tsx` (the shape library, one component per sticker, sized/coloured to match
+  the kit's reference swatches exactly). Use these instead of hand-rolling new inline sticker markup.
+- A sticker placed over editable/interactive content (e.g. near the Notes editor) should be
+  `pointer-events-none` and sit in its own `z-0` layer with the real content wrapped in `relative z-10` —
+  don't let ambient decor intercept clicks meant for the content above it.
 
 ## Motion
 | Duration | Applies to |
@@ -243,3 +256,29 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   to explicit `text-[12px]`, and added the "Non-admins see the same table with static role badges"
   footer caption from the mockup, which had been dropped (every other screen with an equivalent
   helper caption — Notes, Todo empty state — already had theirs).
+- **Logo + header, and stickers everywhere (2026-07-30).** Explicit user direction to move past strict
+  kit-literal fidelity on two fronts:
+  - **Header.** Replaced the 20×18px primary lockup + 14.5px wordmark with the kit's "stacked" 34×30px
+    mark sized up for the header, next to a 20px/−0.016em "CEC Dashboard" title. The mark is now a Link to
+    `/calendar` and click-poppable, matching the Login mark's behaviour. Added a faint `CloudPuff` wash
+    behind the header and a low-opacity `BeadRow` at the end of the nav row.
+  - **Stickers.** Went from "one decor moment per screen, none on forms/Admin/Notes" to decor on every
+    screen, including those three, per direct request ("use the stickers more, a lot more" / "put in forms
+    too" / "+ admin + notes"). Extracted the previously-inline, copy-pasted-per-screen sticker markup (from
+    Login and Calendar) into shared, reusable primitives: `components/stickers/Sticker.tsx` (float + 620ms
+    click-pop wrapper) and `components/stickers/shapes.tsx` (one component per sticker shape, matching the
+    kit's reference swatch sizes/colours exactly, including reserve stickers heart/sparkle/cherries/bow
+    which weren't wired to anything before). Also added hover micro-transitions from the kit's swatch specs
+    (rotate/scale/width/gap) that existing implementations hadn't wired up — stickers now react to hover
+    *and* click. Wired into: Calendar (week/year views, previously undecorated; month view gained two more
+    stickers), Todo (empty-state sprig now poppable; added corner decor to the populated list), Past Events
+    (term-filter "seals" are now the real `Seal` sticker shape, Fall=coral/Spring=teal, plus a faint
+    background flower), Photos (empty-state bloom now poppable; added corner decor to the populated grid),
+    Event Details (header sprig now poppable; added a `Confetti` burst peeking out of the "N of M done"
+    badge once all sections are done), New Event (added a corner star), Notes (added a corner star behind
+    the editor — kept `pointer-events-none` with the editor wrapped in `relative z-10`, since a clickable
+    sticker there would steal clicks meant for the rich-text body — plus a small hover-only highlighter bar
+    by the footer caption), and Admin (added a small `BeadRow` next to the "Signed in as" line, doubling as
+    the kit's own "beads — role dots" placement). Login was left as-is: already the densest screen (7
+    stickers + the mark) and previously verified against the mockup, so it wasn't worth the regression risk
+    for this pass.

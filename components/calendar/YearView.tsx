@@ -2,6 +2,8 @@
 
 import { cn } from "@/lib/utils";
 import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
+import { Sticker } from "@/components/stickers/Sticker";
+import { Sparkle } from "@/components/stickers/shapes";
 import type { CalendarEvent } from "./CalendarView";
 
 // design/CEC Pages.dc.html "02c · year view" — recreated directly (not via
@@ -29,7 +31,17 @@ export function YearView({
   );
 
   return (
-    <div className="grid max-w-[900px] grid-cols-4 gap-3">
+    <div className="relative max-w-[900px]">
+      <Sticker
+        floatVariant="float1"
+        floatDuration="17s"
+        wrapperClassName="pointer-events-none absolute -top-8 -right-6 z-0"
+        className="pointer-events-auto opacity-30"
+      >
+        <Sparkle size={40} />
+      </Sticker>
+
+      <div className="relative grid grid-cols-4 gap-3">
       {MONTH_LABELS.map((label, i) => {
         const isCurrentMonth = today.getFullYear() === year && today.getMonth() === i;
         const monthEvents = eventsByMonth[i];
@@ -45,13 +57,19 @@ export function YearView({
             )}
           >
             {isCurrentMonth && (
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -right-2 -top-2 size-11 rounded-full opacity-80 blur-[7px]"
-                style={{
-                  background: "radial-gradient(circle, rgba(224,185,74,.8), transparent 72%)",
-                }}
-              />
+              <Sticker
+                floatVariant="none"
+                wrapperClassName="absolute -right-2 -top-2 z-10"
+                className="block size-11 rounded-full opacity-80 blur-[7px]"
+              >
+                <div
+                  aria-hidden="true"
+                  className="size-full rounded-full"
+                  style={{
+                    background: "radial-gradient(circle, rgba(224,185,74,.8), transparent 72%)",
+                  }}
+                />
+              </Sticker>
             )}
             <div
               className={cn(
@@ -73,6 +91,7 @@ export function YearView({
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

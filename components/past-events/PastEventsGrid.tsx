@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { cn } from "@/lib/utils";
 import { getEventTerm } from "@/lib/utils/terms";
 import { formatEventDate, formatEventTime } from "@/lib/utils/format-event-time";
+import { Sticker } from "@/components/stickers/Sticker";
+import { Seal, Flower } from "@/components/stickers/shapes";
 
 export type PastEvent = {
   id: string;
@@ -28,28 +29,35 @@ export function PastEventsGrid({ events }: { events: PastEvent[] }) {
     : events;
 
   return (
-    <div className="flex flex-col gap-[17px]">
-      <div className="flex items-baseline justify-between">
+    <div className="relative flex flex-col gap-[17px]">
+      <Sticker
+        floatVariant="float1"
+        floatDuration="16s"
+        wrapperClassName="pointer-events-none absolute -top-6 left-[38%] z-0"
+        className="pointer-events-auto opacity-[0.08]"
+      >
+        <Flower size={64} />
+      </Sticker>
+
+      <div className="relative z-10 flex items-baseline justify-between">
         <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
           Past Events
         </h1>
         {terms.length > 0 && (
           <div className="flex gap-2">
             {terms.map((term) => (
-              <button
+              <Sticker
                 key={term.key}
-                type="button"
+                floatVariant="none"
                 onClick={() => setActiveTerm((prev) => (prev === term.key ? null : term.key))}
-                className={cn(
-                  "flex size-9 items-center justify-center rounded-input border font-mono text-[9px] font-medium transition-colors duration-[240ms]",
-                  term.season === "Fall"
-                    ? "border-coral/50 text-coral hover:bg-coral/8"
-                    : "border-teal/50 text-teal hover:bg-teal/8",
-                  activeTerm === term.key && (term.season === "Fall" ? "bg-coral/8" : "bg-teal/8"),
-                )}
               >
-                {term.key}
-              </button>
+                <Seal
+                  label={term.key}
+                  size={36}
+                  color={term.season === "Fall" ? "var(--coral)" : "var(--teal)"}
+                  active={activeTerm === term.key}
+                />
+              </Sticker>
             ))}
           </div>
         )}
@@ -58,7 +66,7 @@ export function PastEventsGrid({ events }: { events: PastEvent[] }) {
       {visible.length === 0 ? (
         <p className="font-sans text-[14px] text-faint">No completed past events yet.</p>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="relative z-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((event, i) => (
             <div
               key={event.id}

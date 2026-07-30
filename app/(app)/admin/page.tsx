@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
 import { UserTable } from "@/components/admin/UserTable";
+import { Sticker } from "@/components/stickers/Sticker";
+import { BeadRow } from "@/components/stickers/shapes";
 import type { Profile } from "@/lib/auth/getSession";
 
 export default async function AdminPage() {
@@ -45,6 +47,9 @@ export default async function AdminPage() {
             Signed in as {session.profile.full_name ?? session.profile.email} ·{" "}
             {session.profile.email}
           </span>
+          <Sticker floatVariant="none" className="opacity-50 hover:opacity-100">
+            <BeadRow size={5} gap={3} />
+          </Sticker>
         </div>
       </div>
 

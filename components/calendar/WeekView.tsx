@@ -5,6 +5,8 @@ import { addDays, format, isSameDay, startOfWeek } from "date-fns";
 import { cn } from "@/lib/utils";
 import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
 import { formatEventTime } from "@/lib/utils/format-event-time";
+import { Sticker } from "@/components/stickers/Sticker";
+import { Bow } from "@/components/stickers/shapes";
 import type { CalendarEvent } from "./CalendarView";
 
 // design/CEC Pages.dc.html "02b · week view" — recreated directly (not via
@@ -43,7 +45,15 @@ export function WeekView({
   }
 
   return (
-    <div className="overflow-hidden rounded-[8px] bg-[rgba(35,32,28,0.07)]">
+    <div className="relative overflow-hidden rounded-[8px] bg-[rgba(35,32,28,0.07)]">
+      <Sticker
+        floatVariant="float3"
+        floatDuration="16s"
+        wrapperClassName="pointer-events-none absolute top-1 right-3 z-20"
+        className="pointer-events-auto opacity-40"
+      >
+        <Bow size={26} />
+      </Sticker>
       <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-px">
         <div className="h-[26px] bg-page" />
         {days.map((day) => {

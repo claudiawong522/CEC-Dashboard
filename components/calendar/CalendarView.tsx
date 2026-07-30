@@ -10,6 +10,8 @@ import type FullCalendarType from "@fullcalendar/react";
 import { addDays, addYears, format, isSameMonth, startOfWeek, subYears } from "date-fns";
 import { cn } from "@/lib/utils";
 import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
+import { Sticker } from "@/components/stickers/Sticker";
+import { Heart, Cherries } from "@/components/stickers/shapes";
 import { WeekView } from "./WeekView";
 import { YearView } from "./YearView";
 
@@ -239,6 +241,26 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
                 />
               </div>
             </div>
+
+            <Sticker
+              floatVariant="float1"
+              floatDuration="14s"
+              floatDelay="2.4s"
+              wrapperClassName="absolute left-[16%] top-[8%]"
+              className="pointer-events-auto opacity-40"
+            >
+              <Heart size={28} />
+            </Sticker>
+
+            <Sticker
+              floatVariant="float3"
+              floatDuration="19s"
+              floatDelay="0.6s"
+              wrapperClassName="absolute right-[22%] bottom-[6%]"
+              className="pointer-events-auto opacity-40"
+            >
+              <Cherries size={26} />
+            </Sticker>
           </div>
 
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 opacity-45">

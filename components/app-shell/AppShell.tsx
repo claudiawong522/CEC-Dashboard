@@ -5,6 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Profile } from "@/lib/auth/getSession";
 import { BrandMark } from "@/components/app-shell/BrandMark";
+import { Sticker } from "@/components/stickers/Sticker";
+import { CloudPuff, BeadRow } from "@/components/stickers/shapes";
 import {
   Avatar,
   AvatarFallback,
@@ -48,14 +50,20 @@ export function AppShell({
 
   return (
     <div className="flex min-h-svh flex-col bg-background">
-      <header>
-        <div className="mx-auto flex w-full max-w-[1400px] items-center justify-between px-[26px] pt-[15px]">
-          <div className="flex items-center gap-2.5">
-            <BrandMark className="h-[18px] w-5" />
-            <span className="font-sans text-[14.5px] font-medium tracking-[-0.012em] text-ink">
+      <header className="relative overflow-hidden">
+        <CloudPuff
+          size={220}
+          className="pointer-events-none absolute -top-24 -left-10 opacity-[0.08] blur-[2px]"
+        />
+        <div className="relative mx-auto flex w-full max-w-[1400px] items-center justify-between px-[26px] pt-[15px]">
+          <Link href="/calendar" className="flex items-center gap-3">
+            <Sticker floatVariant="none" wrapperClassName="shrink-0">
+              <BrandMark className="h-[30px] w-[34px]" />
+            </Sticker>
+            <span className="font-sans text-[20px] font-medium tracking-[-0.016em] text-ink">
               CEC Dashboard
             </span>
-          </div>
+          </Link>
 
           <DropdownMenu>
             <DropdownMenuTrigger className="rounded-full outline-none">
@@ -119,6 +127,13 @@ export function AppShell({
               </Link>
             );
           })}
+          <Sticker
+            floatVariant="none"
+            wrapperClassName="ml-auto flex items-center pb-[11px]"
+            className="opacity-60 transition-opacity duration-200 hover:opacity-100"
+          >
+            <BeadRow size={5} gap={4} />
+          </Sticker>
         </nav>
         <div className="h-px bg-line" />
       </header>
