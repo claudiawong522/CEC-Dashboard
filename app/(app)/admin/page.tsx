@@ -25,7 +25,7 @@ export default async function AdminPage() {
   return (
     <div className="flex flex-col gap-[17px]">
       <div className="flex flex-col gap-[5px]">
-        <h1 className="font-sans text-2xl leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+        <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
           Admin
         </h1>
         <div className="flex items-center gap-2.5">
@@ -34,7 +34,7 @@ export default async function AdminPage() {
               className="absolute -inset-0.5 rounded-full opacity-75 blur-[2px]"
               style={{
                 background:
-                  "conic-gradient(from 200deg, #E8583D, #E0B94A, #3FA789, #3B6FC2, #E8583D)",
+                  "conic-gradient(from 200deg, var(--coral), var(--amber), var(--teal), var(--blue), var(--coral))",
               }}
             />
             <div className="relative flex size-[26px] items-center justify-center rounded-full bg-wash font-sans text-[9.5px] font-medium text-strong">
@@ -53,6 +53,9 @@ export default async function AdminPage() {
         canManageRoles={session.profile.role === "admin"}
         currentUserId={session.profile.id}
       />
+      <span className="font-sans text-[11.5px] text-faint">
+        Non-admins see the same table with static role badges.
+      </span>
     </div>
   );
 }

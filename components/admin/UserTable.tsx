@@ -31,7 +31,7 @@ export function UserTable({
             >
               {user.full_name ?? "—"}
             </span>
-            <span className="truncate font-sans text-xs text-body">{user.email}</span>
+            <span className="truncate font-sans text-[12px] text-body">{user.email}</span>
             {isSelf ? (
               <span
                 className="justify-self-end rounded-[20px] px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"

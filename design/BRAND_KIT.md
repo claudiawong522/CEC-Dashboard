@@ -236,3 +236,10 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   overridden via the (non-deprecated) `dictionary` option — and `caret-color` (not exposed by the
   theme API either) was the default ink instead of coral. Converted the theme object's remaining
   raw hex to tokens.
+- **Admin.** This screen was already very close to spec — grid columns, header row, hover, name/
+  email sizes, the current-user gradient-tint pill, and the `RoleSelect` dropdown pill (border,
+  hover-border, mono size, the "⌄" affordance colour) all already matched the checklist exactly.
+  Fixed the avatar ring's conic-gradient raw hex → tokens, tightened the email column's `text-xs`
+  to explicit `text-[12px]`, and added the "Non-admins see the same table with static role badges"
+  footer caption from the mockup, which had been dropped (every other screen with an equivalent
+  helper caption — Notes, Todo empty state — already had theirs).
