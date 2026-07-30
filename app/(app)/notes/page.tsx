@@ -28,10 +28,10 @@ export default async function NotesPage() {
         <Sticker
           floatVariant="float3"
           floatDuration="17s"
-          wrapperClassName="pointer-events-none absolute -top-3 -right-3 z-0"
-          className="pointer-events-none opacity-[0.09]"
+          wrapperClassName="pointer-events-none absolute -top-6 -right-6 z-0"
+          className="pointer-events-none opacity-[0.22]"
         >
-          <StarPolygon size={64} />
+          <StarPolygon size={104} />
         </Sticker>
         <div className="relative z-10">
           <NotesEditor initialContent={content} editable={editable} />
@@ -41,8 +41,8 @@ export default async function NotesPage() {
         <span className="font-sans text-[11.5px] text-faint">
           Autosaves. View-role members see the same page read-only, with no handles or slash menu.
         </span>
-        <Sticker floatVariant="none" className="opacity-40 hover:opacity-70">
-          <HighlighterBar width={30} height={9} />
+        <Sticker floatVariant="none" className="opacity-70 hover:opacity-100">
+          <HighlighterBar width={48} height={14} />
         </Sticker>
       </div>
     </div>

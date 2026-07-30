@@ -4,6 +4,7 @@
   --paper:#FFFDF9;
   --page:#FDFAF4;
   --hover:#F5F0E5;
+  --canvas:#EFEBE2; /* app-frame backdrop outside the capped-width shell — from CEC Pages.dc.html's own <body> */
   --line-strong:#E2DACB;
   --faint:#B0A899;
   --body:#6E675C;

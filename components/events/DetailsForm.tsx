@@ -167,10 +167,10 @@ export function DetailsForm({
         <Sticker
           floatVariant="float3"
           floatDuration="14s"
-          wrapperClassName="pointer-events-none absolute top-1 right-[120px] z-0"
-          className="pointer-events-none opacity-70"
+          wrapperClassName="pointer-events-none absolute top-1 right-[110px] z-0"
+          className="pointer-events-none opacity-[0.85]"
         >
-          <Sprig size={44} />
+          <Sprig size={62} />
         </Sticker>
 
         <div className="flex flex-[2] flex-col gap-1.5">

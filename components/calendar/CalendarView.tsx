@@ -11,7 +11,7 @@ import { addDays, addYears, format, isSameMonth, startOfWeek, subYears } from "d
 import { cn } from "@/lib/utils";
 import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
 import { Sticker } from "@/components/stickers/Sticker";
-import { Heart, Cherries } from "@/components/stickers/shapes";
+import { Heart, Cherries, Flower, StarPolygon, TwinkleDiamondPair } from "@/components/stickers/shapes";
 import { WeekView } from "./WeekView";
 import { YearView } from "./YearView";
 
@@ -49,18 +49,12 @@ const VIEWS: { key: ViewKey; label: string }[] = [
   { key: "year", label: "year" },
 ];
 
-type StickerKey = "s8" | "s9" | "s10";
-
 export function CalendarView({ events }: { events: CalendarEvent[] }) {
   const router = useRouter();
   const calendarRef = useRef<FullCalendarType>(null);
   const [monthTitle, setMonthTitle] = useState("");
   const [viewType, setViewType] = useState<ViewKey>("month");
   const [currentDate, setCurrentDate] = useState(() => new Date());
-  const [pops, setPops] = useState<Record<StickerKey, number>>({ s8: 0, s9: 0, s10: 0 });
-  function pop(key: StickerKey) {
-    setPops((prev) => ({ ...prev, [key]: prev[key] + 1 }));
-  }
 
   const fcEvents = events.map((event) => ({
     id: event.id,
@@ -142,7 +136,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
           </button>
         </div>
 
-        <div className="font-sans text-[17px] tracking-[-0.012em] text-ink">
+        <div className="font-sans text-[18px] tracking-[-0.012em] text-ink">
           {title}
         </div>
 
@@ -167,99 +161,54 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
 
       {viewType === "month" && (
         <div className="relative overflow-hidden rounded-[10px] border border-line bg-page">
-          {/* S8-S10 — ambient stickers, above the grid; each pops on its own click */}
+          {/* S8-S10 + Heart/Cherries — ambient stickers, above the grid; each pops on its own click */}
           <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20">
-            <div
-              className="absolute left-[2.5%] bottom-[14%]"
-              style={{ animation: "float1 15s ease-in-out infinite" }}
+            <Sticker
+              floatVariant="float1"
+              floatDuration="15s"
+              wrapperClassName="absolute left-[1%] bottom-[10%]"
+              className="pointer-events-auto opacity-[0.75]"
             >
-              <div
-                key={pops.s8}
-                onClick={() => pop("s8")}
-                className={cn(
-                  "relative size-[52px] cursor-pointer pointer-events-auto opacity-50",
-                  pops.s8 > 0 && "animate-pop"
-                )}
-              >
-                {[0, 90, 180, 270].map((deg) => (
-                  <div
-                    key={deg}
-                    className="absolute top-[1px] left-[16px] h-[29px] w-[20px] rounded-full blur-[6px]"
-                    style={{
-                      background:
-                        "radial-gradient(circle at 50% 64%, var(--teal), rgba(63,167,137,.25) 60%, transparent 76%)",
-                      transformOrigin: "50% 96%",
-                      transform: `rotate(${deg}deg)`,
-                    }}
-                  />
-                ))}
-                <div
-                  className="absolute top-[22px] left-[22px] size-2 rounded-full blur-[2px]"
-                  style={{ background: "var(--amber)" }}
-                />
-              </div>
-            </div>
+              <Flower size={92} petal="var(--teal)" center="var(--amber)" />
+            </Sticker>
 
-            <div
-              className="absolute right-[3%] top-[26%]"
-              style={{ animation: "float2 18s ease-in-out infinite" }}
+            <Sticker
+              floatVariant="float2"
+              floatDuration="18s"
+              wrapperClassName="absolute right-[1%] top-[20%]"
+              className="pointer-events-auto opacity-[0.7]"
             >
-              <div
-                key={pops.s9}
-                onClick={() => pop("s9")}
-                className={cn(
-                  "size-[26px] cursor-pointer pointer-events-auto opacity-[.42]",
-                  pops.s9 > 0 && "animate-pop"
-                )}
-                style={{
-                  background: "linear-gradient(140deg, var(--amber), var(--coral))",
-                  clipPath:
-                    "polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 92%,50% 70%,21% 92%,32% 57%,2% 35%,39% 35%)",
-                }}
-              />
-            </div>
+              <StarPolygon size={54} />
+            </Sticker>
 
-            <div
-              className="absolute left-[34%] bottom-[3%]"
-              style={{ animation: "float3 16s ease-in-out infinite", animationDelay: "1.2s" }}
+            <Sticker
+              floatVariant="float3"
+              floatDuration="16s"
+              floatDelay="1.2s"
+              wrapperClassName="absolute left-[30%] bottom-[-2%]"
+              className="pointer-events-auto opacity-[0.7]"
             >
-              <div
-                key={pops.s10}
-                onClick={() => pop("s10")}
-                className={cn(
-                  "relative size-[30px] cursor-pointer pointer-events-auto opacity-45",
-                  pops.s10 > 0 && "animate-pop"
-                )}
-              >
-                <div
-                  className="absolute top-[1px] left-[5px] h-[27px] w-[19px]"
-                  style={{
-                    background: "var(--blue)",
-                    clipPath: "polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)",
-                    animation: "twinkle 3s ease-in-out infinite",
-                  }}
-                />
-              </div>
-            </div>
+              <TwinkleDiamondPair size={62} />
+            </Sticker>
 
             <Sticker
               floatVariant="float1"
               floatDuration="14s"
               floatDelay="2.4s"
-              wrapperClassName="absolute left-[16%] top-[8%]"
-              className="pointer-events-auto opacity-40"
+              wrapperClassName="absolute left-[13%] top-[4%]"
+              className="pointer-events-auto opacity-[0.65]"
             >
-              <Heart size={28} />
+              <Heart size={48} />
             </Sticker>
 
             <Sticker
               floatVariant="float3"
               floatDuration="19s"
               floatDelay="0.6s"
-              wrapperClassName="absolute right-[22%] bottom-[6%]"
-              className="pointer-events-auto opacity-40"
+              wrapperClassName="absolute right-[18%] bottom-[2%]"
+              className="pointer-events-auto opacity-[0.65]"
             >
-              <Cherries size={26} />
+              <Cherries size={46} />
             </Sticker>
           </div>
 

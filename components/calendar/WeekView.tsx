@@ -50,9 +50,9 @@ export function WeekView({
         floatVariant="float3"
         floatDuration="16s"
         wrapperClassName="pointer-events-none absolute top-1 right-3 z-20"
-        className="pointer-events-auto opacity-40"
+        className="pointer-events-auto opacity-[0.6]"
       >
-        <Bow size={26} />
+        <Bow size={40} />
       </Sticker>
       <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-px">
         <div className="h-[26px] bg-page" />

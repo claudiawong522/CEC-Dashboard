@@ -8,10 +8,10 @@ export default function NewEventPage() {
       <Sticker
         floatVariant="float2"
         floatDuration="15s"
-        wrapperClassName="pointer-events-none absolute -top-3 right-[8%] z-0"
-        className="pointer-events-auto opacity-[0.12]"
+        wrapperClassName="pointer-events-none absolute -top-4 right-[6%] z-0"
+        className="pointer-events-auto opacity-[0.35]"
       >
-        <StarPolygon size={40} />
+        <StarPolygon size={70} />
       </Sticker>
       <div className="flex flex-col gap-[5px]">
         <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">

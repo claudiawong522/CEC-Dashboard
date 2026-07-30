@@ -52,6 +52,7 @@
   --color-paper: var(--paper);
   --color-page: var(--page);
   --color-wash: var(--hover);
+  --color-canvas: var(--canvas);
   --color-line: var(--hairline);
   --color-line-soft: var(--hairline-soft);
   --color-line-input: var(--hairline-input);
@@ -303,22 +304,27 @@
   color: var(--body);
 }
 .fc-cec .fc-col-header-cell {
-  background: transparent;
+  /* grey undertone on the weekday row — same rgba(35,32,28,.07) wash
+     the kit's own mockup uses (design/CEC Pages.dc.html), composited
+     directly since FullCalendar's header cells are <th>s in a table,
+     not CSS-grid children sitting over a shared background. */
+  background: var(--hairline-soft);
 }
 
 /* day cells */
 .fc-cec .fc-daygrid-day-frame {
   position: relative;
-  min-height: 94px;
+  min-height: 122px;
   background: rgba(255, 253, 249, 0.74);
-  padding: 8px 10px;
+  padding: 10px 12px;
 }
 .fc-cec .fc-daygrid-day-top {
   padding: 0;
+  justify-content: flex-start;
 }
 .fc-cec .fc-daygrid-day-number {
   padding: 0;
-  font-size: 11.5px;
+  font-size: 12px;
   color: var(--body);
 }
 .fc-cec .fc-day-other .fc-daygrid-day-number {
@@ -334,10 +340,10 @@
 .fc-cec .fc-daygrid-day.fc-day-today .fc-daygrid-day-frame::after {
   content: "";
   position: absolute;
-  right: 9px;
-  top: 8px;
-  width: 15px;
-  height: 15px;
+  right: 11px;
+  top: 10px;
+  width: 17px;
+  height: 17px;
   border-radius: 50%;
   filter: blur(1.5px);
   background: radial-gradient(
@@ -350,12 +356,12 @@
 
 /* event chips */
 .fc-cec .fc-daygrid-event {
-  margin-top: 7px;
+  margin-top: 8px;
   border-radius: var(--r-chip);
   border: 1px solid rgba(35, 32, 28, 0.08);
   background: rgba(255, 253, 249, 0.95);
-  padding: 4px 7px;
-  font-size: 10.5px;
+  padding: 5px 8px;
+  font-size: 11px;
   font-weight: 400;
   transition:
     transform 180ms ease,

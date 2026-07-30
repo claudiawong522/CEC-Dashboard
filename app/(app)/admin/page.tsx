@@ -47,8 +47,8 @@ export default async function AdminPage() {
             Signed in as {session.profile.full_name ?? session.profile.email} ·{" "}
             {session.profile.email}
           </span>
-          <Sticker floatVariant="none" className="opacity-50 hover:opacity-100">
-            <BeadRow size={5} gap={3} />
+          <Sticker floatVariant="none" className="opacity-70 hover:opacity-100">
+            <BeadRow size={7} gap={4} />
           </Sticker>
         </div>
       </div>

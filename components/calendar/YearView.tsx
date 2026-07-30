@@ -35,10 +35,10 @@ export function YearView({
       <Sticker
         floatVariant="float1"
         floatDuration="17s"
-        wrapperClassName="pointer-events-none absolute -top-8 -right-6 z-0"
-        className="pointer-events-auto opacity-30"
+        wrapperClassName="pointer-events-none absolute -top-10 -right-8 z-0"
+        className="pointer-events-auto opacity-[0.55]"
       >
-        <Sparkle size={40} />
+        <Sparkle size={64} />
       </Sticker>
 
       <div className="relative grid grid-cols-4 gap-3">

@@ -33,10 +33,10 @@ export function PastEventsGrid({ events }: { events: PastEvent[] }) {
       <Sticker
         floatVariant="float1"
         floatDuration="16s"
-        wrapperClassName="pointer-events-none absolute -top-6 left-[38%] z-0"
-        className="pointer-events-auto opacity-[0.08]"
+        wrapperClassName="pointer-events-none absolute -top-8 left-[36%] z-0"
+        className="pointer-events-auto opacity-[0.4]"
       >
-        <Flower size={64} />
+        <Flower size={110} />
       </Sticker>
 
       <div className="relative z-10 flex items-baseline justify-between">

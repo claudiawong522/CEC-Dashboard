@@ -62,9 +62,10 @@ Emphasis = one 500-weight word in `ink`, or a 1px underlined link. Never a bold 
 ## Mark & lockups
 - Triangle: `clip-path: polygon(50% 0,100% 100%,0 100%)` filled with the gradient. Aspect ≈ 1.14:1.
 - Primary lockup: 24×21px mark + "CEC Dashboard" 500/17px, 11px gap. Header uses 20×18px + 14.5px.
-- Stacked: 34×30px mark over "CEC" 500/12px uppercase tracking .1em — login, favicon ≥32px. The header now
-  uses the mark at this same 34×30px size (up from the old 20×18px primary lockup) beside a 20px/−0.016em
-  wordmark, and both are click-poppable, per 2026-07-30's "logo + header" pass — see changelog.
+- Stacked: 34×30px mark over "CEC" 500/12px uppercase tracking .1em — login, favicon ≥32px.
+- Sidebar lockup (2026-07-30, replaces the old top-header lockup): 21×24px mark + a two-line "CEC / Dashboard"
+  16px/1.15/−0.014em wordmark, 10px gap, sitting at the top of the 228px nav sidebar — see changelog. Both
+  mark and wordmark are click-poppable and link home.
 - Outline: gradient triangle with a paper triangle inset equally, 3px bottom rule remaining — favicon 16px,
   print. **The inner triangle must be centred**, or the mark reads as a chevron.
 - Mark on wash: mark over the bottom-anchored cloud wash — login only.
@@ -117,8 +118,11 @@ Only two shadows: primary-button hover glow `0 9px 20px -10px rgba(232,88,61,.9)
 - Built from blurred radial gradients (petals), clip-path polygons (triangle, star, sparkle) and conic
   gradients (ring, pinwheel). Keep them CSS — no bitmap exports.
 - **Functional** stickers (flags, beads, sun, confetti, seal, highlighter) render at full strength.
-- **Decorative** stickers render at low opacity (roughly 6–12%, looser than before — judge by feel against
-  the paper ground), always *behind* or clearly subordinate to content, on ≥70%-opaque paper.
+- **Decorative** stickers render big and obvious (2026-07-30: pushed well past the original 6–12% guidance —
+  most are now 60–90px with 35–75% opacity; judge by feel, they should read as a deliberate visual element,
+  not a barely-there texture), sized generously, always *behind* or clearly subordinate to content, on
+  ≥70%-opaque paper. The Notes/DetailsForm exceptions that sit near editable fields stay lower-opacity and
+  `pointer-events-none` specifically because they're adjacent to interactive controls, not as a general rule.
 - **Every screen gets decor, no exceptions** — as of 2026-07-30 this includes forms (New Event, Event
   Details), Admin and the Notes editor. Multiple decor moments per screen are fine; keep them light enough
   that they read as texture, not clutter, and never let one sit over text a user needs to click through
@@ -282,3 +286,28 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
     the kit's own "beads — role dots" placement). Login was left as-is: already the densest screen (7
     stickers + the mark) and previously verified against the mockup, so it wasn't worth the regression risk
     for this pass.
+- **Sidebar shell, enlarged calendar, canvas backdrop, bigger stickers (2026-07-30, second pass).**
+  Iterated live against a reference screenshot the user took of `design/CEC Pages.dc.html` itself (the
+  "02 · CALENDAR · MONTH (HOME)" caption gave it away) rather than guessing colours off a JPEG:
+  - **App shell rebuilt as a left sidebar.** The old top header + horizontal nav row is gone; `AppShell.tsx`
+    is now a 228px sidebar (brand lockup top, vertical nav with a gradient rail + `bg-cent-tint` pill on the
+    active item, avatar/account menu bottom) beside the page content. This freed the header row's vertical
+    space entirely.
+  - **New `--canvas` token (`#EFEBE2`)**, pulled byte-for-byte from `CEC Pages.dc.html`'s own `<body>`
+    background — not a guess, not reusing `--hover`. The whole app frame (sidebar + content) is now capped
+    at 1360px and centered on this canvas colour, so wide viewports letterbox instead of the grid stretching
+    into an oddly wide aspect ratio. Applies to every authenticated page via `AppShell`; Login is unchanged
+    (it's already a deliberate full-bleed exception, see "Mark on wash" above).
+  - **Calendar month view enlarged and corrected to match the mockup exactly, not approximated:** day
+    numbers left-aligned (were right-aligned — FullCalendar's default `.fc-daygrid-day-top` is
+    `justify-content: flex-end`, overridden to `flex-start`), day cells 94px → 122px, and the weekday header
+    row's grey undertone is `rgba(35,32,28,.07)` applied directly to `.fc-col-header-cell` — this is the
+    exact composited value of the mockup's own grid-container wash (`--hairline-soft`), not an invented flat
+    colour. Event chips, the today-dot and the month title scaled up slightly to match.
+  - **Every decorative sticker sized up significantly** ("bigger + obvious," direct request) — most moved
+    from 26–64px/6–12% opacity to 46–110px/35–75% opacity. Calendar month view's hand-rolled S8/S9/S10 were
+    also rebuilt on the shared `Flower`/`StarPolygon`/`TwinkleDiamondPair` components instead of duplicated
+    inline markup, since they needed to scale anyway. The two stickers sitting near interactive
+    controls/editable text (DetailsForm's header sprig, Notes' corner star) were bumped in size too but kept
+    `pointer-events-none`/low-relative-opacity, since "bigger" there shouldn't mean "steals clicks or fights
+    the text above it."
