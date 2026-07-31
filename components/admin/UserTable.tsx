@@ -39,14 +39,14 @@ export function UserTable({
             <span className="truncate font-sans text-[12px] text-body">{user.email}</span>
             {isPending ? (
               <span
-                className="justify-self-end rounded-[20px] border border-[rgba(224,185,74,0.4)] bg-amber/10 px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-strong uppercase"
+                className="justify-self-start rounded-[20px] border border-[rgba(224,185,74,0.4)] bg-amber/10 px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-strong uppercase"
                 title={`Will become ${user.role} on accept`}
               >
                 pending · {user.role}
               </span>
             ) : isSelf ? (
               <span
-                className="justify-self-end rounded-[20px] px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"
+                className="justify-self-start rounded-[20px] px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"
                 style={{
                   background:
                     "linear-gradient(95deg, rgba(232,88,61,.2), rgba(224,185,74,.2), rgba(63,167,137,.2), rgba(59,111,194,.2))",
@@ -57,7 +57,7 @@ export function UserTable({
             ) : canManageRoles ? (
               <RoleSelect userId={user.id} role={user.role} />
             ) : (
-              <span className="justify-self-end rounded-[20px] border border-line-input bg-page px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-body uppercase">
+              <span className="justify-self-start rounded-[20px] border border-line-input bg-page px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-body uppercase">
                 {user.role}
               </span>
             )}

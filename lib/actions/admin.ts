@@ -16,13 +16,22 @@ export async function updateUserRole(userId: string, role: Role) {
   revalidatePath("/admin");
 }
 
+// There's no self-serve signup — every account starts from an admin invite
+// (see app/auth/callback/route.ts). This just bounds which domains an admin
+// can invite from, e.g. a personal Gmail for a non-Cornell collaborator.
+// Configurable via a comma-separated env var.
+const INVITE_ALLOWED_DOMAINS = (process.env.INVITE_ALLOWED_DOMAINS ?? "cornell.edu,gmail.com")
+  .split(",")
+  .map((domain) => domain.trim().toLowerCase())
+  .filter(Boolean);
+
 export async function inviteUser(email: string, role: Role) {
   const session = await requireRole("admin");
 
-  const allowedDomain = process.env.ALLOWED_EMAIL_DOMAIN ?? "cornell.edu";
   const normalizedEmail = email.trim().toLowerCase();
-  if (!normalizedEmail.endsWith(`@${allowedDomain}`)) {
-    throw new Error(`Invites are limited to @${allowedDomain} addresses`);
+  const domain = normalizedEmail.split("@")[1];
+  if (!domain || !INVITE_ALLOWED_DOMAINS.includes(domain)) {
+    throw new Error(`Invites are limited to: ${INVITE_ALLOWED_DOMAINS.join(", ")}`);
   }
 
   const admin = createAdminClient();

@@ -4,7 +4,8 @@
 
 ## What this app is
 Internal web app for the Cornell Entrepreneurship Club: events, prep-work tracking, photos, shared notes,
-admin access. Next.js + Tailwind + shadcn/ui. Members sign in with Google, @cornell.edu only.
+admin access. Next.js + Tailwind + shadcn/ui. Invite-only — members sign in with Google, but only after
+an admin has invited their email from `/admin`; there's no self-serve signup.
 
 ## Design system — read before any UI change
 `design/BRAND_KIT.md` is the source of truth for colour, type, radii, controls, stickers and motion.

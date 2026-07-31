@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 type StickerKey = "mark" | "s1" | "s2" | "s3" | "s4" | "s5" | "s6" | "s7";
 
 const ERROR_MESSAGES: Record<string, string> = {
-  domain: "Please sign in with an @cornell.edu email address.",
+  not_invited: "This app is invite-only — ask an admin to invite your email first.",
   unknown: "Something went wrong signing you in. Please try again.",
 };
 

@@ -1,9 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import type { Role } from "@/lib/auth/getSession";
-
-const ALLOWED_DOMAIN = process.env.ALLOWED_EMAIL_DOMAIN ?? "cornell.edu";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
@@ -23,16 +20,6 @@ export async function GET(request: Request) {
   const { user } = data;
   const email = user.email!;
 
-  // Google's `hd` param is only a soft UI hint on an External OAuth consent
-  // screen — the real domain restriction has to be enforced here.
-  if (!email.toLowerCase().endsWith(`@${ALLOWED_DOMAIN}`)) {
-    await supabase.auth.signOut();
-    return NextResponse.redirect(`${origin}/login?error=domain`);
-  }
-
-  const seedAdminEmail = process.env.SEED_ADMIN_EMAIL?.toLowerCase();
-  const role: Role = email.toLowerCase() === seedAdminEmail ? "admin" : "view";
-
   // Service-role client: creating/reading another user's profile row on
   // first login is outside what the anon+session client's RLS allows.
   const admin = createAdminClient();
@@ -42,13 +29,26 @@ export async function GET(request: Request) {
     .eq("id", user.id)
     .maybeSingle();
 
+  const seedAdminEmail = process.env.SEED_ADMIN_EMAIL?.toLowerCase();
+  const isSeedAdmin = email.toLowerCase() === seedAdminEmail;
+
+  // No self-serve signup: the only ways in are (1) an admin already invited
+  // this email (a `profiles` row exists), or (2) this is the one bootstrap
+  // admin identity configured out-of-band via SEED_ADMIN_EMAIL — every other
+  // first-time Google sign-in gets turned away here, Cornell email or not.
+  if (!existing && !isSeedAdmin) {
+    await supabase.auth.signOut();
+    return NextResponse.redirect(`${origin}/login?error=not_invited`);
+  }
+
   if (!existing) {
+    // Only reachable by the seed admin's very first sign-in.
     await admin.from("profiles").insert({
       id: user.id,
       email,
       full_name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
       avatar_url: user.user_metadata?.avatar_url ?? null,
-      role,
+      role: "admin",
       status: "active",
     });
   } else if (existing.status === "invited") {
