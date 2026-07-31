@@ -35,6 +35,8 @@ export type CalendarEvent = {
   id: string;
   name: string;
   event_date: string;
+  event_end_date: string;
+  all_day: boolean;
   event_time: string;
   event_end_time: string | null;
   venue: string;
@@ -71,8 +73,14 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
   const fcEvents = events.map((event) => ({
     id: event.id,
     title: event.name,
-    start: `${event.event_date}T${event.event_time}`,
-    end: event.event_end_time ? `${event.event_date}T${event.event_end_time}` : undefined,
+    allDay: event.all_day,
+    start: event.all_day ? event.event_date : `${event.event_date}T${event.event_time}`,
+    // FullCalendar's `end` is exclusive for all-day events (needs the day
+    // *after* the last day) but inclusive of the actual moment for timed
+    // ones — same event_end_date column, two different offsets.
+    end: event.all_day
+      ? format(addDays(new Date(`${event.event_end_date}T00:00`), 1), "yyyy-MM-dd")
+      : `${event.event_end_date}T${event.event_end_time ?? event.event_time}`,
     extendedProps: {
       venue: event.venue,
       isComplete: event.is_complete,

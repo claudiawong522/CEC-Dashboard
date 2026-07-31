@@ -1,12 +1,34 @@
 import { z } from "zod";
 
-// Both event forms carry a start/end time pair — factored out so the
-// "end after start" rule can't drift between them.
-function requireEndAfterStart<T extends { eventStartTime: string; eventEndTime: string }>(
-  values: T,
-  ctx: z.RefinementCtx,
-) {
-  if (values.eventStartTime && values.eventEndTime && values.eventEndTime <= values.eventStartTime) {
+// Both event forms carry the same date-range + time-range pair — factored
+// out so the ordering rules can't drift between them. Time order only
+// matters when the event is a single day and has times at all (all-day
+// events skip it entirely); a later end *date* makes any end time valid,
+// since e.g. "Mon 9am to Wed 5pm" doesn't compare times directly.
+function requireValidRange<
+  T extends {
+    eventDate: string;
+    eventEndDate: string;
+    allDay: boolean;
+    eventStartTime: string;
+    eventEndTime: string;
+  },
+>(values: T, ctx: z.RefinementCtx) {
+  if (values.eventEndDate && values.eventDate && values.eventEndDate < values.eventDate) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "End date must be on or after the start date",
+      path: ["eventEndDate"],
+    });
+  }
+  const sameDay = values.eventEndDate === values.eventDate;
+  if (
+    !values.allDay &&
+    sameDay &&
+    values.eventStartTime &&
+    values.eventEndTime &&
+    values.eventEndTime <= values.eventStartTime
+  ) {
     ctx.addIssue({
       code: z.ZodIssueCode.custom,
       message: "End must be after start",
@@ -19,6 +41,8 @@ export const toggleFormSchema = z
   .object({
     name: z.string().min(1, "Required"),
     eventDate: z.string().min(1, "Required"),
+    eventEndDate: z.string().min(1, "Required"),
+    allDay: z.boolean(),
     eventStartTime: z.string().min(1, "Required"),
     eventEndTime: z.string().min(1, "Required"),
     venue: z.string().min(1, "Required"),
@@ -40,7 +64,7 @@ export const toggleFormSchema = z
     repeatsOccurrenceCount: z.number().int().min(1).max(104).optional(),
   })
   .superRefine((values, ctx) => {
-    requireEndAfterStart(values, ctx);
+    requireValidRange(values, ctx);
     if (!values.repeatsFrequency) return;
     if ((values.repeatsEndsMode ?? "date") === "date" && !values.repeatsEndDate) {
       ctx.addIssue({
@@ -65,6 +89,8 @@ export type ToggleFormValues = z.infer<typeof toggleFormSchema>;
 export const eventCoreSchema = z.object({
   name: z.string().min(1, "Required"),
   eventDate: z.string().min(1, "Required"),
+  eventEndDate: z.string().min(1, "Required"),
+  allDay: z.boolean(),
   eventStartTime: z.string().min(1, "Required"),
   eventEndTime: z.string().min(1, "Required"),
   venue: z.string().min(1, "Required"),
@@ -73,8 +99,15 @@ export const eventCoreSchema = z.object({
 export type EventCoreValues = z.infer<typeof eventCoreSchema>;
 
 export const eventHeaderSchema = eventCoreSchema
-  .pick({ name: true, eventDate: true, eventStartTime: true, eventEndTime: true })
-  .superRefine(requireEndAfterStart);
+  .pick({
+    name: true,
+    eventDate: true,
+    eventEndDate: true,
+    allDay: true,
+    eventStartTime: true,
+    eventEndTime: true,
+  })
+  .superRefine(requireValidRange);
 
 export const speakerSchema = z.object({
   description: z.string().optional(),

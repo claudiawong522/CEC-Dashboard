@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useRef, useTransition } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -47,17 +47,21 @@ export function ToggleForm({
   defaultDate?: string;
 }) {
   const [isPending, startTransition] = useTransition();
+  const endDateTouched = useRef(false);
   const {
     register,
     control,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<ToggleFormValues>({
     resolver: zodResolver(toggleFormSchema),
     defaultValues: {
       name: "",
       eventDate: defaultDate ?? "",
+      eventEndDate: defaultDate ?? "",
+      allDay: false,
       eventStartTime: "",
       eventEndTime: "",
       venue: "",
@@ -100,16 +104,48 @@ export function ToggleForm({
         {errors.name && <p className="font-sans text-[12px] text-destructive">{errors.name.message}</p>}
       </div>
 
+      <div className="flex items-center justify-between">
+        <Label className="font-sans text-[12px] font-normal text-body">When</Label>
+        <label className="flex items-center gap-2">
+          <span className="font-sans text-[12px] text-body">All day</span>
+          <Controller
+            name="allDay"
+            control={control}
+            render={({ field }) => (
+              <Switch
+                checked={field.value}
+                onCheckedChange={(checked) => {
+                  field.onChange(checked);
+                  // Times stay required by the schema even when hidden —
+                  // an all-day event just gets a fixed full-day range under
+                  // the hood instead of asking the user to pick one.
+                  if (checked) {
+                    setValue("eventStartTime", "00:00");
+                    setValue("eventEndTime", "23:45");
+                  }
+                }}
+              />
+            )}
+          />
+        </label>
+      </div>
       <div className="flex gap-[11px]">
         <div className="flex flex-1 flex-col gap-1.5">
           <Label htmlFor="eventDate" className="font-sans text-[12px] font-normal text-body">
-            Date
+            Start date
           </Label>
           <Controller
             name="eventDate"
             control={control}
             render={({ field }) => (
-              <DatePicker id="eventDate" value={field.value} onChange={field.onChange} />
+              <DatePicker
+                id="eventDate"
+                value={field.value}
+                onChange={(v) => {
+                  field.onChange(v);
+                  if (!endDateTouched.current) setValue("eventEndDate", v);
+                }}
+              />
             )}
           />
           {errors.eventDate && (
@@ -117,36 +153,62 @@ export function ToggleForm({
           )}
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="eventStartTime" className="font-sans text-[12px] font-normal text-body">
-            Start time
+          <Label htmlFor="eventEndDate" className="font-sans text-[12px] font-normal text-body">
+            End date
           </Label>
           <Controller
-            name="eventStartTime"
+            name="eventEndDate"
             control={control}
             render={({ field }) => (
-              <TimePicker id="eventStartTime" value={field.value} onChange={field.onChange} />
+              <DatePicker
+                id="eventEndDate"
+                value={field.value}
+                onChange={(v) => {
+                  endDateTouched.current = true;
+                  field.onChange(v);
+                }}
+              />
             )}
           />
-          {errors.eventStartTime && (
-            <p className="font-sans text-[12px] text-destructive">{errors.eventStartTime.message}</p>
-          )}
-        </div>
-        <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="eventEndTime" className="font-sans text-[12px] font-normal text-body">
-            End time
-          </Label>
-          <Controller
-            name="eventEndTime"
-            control={control}
-            render={({ field }) => (
-              <TimePicker id="eventEndTime" value={field.value} onChange={field.onChange} />
-            )}
-          />
-          {errors.eventEndTime && (
-            <p className="font-sans text-[12px] text-destructive">{errors.eventEndTime.message}</p>
+          {errors.eventEndDate && (
+            <p className="font-sans text-[12px] text-destructive">{errors.eventEndDate.message}</p>
           )}
         </div>
       </div>
+      {!values.allDay && (
+        <div className="flex gap-[11px]">
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Label htmlFor="eventStartTime" className="font-sans text-[12px] font-normal text-body">
+              Start time
+            </Label>
+            <Controller
+              name="eventStartTime"
+              control={control}
+              render={({ field }) => (
+                <TimePicker id="eventStartTime" value={field.value} onChange={field.onChange} />
+              )}
+            />
+            {errors.eventStartTime && (
+              <p className="font-sans text-[12px] text-destructive">{errors.eventStartTime.message}</p>
+            )}
+          </div>
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Label htmlFor="eventEndTime" className="font-sans text-[12px] font-normal text-body">
+              End time
+            </Label>
+            <Controller
+              name="eventEndTime"
+              control={control}
+              render={({ field }) => (
+                <TimePicker id="eventEndTime" value={field.value} onChange={field.onChange} />
+              )}
+            />
+            {errors.eventEndTime && (
+              <p className="font-sans text-[12px] text-destructive">{errors.eventEndTime.message}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="flex gap-[11px]">
         <div className="flex flex-1 flex-col gap-1.5">

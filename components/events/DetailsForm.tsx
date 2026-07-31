@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DatePicker } from "@/components/ui/date-picker";
 import { TimePicker } from "@/components/ui/time-picker";
+import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -85,14 +86,18 @@ export function DetailsForm({
 }) {
   const [name, setName] = useState(event.name);
   const [date, setDate] = useState(event.event_date);
+  const [endDate, setEndDate] = useState(event.event_end_date);
+  const [allDay, setAllDay] = useState(event.all_day);
   const [startTime, setStartTime] = useState(event.event_time.slice(0, 5));
   const [endTime, setEndTime] = useState(event.event_end_time?.slice(0, 5) ?? "");
-  const headerStatus = useAutoSave({ name, date, startTime, endTime }, (next) =>
+  const headerStatus = useAutoSave({ name, date, endDate, allDay, startTime, endTime }, (next) =>
     updateEventHeader(event.id, {
       name: next.name,
       eventDate: next.date,
-      eventStartTime: next.startTime,
-      eventEndTime: next.endTime,
+      eventEndDate: next.endDate,
+      allDay: next.allDay,
+      eventStartTime: next.allDay ? "00:00" : next.startTime,
+      eventEndTime: next.allDay ? "23:45" : next.endTime,
     }),
   );
 
@@ -191,19 +196,47 @@ export function DetailsForm({
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="flex flex-1 flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Date</Label>
-            <DatePicker value={date} onChange={setDate} />
+            <Label className="font-sans text-[12px] font-normal text-body">Start date</Label>
+            <DatePicker
+              value={date}
+              onChange={(v) => {
+                setDate(v);
+                if (endDate === date || !endDate) setEndDate(v);
+              }}
+            />
           </div>
           <div className="flex flex-1 flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Start</Label>
-            <TimePicker value={startTime} onChange={setStartTime} />
+            <Label className="font-sans text-[12px] font-normal text-body">End date</Label>
+            <DatePicker value={endDate} onChange={setEndDate} />
           </div>
-          <div className="flex flex-1 flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">End</Label>
-            <TimePicker value={endTime} onChange={setEndTime} />
-          </div>
+          <label className="flex items-center gap-2 pb-2.5">
+            <span className="font-sans text-[12px] text-body">All day</span>
+            <Switch
+              checked={allDay}
+              onCheckedChange={(checked) => {
+                setAllDay(checked);
+                if (checked) {
+                  setStartTime("00:00");
+                  setEndTime("23:45");
+                }
+              }}
+            />
+          </label>
           <SaveIndicator status={headerStatus} className="pb-2.5" />
         </div>
+        {!allDay && (
+          <div className="flex items-end gap-3">
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Label className="font-sans text-[12px] font-normal text-body">Start time</Label>
+              <TimePicker value={startTime} onChange={setStartTime} />
+            </div>
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Label className="font-sans text-[12px] font-normal text-body">End time</Label>
+              <TimePicker value={endTime} onChange={setEndTime} />
+            </div>
+            <div className="flex-[2]" />
+          </div>
+        )}
 
         {recurringSeries && (
           <div className="flex items-end gap-3 border-t border-[rgba(35,32,28,0.07)] pt-4">

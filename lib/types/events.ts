@@ -2,6 +2,8 @@ export type EventRow = {
   id: string;
   name: string;
   event_date: string;
+  event_end_date: string;
+  all_day: boolean;
   event_time: string;
   event_end_time: string | null;
   venue: string;

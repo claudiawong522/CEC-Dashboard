@@ -2,7 +2,15 @@
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
-import { addWeeks, addMonths, formatISO, isAfter, parseISO } from "date-fns";
+import {
+  addDays,
+  addWeeks,
+  addMonths,
+  differenceInCalendarDays,
+  formatISO,
+  isAfter,
+  parseISO,
+} from "date-fns";
 import { requireRole } from "@/lib/auth/requireRole";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -62,6 +70,8 @@ export async function createEvent(values: ToggleFormValues) {
     .insert({
       name: parsed.name,
       event_date: parsed.eventDate,
+      event_end_date: parsed.eventEndDate,
+      all_day: parsed.allDay,
       event_time: parsed.eventStartTime,
       event_end_time: parsed.eventEndTime,
       venue: parsed.venue,
@@ -163,7 +173,10 @@ export async function rescheduleEvent(eventId: string, eventDate: string) {
 
 export async function updateEventHeader(
   eventId: string,
-  values: Pick<EventCoreValues, "name" | "eventDate" | "eventStartTime" | "eventEndTime">,
+  values: Pick<
+    EventCoreValues,
+    "name" | "eventDate" | "eventEndDate" | "allDay" | "eventStartTime" | "eventEndTime"
+  >,
 ) {
   await requireRole("edit");
   const parsed = eventHeaderSchema.parse(values);
@@ -174,6 +187,8 @@ export async function updateEventHeader(
     .update({
       name: parsed.name,
       event_date: parsed.eventDate,
+      event_end_date: parsed.eventEndDate,
+      all_day: parsed.allDay,
       event_time: parsed.eventStartTime,
       event_end_time: parsed.eventEndTime,
     })
@@ -375,12 +390,13 @@ export async function generateRecurringOccurrences(
   const { data: parent, error: parentError } = await supabase
     .from("events")
     .select(
-      "id, name, event_date, event_time, event_end_time, venue, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media",
+      "id, name, event_date, event_end_date, all_day, event_time, event_end_time, venue, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media",
     )
     .eq("id", eventId)
     .single();
 
   if (parentError || !parent) throw new Error(parentError?.message ?? "Event not found");
+  const spanDays = differenceInCalendarDays(parseISO(parent.event_end_date), parseISO(parent.event_date));
 
   const { data: series, error: seriesError } = await supabase
     .from("recurring_series")
@@ -415,6 +431,8 @@ export async function generateRecurringOccurrences(
       .insert({
         name: parent.name,
         event_date: formatISO(date, { representation: "date" }),
+        event_end_date: formatISO(addDays(date, spanDays), { representation: "date" }),
+        all_day: parent.all_day,
         event_time: parent.event_time,
         event_end_time: parent.event_end_time,
         venue: parent.venue,
@@ -463,7 +481,7 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
   const { data: seriesEvents, error: seriesEventsError } = await supabase
     .from("events")
     .select(
-      "id, name, event_date, event_time, event_end_time, venue, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media, is_recurring_parent",
+      "id, name, event_date, event_end_date, all_day, event_time, event_end_time, venue, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media, is_recurring_parent",
     )
     .eq("recurring_series_id", seriesId);
   if (seriesEventsError || !seriesEvents?.length) {
@@ -509,6 +527,7 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
   };
 
   const createdIds: string[] = [];
+  const spanDays = differenceInCalendarDays(parseISO(anchor.event_end_date), parseISO(anchor.event_date));
   const dates = occurrenceDatesAfter(parseISO(anchor.event_date), parsed);
   for (const date of dates) {
     const { data: child, error: childError } = await supabase
@@ -516,6 +535,8 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
       .insert({
         name: anchor.name,
         event_date: formatISO(date, { representation: "date" }),
+        event_end_date: formatISO(addDays(date, spanDays), { representation: "date" }),
+        all_day: anchor.all_day,
         event_time: anchor.event_time,
         event_end_time: anchor.event_end_time,
         venue: anchor.venue,
