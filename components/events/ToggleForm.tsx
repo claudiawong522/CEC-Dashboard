@@ -62,7 +62,9 @@ export function ToggleForm({ defaultMediaOn = false }: { defaultMediaOn?: boolea
       hasMarketing: false,
       hasMedia: defaultMediaOn,
       repeatsFrequency: null,
+      repeatsEndsMode: "date",
       repeatsEndDate: "",
+      repeatsOccurrenceCount: 6,
     },
   });
 
@@ -168,8 +170,30 @@ export function ToggleForm({ defaultMediaOn = false }: { defaultMediaOn?: boolea
         </div>
         {values.repeatsFrequency && (
           <div className="flex flex-1 flex-col gap-1.5">
+            <Label htmlFor="repeatsEndsMode" className="font-sans text-[12px] font-normal text-body">
+              Ends
+            </Label>
+            <Controller
+              name="repeatsEndsMode"
+              control={control}
+              render={({ field }) => (
+                <Select value={field.value ?? "date"} onValueChange={field.onChange}>
+                  <SelectTrigger id="repeatsEndsMode" className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="date">On date</SelectItem>
+                    <SelectItem value="count">After N times</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+        )}
+        {values.repeatsFrequency && values.repeatsEndsMode !== "count" && (
+          <div className="flex flex-1 flex-col gap-1.5">
             <Label htmlFor="repeatsEndDate" className="font-sans text-[12px] font-normal text-body">
-              Ends on
+              End date
             </Label>
             <Controller
               name="repeatsEndDate"
@@ -180,6 +204,32 @@ export function ToggleForm({ defaultMediaOn = false }: { defaultMediaOn?: boolea
             />
             {errors.repeatsEndDate && (
               <p className="font-sans text-[12px] text-destructive">{errors.repeatsEndDate.message}</p>
+            )}
+          </div>
+        )}
+        {values.repeatsFrequency && values.repeatsEndsMode === "count" && (
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Label htmlFor="repeatsOccurrenceCount" className="font-sans text-[12px] font-normal text-body">
+              Occurrences
+            </Label>
+            <Controller
+              name="repeatsOccurrenceCount"
+              control={control}
+              render={({ field }) => (
+                <Input
+                  id="repeatsOccurrenceCount"
+                  type="number"
+                  min={1}
+                  max={104}
+                  value={field.value ?? 6}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
+              )}
+            />
+            {errors.repeatsOccurrenceCount && (
+              <p className="font-sans text-[12px] text-destructive">
+                {errors.repeatsOccurrenceCount.message}
+              </p>
             )}
           </div>
         )}

@@ -1,5 +1,20 @@
 import { z } from "zod";
 
+// Both event forms carry a start/end time pair — factored out so the
+// "end after start" rule can't drift between them.
+function requireEndAfterStart<T extends { eventStartTime: string; eventEndTime: string }>(
+  values: T,
+  ctx: z.RefinementCtx,
+) {
+  if (values.eventStartTime && values.eventEndTime && values.eventEndTime <= values.eventStartTime) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "End must be after start",
+      path: ["eventEndTime"],
+    });
+  }
+}
+
 export const toggleFormSchema = z
   .object({
     name: z.string().min(1, "Required"),
@@ -14,14 +29,39 @@ export const toggleFormSchema = z
     hasMarketing: z.boolean(),
     hasMedia: z.boolean(),
     repeatsFrequency: z.enum(["weekly", "biweekly", "monthly"]).nullable(),
+    repeatsEndsMode: z.enum(["date", "count"]).optional(),
     repeatsEndDate: z.string().optional(),
+    // Plain z.number(), not z.coerce — react-hook-form's zodResolver infers
+    // its field type from the schema's input type, and a coerced field's
+    // input type is `unknown`, which the useForm<ToggleFormValues>() generic
+    // (built from the *output* type) can't satisfy. The Select in ToggleForm
+    // converts to a number before calling field.onChange, so input already
+    // matches output here.
+    repeatsOccurrenceCount: z.number().int().min(1).max(104).optional(),
   })
-  .refine((values) => !values.repeatsFrequency || !!values.repeatsEndDate, {
-    message: "Pick an end date",
-    path: ["repeatsEndDate"],
+  .superRefine((values, ctx) => {
+    requireEndAfterStart(values, ctx);
+    if (!values.repeatsFrequency) return;
+    if ((values.repeatsEndsMode ?? "date") === "date" && !values.repeatsEndDate) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Pick an end date",
+        path: ["repeatsEndDate"],
+      });
+    }
+    if (values.repeatsEndsMode === "count" && !values.repeatsOccurrenceCount) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Pick a number of occurrences",
+        path: ["repeatsOccurrenceCount"],
+      });
+    }
   });
 export type ToggleFormValues = z.infer<typeof toggleFormSchema>;
 
+// Plain ZodObject (not wrapped in superRefine) so callers can still .pick()
+// individual fields off it — eventHeaderSchema below is the refined version
+// used wherever the full start/end time pair is being validated together.
 export const eventCoreSchema = z.object({
   name: z.string().min(1, "Required"),
   eventDate: z.string().min(1, "Required"),
@@ -31,6 +71,10 @@ export const eventCoreSchema = z.object({
   notes: z.string().optional(),
 });
 export type EventCoreValues = z.infer<typeof eventCoreSchema>;
+
+export const eventHeaderSchema = eventCoreSchema
+  .pick({ name: true, eventDate: true, eventStartTime: true, eventEndTime: true })
+  .superRefine(requireEndAfterStart);
 
 export const speakerSchema = z.object({
   description: z.string().optional(),
@@ -73,10 +117,21 @@ export const customMarketingItemSchema = z.object({
 });
 export type CustomMarketingItemValues = z.infer<typeof customMarketingItemSchema>;
 
-export const recurringSchema = z.object({
-  frequency: z.enum(["weekly", "biweekly", "monthly"]),
-  endDate: z.string().min(1, "Required"),
-});
+export const recurringSchema = z
+  .object({
+    frequency: z.enum(["weekly", "biweekly", "monthly"]),
+    endsMode: z.enum(["date", "count"]),
+    endDate: z.string().optional(),
+    occurrenceCount: z.coerce.number().int().min(1).max(104).optional(),
+  })
+  .superRefine((values, ctx) => {
+    if (values.endsMode === "date" && !values.endDate) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required", path: ["endDate"] });
+    }
+    if (values.endsMode === "count" && !values.occurrenceCount) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Required", path: ["occurrenceCount"] });
+    }
+  });
 export type RecurringValues = z.infer<typeof recurringSchema>;
 
 export const SECTIONS = [

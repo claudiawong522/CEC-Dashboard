@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import {
   toggleFormSchema,
   eventCoreSchema,
+  eventHeaderSchema,
   speakerSchema,
   attendeesSchema,
   moneySchema,
@@ -81,10 +82,12 @@ export async function createEvent(values: ToggleFormValues) {
 
   await insertChildRows(supabase, event.id, { ...parsed, hasRecurring: repeats });
 
-  if (repeats && parsed.repeatsFrequency && parsed.repeatsEndDate) {
+  if (repeats && parsed.repeatsFrequency) {
     await generateRecurringOccurrences(event.id, {
       frequency: parsed.repeatsFrequency,
+      endsMode: parsed.repeatsEndsMode ?? "date",
       endDate: parsed.repeatsEndDate,
+      occurrenceCount: parsed.repeatsOccurrenceCount,
     });
   }
 
@@ -97,9 +100,7 @@ export async function updateEventHeader(
   values: Pick<EventCoreValues, "name" | "eventDate" | "eventStartTime" | "eventEndTime">,
 ) {
   await requireRole("edit");
-  const parsed = eventCoreSchema
-    .pick({ name: true, eventDate: true, eventStartTime: true, eventEndTime: true })
-    .parse(values);
+  const parsed = eventHeaderSchema.parse(values);
   const supabase = await createClient();
 
   const { error } = await supabase
@@ -267,10 +268,34 @@ export async function setSectionDone(eventId: string, section: string, done: boo
   revalidatePath("/past-events");
 }
 
-function nextOccurrence(date: Date, frequency: RecurringValues["frequency"]) {
-  if (frequency === "weekly") return addWeeks(date, 1);
-  if (frequency === "biweekly") return addWeeks(date, 2);
-  return addMonths(date, 1);
+// The nth occurrence (n = 1, 2, ...) after `anchor`, computed directly from
+// the anchor every time rather than by repeatedly stepping off the last
+// generated date — stepping off itself compounds date-fns' end-of-month
+// clamping (Jan 31 -> Feb 28 -> Mar 28 -> ...) into permanent drift away
+// from the original day-of-month.
+function occurrenceDate(anchor: Date, frequency: RecurringValues["frequency"], n: number) {
+  if (frequency === "weekly") return addWeeks(anchor, n);
+  if (frequency === "biweekly") return addWeeks(anchor, n * 2);
+  return addMonths(anchor, n);
+}
+
+// Ends-by-date: every occurrence up to and including endDate.
+// Ends-by-count: `count` occurrences total, counting the anchor itself as
+// the first — so `count` child events are (count - 1) more after it.
+function occurrenceDatesAfter(anchor: Date, values: RecurringValues) {
+  const dates: Date[] = [];
+  if (values.endsMode === "count") {
+    const remaining = (values.occurrenceCount ?? 1) - 1;
+    for (let n = 1; n <= remaining && n <= 104; n++) dates.push(occurrenceDate(anchor, values.frequency, n));
+    return dates;
+  }
+  const endDate = parseISO(values.endDate!);
+  for (let n = 1; n <= 104; n++) {
+    const date = occurrenceDate(anchor, values.frequency, n);
+    if (isAfter(date, endDate)) break;
+    dates.push(date);
+  }
+  return dates;
 }
 
 export async function generateRecurringOccurrences(
@@ -293,7 +318,13 @@ export async function generateRecurringOccurrences(
 
   const { data: series, error: seriesError } = await supabase
     .from("recurring_series")
-    .insert({ frequency: parsed.frequency, end_date: parsed.endDate, created_by: session.user.id })
+    .insert({
+      frequency: parsed.frequency,
+      ends_mode: parsed.endsMode,
+      end_date: parsed.endsMode === "date" ? parsed.endDate : null,
+      occurrence_count: parsed.endsMode === "count" ? parsed.occurrenceCount : null,
+      created_by: session.user.id,
+    })
     .select("id")
     .single();
 
@@ -301,8 +332,6 @@ export async function generateRecurringOccurrences(
 
   await supabase.from("events").update({ recurring_series_id: series.id }).eq("id", eventId);
 
-  const endDate = parseISO(parsed.endDate);
-  let cursor = nextOccurrence(parseISO(parent.event_date), parsed.frequency);
   const toggles: Toggles = {
     hasSpeaker: parent.has_speaker,
     hasAttendees: parent.has_attendees,
@@ -313,14 +342,13 @@ export async function generateRecurringOccurrences(
     hasRecurring: false,
   };
 
-  let guard = 0;
-  while (!isAfter(cursor, endDate) && guard < 104) {
-    guard += 1;
+  const dates = occurrenceDatesAfter(parseISO(parent.event_date), parsed);
+  for (const date of dates) {
     const { data: child, error: childError } = await supabase
       .from("events")
       .insert({
         name: parent.name,
-        event_date: formatISO(cursor, { representation: "date" }),
+        event_date: formatISO(date, { representation: "date" }),
         event_time: parent.event_time,
         event_end_time: parent.event_end_time,
         venue: parent.venue,
@@ -341,8 +369,6 @@ export async function generateRecurringOccurrences(
     if (!childError && child) {
       await insertChildRows(supabase, child.id, toggles);
     }
-
-    cursor = nextOccurrence(cursor, parsed.frequency);
   }
 
   revalidatePath("/calendar");
@@ -397,12 +423,15 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
 
   const { error: seriesUpdateError } = await supabase
     .from("recurring_series")
-    .update({ frequency: parsed.frequency, end_date: parsed.endDate })
+    .update({
+      frequency: parsed.frequency,
+      ends_mode: parsed.endsMode,
+      end_date: parsed.endsMode === "date" ? parsed.endDate : null,
+      occurrence_count: parsed.endsMode === "count" ? parsed.occurrenceCount : null,
+    })
     .eq("id", seriesId);
   if (seriesUpdateError) throw new Error(seriesUpdateError.message);
 
-  const endDate = parseISO(parsed.endDate);
-  let cursor = nextOccurrence(parseISO(anchor.event_date), parsed.frequency);
   const toggles: Toggles = {
     hasSpeaker: anchor.has_speaker,
     hasAttendees: anchor.has_attendees,
@@ -414,14 +443,13 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
   };
 
   const createdIds: string[] = [];
-  let guard = 0;
-  while (!isAfter(cursor, endDate) && guard < 104) {
-    guard += 1;
+  const dates = occurrenceDatesAfter(parseISO(anchor.event_date), parsed);
+  for (const date of dates) {
     const { data: child, error: childError } = await supabase
       .from("events")
       .insert({
         name: anchor.name,
-        event_date: formatISO(cursor, { representation: "date" }),
+        event_date: formatISO(date, { representation: "date" }),
         event_time: anchor.event_time,
         event_end_time: anchor.event_end_time,
         venue: anchor.venue,
@@ -443,8 +471,6 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
       await insertChildRows(supabase, child.id, toggles);
       createdIds.push(child.id);
     }
-
-    cursor = nextOccurrence(cursor, parsed.frequency);
   }
 
   revalidatePath("/calendar");

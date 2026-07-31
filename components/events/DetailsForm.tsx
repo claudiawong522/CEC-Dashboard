@@ -96,9 +96,21 @@ export function DetailsForm({
   );
 
   const [repeatsFrequency, setRepeatsFrequency] = useState(recurringSeries?.frequency ?? "weekly");
+  const [repeatsEndsMode, setRepeatsEndsMode] = useState(recurringSeries?.ends_mode ?? "date");
   const [repeatsEndDate, setRepeatsEndDate] = useState(recurringSeries?.end_date ?? "");
-  const repeatsStatus = useAutoSave({ repeatsFrequency, repeatsEndDate }, (next) =>
-    updateRecurringSeries(event.id, { frequency: next.repeatsFrequency, endDate: next.repeatsEndDate }),
+  const [repeatsOccurrenceCount, setRepeatsOccurrenceCount] = useState(
+    String(recurringSeries?.occurrence_count ?? 6),
+  );
+  const repeatsStatus = useAutoSave(
+    { repeatsFrequency, repeatsEndsMode, repeatsEndDate, repeatsOccurrenceCount },
+    (next) =>
+      updateRecurringSeries(event.id, {
+        frequency: next.repeatsFrequency,
+        endsMode: next.repeatsEndsMode,
+        endDate: next.repeatsEndsMode === "date" ? next.repeatsEndDate : undefined,
+        occurrenceCount:
+          next.repeatsEndsMode === "count" ? Number(next.repeatsOccurrenceCount) : undefined,
+      }),
   );
 
   const requestedTab = useSearchParams().get("tab");
@@ -208,8 +220,35 @@ export function DetailsForm({
               </Select>
             </div>
             <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-body">Ends on</Label>
-              <DatePicker value={repeatsEndDate} onChange={setRepeatsEndDate} />
+              <Label className="font-sans text-[12px] font-normal text-body">Ends</Label>
+              <Select
+                value={repeatsEndsMode}
+                onValueChange={(v) => setRepeatsEndsMode(v as typeof repeatsEndsMode)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="date">On date</SelectItem>
+                  <SelectItem value="count">After N times</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Label className="font-sans text-[12px] font-normal text-body">
+                {repeatsEndsMode === "date" ? "End date" : "Occurrences"}
+              </Label>
+              {repeatsEndsMode === "date" ? (
+                <DatePicker value={repeatsEndDate} onChange={setRepeatsEndDate} />
+              ) : (
+                <Input
+                  type="number"
+                  min={1}
+                  max={104}
+                  value={repeatsOccurrenceCount}
+                  onChange={(e) => setRepeatsOccurrenceCount(e.target.value)}
+                />
+              )}
             </div>
             <div className="flex-[2] font-sans text-[11.5px] text-faint">
               Changing this only affects occurrences that haven&apos;t happened yet — past ones are

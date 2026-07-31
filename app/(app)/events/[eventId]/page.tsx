@@ -56,7 +56,7 @@ export default async function EventDetailsPage({
     event.recurring_series_id
       ? supabase
           .from("recurring_series")
-          .select("id, frequency, end_date")
+          .select("id, frequency, ends_mode, end_date, occurrence_count")
           .eq("id", event.recurring_series_id)
           .maybeSingle<RecurringSeriesRow>()
       : Promise.resolve({ data: null }),
