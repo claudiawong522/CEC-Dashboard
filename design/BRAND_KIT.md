@@ -383,9 +383,9 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   left edge instead of ~54px in from it. The amber gutter bar moved from `left-0` inside a `pl-5`
   wrapper (which had been indenting the text to make room for it) to `-left-4` outside the now-flush
   text column, so it reads as a margin mark rather than pushing content over.
-- **Added `Members` as a fixed section colour — teal (2026-07-31).** New "Members" tab on event
-  details (tag club members onto an event, separate from the Luma-link `Attendees` tab) needed a
-  section colour not covered by the existing fixed list. Grouped it with Venue/Attendees/Media
-  (teal) since it's the same "people/participation" family, rather than introducing a new hue.
-  Like Notes, it has no done-checkbox — it's metadata, not a completable prep task — so it's
-  excluded from the tab bar's done-dot and the header's "N of M done" count the same way Notes is.
+- **Member tagging lives in the header card, not the tab bar (2026-07-31).** Tagging club members
+  onto an event (separate from the Luma-link `Attendees` tab) isn't a prep-task section — it's
+  metadata about the event itself, same category as name/date/time. `TaggedMembersSection` renders
+  as a labeled row directly in the event-details header card, below the start/end time fields
+  (above the conditional Repeats row), not as its own tab — so it never got a fixed section colour
+  and doesn't participate in the tab bar's done-dot/"N of M done" count at all.

@@ -66,7 +66,6 @@ type TabKey =
   | "venue"
   | "speaker"
   | "attendees"
-  | "members"
   | "money"
   | "food"
   | "marketing"
@@ -169,7 +168,6 @@ export function DetailsForm({
     ...(sectionFlags.attendees
       ? [{ key: "attendees" as const, label: "Attendees" as const, done: attendees?.done ?? false }]
       : []),
-    { key: "members", label: "Members", done: false },
     ...(sectionFlags.money
       ? [{ key: "money" as const, label: "Money" as const, done: money?.done ?? false }]
       : []),
@@ -185,7 +183,7 @@ export function DetailsForm({
     { key: "notes", label: "Notes", done: false },
   ];
 
-  const doneable = tabs.filter((t) => t.key !== "notes" && t.key !== "members");
+  const doneable = tabs.filter((t) => t.key !== "notes");
   const doneCount = doneable.filter((t) => t.done).length;
   const activeIndex = tabs.findIndex((t) => t.key === activeTab);
 
@@ -279,6 +277,8 @@ export function DetailsForm({
           </div>
         )}
 
+        <TaggedMembersSection eventId={event.id} taggedMembers={taggedMembers} allMembers={allMembers} />
+
         {recurringSeries && (
           <div className="flex items-end gap-3 border-t border-[rgba(35,32,28,0.07)] pt-4">
             <div className="flex flex-1 flex-col gap-1.5">
@@ -362,7 +362,7 @@ export function DetailsForm({
                 }}
               />
               {tab.label}
-              {tab.key !== "notes" && tab.key !== "members" && (
+              {tab.key !== "notes" && (
                 <span
                   className="ml-auto size-1.5 rounded-full bg-teal transition-opacity duration-300"
                   style={{ opacity: tab.done ? 1 : 0 }}
@@ -399,10 +399,6 @@ export function DetailsForm({
               done={attendees?.done ?? false}
               files={filesFor(files, "attendees")}
             />
-          )}
-
-          {activeTab === "members" && (
-            <TaggedMembersSection eventId={event.id} taggedMembers={taggedMembers} allMembers={allMembers} />
           )}
 
           {activeTab === "money" && sectionFlags.money && (
