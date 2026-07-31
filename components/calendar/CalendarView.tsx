@@ -23,6 +23,9 @@ import { YearView } from "./YearView";
 // custom toolbar) type-checked.
 const FullCalendar = dynamic(() => import("@fullcalendar/react"), {
   ssr: false,
+  loading: () => (
+    <div className="h-[732px] w-full animate-pulse rounded-[10px] bg-stone-100" />
+  ),
 }) as unknown as typeof FullCalendarType;
 
 export type CalendarEvent = {
@@ -161,8 +164,11 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
 
       {viewType === "month" && (
         <div className="relative overflow-hidden rounded-[10px] border border-line bg-page">
-          {/* S8-S10 + Heart/Cherries — ambient stickers, above the grid; each pops on its own click */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-20">
+          {/* S8-S10 + Heart/Cherries — ambient stickers, behind the day grid (per
+              BRAND_KIT.md's decorative-stickers-behind-opaque-content rule) so a
+              day cell's own link always wins the click over a sticker sitting on
+              top of it; each still pops on its own click where it peeks through. */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5]">
             <Sticker
               floatVariant="float1"
               floatDuration="15s"

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
 import { UserTable } from "@/components/admin/UserTable";
+import { AdminDecor } from "@/components/admin/AdminDecor";
 import { Sticker } from "@/components/stickers/Sticker";
 import { BeadRow } from "@/components/stickers/shapes";
 import type { Profile } from "@/lib/auth/getSession";
@@ -25,8 +26,9 @@ export default async function AdminPage() {
     .toUpperCase();
 
   return (
-    <div className="flex flex-col gap-[17px]">
-      <div className="flex flex-col gap-[5px]">
+    <div className="relative flex flex-col gap-[17px]">
+      <AdminDecor />
+      <div className="relative z-10 flex flex-col gap-[5px]">
         <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
           Admin
         </h1>

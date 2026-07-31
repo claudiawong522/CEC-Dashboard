@@ -40,7 +40,10 @@ export default async function PhotosPage() {
       </h1>
 
       {!files || files.length === 0 ? (
-        <div className="relative flex aspect-square max-w-[220px] flex-col items-center justify-center gap-[7px] overflow-hidden rounded-[9px] border border-dashed border-[rgba(35,32,28,0.14)]">
+        <Link
+          href="/todo"
+          className="group relative flex aspect-square max-w-[220px] flex-col items-center justify-center gap-[7px] overflow-hidden rounded-[9px] border border-dashed border-[rgba(35,32,28,0.14)] text-center transition-colors duration-200 hover:border-[rgba(35,32,28,0.28)] hover:bg-wash"
+        >
           <Sticker floatVariant="none" className="relative block h-[34px] w-11">
             <div
               className="absolute top-[5px] left-0 size-[22px] rounded-full blur-[6px]"
@@ -55,8 +58,10 @@ export default async function PhotosPage() {
               style={{ background: "radial-gradient(circle, rgba(63,167,137,.7), transparent 72%)" }}
             />
           </Sticker>
-          <span className="font-sans text-[10px] text-faint">No media uploaded yet.</span>
-        </div>
+          <span className="px-4 font-sans text-[10px] text-faint">
+            No media uploaded yet — drop files on an event&apos;s Media tab
+          </span>
+        </Link>
       ) : (
         <div className="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {files.map((file, i) => (
