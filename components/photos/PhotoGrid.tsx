@@ -5,6 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { publicFileUrl } from "@/lib/utils/storage";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+type TaggedMember = { id: string; full_name: string | null; avatar_url: string | null; email: string };
 
 export type MediaFile = {
   id: string;
@@ -13,8 +16,22 @@ export type MediaFile = {
   storage_path: string;
   file_name: string | null;
   mime_type: string | null;
-  events: { name: string; event_date: string } | null;
+  events: {
+    name: string;
+    event_date: string;
+    event_tagged_members: { profiles: TaggedMember | null }[];
+  } | null;
 };
+
+function initials(member: TaggedMember) {
+  const source = member.full_name ?? member.email;
+  return source
+    .split(/\s+/)
+    .map((part) => part[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
 
 function fileTypeLabel(file: MediaFile) {
   const ext = file.file_name?.split(".").pop();
@@ -105,12 +122,32 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                   Preview not available
                 </div>
               )}
-              <Link
-                href={`/events/${openFile.event_id}`}
-                className="self-start rounded-btn bg-paper px-2.5 py-1.5 font-sans text-[12px] text-faint transition-colors duration-150 hover:text-ink"
-              >
-                {openFile.events?.name ?? "Untitled event"}
-              </Link>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <Link
+                  href={`/events/${openFile.event_id}`}
+                  className="self-start rounded-btn bg-paper px-2.5 py-1.5 font-sans text-[12px] text-faint transition-colors duration-150 hover:text-ink"
+                >
+                  {openFile.events?.name ?? "Untitled event"}
+                </Link>
+                {openFile.events?.event_tagged_members
+                  .flatMap((row) => (row.profiles ? [row.profiles] : []))
+                  .map((member) => (
+                    <span
+                      key={member.id}
+                      className="flex items-center gap-1.5 rounded-[20px] bg-paper py-1 pr-2.5 pl-1"
+                    >
+                      <Avatar size="sm">
+                        <AvatarImage src={member.avatar_url ?? undefined} alt="" />
+                        <AvatarFallback className="font-sans text-[9px]">
+                          {initials(member)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="font-sans text-[11.5px] text-faint">
+                        {member.full_name ?? member.email}
+                      </span>
+                    </span>
+                  ))}
+              </div>
             </div>
           )}
         </DialogContent>

@@ -10,7 +10,9 @@ export default async function PhotosPage() {
   const [{ data: files }, { data: allEvents }] = await Promise.all([
     supabase
       .from("event_files")
-      .select("id, event_id, bucket, storage_path, file_name, mime_type, events(name, event_date)")
+      .select(
+        "id, event_id, bucket, storage_path, file_name, mime_type, events(name, event_date, event_tagged_members(profiles(id, full_name, avatar_url, email)))",
+      )
       .eq("section", "media")
       .order("created_at", { ascending: false })
       .returns<MediaFile[]>(),

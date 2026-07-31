@@ -29,6 +29,7 @@ import { NotesField } from "@/components/events/NotesField";
 import { VenueSection } from "@/components/events/sections/VenueSection";
 import { SpeakerSection } from "@/components/events/sections/SpeakerSection";
 import { AttendeesSection } from "@/components/events/sections/AttendeesSection";
+import { TaggedMembersSection } from "@/components/events/sections/TaggedMembersSection";
 import { MoneySection } from "@/components/events/sections/MoneySection";
 import { FoodSection } from "@/components/events/sections/FoodSection";
 import { MarketingSection } from "@/components/events/sections/MarketingSection";
@@ -47,6 +48,7 @@ import type {
   RecurringSeriesRow,
   EventFileRow,
 } from "@/lib/types/events";
+import type { Profile } from "@/lib/auth/getSession";
 
 function filesFor(files: EventFileRow[], section: string) {
   return files
@@ -64,6 +66,7 @@ type TabKey =
   | "venue"
   | "speaker"
   | "attendees"
+  | "members"
   | "money"
   | "food"
   | "marketing"
@@ -80,6 +83,8 @@ export function DetailsForm({
   recurringSeries,
   files,
   marketingCustomItems,
+  taggedMembers,
+  allMembers,
 }: {
   event: EventRow;
   speaker: SpeakerRow | null;
@@ -90,6 +95,8 @@ export function DetailsForm({
   recurringSeries: RecurringSeriesRow | null;
   files: EventFileRow[];
   marketingCustomItems: MarketingCustomItemRow[];
+  taggedMembers: Profile[];
+  allMembers: Profile[];
 }) {
   const [name, setName] = useState(event.name);
   const [date, setDate] = useState(event.event_date);
@@ -162,6 +169,7 @@ export function DetailsForm({
     ...(sectionFlags.attendees
       ? [{ key: "attendees" as const, label: "Attendees" as const, done: attendees?.done ?? false }]
       : []),
+    { key: "members", label: "Members", done: false },
     ...(sectionFlags.money
       ? [{ key: "money" as const, label: "Money" as const, done: money?.done ?? false }]
       : []),
@@ -177,7 +185,7 @@ export function DetailsForm({
     { key: "notes", label: "Notes", done: false },
   ];
 
-  const doneable = tabs.filter((t) => t.key !== "notes");
+  const doneable = tabs.filter((t) => t.key !== "notes" && t.key !== "members");
   const doneCount = doneable.filter((t) => t.done).length;
   const activeIndex = tabs.findIndex((t) => t.key === activeTab);
 
@@ -354,7 +362,7 @@ export function DetailsForm({
                 }}
               />
               {tab.label}
-              {tab.key !== "notes" && (
+              {tab.key !== "notes" && tab.key !== "members" && (
                 <span
                   className="ml-auto size-1.5 rounded-full bg-teal transition-opacity duration-300"
                   style={{ opacity: tab.done ? 1 : 0 }}
@@ -391,6 +399,10 @@ export function DetailsForm({
               done={attendees?.done ?? false}
               files={filesFor(files, "attendees")}
             />
+          )}
+
+          {activeTab === "members" && (
+            <TaggedMembersSection eventId={event.id} taggedMembers={taggedMembers} allMembers={allMembers} />
           )}
 
           {activeTab === "money" && sectionFlags.money && (

@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DetailsForm } from "@/components/events/DetailsForm";
+import type { Profile } from "@/lib/auth/getSession";
 import type {
   EventRow,
   SpeakerRow,
@@ -12,6 +13,7 @@ import type {
   MarketingCustomItemRow,
   RecurringSeriesRow,
   EventFileRow,
+  TaggedMemberRow,
 } from "@/lib/types/events";
 
 export default async function EventDetailsPage({
@@ -39,6 +41,8 @@ export default async function EventDetailsPage({
     { data: recurringSeries },
     { data: files },
     { data: marketingCustomItems },
+    { data: taggedMembers },
+    { data: allMembers },
   ] = await Promise.all([
     supabase.from("event_speaker").select("*").eq("event_id", eventId).maybeSingle<SpeakerRow>(),
     supabase
@@ -67,6 +71,16 @@ export default async function EventDetailsPage({
       .eq("event_id", eventId)
       .order("created_at", { ascending: true })
       .returns<MarketingCustomItemRow[]>(),
+    supabase
+      .from("event_tagged_members")
+      .select("profile_id, tagged_at, profiles(id, full_name, avatar_url, email, role)")
+      .eq("event_id", eventId)
+      .returns<TaggedMemberRow[]>(),
+    supabase
+      .from("profiles")
+      .select("id, email, full_name, avatar_url, role")
+      .order("full_name", { ascending: true, nullsFirst: false })
+      .returns<Profile[]>(),
   ]);
 
   return (
@@ -81,6 +95,8 @@ export default async function EventDetailsPage({
         recurringSeries={recurringSeries}
         files={files ?? []}
         marketingCustomItems={marketingCustomItems ?? []}
+        taggedMembers={(taggedMembers ?? []).flatMap((row) => (row.profiles ? [row.profiles] : []))}
+        allMembers={allMembers ?? []}
       />
     </Suspense>
   );

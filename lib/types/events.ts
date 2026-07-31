@@ -79,6 +79,18 @@ export type RecurringSeriesRow = {
   occurrence_count: number | null;
 };
 
+export type TaggedMemberRow = {
+  profile_id: string;
+  tagged_at: string;
+  profiles: {
+    id: string;
+    full_name: string | null;
+    avatar_url: string | null;
+    email: string;
+    role: "view" | "edit" | "admin";
+  } | null;
+};
+
 export type EventFileRow = {
   id: string;
   event_id: string;
