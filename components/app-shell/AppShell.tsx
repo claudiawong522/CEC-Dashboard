@@ -41,6 +41,7 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const isCalendar = pathname === "/calendar" || pathname.startsWith("/calendar/");
   const router = useRouter();
   const signOutFormRef = useRef<HTMLFormElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -172,7 +173,12 @@ export function AppShell({
       >
         <SidebarSeam />
         <main className="relative z-10 h-full overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1120px] py-8 pr-10 pl-[66px]">{children}</div>
+          <div
+            className="mx-auto w-full max-w-[1120px] py-8 pr-10 pl-[66px]"
+            style={isCalendar ? undefined : { zoom: 1.08 }}
+          >
+            {children}
+          </div>
         </main>
       </div>
     </div>
