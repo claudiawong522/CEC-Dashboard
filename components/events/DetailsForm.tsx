@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { SaveIndicator } from "@/components/events/SaveIndicator";
+import { DeleteEventDialog } from "@/components/events/DeleteEventDialog";
 import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { updateEventHeader, updateRecurringSeries } from "@/lib/actions/events";
 import { NotesField } from "@/components/events/NotesField";
@@ -147,25 +148,28 @@ export function DetailsForm({
 
   return (
     <div className="flex max-w-[1180px] flex-col gap-[19px]">
-      <div className="flex items-center gap-3">
-        <span className="font-mono text-[10px] tracking-[0.14em] text-faint uppercase">
-          Step 2 of 2
-        </span>
-        <span
-          className="relative overflow-hidden rounded-[20px] px-2.5 py-1 font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"
-          style={{
-            background:
-              "linear-gradient(95deg, rgba(232,88,61,.2), rgba(224,185,74,.2), rgba(63,167,137,.2), rgba(59,111,194,.2))",
-          }}
-        >
-          {doneCount} of {doneable.length} done
-          {doneCount === doneable.length && (
-            <Confetti
-              size={28}
-              className="pointer-events-none absolute -top-1.5 -right-1.5 opacity-90"
-            />
-          )}
-        </span>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span className="font-mono text-[10px] tracking-[0.14em] text-faint uppercase">
+            Step 2 of 2
+          </span>
+          <span
+            className="relative overflow-hidden rounded-[20px] px-2.5 py-1 font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"
+            style={{
+              background:
+                "linear-gradient(95deg, rgba(232,88,61,.2), rgba(224,185,74,.2), rgba(63,167,137,.2), rgba(59,111,194,.2))",
+            }}
+          >
+            {doneCount} of {doneable.length} done
+            {doneCount === doneable.length && (
+              <Confetti
+                size={28}
+                className="pointer-events-none absolute -top-1.5 -right-1.5 opacity-90"
+              />
+            )}
+          </span>
+        </div>
+        <DeleteEventDialog eventId={event.id} isRecurring={!!event.recurring_series_id} />
       </div>
 
       <div

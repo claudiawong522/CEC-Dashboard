@@ -95,6 +95,57 @@ export async function createEvent(values: ToggleFormValues) {
   redirect(parsed.hasMedia ? `/events/${event.id}?tab=media` : `/events/${event.id}`);
 }
 
+export async function deleteEvent(eventId: string, scope: "single" | "following" = "single") {
+  await requireRole("edit");
+  const supabase = await createClient();
+
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("id, event_date, recurring_series_id")
+    .eq("id", eventId)
+    .single();
+  if (eventError || !event) throw new Error(eventError?.message ?? "Event not found");
+
+  let idsToDelete = [eventId];
+  if (scope === "following" && event.recurring_series_id) {
+    const { data: seriesEvents } = await supabase
+      .from("events")
+      .select("id")
+      .eq("recurring_series_id", event.recurring_series_id)
+      .gte("event_date", event.event_date);
+    if (seriesEvents?.length) idsToDelete = seriesEvents.map((e) => e.id);
+  }
+
+  // event_files rows cascade-delete with their event, but the underlying
+  // storage objects don't — clean those up first, same as deleteFile does
+  // for a single file.
+  const { data: files } = await supabase
+    .from("event_files")
+    .select("bucket, storage_path")
+    .in("event_id", idsToDelete);
+
+  if (files?.length) {
+    const pathsByBucket = new Map<string, string[]>();
+    for (const file of files) {
+      const paths = pathsByBucket.get(file.bucket) ?? [];
+      paths.push(file.storage_path);
+      pathsByBucket.set(file.bucket, paths);
+    }
+    for (const [bucket, paths] of pathsByBucket) {
+      await supabase.storage.from(bucket).remove(paths);
+    }
+  }
+
+  const { error: deleteError } = await supabase.from("events").delete().in("id", idsToDelete);
+  if (deleteError) throw new Error(deleteError.message);
+
+  revalidatePath("/calendar");
+  revalidatePath("/todo");
+  revalidatePath("/past-events");
+  revalidatePath("/photos");
+  redirect("/calendar");
+}
+
 export async function updateEventHeader(
   eventId: string,
   values: Pick<EventCoreValues, "name" | "eventDate" | "eventStartTime" | "eventEndTime">,

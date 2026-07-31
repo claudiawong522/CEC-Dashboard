@@ -58,6 +58,12 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
   const [monthTitle, setMonthTitle] = useState("");
   const [viewType, setViewType] = useState<ViewKey>("month");
   const [currentDate, setCurrentDate] = useState(() => new Date());
+  // FullCalendar only exists in the DOM while viewType === "month" — it
+  // unmounts (and its ref goes stale) the moment you leave month view, so
+  // jumping to a specific month from elsewhere (e.g. Year view) can't use
+  // calendarRef.current.gotoDate(). Instead it remounts fresh from this
+  // date every time you re-enter month view.
+  const [monthViewDate, setMonthViewDate] = useState(() => new Date());
 
   const fcEvents = events.map((event) => ({
     id: event.id,
@@ -265,6 +271,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
               ref={calendarRef}
               plugins={[dayGridPlugin, interactionPlugin]}
               initialView="dayGridMonth"
+              initialDate={monthViewDate}
               headerToolbar={false}
               datesSet={handleDatesSet}
               height="auto"
@@ -280,7 +287,18 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
       )}
 
       {viewType === "week" && <WeekView events={events} currentDate={currentDate} />}
-      {viewType === "year" && <YearView events={events} year={currentDate.getFullYear()} />}
+      {viewType === "year" && (
+        <YearView
+          events={events}
+          year={currentDate.getFullYear()}
+          onSelectMonth={(monthIndex) => {
+            const target = new Date(currentDate.getFullYear(), monthIndex, 1);
+            setCurrentDate(target);
+            setMonthViewDate(target);
+            setViewType("month");
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
 import { Sticker } from "@/components/stickers/Sticker";
@@ -17,10 +18,13 @@ const MONTH_LABELS = [
 export function YearView({
   events,
   year,
+  onSelectMonth,
 }: {
   events: CalendarEvent[];
   year: number;
+  onSelectMonth: (monthIndex: number) => void;
 }) {
+  const router = useRouter();
   const today = new Date();
 
   const eventsByMonth = MONTH_LABELS.map((_, monthIndex) =>
@@ -47,10 +51,12 @@ export function YearView({
         const monthEvents = eventsByMonth[i];
 
         return (
-          <div
+          <button
             key={label}
+            type="button"
+            onClick={() => onSelectMonth(i)}
             className={cn(
-              "relative overflow-hidden rounded-[10px] border bg-paper p-5 transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5",
+              "relative overflow-hidden rounded-[10px] border bg-paper p-5 text-left transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5",
               isCurrentMonth
                 ? "border-[rgba(35,32,28,0.18)]"
                 : "border-[rgba(35,32,28,0.07)] hover:border-[rgba(35,32,28,0.18)]",
@@ -83,12 +89,18 @@ export function YearView({
               {monthEvents.map((event) => (
                 <span
                   key={event.id}
-                  className="size-[9px] shrink-0 rounded-full"
+                  role="button"
+                  title={event.name}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    router.push(`/events/${event.id}`);
+                  }}
+                  className="size-[9px] shrink-0 rounded-full transition-transform duration-150 hover:scale-125"
                   style={{ background: SECTION_COLORS[firstPrepSection(event)] }}
                 />
               ))}
             </div>
-          </div>
+          </button>
         );
       })}
       </div>

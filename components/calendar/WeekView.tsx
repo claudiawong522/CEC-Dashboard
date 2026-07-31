@@ -98,27 +98,31 @@ export function WeekView({
                       }}
                     />
                   )}
-                  {dayEvents.map((event) => {
-                    const sectionColor = SECTION_COLORS[firstPrepSection(event)];
-                    return (
-                      <button
-                        key={event.id}
-                        type="button"
-                        title={event.name}
-                        onClick={() => router.push(`/events/${event.id}`)}
-                        className="relative flex h-full w-full items-baseline gap-1 rounded-[5px] border-l-2 px-1.5 py-1 text-left font-sans text-[9.5px] text-ink"
-                        style={{
-                          borderLeftColor: sectionColor,
-                          background: `linear-gradient(160deg, color-mix(in srgb, ${sectionColor} 14%, transparent), color-mix(in srgb, ${sectionColor} 8%, transparent))`,
-                        }}
-                      >
-                        <span className="shrink-0 font-mono text-[9px] text-body">
-                          {formatEventTime(event.event_time)}
-                        </span>
-                        <span className="min-w-0 truncate">{event.name}</span>
-                      </button>
-                    );
-                  })}
+                  {dayEvents.length > 0 && (
+                    <div className="relative flex h-full gap-0.5">
+                      {dayEvents.map((event) => {
+                        const sectionColor = SECTION_COLORS[firstPrepSection(event)];
+                        return (
+                          <button
+                            key={event.id}
+                            type="button"
+                            title={event.name}
+                            onClick={() => router.push(`/events/${event.id}`)}
+                            className="relative flex h-full min-w-0 flex-1 items-baseline gap-1 overflow-hidden rounded-[5px] border-l-2 px-1.5 py-1 text-left font-sans text-[9.5px] text-ink"
+                            style={{
+                              borderLeftColor: sectionColor,
+                              background: `linear-gradient(160deg, color-mix(in srgb, ${sectionColor} 14%, transparent), color-mix(in srgb, ${sectionColor} 8%, transparent))`,
+                            }}
+                          >
+                            <span className="shrink-0 font-mono text-[9px] text-body">
+                              {formatEventTime(event.event_time)}
+                            </span>
+                            <span className="min-w-0 truncate">{event.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               );
             })}
