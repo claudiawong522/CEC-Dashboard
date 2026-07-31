@@ -20,6 +20,72 @@ function formatTimeLabel(value: string) {
   return `${displayH}:${mStr} ${h < 12 ? "AM" : "PM"}`
 }
 
+// Parses whatever's been typed so far — bare digits ("6", "630", "6:30")
+// with an optional trailing am/pm — into a 24-hour "HH:MM" string, or null
+// if it isn't parseable yet. With no am/pm typed, hours 1-12 default to PM
+// (event times skew afternoon/evening) and 13-23 are already unambiguous.
+function parseTypedTime(raw: string): string | null {
+  let s = raw.trim().toLowerCase()
+  if (!s) return null
+
+  let meridiem: "am" | "pm" | null = null
+  const meridiemMatch = s.match(/(am|pm|a|p)$/)
+  if (meridiemMatch) {
+    meridiem = meridiemMatch[1].startsWith("a") ? "am" : "pm"
+    s = s.slice(0, -meridiemMatch[1].length)
+  }
+  if (!s) return null
+
+  let hour: number
+  let minute = 0
+
+  if (s.includes(":")) {
+    const [hStr, mStr = ""] = s.split(":")
+    if (!/^\d{1,2}$/.test(hStr) || !/^\d{0,2}$/.test(mStr)) return null
+    hour = Number(hStr)
+    minute = mStr ? Number(mStr) : 0
+  } else {
+    if (!/^\d{1,4}$/.test(s)) return null
+    if (s.length <= 2) {
+      hour = Number(s)
+    } else if (s.length === 3) {
+      hour = Number(s.slice(0, 1))
+      minute = Number(s.slice(1))
+    } else {
+      hour = Number(s.slice(0, 2))
+      minute = Number(s.slice(2))
+    }
+  }
+
+  if (Number.isNaN(hour) || Number.isNaN(minute) || minute > 59 || hour > 23) return null
+
+  let hour24: number
+  if (meridiem === "am") {
+    if (hour > 12) return null
+    hour24 = hour % 12
+  } else if (meridiem === "pm") {
+    if (hour > 12) return null
+    hour24 = hour === 12 ? 12 : hour + 12
+  } else if (hour === 0 || hour >= 13) {
+    hour24 = hour
+  } else {
+    hour24 = hour === 12 ? 12 : hour + 12
+  }
+
+  return `${String(hour24).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
+}
+
+function nearestOption(hhmm: string) {
+  const [h, m] = hhmm.split(":").map(Number)
+  const index = Math.min(95, Math.max(0, Math.round((h * 60 + m) / 15)))
+  return TIME_OPTIONS[index]
+}
+
+// Typed digits reset after a pause, same as native <select> typeahead —
+// otherwise stale keystrokes from a while ago would silently prefix the
+// next entry.
+const TYPEAHEAD_RESET_MS = 1200
+
 function TimePicker({
   value,
   onChange,
@@ -35,23 +101,59 @@ function TimePicker({
 }) {
   const [open, setOpen] = React.useState(false)
   const listRef = React.useRef<HTMLDivElement>(null)
+  const bufferRef = React.useRef("")
+  const resetTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  function scrollToOption(option: string) {
+    requestAnimationFrame(() => {
+      listRef.current
+        ?.querySelector(`[data-option="${option}"]`)
+        ?.scrollIntoView({ block: "center" })
+    })
+  }
+
+  function clearBuffer() {
+    bufferRef.current = ""
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Escape") {
+      clearBuffer()
+      return
+    }
+    if (e.key === "Backspace") {
+      bufferRef.current = bufferRef.current.slice(0, -1)
+    } else if (/^[0-9]$/.test(e.key) || e.key === ":" || /^[ap]$/i.test(e.key)) {
+      bufferRef.current += e.key.toLowerCase()
+    } else {
+      return
+    }
+
+    e.preventDefault()
+    if (resetTimerRef.current) clearTimeout(resetTimerRef.current)
+    resetTimerRef.current = setTimeout(clearBuffer, TYPEAHEAD_RESET_MS)
+
+    const parsed = parseTypedTime(bufferRef.current)
+    if (parsed) {
+      onChange(parsed)
+      setOpen(true)
+      scrollToOption(nearestOption(parsed))
+    }
+  }
 
   return (
     <Popover
       open={open}
       onOpenChange={(next) => {
         setOpen(next)
-        if (next) {
-          requestAnimationFrame(() => {
-            listRef.current
-              ?.querySelector('[data-active="true"]')
-              ?.scrollIntoView({ block: "center" })
-          })
-        }
+        clearBuffer()
+        if (next && value) scrollToOption(nearestOption(value))
       }}
     >
       <PopoverTrigger
         id={id}
+        onKeyDown={handleKeyDown}
         className={cn(
           "flex h-auto w-full min-w-0 items-center gap-2 rounded-input border border-line-input bg-[var(--input-ground,var(--paper))] px-3 py-2.5 font-sans text-[13.5px] text-ink transition-[border-color,box-shadow] duration-[220ms] outline-none focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)]",
           !value && "text-faint",
@@ -67,7 +169,7 @@ function TimePicker({
             <button
               key={option}
               type="button"
-              data-active={option === value}
+              data-option={option}
               onClick={() => {
                 onChange(option)
                 setOpen(false)
