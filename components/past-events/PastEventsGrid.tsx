@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { getEventTerm } from "@/lib/utils/terms";
 import { formatEventDate, formatEventTime } from "@/lib/utils/format-event-time";
 import { Sticker } from "@/components/stickers/Sticker";
@@ -68,8 +69,9 @@ export function PastEventsGrid({ events }: { events: PastEvent[] }) {
       ) : (
         <div className="relative z-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((event, i) => (
-            <div
+            <Link
               key={event.id}
+              href={`/events/${event.id}`}
               style={{ animationDelay: `${0.05 + i * 0.07}s` }}
               className="flex items-center gap-[13px] rounded-[10px] border border-[rgba(35,32,28,0.09)] bg-paper p-3.5 transition-[transform,border-color] duration-200 ease-brand animate-riseIn hover:-translate-y-0.5 hover:border-[rgba(35,32,28,0.2)]"
             >
@@ -96,7 +98,7 @@ export function PastEventsGrid({ events }: { events: PastEvent[] }) {
                 </span>
                 <span className="truncate font-sans text-[11px] text-faint">{event.venue}</span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
