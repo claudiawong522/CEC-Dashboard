@@ -112,13 +112,16 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
 
   return (
     <div className="flex flex-col gap-[18px]">
-      <div className="flex items-center justify-between">
+      <div className={cn("flex items-center justify-between", viewType === "year" && "mx-auto max-w-[1040px] w-full")}>
         <div className="flex items-center gap-2">
           <button
             type="button"
             aria-label="Previous"
             onClick={goPrev}
-            className="flex size-[31px] items-center justify-center rounded-input border border-line-input bg-paper font-sans text-[13px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+            className={cn(
+              "flex items-center justify-center rounded-input border border-line-input bg-paper font-sans text-body transition-colors duration-200 hover:bg-wash hover:text-ink",
+              viewType === "year" ? "size-[38px] text-[16px]" : "size-[31px] text-[13px]",
+            )}
           >
             ‹
           </button>
@@ -126,20 +129,31 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
             type="button"
             aria-label="Next"
             onClick={goNext}
-            className="flex size-[31px] items-center justify-center rounded-input border border-line-input bg-paper font-sans text-[13px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+            className={cn(
+              "flex items-center justify-center rounded-input border border-line-input bg-paper font-sans text-body transition-colors duration-200 hover:bg-wash hover:text-ink",
+              viewType === "year" ? "size-[38px] text-[16px]" : "size-[31px] text-[13px]",
+            )}
           >
             ›
           </button>
           <button
             type="button"
             onClick={goToday}
-            className="rounded-input border border-line-input bg-paper px-[13px] py-[7px] font-sans text-[12.5px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+            className={cn(
+              "rounded-input border border-line-input bg-paper font-sans text-body transition-colors duration-200 hover:bg-wash hover:text-ink",
+              viewType === "year" ? "px-[16px] py-[9px] text-[14px]" : "px-[13px] py-[7px] text-[12.5px]",
+            )}
           >
             Today
           </button>
         </div>
 
-        <div className="font-sans text-[18px] tracking-[-0.012em] text-ink">
+        <div
+          className={cn(
+            "font-sans tracking-[-0.012em] text-ink",
+            viewType === "year" ? "text-[22px]" : "text-[18px]",
+          )}
+        >
           {title}
         </div>
 
@@ -150,7 +164,8 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
               type="button"
               onClick={() => setViewType(v.key)}
               className={cn(
-                "px-[13px] py-2 font-mono text-[10px] tracking-[0.12em] uppercase transition-colors duration-200",
+                "font-mono tracking-[0.12em] uppercase transition-colors duration-200",
+                viewType === "year" ? "px-[16px] py-[10px] text-[11px]" : "px-[13px] py-2 text-[10px]",
                 viewType === v.key
                   ? "bg-ink text-page"
                   : "text-faint hover:bg-wash hover:text-ink",
@@ -257,6 +272,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
               eventClick={handleEventClick}
               eventDidMount={handleEventDidMount}
               eventDisplay="list-item"
+              eventTimeFormat={{ hour: "numeric", minute: "2-digit", meridiem: "short", hour12: true }}
               dayMaxEventRows={3}
             />
           </div>

@@ -97,6 +97,17 @@ Only two shadows: primary-button hover glow `0 9px 20px -10px rgba(232,88,61,.9)
   drops the border and sits on the 20% gradient tint.
 - **Vertical tabs:** 36px rows, absolute 15%-tint pill animated via `top`; done rows show a 6px teal dot.
 - **Segmented control:** 1px .13 border, r8, active segment `ink`/`page`, mono 10px uppercase.
+- **Date/time picker:** `components/ui/date-picker.tsx` / `time-picker.tsx` — same trigger chrome as
+  Input (r8, `.14` border, `paper` ground) plus a leading 14px faint icon, opening a `Popover`. Date side
+  is `react-day-picker` restyled via `components/ui/calendar.tsx`: mono 9.5px uppercase weekday row, 36px
+  day cells, selected day filled with the `--cent` gradient (paper text), today gets a 1px ink inset ring
+  instead of a fill so it doesn't compete with selection. Time side is a scrollable 15-minute-increment
+  list in a 132px popover, active row filled `--cent`. Replaces all native `<input type="date"/"time">` in
+  event forms — the native control couldn't be restyled to match at all.
+- **Auto-save + saved indicator:** `lib/hooks/use-autosave.ts` debounces a value (700ms) and calls a
+  server action automatically; `components/events/SaveIndicator.tsx` renders a small mono 10px
+  uppercase status (`Saving` spinner → `Saved` check, fading after 2s, or `Couldn't save` in
+  `--destructive`) next to the field. Replaces manual per-section Save buttons on the event-details page.
 
 ## Sticker library — ten in use
 | Sticker | Placement |
@@ -311,3 +322,34 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
     controls/editable text (DetailsForm's header sprig, Notes' corner star) were bumped in size too but kept
     `pointer-events-none`/low-relative-opacity, since "bigger" there shouldn't mean "steals clicks or fights
     the text above it."
+- **Recurring moved out of "what does this event need?", auto-save everywhere, styled date/time pickers,
+  year view scale-up (2026-07-30, third pass).** Direct user feedback on the event-prep flow and calendar:
+  - **Recurring is no longer a toggle-list item.** `ToggleForm.tsx` ("New event · step 1") now has a
+    "Repeats" select (does not repeat / weekly / biweekly / monthly) directly under the Date/Start/End
+    row, with an "Ends on" date field appearing inline once a frequency is picked. Diverges from
+    `CEC Pages.dc.html`'s "03 · new event · step 1" mockup, which still shows Recurring as a switch in
+    that list — the mockup wasn't updated for this, treat this file as the current source of truth for
+    that screen instead. `generateRecurringOccurrences` now runs automatically inside `createEvent`
+    (`lib/actions/events.ts`) the moment the event is saved, instead of requiring a second "Generate
+    series" click on a separate tab in step 2. The Recurring tab in event-details still exists (evidence
+    upload + done-marking for the series), it just no longer has a manual generate step for events
+    created through this flow.
+  - **Every manual per-section Save button on the event-details page is gone.** Venue, Speaker,
+    Attendees, Money, Food, Notes, and the header (name/date/time) now auto-save 700ms after the last
+    edit via `lib/hooks/use-autosave.ts`, showing a small `Saving…` / `✓ Saved` / `Couldn't save` label
+    (`components/events/SaveIndicator.tsx`) next to the field instead of requiring a click. Marketing
+    already auto-saved on toggle before this pass; it was the model for the rest.
+  - **Native `<input type="date"/"time">` replaced everywhere** (new-event step 1, event-details header)
+    with the styled `DatePicker`/`TimePicker` documented under Controls above — the native browser picker
+    UI couldn't be made to match the kit at all.
+  - **Week view event chips truncate with an ellipsis** instead of hard-clipping mid-word (no
+    `truncate`/`min-w-0` on the old markup), and show a `title` tooltip with the full event name.
+  - **Full "am"/"pm" everywhere a time is rendered** (`formatEventTime` in
+    `lib/utils/format-event-time.ts`, plus FullCalendar's `eventTimeFormat` in month view) — was a bare
+    `a`/`p` suffix. Week view's hour-gutter labels (`8a`, `9a`...) were left as the narrow form; that's a
+    much smaller, denser label and reads fine abbreviated.
+  - **Year view enlarged and centered, month/week left alone** (explicit ask — "keep month and week the
+    same, only year needs work"). `YearView.tsx`'s grid gained `mx-auto w-full` (it had `max-w-[900px]`
+    with no centering, so it always sat flush-left) plus bigger tiles/gaps/dots/type. The shared toolbar
+    in `CalendarView.tsx` (prev/next/Today/segmented view control) now conditionally scales up only when
+    `viewType === "year"`, matching the bigger grid; month and week keep the original toolbar size.

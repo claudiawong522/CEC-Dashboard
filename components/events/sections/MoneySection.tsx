@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { SectionCard } from "@/components/events/SectionCard";
+import { SaveIndicator } from "@/components/events/SaveIndicator";
 import { EvidenceUploader, type UploadedFile } from "@/components/events/EvidenceUploader";
+import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { updateMoney } from "@/lib/actions/events";
 
 export function MoneySection({
@@ -28,26 +28,13 @@ export function MoneySection({
   const [budgeted, setBudgeted] = useState(budgetedAmount?.toString() ?? "");
   const [actual, setActual] = useState(actualAmount?.toString() ?? "");
   const [notesValue, setNotesValue] = useState(notes ?? "");
-  const [isPending, startTransition] = useTransition();
-  const dirty =
-    budgeted !== (budgetedAmount?.toString() ?? "") ||
-    actual !== (actualAmount?.toString() ?? "") ||
-    notesValue !== (notes ?? "");
-
-  function handleSave() {
-    startTransition(async () => {
-      try {
-        await updateMoney(eventId, {
-          budgetedAmount: budgeted === "" ? null : Number(budgeted),
-          actualAmount: actual === "" ? null : Number(actual),
-          notes: notesValue,
-        });
-        toast.success("Money saved");
-      } catch {
-        toast.error("Couldn't save money");
-      }
-    });
-  }
+  const status = useAutoSave({ budgeted, actual, notesValue }, (next) =>
+    updateMoney(eventId, {
+      budgetedAmount: next.budgeted === "" ? null : Number(next.budgeted),
+      actualAmount: next.actual === "" ? null : Number(next.actual),
+      notes: next.notesValue,
+    }),
+  );
 
   return (
     <SectionCard title="Money" eventId={eventId} section="money" done={done}>
@@ -74,22 +61,16 @@ export function MoneySection({
         </div>
       </div>
       <div className="flex flex-col gap-1.5">
-        <Label>Notes</Label>
+        <div className="flex items-center justify-between">
+          <Label>Notes</Label>
+          <SaveIndicator status={status} />
+        </div>
         <Textarea
           value={notesValue}
           onChange={(e) => setNotesValue(e.target.value)}
           placeholder="What this covers, reimbursement status..."
         />
       </div>
-      <Button
-        size="sm"
-        variant="outline"
-        className="self-start"
-        disabled={!dirty || isPending}
-        onClick={handleSave}
-      >
-        Save
-      </Button>
       <div className="flex flex-col gap-1.5">
         <Label>Receipts</Label>
         <EvidenceUploader

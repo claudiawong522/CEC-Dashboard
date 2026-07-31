@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { SectionCard } from "@/components/events/SectionCard";
+import { SaveIndicator } from "@/components/events/SaveIndicator";
 import { EvidenceUploader, type UploadedFile } from "@/components/events/EvidenceUploader";
+import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { updateFood } from "@/lib/actions/events";
 
 export function FoodSection({
@@ -28,25 +28,17 @@ export function FoodSection({
   const [usual, setUsual] = useState(usualOptions ?? "");
   const [halal, setHalal] = useState(halalOptions ?? "");
   const [halalOn, setHalalOn] = useState(halalEnabled);
-  const [isPending, startTransition] = useTransition();
-  const dirty =
-    usual !== (usualOptions ?? "") || halal !== (halalOptions ?? "") || halalOn !== halalEnabled;
-
-  function handleSave() {
-    startTransition(async () => {
-      try {
-        await updateFood(eventId, { usualOptions: usual, halalEnabled: halalOn, halalOptions: halal });
-        toast.success("Food saved");
-      } catch {
-        toast.error("Couldn't save food");
-      }
-    });
-  }
+  const status = useAutoSave({ usual, halal, halalOn }, (next) =>
+    updateFood(eventId, { usualOptions: next.usual, halalEnabled: next.halalOn, halalOptions: next.halal }),
+  );
 
   return (
     <SectionCard title="Food" eventId={eventId} section="food" done={done}>
       <div className="flex flex-col gap-1.5">
-        <Label>Usual</Label>
+        <div className="flex items-center justify-between">
+          <Label>Usual</Label>
+          <SaveIndicator status={status} />
+        </div>
         <Textarea value={usual} onChange={(e) => setUsual(e.target.value)} placeholder="Catering plan..." />
       </div>
 
@@ -58,15 +50,6 @@ export function FoodSection({
         <Textarea value={halal} onChange={(e) => setHalal(e.target.value)} placeholder="Halal catering plan..." />
       )}
 
-      <Button
-        size="sm"
-        variant="outline"
-        className="self-start"
-        disabled={!dirty || isPending}
-        onClick={handleSave}
-      >
-        Save
-      </Button>
       <EvidenceUploader
         eventId={eventId}
         section="food"

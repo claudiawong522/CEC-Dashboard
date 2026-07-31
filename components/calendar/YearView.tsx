@@ -31,17 +31,17 @@ export function YearView({
   );
 
   return (
-    <div className="relative max-w-[900px]">
+    <div className="relative mx-auto w-full max-w-[1040px]">
       <Sticker
         floatVariant="float1"
         floatDuration="17s"
         wrapperClassName="pointer-events-none absolute -top-10 -right-8 z-0"
         className="pointer-events-auto opacity-[0.55]"
       >
-        <Sparkle size={64} />
+        <Sparkle size={72} />
       </Sticker>
 
-      <div className="relative grid grid-cols-4 gap-3">
+      <div className="relative grid grid-cols-4 gap-4">
       {MONTH_LABELS.map((label, i) => {
         const isCurrentMonth = today.getFullYear() === year && today.getMonth() === i;
         const monthEvents = eventsByMonth[i];
@@ -50,7 +50,7 @@ export function YearView({
           <div
             key={label}
             className={cn(
-              "relative overflow-hidden rounded-[7px] border bg-paper p-3 transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5",
+              "relative overflow-hidden rounded-[10px] border bg-paper p-5 transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5",
               isCurrentMonth
                 ? "border-[rgba(35,32,28,0.18)]"
                 : "border-[rgba(35,32,28,0.07)] hover:border-[rgba(35,32,28,0.18)]",
@@ -60,7 +60,7 @@ export function YearView({
               <Sticker
                 floatVariant="none"
                 wrapperClassName="absolute -right-2 -top-2 z-10"
-                className="block size-11 rounded-full opacity-80 blur-[7px]"
+                className="block size-14 rounded-full opacity-80 blur-[8px]"
               >
                 <div
                   aria-hidden="true"
@@ -73,17 +73,17 @@ export function YearView({
             )}
             <div
               className={cn(
-                "relative font-mono text-[12px] tracking-[0.1em] uppercase",
+                "relative font-mono text-[14px] tracking-[0.1em] uppercase",
                 isCurrentMonth ? "font-medium text-ink" : "text-body",
               )}
             >
               {label}
             </div>
-            <div className="relative mt-2 flex h-[7px] gap-1">
+            <div className="relative mt-3 flex h-[9px] flex-wrap gap-1.5">
               {monthEvents.map((event) => (
                 <span
                   key={event.id}
-                  className="size-[7px] shrink-0 rounded-full"
+                  className="size-[9px] shrink-0 rounded-full"
                   style={{ background: SECTION_COLORS[firstPrepSection(event)] }}
                 />
               ))}

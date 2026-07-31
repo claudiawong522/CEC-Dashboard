@@ -104,14 +104,18 @@ export function WeekView({
                       <button
                         key={event.id}
                         type="button"
+                        title={event.name}
                         onClick={() => router.push(`/events/${event.id}`)}
-                        className="relative h-full w-full rounded-[5px] border-l-2 px-1.5 py-1 text-left font-sans text-[9.5px] text-ink"
+                        className="relative flex h-full w-full items-baseline gap-1 rounded-[5px] border-l-2 px-1.5 py-1 text-left font-sans text-[9.5px] text-ink"
                         style={{
                           borderLeftColor: sectionColor,
                           background: `linear-gradient(160deg, color-mix(in srgb, ${sectionColor} 14%, transparent), color-mix(in srgb, ${sectionColor} 8%, transparent))`,
                         }}
                       >
-                        {formatEventTime(event.event_time)} {event.name}
+                        <span className="shrink-0 font-mono text-[9px] text-body">
+                          {formatEventTime(event.event_time)}
+                        </span>
+                        <span className="min-w-0 truncate">{event.name}</span>
                       </button>
                     );
                   })}

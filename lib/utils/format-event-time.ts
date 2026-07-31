@@ -6,10 +6,10 @@ export function formatEventDate(dateStr: string) {
   return format(new Date(y, m - 1, d), "MMM d").toLowerCase();
 }
 
-// "5:30p" — no leading zero, single-letter meridiem, per design/CEC Pages.dc.html.
+// "5:30pm" — no leading zero, full meridiem.
 export function formatEventTime(time: string) {
   const [hStr, mStr] = time.split(":");
   const h = Number(hStr);
   const displayH = h % 12 === 0 ? 12 : h % 12;
-  return `${displayH}:${mStr}${h < 12 ? "a" : "p"}`;
+  return `${displayH}:${mStr}${h < 12 ? "am" : "pm"}`;
 }

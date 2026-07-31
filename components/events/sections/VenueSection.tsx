@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { SectionCard } from "@/components/events/SectionCard";
+import { SaveIndicator } from "@/components/events/SaveIndicator";
 import { EvidenceUploader, type UploadedFile } from "@/components/events/EvidenceUploader";
+import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { updateVenue } from "@/lib/actions/events";
 
 export function VenueSection({
@@ -20,27 +20,13 @@ export function VenueSection({
   files: UploadedFile[];
 }) {
   const [value, setValue] = useState(venue);
-  const [isPending, startTransition] = useTransition();
-  const dirty = value !== venue;
-
-  function handleSave() {
-    startTransition(async () => {
-      try {
-        await updateVenue(eventId, value);
-        toast.success("Venue saved");
-      } catch {
-        toast.error("Couldn't save venue");
-      }
-    });
-  }
+  const status = useAutoSave(value, (next) => updateVenue(eventId, next));
 
   return (
     <SectionCard title="Venue" eventId={eventId} section="venue" done={done}>
-      <div className="flex gap-2">
+      <div className="flex items-center gap-2">
         <Input value={value} onChange={(e) => setValue(e.target.value)} placeholder="Venue" />
-        <Button size="sm" variant="outline" disabled={!dirty || isPending} onClick={handleSave}>
-          Save
-        </Button>
+        <SaveIndicator status={status} />
       </div>
       <EvidenceUploader
         eventId={eventId}

@@ -51,6 +51,7 @@ export async function createEvent(values: ToggleFormValues) {
   const session = await requireRole("edit");
   const parsed = toggleFormSchema.parse(values);
   const supabase = await createClient();
+  const repeats = !!parsed.repeatsFrequency;
 
   const { data: event, error } = await supabase
     .from("events")
@@ -66,8 +67,8 @@ export async function createEvent(values: ToggleFormValues) {
       has_food: parsed.hasFood,
       has_marketing: parsed.hasMarketing,
       has_media: parsed.hasMedia,
-      has_recurring: parsed.hasRecurring,
-      is_recurring_parent: parsed.hasRecurring,
+      has_recurring: repeats,
+      is_recurring_parent: repeats,
       created_by: session.user.id,
     })
     .select("id")
@@ -75,7 +76,14 @@ export async function createEvent(values: ToggleFormValues) {
 
   if (error || !event) throw new Error(error?.message ?? "Failed to create event");
 
-  await insertChildRows(supabase, event.id, parsed);
+  await insertChildRows(supabase, event.id, { ...parsed, hasRecurring: repeats });
+
+  if (repeats && parsed.repeatsFrequency && parsed.repeatsEndDate) {
+    await generateRecurringOccurrences(event.id, {
+      frequency: parsed.repeatsFrequency,
+      endDate: parsed.repeatsEndDate,
+    });
+  }
 
   revalidatePath("/calendar");
   redirect(`/events/${event.id}`);

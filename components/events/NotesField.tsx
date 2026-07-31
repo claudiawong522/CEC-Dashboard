@@ -1,33 +1,24 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { SectionCard } from "@/components/events/SectionCard";
+import { SaveIndicator } from "@/components/events/SaveIndicator";
+import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { updateNotes } from "@/lib/actions/events";
 
 export function NotesField({ eventId, notes }: { eventId: string; notes: string | null }) {
   const [value, setValue] = useState(notes ?? "");
-  const [isPending, startTransition] = useTransition();
-  const dirty = value !== (notes ?? "");
-
-  function handleSave() {
-    startTransition(async () => {
-      try {
-        await updateNotes(eventId, value);
-        toast.success("Notes saved");
-      } catch {
-        toast.error("Couldn't save notes");
-      }
-    });
-  }
+  const status = useAutoSave(value, (next) => updateNotes(eventId, next));
 
   return (
     <SectionCard title="Notes" eventId={eventId} section="notes" done={false} hideDone>
       <div className="flex flex-col gap-1.5">
-        <Label className="font-sans text-[12px] font-normal text-body">Optional notes</Label>
+        <div className="flex items-center justify-between">
+          <Label className="font-sans text-[12px] font-normal text-body">Optional notes</Label>
+          <SaveIndicator status={status} />
+        </div>
         <Textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -35,14 +26,6 @@ export function NotesField({ eventId, notes }: { eventId: string; notes: string 
           rows={4}
         />
       </div>
-      <Button
-        variant="outline"
-        className="self-start px-[17px] py-2 text-[12.5px]"
-        disabled={!dirty || isPending}
-        onClick={handleSave}
-      >
-        Save
-      </Button>
     </SectionCard>
   );
 }

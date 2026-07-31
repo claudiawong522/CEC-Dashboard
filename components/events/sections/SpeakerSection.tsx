@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { SectionCard } from "@/components/events/SectionCard";
+import { SaveIndicator } from "@/components/events/SaveIndicator";
 import { EvidenceUploader, type UploadedFile } from "@/components/events/EvidenceUploader";
+import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { updateSpeaker } from "@/lib/actions/events";
 
 export function SpeakerSection({
@@ -21,38 +21,20 @@ export function SpeakerSection({
   portraitFiles: UploadedFile[];
 }) {
   const [value, setValue] = useState(description ?? "");
-  const [isPending, startTransition] = useTransition();
-  const dirty = value !== (description ?? "");
-
-  function handleSave() {
-    startTransition(async () => {
-      try {
-        await updateSpeaker(eventId, { description: value });
-        toast.success("Speaker saved");
-      } catch {
-        toast.error("Couldn't save speaker");
-      }
-    });
-  }
+  const status = useAutoSave(value, (next) => updateSpeaker(eventId, { description: next }));
 
   return (
     <SectionCard title="Speaker" eventId={eventId} section="speaker" done={done}>
       <div className="flex flex-col gap-1.5">
-        <Label>Details</Label>
+        <div className="flex items-center justify-between">
+          <Label>Details</Label>
+          <SaveIndicator status={status} />
+        </div>
         <Textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder="Who's speaking, what about..."
         />
-        <Button
-          size="sm"
-          variant="outline"
-          className="self-start"
-          disabled={!dirty || isPending}
-          onClick={handleSave}
-        >
-          Save
-        </Button>
       </div>
 
       <div className="flex flex-col gap-1.5">

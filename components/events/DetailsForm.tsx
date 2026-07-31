@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { DatePicker } from "@/components/ui/date-picker";
+import { TimePicker } from "@/components/ui/time-picker";
+import { SaveIndicator } from "@/components/events/SaveIndicator";
+import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { updateEventHeader } from "@/lib/actions/events";
 import { NotesField } from "@/components/events/NotesField";
 import { VenueSection } from "@/components/events/sections/VenueSection";
@@ -78,34 +80,16 @@ export function DetailsForm({
   const [date, setDate] = useState(event.event_date);
   const [startTime, setStartTime] = useState(event.event_time.slice(0, 5));
   const [endTime, setEndTime] = useState(event.event_end_time?.slice(0, 5) ?? "");
-  const [isPending, startTransition] = useTransition();
-  const dirty =
-    name !== event.name ||
-    date !== event.event_date ||
-    startTime !== event.event_time.slice(0, 5) ||
-    endTime !== (event.event_end_time?.slice(0, 5) ?? "");
+  const headerStatus = useAutoSave({ name, date, startTime, endTime }, (next) =>
+    updateEventHeader(event.id, {
+      name: next.name,
+      eventDate: next.date,
+      eventStartTime: next.startTime,
+      eventEndTime: next.endTime,
+    }),
+  );
 
-  // Land straight on the Recurring tab right after creating a recurring
-  // event — that's the one step that still needs action before anything
-  // else here is useful.
-  const defaultTab: TabKey = event.has_recurring && !event.recurring_series_id ? "recurring" : "venue";
-  const [activeTab, setActiveTab] = useState<TabKey>(defaultTab);
-
-  function handleSaveHeader() {
-    startTransition(async () => {
-      try {
-        await updateEventHeader(event.id, {
-          name,
-          eventDate: date,
-          eventStartTime: startTime,
-          eventEndTime: endTime,
-        });
-        toast.success("Saved");
-      } catch {
-        toast.error("Couldn't save");
-      }
-    });
-  }
+  const [activeTab, setActiveTab] = useState<TabKey>("venue");
 
   const tabs: { key: TabKey; label: SectionLabel | "Notes"; done: boolean }[] = [
     { key: "venue", label: "Venue", done: event.venue_done },
@@ -179,24 +163,17 @@ export function DetailsForm({
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
           <Label className="font-sans text-[12px] font-normal text-body">Date</Label>
-          <Input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <DatePicker value={date} onChange={setDate} />
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
           <Label className="font-sans text-[12px] font-normal text-body">Start</Label>
-          <Input type="time" value={startTime} onChange={(e) => setStartTime(e.target.value)} />
+          <TimePicker value={startTime} onChange={setStartTime} />
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
           <Label className="font-sans text-[12px] font-normal text-body">End</Label>
-          <Input type="time" value={endTime} onChange={(e) => setEndTime(e.target.value)} />
+          <TimePicker value={endTime} onChange={setEndTime} />
         </div>
-        <Button
-          variant="outline"
-          className="px-[18px] py-2.5 text-[13px]"
-          disabled={!dirty || isPending}
-          onClick={handleSaveHeader}
-        >
-          Save
-        </Button>
+        <SaveIndicator status={headerStatus} className="pb-2.5" />
       </div>
 
       <div className="relative flex gap-6">

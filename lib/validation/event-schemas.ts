@@ -1,19 +1,25 @@
 import { z } from "zod";
 
-export const toggleFormSchema = z.object({
-  name: z.string().min(1, "Required"),
-  eventDate: z.string().min(1, "Required"),
-  eventStartTime: z.string().min(1, "Required"),
-  eventEndTime: z.string().min(1, "Required"),
-  venue: z.string().min(1, "Required"),
-  hasSpeaker: z.boolean(),
-  hasAttendees: z.boolean(),
-  hasMoney: z.boolean(),
-  hasFood: z.boolean(),
-  hasMarketing: z.boolean(),
-  hasMedia: z.boolean(),
-  hasRecurring: z.boolean(),
-});
+export const toggleFormSchema = z
+  .object({
+    name: z.string().min(1, "Required"),
+    eventDate: z.string().min(1, "Required"),
+    eventStartTime: z.string().min(1, "Required"),
+    eventEndTime: z.string().min(1, "Required"),
+    venue: z.string().min(1, "Required"),
+    hasSpeaker: z.boolean(),
+    hasAttendees: z.boolean(),
+    hasMoney: z.boolean(),
+    hasFood: z.boolean(),
+    hasMarketing: z.boolean(),
+    hasMedia: z.boolean(),
+    repeatsFrequency: z.enum(["weekly", "biweekly", "monthly"]).nullable(),
+    repeatsEndDate: z.string().optional(),
+  })
+  .refine((values) => !values.repeatsFrequency || !!values.repeatsEndDate, {
+    message: "Pick an end date",
+    path: ["repeatsEndDate"],
+  });
 export type ToggleFormValues = z.infer<typeof toggleFormSchema>;
 
 export const eventCoreSchema = z.object({

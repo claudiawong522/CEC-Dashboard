@@ -8,6 +8,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
+import { DatePicker } from "@/components/ui/date-picker";
+import { TimePicker } from "@/components/ui/time-picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { createEvent } from "@/lib/actions/events";
 import { toggleFormSchema, type ToggleFormValues } from "@/lib/validation/event-schemas";
 import { SECTION_COLORS } from "@/lib/utils/section-colors";
@@ -19,7 +28,6 @@ const TOGGLE_ITEMS: { key: keyof ToggleFormValues; label: keyof typeof SECTION_C
   { key: "hasFood", label: "Food" },
   { key: "hasMarketing", label: "Marketing" },
   { key: "hasMedia", label: "Media" },
-  { key: "hasRecurring", label: "Recurring" },
 ];
 
 function SectionFlag({ color }: { color: string }) {
@@ -53,14 +61,15 @@ export function ToggleForm() {
       hasFood: false,
       hasMarketing: false,
       hasMedia: false,
-      hasRecurring: false,
+      repeatsFrequency: null,
+      repeatsEndDate: "",
     },
   });
 
   const values = watch();
   // Venue and Notes are always prepped sections regardless of the switches.
   const sectionsSelected =
-    TOGGLE_ITEMS.filter((item) => values[item.key]).length + 2;
+    TOGGLE_ITEMS.filter((item) => values[item.key]).length + (values.repeatsFrequency ? 1 : 0) + 2;
 
   function onSubmit(values: ToggleFormValues) {
     startTransition(async () => {
@@ -88,7 +97,13 @@ export function ToggleForm() {
           <Label htmlFor="eventDate" className="font-sans text-[12px] font-normal text-body">
             Date
           </Label>
-          <Input id="eventDate" type="date" {...register("eventDate")} />
+          <Controller
+            name="eventDate"
+            control={control}
+            render={({ field }) => (
+              <DatePicker id="eventDate" value={field.value} onChange={field.onChange} />
+            )}
+          />
           {errors.eventDate && (
             <p className="font-sans text-[12px] text-destructive">{errors.eventDate.message}</p>
           )}
@@ -97,7 +112,13 @@ export function ToggleForm() {
           <Label htmlFor="eventStartTime" className="font-sans text-[12px] font-normal text-body">
             Start time
           </Label>
-          <Input id="eventStartTime" type="time" {...register("eventStartTime")} />
+          <Controller
+            name="eventStartTime"
+            control={control}
+            render={({ field }) => (
+              <TimePicker id="eventStartTime" value={field.value} onChange={field.onChange} />
+            )}
+          />
           {errors.eventStartTime && (
             <p className="font-sans text-[12px] text-destructive">{errors.eventStartTime.message}</p>
           )}
@@ -106,11 +127,62 @@ export function ToggleForm() {
           <Label htmlFor="eventEndTime" className="font-sans text-[12px] font-normal text-body">
             End time
           </Label>
-          <Input id="eventEndTime" type="time" {...register("eventEndTime")} />
+          <Controller
+            name="eventEndTime"
+            control={control}
+            render={({ field }) => (
+              <TimePicker id="eventEndTime" value={field.value} onChange={field.onChange} />
+            )}
+          />
           {errors.eventEndTime && (
             <p className="font-sans text-[12px] text-destructive">{errors.eventEndTime.message}</p>
           )}
         </div>
+      </div>
+
+      <div className="flex gap-[11px]">
+        <div className="flex flex-1 flex-col gap-1.5">
+          <Label htmlFor="repeatsFrequency" className="font-sans text-[12px] font-normal text-body">
+            Repeats
+          </Label>
+          <Controller
+            name="repeatsFrequency"
+            control={control}
+            render={({ field }) => (
+              <Select
+                value={field.value ?? "none"}
+                onValueChange={(v) => field.onChange(v === "none" ? null : v)}
+              >
+                <SelectTrigger id="repeatsFrequency" className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">Does not repeat</SelectItem>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="biweekly">Biweekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            )}
+          />
+        </div>
+        {values.repeatsFrequency && (
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Label htmlFor="repeatsEndDate" className="font-sans text-[12px] font-normal text-body">
+              Ends on
+            </Label>
+            <Controller
+              name="repeatsEndDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker id="repeatsEndDate" value={field.value ?? ""} onChange={field.onChange} />
+              )}
+            />
+            {errors.repeatsEndDate && (
+              <p className="font-sans text-[12px] text-destructive">{errors.repeatsEndDate.message}</p>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-1.5">
