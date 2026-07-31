@@ -146,6 +146,21 @@ export async function deleteEvent(eventId: string, scope: "single" | "following"
   redirect("/calendar");
 }
 
+// Dragging an event on the month grid to a new day — keeps its time, just
+// moves the date. Only the dragged occurrence moves, not its whole series.
+export async function rescheduleEvent(eventId: string, eventDate: string) {
+  await requireRole("edit");
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("events").update({ event_date: eventDate }).eq("id", eventId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath("/calendar");
+  revalidatePath("/todo");
+  revalidatePath("/past-events");
+}
+
 export async function updateEventHeader(
   eventId: string,
   values: Pick<EventCoreValues, "name" | "eventDate" | "eventStartTime" | "eventEndTime">,

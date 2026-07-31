@@ -5,11 +5,14 @@ import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import type { EventClickArg, DatesSetArg, EventMountArg } from "@fullcalendar/core";
+import type { EventClickArg, EventDropArg, DatesSetArg, EventMountArg } from "@fullcalendar/core";
+import type { DateClickArg } from "@fullcalendar/interaction";
 import type FullCalendarType from "@fullcalendar/react";
 import { addDays, addYears, format, isSameMonth, startOfWeek, subYears } from "date-fns";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
+import { rescheduleEvent } from "@/lib/actions/events";
 import { Sticker } from "@/components/stickers/Sticker";
 import { Heart, Cherries, Flower, StarPolygon, TwinkleDiamondPair } from "@/components/stickers/shapes";
 import { WeekView } from "./WeekView";
@@ -79,6 +82,18 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
 
   function handleEventClick(info: EventClickArg) {
     router.push(`/events/${info.event.id}`);
+  }
+
+  function handleDateClick(info: DateClickArg) {
+    router.push(`/events/new?date=${info.dateStr}`);
+  }
+
+  function handleEventDrop(info: EventDropArg) {
+    const newDate = info.event.startStr.slice(0, 10);
+    rescheduleEvent(info.event.id, newDate).catch(() => {
+      toast.error("Couldn't move that event — try again");
+      info.revert();
+    });
   }
 
   function handleEventDidMount(info: EventMountArg) {
@@ -276,6 +291,11 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
               datesSet={handleDatesSet}
               height="auto"
               events={fcEvents}
+              editable
+              eventStartEditable
+              eventDurationEditable={false}
+              dateClick={handleDateClick}
+              eventDrop={handleEventDrop}
               eventClick={handleEventClick}
               eventDidMount={handleEventDidMount}
               eventDisplay="list-item"

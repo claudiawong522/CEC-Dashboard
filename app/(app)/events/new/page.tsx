@@ -5,9 +5,9 @@ import { StarPolygon } from "@/components/stickers/shapes";
 export default async function NewEventPage({
   searchParams,
 }: {
-  searchParams: Promise<{ media?: string }>;
+  searchParams: Promise<{ media?: string; date?: string }>;
 }) {
-  const { media } = await searchParams;
+  const { media, date } = await searchParams;
 
   return (
     <div className="relative flex flex-col gap-[19px]">
@@ -27,7 +27,7 @@ export default async function NewEventPage({
           Step 1 of 2
         </p>
       </div>
-      <ToggleForm defaultMediaOn={media === "1"} />
+      <ToggleForm defaultMediaOn={media === "1"} defaultDate={date} />
     </div>
   );
 }

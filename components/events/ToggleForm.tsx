@@ -39,7 +39,13 @@ function SectionFlag({ color }: { color: string }) {
   );
 }
 
-export function ToggleForm({ defaultMediaOn = false }: { defaultMediaOn?: boolean }) {
+export function ToggleForm({
+  defaultMediaOn = false,
+  defaultDate,
+}: {
+  defaultMediaOn?: boolean;
+  defaultDate?: string;
+}) {
   const [isPending, startTransition] = useTransition();
   const {
     register,
@@ -51,7 +57,7 @@ export function ToggleForm({ defaultMediaOn = false }: { defaultMediaOn?: boolea
     resolver: zodResolver(toggleFormSchema),
     defaultValues: {
       name: "",
-      eventDate: "",
+      eventDate: defaultDate ?? "",
       eventStartTime: "",
       eventEndTime: "",
       venue: "",
