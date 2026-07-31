@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 
 export type Role = "view" | "edit" | "admin";
+export type ProfileStatus = "invited" | "active";
 
 export type Profile = {
   id: string;
@@ -8,6 +9,7 @@ export type Profile = {
   full_name: string | null;
   avatar_url: string | null;
   role: Role;
+  status: ProfileStatus;
 };
 
 export type Session = {
@@ -25,7 +27,7 @@ export async function getSession(): Promise<Session | null> {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, email, full_name, avatar_url, role")
+    .select("id, email, full_name, avatar_url, role, status")
     .eq("id", user.id)
     .single();
 

@@ -38,7 +38,7 @@ export async function GET(request: Request) {
   const admin = createAdminClient();
   const { data: existing } = await admin
     .from("profiles")
-    .select("id")
+    .select("id, status")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -49,7 +49,21 @@ export async function GET(request: Request) {
       full_name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
       avatar_url: user.user_metadata?.avatar_url ?? null,
       role,
+      status: "active",
     });
+  } else if (existing.status === "invited") {
+    // An admin-issued invite already created this row (with the role the
+    // admin chose) ahead of the person's first sign-in — just mark it
+    // active and fill in the profile fields Google now gives us. Don't
+    // touch `role`, so the invite's grant survives.
+    await admin
+      .from("profiles")
+      .update({
+        status: "active",
+        full_name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
+        avatar_url: user.user_metadata?.avatar_url ?? null,
+      })
+      .eq("id", user.id);
   }
 
   return NextResponse.redirect(`${origin}/calendar`);

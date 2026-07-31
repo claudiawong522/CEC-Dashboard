@@ -73,12 +73,12 @@ export default async function EventDetailsPage({
       .returns<MarketingCustomItemRow[]>(),
     supabase
       .from("event_tagged_members")
-      .select("profile_id, tagged_at, profiles(id, full_name, avatar_url, email, role)")
+      .select("profile_id, tagged_at, profiles(id, full_name, avatar_url, email, role, status)")
       .eq("event_id", eventId)
       .returns<TaggedMemberRow[]>(),
     supabase
       .from("profiles")
-      .select("id, email, full_name, avatar_url, role")
+      .select("id, email, full_name, avatar_url, role, status")
       .order("full_name", { ascending: true, nullsFirst: false })
       .returns<Profile[]>(),
   ]);

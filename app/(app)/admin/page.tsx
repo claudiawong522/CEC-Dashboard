@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
 import { UserTable } from "@/components/admin/UserTable";
+import { InviteForm } from "@/components/admin/InviteForm";
 import { AdminDecor } from "@/components/admin/AdminDecor";
 import { Sticker } from "@/components/stickers/Sticker";
 import { BeadRow } from "@/components/stickers/shapes";
@@ -14,7 +15,7 @@ export default async function AdminPage() {
   const supabase = await createClient();
   const { data: users } = await supabase
     .from("profiles")
-    .select("id, email, full_name, avatar_url, role")
+    .select("id, email, full_name, avatar_url, role, status")
     .order("full_name", { ascending: true, nullsFirst: false })
     .returns<Profile[]>();
 
@@ -54,6 +55,8 @@ export default async function AdminPage() {
           </Sticker>
         </div>
       </div>
+
+      {session.profile.role === "admin" && <InviteForm />}
 
       <UserTable
         users={users ?? []}

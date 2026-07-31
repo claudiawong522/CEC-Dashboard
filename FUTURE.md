@@ -55,6 +55,10 @@ verification process, is the realistic path. Not each admin's personal account �
   this adds (matching `event_tagged_members`'s policy), not only in the server action — and check
   whether any of this can be reached through the service-role client (`lib/supabase/admin.ts`),
   which bypasses RLS entirely.
-- **Roster gap**: the member picker can only tag people who've signed into the dashboard at least
-  once (`profiles` rows are created by the Google OAuth trigger) — surface that explicitly in the
-  picker rather than a silent omission.
+- **Roster gap — partially closed (2026-07-31)**: the member picker used to only be able to tag
+  people who'd signed into the dashboard at least once, since `profiles` rows were created solely
+  on first Google OAuth login. Admin-issued invites (see `BRAND_KIT.md` changelog) now create a
+  `profiles` row up front with `status: 'invited'`, so an admin can invite someone and immediately
+  tag them into an event before they've ever logged in. Still not fully closed: the picker itself
+  doesn't distinguish invited-but-not-yet-accepted members from active ones, and there's no
+  "invite + tag" shortcut from the tagging picker — inviting still requires a trip to `/admin`.

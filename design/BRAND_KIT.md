@@ -389,3 +389,15 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   as a labeled row directly in the event-details header card, below the start/end time fields
   (above the conditional Repeats row), not as its own tab — so it never got a fixed section colour
   and doesn't participate in the tab bar's done-dot/"N of M done" count at all.
+- **Admin — added invite-by-email (2026-07-31).** New surface not in the original mockup, designed
+  against the kit's existing Admin patterns rather than approximated from a library default.
+  `InviteForm` sits above the user table: same card shell as the table itself
+  (`rounded-[10px] border-[rgba(35,32,28,.1)] bg-paper`), a `9px` Geist Mono uppercase label matching
+  the table's own column headers, and the existing pill-shaped role `Select` reused verbatim from
+  `RoleSelect`. A pending row shows an amber-tinted pill (`border-[rgba(224,185,74,.4)] bg-amber/10`
+  — Food/Notes' section colour, repurposed here for "awaiting action") reading `pending · <role>`
+  instead of the row's usual gradient/outline role badge, plus a small `X` revoke icon (same
+  `hover:bg-coral/10 hover:text-destructive` treatment as `DeleteEventDialog`'s trash icon) gated
+  behind a confirm dialog. The name column shows italic faint "Invite pending" in place of the
+  usual name/em-dash, since an invited profile has no `full_name` yet — Google only supplies that
+  on first sign-in.

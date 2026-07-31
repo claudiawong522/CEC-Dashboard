@@ -88,6 +88,7 @@ export type TaggedMemberRow = {
     avatar_url: string | null;
     email: string;
     role: "view" | "edit" | "admin";
+    status: "invited" | "active";
   } | null;
 };
 
