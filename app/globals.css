@@ -382,6 +382,10 @@
   background: var(--event-dot-color, var(--teal));
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
+.fc-cec .fc-daygrid-block-event {
+  border-left: 3px solid var(--event-dot-color, var(--teal));
+  color: var(--ink);
+}
 
 /* date picker (components/ui/calendar.tsx) */
 .day-cell[data-today="true"] .day-btn {

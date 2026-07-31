@@ -306,7 +306,6 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
               eventDrop={handleEventDrop}
               eventClick={handleEventClick}
               eventDidMount={handleEventDidMount}
-              eventDisplay="list-item"
               eventTimeFormat={{ hour: "numeric", minute: "2-digit", meridiem: "short", hour12: true }}
               dayMaxEventRows={3}
             />

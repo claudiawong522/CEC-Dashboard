@@ -182,6 +182,13 @@ export async function updateEventHeader(
   const parsed = eventHeaderSchema.parse(values);
   const supabase = await createClient();
 
+  const { data: existing, error: existingError } = await supabase
+    .from("events")
+    .select("event_date, recurring_series_id")
+    .eq("id", eventId)
+    .single();
+  if (existingError || !existing) throw new Error(existingError?.message ?? "Event not found");
+
   const { error } = await supabase
     .from("events")
     .update({
@@ -195,8 +202,38 @@ export async function updateEventHeader(
     .eq("id", eventId);
 
   if (error) throw new Error(error.message);
+
+  // Moving one occurrence's date shifts every other occurrence in the same
+  // series by the same number of days, so the whole series' schedule moves
+  // together — occurrences that have already happened are left untouched.
+  const dayShift = differenceInCalendarDays(parseISO(parsed.eventDate), parseISO(existing.event_date));
+  if (existing.recurring_series_id && dayShift !== 0) {
+    const today = formatISO(new Date(), { representation: "date" });
+    const { data: siblings } = await supabase
+      .from("events")
+      .select("id, event_date, event_end_date")
+      .eq("recurring_series_id", existing.recurring_series_id)
+      .neq("id", eventId)
+      .gt("event_date", today);
+
+    for (const sibling of siblings ?? []) {
+      await supabase
+        .from("events")
+        .update({
+          event_date: formatISO(addDays(parseISO(sibling.event_date), dayShift), { representation: "date" }),
+          event_end_date: formatISO(addDays(parseISO(sibling.event_end_date), dayShift), {
+            representation: "date",
+          }),
+        })
+        .eq("id", sibling.id);
+      revalidatePath(`/events/${sibling.id}`);
+    }
+  }
+
   revalidatePath(`/events/${eventId}`);
   revalidatePath("/calendar");
+  revalidatePath("/todo");
+  revalidatePath("/past-events");
 }
 
 export async function updateVenue(eventId: string, venue: string) {

@@ -1,27 +1,8 @@
-import Image from "next/image";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { publicFileUrl } from "@/lib/utils/storage";
 import { Sticker } from "@/components/stickers/Sticker";
 import { PhotosDecor } from "@/components/photos/PhotosDecor";
 import { AddPhotoDialog } from "@/components/photos/AddPhotoDialog";
-
-type MediaFile = {
-  id: string;
-  event_id: string;
-  bucket: string;
-  storage_path: string;
-  file_name: string | null;
-  mime_type: string | null;
-  events: { name: string; event_date: string } | null;
-};
-
-function fileTypeLabel(file: MediaFile) {
-  const ext = file.file_name?.split(".").pop();
-  if (ext) return ext.toLowerCase();
-  if (file.mime_type?.startsWith("video/")) return "video";
-  return "file";
-}
+import { PhotoGrid, type MediaFile } from "@/components/photos/PhotoGrid";
 
 export default async function PhotosPage() {
   const supabase = await createClient();
@@ -35,19 +16,16 @@ export default async function PhotosPage() {
       .returns<MediaFile[]>(),
     supabase
       .from("events")
-      .select("id, name, event_date, event_time, event_end_time")
-      .order("event_date", { ascending: false })
-      .order("event_time", { ascending: false })
-      .returns<{ id: string; name: string; event_date: string; event_time: string; event_end_time: string | null }[]>(),
+      .select("id, name, event_date")
+      .returns<{ id: string; name: string; event_date: string }[]>(),
   ]);
 
-  // Photos get added after an event happens — the picker should surface
-  // events that have already happened (latest first), not bury them under
-  // every future recurring occurrence.
   // eslint-disable-next-line react-hooks/purity
-  const now = Date.now();
-  const events = (allEvents ?? []).filter(
-    (e) => new Date(`${e.event_date}T${e.event_end_time ?? e.event_time}`).getTime() < now,
+  const today = Date.now();
+  const events = (allEvents ?? []).slice().sort(
+    (a, b) =>
+      Math.abs(new Date(a.event_date).getTime() - today) -
+      Math.abs(new Date(b.event_date).getTime() - today),
   );
 
   return (
@@ -55,11 +33,11 @@ export default async function PhotosPage() {
       <PhotosDecor />
       <div className="relative z-10 flex items-center justify-between">
         <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-          Photos
+          Gallery
         </h1>
         <AddPhotoDialog
           events={events}
-          className="rounded-input border border-line-input bg-paper px-[13px] py-[7px] font-sans text-[12.5px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+          className="-mr-2 rounded-input border border-line-input bg-paper px-[13px] py-[7px] font-sans text-[12.5px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
         >
           + Add photo
         </AddPhotoDialog>
@@ -89,35 +67,7 @@ export default async function PhotosPage() {
           </span>
         </AddPhotoDialog>
       ) : (
-        <div className="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-          {files.map((file, i) => (
-            <Link
-              key={file.id}
-              href={`/events/${file.event_id}`}
-              style={{ animationDelay: `${0.05 + i * 0.06}s` }}
-              className="flex flex-col gap-1.5 animate-riseIn"
-            >
-              <div className="group relative aspect-square overflow-hidden rounded-[9px] border border-[rgba(35,32,28,0.07)]">
-                {file.mime_type?.startsWith("image/") ? (
-                  <Image
-                    src={publicFileUrl(file.bucket, file.storage_path)}
-                    alt={file.file_name ?? "media"}
-                    fill
-                    sizes="(min-width: 768px) 25vw, 50vw"
-                    className="object-cover transition-transform duration-[380ms] ease-brand group-hover:scale-[1.04]"
-                  />
-                ) : (
-                  <div className="flex size-full items-center justify-center font-mono text-[9px] tracking-[0.1em] text-faint uppercase transition-transform duration-[380ms] ease-brand group-hover:scale-[1.04]">
-                    {fileTypeLabel(file)}
-                  </div>
-                )}
-              </div>
-              <span className="truncate font-sans text-[10px] text-faint">
-                {file.events?.name ?? "Untitled event"}
-              </span>
-            </Link>
-          ))}
-        </div>
+        <PhotoGrid files={files} />
       )}
     </div>
   );
