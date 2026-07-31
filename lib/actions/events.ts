@@ -44,7 +44,10 @@ async function insertChildRows(
   if (toggles.hasMoney) await supabase.from("event_money").insert({ event_id: eventId });
   if (toggles.hasFood) await supabase.from("event_food").insert({ event_id: eventId });
   if (toggles.hasMarketing) await supabase.from("event_marketing").insert({ event_id: eventId });
-  if (toggles.hasRecurring) await supabase.from("event_recurring").insert({ event_id: eventId });
+  // event_recurring has no user-facing "done" checkbox anymore (recurrence
+  // isn't a prep task) — insert it pre-satisfied so it never blocks
+  // events.is_complete.
+  if (toggles.hasRecurring) await supabase.from("event_recurring").insert({ event_id: eventId, done: true });
 }
 
 export async function createEvent(values: ToggleFormValues) {
@@ -344,4 +347,108 @@ export async function generateRecurringOccurrences(
 
   revalidatePath("/calendar");
   revalidatePath(`/events/${eventId}`);
+}
+
+// Changing an already-generated series' frequency or end date only affects
+// occurrences that haven't happened yet: everything up to today (and the
+// parent, regardless of its date) is left untouched, everything after is
+// dropped and regenerated at the new cadence/end date.
+export async function updateRecurringSeries(eventId: string, values: RecurringValues) {
+  const session = await requireRole("edit");
+  const parsed = recurringSchema.parse(values);
+  const supabase = await createClient();
+
+  const { data: event, error: eventError } = await supabase
+    .from("events")
+    .select("recurring_series_id")
+    .eq("id", eventId)
+    .single();
+  if (eventError || !event?.recurring_series_id) {
+    throw new Error(eventError?.message ?? "Event is not part of a recurring series");
+  }
+  const seriesId = event.recurring_series_id;
+
+  const { data: seriesEvents, error: seriesEventsError } = await supabase
+    .from("events")
+    .select(
+      "id, name, event_date, event_time, event_end_time, venue, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media, is_recurring_parent",
+    )
+    .eq("recurring_series_id", seriesId);
+  if (seriesEventsError || !seriesEvents?.length) {
+    throw new Error(seriesEventsError?.message ?? "Series has no events");
+  }
+
+  // The event the caller is currently viewing is always protected too, even
+  // if it's a future occurrence — otherwise editing the series from a
+  // not-yet-happened occurrence could delete the very page you're on.
+  const today = formatISO(new Date(), { representation: "date" });
+  const protectedEvents = seriesEvents.filter(
+    (e) => e.is_recurring_parent || e.event_date <= today || e.id === eventId,
+  );
+  const anchor = protectedEvents.reduce((latest, e) => (e.event_date > latest.event_date ? e : latest));
+
+  const toDelete = seriesEvents
+    .filter((e) => !e.is_recurring_parent && e.event_date > anchor.event_date)
+    .map((e) => e.id);
+  if (toDelete.length) {
+    const { error: deleteError } = await supabase.from("events").delete().in("id", toDelete);
+    if (deleteError) throw new Error(deleteError.message);
+  }
+
+  const { error: seriesUpdateError } = await supabase
+    .from("recurring_series")
+    .update({ frequency: parsed.frequency, end_date: parsed.endDate })
+    .eq("id", seriesId);
+  if (seriesUpdateError) throw new Error(seriesUpdateError.message);
+
+  const endDate = parseISO(parsed.endDate);
+  let cursor = nextOccurrence(parseISO(anchor.event_date), parsed.frequency);
+  const toggles: Toggles = {
+    hasSpeaker: anchor.has_speaker,
+    hasAttendees: anchor.has_attendees,
+    hasMoney: anchor.has_money,
+    hasFood: anchor.has_food,
+    hasMarketing: anchor.has_marketing,
+    hasMedia: anchor.has_media,
+    hasRecurring: false,
+  };
+
+  const createdIds: string[] = [];
+  let guard = 0;
+  while (!isAfter(cursor, endDate) && guard < 104) {
+    guard += 1;
+    const { data: child, error: childError } = await supabase
+      .from("events")
+      .insert({
+        name: anchor.name,
+        event_date: formatISO(cursor, { representation: "date" }),
+        event_time: anchor.event_time,
+        event_end_time: anchor.event_end_time,
+        venue: anchor.venue,
+        has_speaker: anchor.has_speaker,
+        has_attendees: anchor.has_attendees,
+        has_money: anchor.has_money,
+        has_food: anchor.has_food,
+        has_marketing: anchor.has_marketing,
+        has_media: anchor.has_media,
+        has_recurring: false,
+        recurring_series_id: seriesId,
+        is_recurring_parent: false,
+        created_by: session.user.id,
+      })
+      .select("id")
+      .single();
+
+    if (!childError && child) {
+      await insertChildRows(supabase, child.id, toggles);
+      createdIds.push(child.id);
+    }
+
+    cursor = nextOccurrence(cursor, parsed.frequency);
+  }
+
+  revalidatePath("/calendar");
+  revalidatePath("/todo");
+  revalidatePath("/past-events");
+  for (const id of [...toDelete, ...createdIds, anchor.id]) revalidatePath(`/events/${id}`);
 }

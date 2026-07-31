@@ -6,9 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DatePicker } from "@/components/ui/date-picker";
 import { TimePicker } from "@/components/ui/time-picker";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { SaveIndicator } from "@/components/events/SaveIndicator";
 import { useAutoSave } from "@/lib/hooks/use-autosave";
-import { updateEventHeader } from "@/lib/actions/events";
+import { updateEventHeader, updateRecurringSeries } from "@/lib/actions/events";
 import { NotesField } from "@/components/events/NotesField";
 import { VenueSection } from "@/components/events/sections/VenueSection";
 import { SpeakerSection } from "@/components/events/sections/SpeakerSection";
@@ -17,7 +24,6 @@ import { MoneySection } from "@/components/events/sections/MoneySection";
 import { FoodSection } from "@/components/events/sections/FoodSection";
 import { MarketingSection } from "@/components/events/sections/MarketingSection";
 import { MediaSection } from "@/components/events/sections/MediaSection";
-import { RecurringSection } from "@/components/events/sections/RecurringSection";
 import { SECTION_COLORS, type SectionLabel } from "@/lib/utils/section-colors";
 import { Sticker } from "@/components/stickers/Sticker";
 import { Sprig, Confetti } from "@/components/stickers/shapes";
@@ -29,7 +35,7 @@ import type {
   FoodRow,
   MarketingRow,
   MarketingCustomItemRow,
-  RecurringRow,
+  RecurringSeriesRow,
   EventFileRow,
 } from "@/lib/types/events";
 
@@ -53,7 +59,6 @@ type TabKey =
   | "food"
   | "marketing"
   | "media"
-  | "recurring"
   | "notes";
 
 export function DetailsForm({
@@ -63,7 +68,7 @@ export function DetailsForm({
   money,
   food,
   marketing,
-  recurring,
+  recurringSeries,
   files,
   marketingCustomItems,
 }: {
@@ -73,7 +78,7 @@ export function DetailsForm({
   money: MoneyRow | null;
   food: FoodRow | null;
   marketing: MarketingRow | null;
-  recurring: RecurringRow | null;
+  recurringSeries: RecurringSeriesRow | null;
   files: EventFileRow[];
   marketingCustomItems: MarketingCustomItemRow[];
 }) {
@@ -88,6 +93,12 @@ export function DetailsForm({
       eventStartTime: next.startTime,
       eventEndTime: next.endTime,
     }),
+  );
+
+  const [repeatsFrequency, setRepeatsFrequency] = useState(recurringSeries?.frequency ?? "weekly");
+  const [repeatsEndDate, setRepeatsEndDate] = useState(recurringSeries?.end_date ?? "");
+  const repeatsStatus = useAutoSave({ repeatsFrequency, repeatsEndDate }, (next) =>
+    updateRecurringSeries(event.id, { frequency: next.repeatsFrequency, endDate: next.repeatsEndDate }),
   );
 
   const requestedTab = useSearchParams().get("tab");
@@ -114,9 +125,6 @@ export function DetailsForm({
       : []),
     ...(event.has_media
       ? [{ key: "media" as const, label: "Media" as const, done: event.media_done }]
-      : []),
-    ...(event.has_recurring
-      ? [{ key: "recurring" as const, label: "Recurring" as const, done: recurring?.done ?? false }]
       : []),
     { key: "notes", label: "Notes", done: false },
   ];
@@ -149,7 +157,7 @@ export function DetailsForm({
       </div>
 
       <div
-        className="relative flex items-end gap-3 overflow-hidden rounded-card border border-[rgba(35,32,28,0.1)] bg-paper px-5 py-[19px]"
+        className="relative flex flex-col gap-4 overflow-hidden rounded-card border border-[rgba(35,32,28,0.1)] bg-paper px-5 py-[19px]"
         style={{ "--input-ground": "var(--page)" } as React.CSSProperties}
       >
         <Sticker
@@ -161,23 +169,55 @@ export function DetailsForm({
           <Sprig size={62} />
         </Sticker>
 
-        <div className="flex flex-[2] flex-col gap-1.5">
-          <Label className="font-sans text-[12px] font-normal text-body">Event name</Label>
-          <Input value={name} onChange={(e) => setName(e.target.value)} />
+        <div className="flex items-end gap-3">
+          <div className="flex flex-[2] flex-col gap-1.5">
+            <Label className="font-sans text-[12px] font-normal text-body">Event name</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
+          </div>
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Label className="font-sans text-[12px] font-normal text-body">Date</Label>
+            <DatePicker value={date} onChange={setDate} />
+          </div>
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Label className="font-sans text-[12px] font-normal text-body">Start</Label>
+            <TimePicker value={startTime} onChange={setStartTime} />
+          </div>
+          <div className="flex flex-1 flex-col gap-1.5">
+            <Label className="font-sans text-[12px] font-normal text-body">End</Label>
+            <TimePicker value={endTime} onChange={setEndTime} />
+          </div>
+          <SaveIndicator status={headerStatus} className="pb-2.5" />
         </div>
-        <div className="flex flex-1 flex-col gap-1.5">
-          <Label className="font-sans text-[12px] font-normal text-body">Date</Label>
-          <DatePicker value={date} onChange={setDate} />
-        </div>
-        <div className="flex flex-1 flex-col gap-1.5">
-          <Label className="font-sans text-[12px] font-normal text-body">Start</Label>
-          <TimePicker value={startTime} onChange={setStartTime} />
-        </div>
-        <div className="flex flex-1 flex-col gap-1.5">
-          <Label className="font-sans text-[12px] font-normal text-body">End</Label>
-          <TimePicker value={endTime} onChange={setEndTime} />
-        </div>
-        <SaveIndicator status={headerStatus} className="pb-2.5" />
+
+        {recurringSeries && (
+          <div className="flex items-end gap-3 border-t border-[rgba(35,32,28,0.07)] pt-4">
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Label className="font-sans text-[12px] font-normal text-body">Repeats</Label>
+              <Select
+                value={repeatsFrequency}
+                onValueChange={(v) => setRepeatsFrequency(v as typeof repeatsFrequency)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="weekly">Weekly</SelectItem>
+                  <SelectItem value="biweekly">Biweekly</SelectItem>
+                  <SelectItem value="monthly">Monthly</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex flex-1 flex-col gap-1.5">
+              <Label className="font-sans text-[12px] font-normal text-body">Ends on</Label>
+              <DatePicker value={repeatsEndDate} onChange={setRepeatsEndDate} />
+            </div>
+            <div className="flex-[2] font-sans text-[11.5px] text-faint">
+              Changing this only affects occurrences that haven&apos;t happened yet — past ones are
+              left as-is.
+            </div>
+            <SaveIndicator status={repeatsStatus} className="pb-2.5" />
+          </div>
+        )}
       </div>
 
       <div className="flex gap-6">
@@ -286,15 +326,6 @@ export function DetailsForm({
 
           {activeTab === "media" && event.has_media && (
             <MediaSection eventId={event.id} done={event.media_done} files={filesFor(files, "media")} />
-          )}
-
-          {activeTab === "recurring" && event.has_recurring && (
-            <RecurringSection
-              eventId={event.id}
-              done={recurring?.done ?? false}
-              alreadyLinked={!!event.recurring_series_id}
-              files={filesFor(files, "recurring")}
-            />
           )}
 
           {activeTab === "notes" && <NotesField eventId={event.id} notes={event.notes} />}

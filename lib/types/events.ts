@@ -69,9 +69,10 @@ export type MarketingCustomItemRow = {
   done: boolean;
 };
 
-export type RecurringRow = {
-  event_id: string;
-  done: boolean;
+export type RecurringSeriesRow = {
+  id: string;
+  frequency: "weekly" | "biweekly" | "monthly";
+  end_date: string;
 };
 
 export type EventFileRow = {

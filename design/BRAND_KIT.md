@@ -353,3 +353,13 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
     with no centering, so it always sat flush-left) plus bigger tiles/gaps/dots/type. The shared toolbar
     in `CalendarView.tsx` (prev/next/Today/segmented view control) now conditionally scales up only when
     `viewType === "year"`, matching the bigger grid; month and week keep the original toolbar size.
+- **Recurring is no longer a section tab at all (2026-07-30, fourth pass).** Follow-up to the third
+  pass — the "Recurring" tab (with its own Save/Mark-as-done/evidence-upload) is gone entirely from
+  event details; `RecurringSection.tsx` is deleted. Instead, the event-details header (same card as
+  Event name/Date/Start/End) grows a second row with `Repeats` + `Ends on` whenever the event is part
+  of a series, auto-saving like every other field. Editing it calls `updateRecurringSeries`
+  (`lib/actions/events.ts`), which only ever touches occurrences that haven't happened yet — the
+  parent and anything on/before today are untouched; everything after is dropped and regenerated at
+  the new frequency/end date. Since there's no more "done" checkbox for it, `event_recurring` rows are
+  now inserted pre-satisfied (`done: true`) so recurrence can never block `events.is_complete` — no DB
+  migration needed, the completion trigger already just reads that column.

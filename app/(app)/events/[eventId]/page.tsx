@@ -10,7 +10,7 @@ import type {
   FoodRow,
   MarketingRow,
   MarketingCustomItemRow,
-  RecurringRow,
+  RecurringSeriesRow,
   EventFileRow,
 } from "@/lib/types/events";
 
@@ -22,18 +22,24 @@ export default async function EventDetailsPage({
   const { eventId } = await params;
   const supabase = await createClient();
 
+  const { data: event } = await supabase
+    .from("events")
+    .select("*")
+    .eq("id", eventId)
+    .maybeSingle<EventRow>();
+
+  if (!event) notFound();
+
   const [
-    { data: event },
     { data: speaker },
     { data: attendees },
     { data: money },
     { data: food },
     { data: marketing },
-    { data: recurring },
+    { data: recurringSeries },
     { data: files },
     { data: marketingCustomItems },
   ] = await Promise.all([
-    supabase.from("events").select("*").eq("id", eventId).maybeSingle<EventRow>(),
     supabase.from("event_speaker").select("*").eq("event_id", eventId).maybeSingle<SpeakerRow>(),
     supabase
       .from("event_attendees")
@@ -47,11 +53,13 @@ export default async function EventDetailsPage({
       .select("*")
       .eq("event_id", eventId)
       .maybeSingle<MarketingRow>(),
-    supabase
-      .from("event_recurring")
-      .select("*")
-      .eq("event_id", eventId)
-      .maybeSingle<RecurringRow>(),
+    event.recurring_series_id
+      ? supabase
+          .from("recurring_series")
+          .select("id, frequency, end_date")
+          .eq("id", event.recurring_series_id)
+          .maybeSingle<RecurringSeriesRow>()
+      : Promise.resolve({ data: null }),
     supabase.from("event_files").select("*").eq("event_id", eventId).returns<EventFileRow[]>(),
     supabase
       .from("event_marketing_custom_items")
@@ -60,8 +68,6 @@ export default async function EventDetailsPage({
       .order("created_at", { ascending: true })
       .returns<MarketingCustomItemRow[]>(),
   ]);
-
-  if (!event) notFound();
 
   return (
     <Suspense fallback={null}>
@@ -72,7 +78,7 @@ export default async function EventDetailsPage({
         money={money}
         food={food}
         marketing={marketing}
-        recurring={recurring}
+        recurringSeries={recurringSeries}
         files={files ?? []}
         marketingCustomItems={marketingCustomItems ?? []}
       />
