@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Profile } from "@/lib/auth/getSession";
 import { BrandMark } from "@/components/app-shell/BrandMark";
+import { SidebarSeam } from "@/components/app-shell/SidebarSeam";
 import { Sticker } from "@/components/stickers/Sticker";
 import { CloudPuff, BeadRow } from "@/components/stickers/shapes";
 import {
@@ -50,7 +51,7 @@ export function AppShell({
 
   return (
     <div className="flex h-svh items-stretch overflow-hidden bg-canvas">
-      <aside className="relative flex w-[272px] shrink-0 flex-col justify-between overflow-hidden border-r border-line bg-paper p-4">
+      <aside className="relative flex w-[272px] shrink-0 flex-col justify-between overflow-hidden bg-paper p-4">
         <CloudPuff
           size={260}
           className="pointer-events-none absolute -top-16 -left-20 opacity-[0.14] blur-[2px]"
@@ -141,6 +142,8 @@ export function AppShell({
           className="hidden"
         />
       </aside>
+
+      <SidebarSeam />
 
       <main
         className="min-w-0 flex-1 overflow-y-auto"
