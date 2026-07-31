@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -89,7 +90,10 @@ export function DetailsForm({
     }),
   );
 
-  const [activeTab, setActiveTab] = useState<TabKey>("venue");
+  const requestedTab = useSearchParams().get("tab");
+  const [activeTab, setActiveTab] = useState<TabKey>(
+    requestedTab === "media" && event.has_media ? "media" : "venue",
+  );
 
   const tabs: { key: TabKey; label: SectionLabel | "Notes"; done: boolean }[] = [
     { key: "venue", label: "Venue", done: event.venue_done },

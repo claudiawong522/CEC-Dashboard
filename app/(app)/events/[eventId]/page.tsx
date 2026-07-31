@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { DetailsForm } from "@/components/events/DetailsForm";
@@ -63,16 +64,18 @@ export default async function EventDetailsPage({
   if (!event) notFound();
 
   return (
-    <DetailsForm
-      event={event}
-      speaker={speaker}
-      attendees={attendees}
-      money={money}
-      food={food}
-      marketing={marketing}
-      recurring={recurring}
-      files={files ?? []}
-      marketingCustomItems={marketingCustomItems ?? []}
-    />
+    <Suspense fallback={null}>
+      <DetailsForm
+        event={event}
+        speaker={speaker}
+        attendees={attendees}
+        money={money}
+        food={food}
+        marketing={marketing}
+        recurring={recurring}
+        files={files ?? []}
+        marketingCustomItems={marketingCustomItems ?? []}
+      />
+    </Suspense>
   );
 }

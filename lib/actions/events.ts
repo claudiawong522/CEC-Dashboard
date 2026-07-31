@@ -86,7 +86,7 @@ export async function createEvent(values: ToggleFormValues) {
   }
 
   revalidatePath("/calendar");
-  redirect(`/events/${event.id}`);
+  redirect(parsed.hasMedia ? `/events/${event.id}?tab=media` : `/events/${event.id}`);
 }
 
 export async function updateEventHeader(

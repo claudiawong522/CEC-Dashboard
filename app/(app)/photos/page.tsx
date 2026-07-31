@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { publicFileUrl } from "@/lib/utils/storage";
 import { Sticker } from "@/components/stickers/Sticker";
 import { PhotosDecor } from "@/components/photos/PhotosDecor";
+import { AddPhotoDialog } from "@/components/photos/AddPhotoDialog";
 
 type MediaFile = {
   id: string;
@@ -25,23 +26,38 @@ function fileTypeLabel(file: MediaFile) {
 export default async function PhotosPage() {
   const supabase = await createClient();
 
-  const { data: files } = await supabase
-    .from("event_files")
-    .select("id, event_id, bucket, storage_path, file_name, mime_type, events(name, event_date)")
-    .eq("section", "media")
-    .order("created_at", { ascending: false })
-    .returns<MediaFile[]>();
+  const [{ data: files }, { data: events }] = await Promise.all([
+    supabase
+      .from("event_files")
+      .select("id, event_id, bucket, storage_path, file_name, mime_type, events(name, event_date)")
+      .eq("section", "media")
+      .order("created_at", { ascending: false })
+      .returns<MediaFile[]>(),
+    supabase
+      .from("events")
+      .select("id, name, event_date")
+      .order("event_date", { ascending: false })
+      .returns<{ id: string; name: string; event_date: string }[]>(),
+  ]);
 
   return (
     <div className="relative flex flex-col gap-[17px]">
       <PhotosDecor />
-      <h1 className="relative z-10 font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-        Photos
-      </h1>
+      <div className="relative z-10 flex items-center justify-between">
+        <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+          Photos
+        </h1>
+        <AddPhotoDialog
+          events={events ?? []}
+          className="rounded-input border border-line-input bg-paper px-[13px] py-[7px] font-sans text-[12.5px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
+        >
+          + Add photo
+        </AddPhotoDialog>
+      </div>
 
       {!files || files.length === 0 ? (
-        <Link
-          href="/todo"
+        <AddPhotoDialog
+          events={events ?? []}
           className="group relative flex aspect-square max-w-[220px] flex-col items-center justify-center gap-[7px] overflow-hidden rounded-[9px] border border-dashed border-[rgba(35,32,28,0.14)] text-center transition-colors duration-200 hover:border-[rgba(35,32,28,0.28)] hover:bg-wash"
         >
           <Sticker floatVariant="none" className="relative block h-[34px] w-11">
@@ -59,9 +75,9 @@ export default async function PhotosPage() {
             />
           </Sticker>
           <span className="px-4 font-sans text-[10px] text-faint">
-            No media uploaded yet — drop files on an event&apos;s Media tab
+            No media uploaded yet — click to add a photo
           </span>
-        </Link>
+        </AddPhotoDialog>
       ) : (
         <div className="relative z-10 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
           {files.map((file, i) => (

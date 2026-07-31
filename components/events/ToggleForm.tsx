@@ -39,7 +39,7 @@ function SectionFlag({ color }: { color: string }) {
   );
 }
 
-export function ToggleForm() {
+export function ToggleForm({ defaultMediaOn = false }: { defaultMediaOn?: boolean }) {
   const [isPending, startTransition] = useTransition();
   const {
     register,
@@ -60,7 +60,7 @@ export function ToggleForm() {
       hasMoney: false,
       hasFood: false,
       hasMarketing: false,
-      hasMedia: false,
+      hasMedia: defaultMediaOn,
       repeatsFrequency: null,
       repeatsEndDate: "",
     },

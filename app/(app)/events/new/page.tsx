@@ -2,7 +2,13 @@ import { ToggleForm } from "@/components/events/ToggleForm";
 import { Sticker } from "@/components/stickers/Sticker";
 import { StarPolygon } from "@/components/stickers/shapes";
 
-export default function NewEventPage() {
+export default async function NewEventPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ media?: string }>;
+}) {
+  const { media } = await searchParams;
+
   return (
     <div className="relative flex flex-col gap-[19px]">
       <Sticker
@@ -21,7 +27,7 @@ export default function NewEventPage() {
           Step 1 of 2
         </p>
       </div>
-      <ToggleForm />
+      <ToggleForm defaultMediaOn={media === "1"} />
     </div>
   );
 }
