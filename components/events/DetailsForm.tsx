@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -16,8 +17,14 @@ import {
 } from "@/components/ui/select";
 import { SaveIndicator } from "@/components/events/SaveIndicator";
 import { DeleteEventDialog } from "@/components/events/DeleteEventDialog";
+import { SectionsDialog } from "@/components/events/SectionsDialog";
 import { useAutoSave } from "@/lib/hooks/use-autosave";
-import { updateEventHeader, updateRecurringSeries } from "@/lib/actions/events";
+import {
+  updateEventHeader,
+  updateRecurringSeries,
+  setEventSectionEnabled,
+  type OptionalEventSection,
+} from "@/lib/actions/events";
 import { NotesField } from "@/components/events/NotesField";
 import { VenueSection } from "@/components/events/sections/VenueSection";
 import { SpeakerSection } from "@/components/events/sections/SpeakerSection";
@@ -124,24 +131,47 @@ export function DetailsForm({
     requestedTab === "media" && event.has_media ? "media" : "venue",
   );
 
+  const [sectionFlags, setSectionFlags] = useState<Record<OptionalEventSection, boolean>>({
+    speaker: event.has_speaker,
+    attendees: event.has_attendees,
+    money: event.has_money,
+    food: event.has_food,
+    marketing: event.has_marketing,
+    media: event.has_media,
+  });
+  const [, startSectionTransition] = useTransition();
+
+  function handleToggleSection(section: OptionalEventSection, enabled: boolean) {
+    setSectionFlags((prev) => ({ ...prev, [section]: enabled }));
+    if (!enabled && activeTab === section) setActiveTab("venue");
+    startSectionTransition(async () => {
+      try {
+        await setEventSectionEnabled(event.id, section, enabled);
+      } catch {
+        toast.error("Couldn't update section — try again");
+        setSectionFlags((prev) => ({ ...prev, [section]: !enabled }));
+      }
+    });
+  }
+
   const tabs: { key: TabKey; label: SectionLabel | "Notes"; done: boolean }[] = [
     { key: "venue", label: "Venue", done: event.venue_done },
-    ...(event.has_speaker
+    ...(sectionFlags.speaker
       ? [{ key: "speaker" as const, label: "Speaker" as const, done: speaker?.done ?? false }]
       : []),
-    ...(event.has_attendees
+    ...(sectionFlags.attendees
       ? [{ key: "attendees" as const, label: "Attendees" as const, done: attendees?.done ?? false }]
       : []),
-    ...(event.has_money
+    ...(sectionFlags.money
       ? [{ key: "money" as const, label: "Money" as const, done: money?.done ?? false }]
       : []),
-    ...(event.has_food
+    ...(sectionFlags.food
       ? [{ key: "food" as const, label: "Food" as const, done: food?.done ?? false }]
       : []),
-    ...(event.has_marketing
+    ...(sectionFlags.marketing
       ? [{ key: "marketing" as const, label: "Marketing" as const, done: marketing?.done ?? false }]
       : []),
-    ...(event.has_media
+    ...(sectionFlags.media
       ? [{ key: "media" as const, label: "Media" as const, done: event.media_done }]
       : []),
     { key: "notes", label: "Notes", done: false },
@@ -174,7 +204,10 @@ export function DetailsForm({
             )}
           </span>
         </div>
-        <DeleteEventDialog eventId={event.id} isRecurring={!!event.recurring_series_id} />
+        <div className="flex items-center gap-1">
+          <SectionsDialog flags={sectionFlags} onToggle={handleToggleSection} />
+          <DeleteEventDialog eventId={event.id} isRecurring={!!event.recurring_series_id} />
+        </div>
       </div>
 
       <div
@@ -341,7 +374,7 @@ export function DetailsForm({
             />
           )}
 
-          {activeTab === "speaker" && event.has_speaker && (
+          {activeTab === "speaker" && sectionFlags.speaker && (
             <SpeakerSection
               eventId={event.id}
               description={speaker?.description ?? null}
@@ -350,7 +383,7 @@ export function DetailsForm({
             />
           )}
 
-          {activeTab === "attendees" && event.has_attendees && (
+          {activeTab === "attendees" && sectionFlags.attendees && (
             <AttendeesSection
               eventId={event.id}
               lumaUrl={attendees?.luma_url ?? null}
@@ -360,7 +393,7 @@ export function DetailsForm({
             />
           )}
 
-          {activeTab === "money" && event.has_money && (
+          {activeTab === "money" && sectionFlags.money && (
             <MoneySection
               eventId={event.id}
               budgetedAmount={money?.budgeted_amount ?? null}
@@ -371,7 +404,7 @@ export function DetailsForm({
             />
           )}
 
-          {activeTab === "food" && event.has_food && (
+          {activeTab === "food" && sectionFlags.food && (
             <FoodSection
               eventId={event.id}
               usualOptions={food?.usual_options ?? null}
@@ -382,7 +415,7 @@ export function DetailsForm({
             />
           )}
 
-          {activeTab === "marketing" && event.has_marketing && (
+          {activeTab === "marketing" && sectionFlags.marketing && (
             <MarketingSection
               eventId={event.id}
               done={marketing?.done ?? false}
@@ -400,7 +433,7 @@ export function DetailsForm({
             />
           )}
 
-          {activeTab === "media" && event.has_media && (
+          {activeTab === "media" && sectionFlags.media && (
             <MediaSection eventId={event.id} done={event.media_done} files={filesFor(files, "media")} />
           )}
 

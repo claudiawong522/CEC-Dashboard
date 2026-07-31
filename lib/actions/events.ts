@@ -334,6 +334,62 @@ export async function updateMarketing(eventId: string, values: MarketingValues) 
   revalidatePath(`/events/${eventId}`);
 }
 
+export type OptionalEventSection = "speaker" | "attendees" | "money" | "food" | "marketing" | "media";
+
+const SECTION_HAS_COLUMN: Record<
+  OptionalEventSection,
+  "has_speaker" | "has_attendees" | "has_money" | "has_food" | "has_marketing" | "has_media"
+> = {
+  speaker: "has_speaker",
+  attendees: "has_attendees",
+  money: "has_money",
+  food: "has_food",
+  marketing: "has_marketing",
+  media: "has_media",
+};
+
+// Media has no child table of its own — its "done" state lives directly on
+// events.media_done, so there's no row to create when it's switched back on.
+const SECTION_CHILD_TABLE: Partial<Record<OptionalEventSection, string>> = {
+  speaker: "event_speaker",
+  attendees: "event_attendees",
+  money: "event_money",
+  food: "event_food",
+  marketing: "event_marketing",
+};
+
+// Turning a section off just hides its tab — the child row (and any files
+// already attached to it) is left in place so turning it back on restores
+// whatever was filled in, rather than losing it.
+export async function setEventSectionEnabled(
+  eventId: string,
+  section: OptionalEventSection,
+  enabled: boolean,
+) {
+  await requireRole("edit");
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("events")
+    .update({ [SECTION_HAS_COLUMN[section]]: enabled })
+    .eq("id", eventId);
+  if (error) throw new Error(error.message);
+
+  const table = SECTION_CHILD_TABLE[section];
+  if (enabled && table) {
+    const { data: existing } = await supabase
+      .from(table)
+      .select("event_id")
+      .eq("event_id", eventId)
+      .maybeSingle();
+    if (!existing) await supabase.from(table).insert({ event_id: eventId });
+  }
+
+  revalidatePath(`/events/${eventId}`);
+  revalidatePath("/todo");
+  revalidatePath("/past-events");
+}
+
 const DONE_ON_EVENTS: Record<string, "venue_done" | "media_done"> = {
   venue: "venue_done",
   media: "media_done",
