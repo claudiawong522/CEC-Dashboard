@@ -176,16 +176,8 @@ export function DetailsForm({
         <SaveIndicator status={headerStatus} className="pb-2.5" />
       </div>
 
-      <div className="relative flex gap-6">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-0 bottom-0 left-[184px] z-0 w-[72px] -translate-x-1/2 opacity-[0.5] blur-[26px]"
-          style={{
-            background:
-              "linear-gradient(180deg, rgba(232,88,61,.5), rgba(224,185,74,.5) 34%, rgba(63,167,137,.5) 67%, rgba(59,111,194,.5))",
-          }}
-        />
-        <nav className="relative z-10 flex w-[184px] shrink-0 flex-col">
+      <div className="flex gap-6">
+        <nav className="relative flex w-[184px] shrink-0 flex-col">
           <div
             className="absolute inset-x-0 h-9 rounded-btn transition-[top] duration-[340ms] ease-indicator"
             style={{
