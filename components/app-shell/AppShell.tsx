@@ -1,8 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { SearchIcon } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
 import { BrandMark } from "@/components/app-shell/BrandMark";
 import { SidebarSeam } from "@/components/app-shell/SidebarSeam";
@@ -40,7 +41,15 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const signOutFormRef = useRef<HTMLFormElement>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  function handleSearchSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    const q = searchQuery.trim();
+    if (q) router.push(`/search?q=${encodeURIComponent(q)}`);
+  }
 
   const initials = (profile.full_name ?? profile.email)
     .split(/\s+/)
@@ -66,6 +75,17 @@ export function AppShell({
               CEC Dashboard
             </span>
           </Link>
+
+          <form onSubmit={handleSearchSubmit} className="relative px-2">
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-4.5 size-3.5 -translate-y-1/2 text-faint" />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search events"
+              className="w-full rounded-input border border-line-input bg-page py-2 pr-2.5 pl-8 font-sans text-[12.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)]"
+            />
+          </form>
 
           <nav className="flex flex-col gap-px">
             {NAV_ITEMS.map((item) => {
