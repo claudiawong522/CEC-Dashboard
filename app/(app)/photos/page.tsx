@@ -26,7 +26,7 @@ function fileTypeLabel(file: MediaFile) {
 export default async function PhotosPage() {
   const supabase = await createClient();
 
-  const [{ data: files }, { data: events }] = await Promise.all([
+  const [{ data: files }, { data: allEvents }] = await Promise.all([
     supabase
       .from("event_files")
       .select("id, event_id, bucket, storage_path, file_name, mime_type, events(name, event_date)")
@@ -35,10 +35,20 @@ export default async function PhotosPage() {
       .returns<MediaFile[]>(),
     supabase
       .from("events")
-      .select("id, name, event_date")
+      .select("id, name, event_date, event_time, event_end_time")
       .order("event_date", { ascending: false })
-      .returns<{ id: string; name: string; event_date: string }[]>(),
+      .order("event_time", { ascending: false })
+      .returns<{ id: string; name: string; event_date: string; event_time: string; event_end_time: string | null }[]>(),
   ]);
+
+  // Photos get added after an event happens — the picker should surface
+  // events that have already happened (latest first), not bury them under
+  // every future recurring occurrence.
+  // eslint-disable-next-line react-hooks/purity
+  const now = Date.now();
+  const events = (allEvents ?? []).filter(
+    (e) => new Date(`${e.event_date}T${e.event_end_time ?? e.event_time}`).getTime() < now,
+  );
 
   return (
     <div className="relative flex flex-col gap-[17px]">
@@ -48,7 +58,7 @@ export default async function PhotosPage() {
           Photos
         </h1>
         <AddPhotoDialog
-          events={events ?? []}
+          events={events}
           className="rounded-input border border-line-input bg-paper px-[13px] py-[7px] font-sans text-[12.5px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink"
         >
           + Add photo
@@ -57,7 +67,7 @@ export default async function PhotosPage() {
 
       {!files || files.length === 0 ? (
         <AddPhotoDialog
-          events={events ?? []}
+          events={events}
           className="group relative flex aspect-square max-w-[220px] flex-col items-center justify-center gap-[7px] overflow-hidden rounded-[9px] border border-dashed border-[rgba(35,32,28,0.14)] text-center transition-colors duration-200 hover:border-[rgba(35,32,28,0.28)] hover:bg-wash"
         >
           <Sticker floatVariant="none" className="relative block h-[34px] w-11">
