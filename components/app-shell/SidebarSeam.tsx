@@ -1,22 +1,23 @@
 const MARKS = Array.from({ length: 60 }, (_, i) => (i % 2 === 0 ? "diamond" : "dot"));
 
 /**
- * The divider between the sidebar and the main content — not a hairline,
- * the wash itself is the seam. Runs --paper (sidebar's white) through
- * --canvas (beige) into --page (main's own background) so both edges
- * blend into their neighbor instead of cutting a line against it.
+ * Overlay, not a background — the wrapping panel in AppShell.tsx paints one
+ * continuous gradient under both this strip and main, so there's no seam of
+ * its own to blend. This just fades --paper in over the left edge (so the
+ * sidebar's flat white eases into that shared gradient) and lays a fine lace
+ * of small coral marks on top.
  */
 export function SidebarSeam() {
   return (
     <div
       aria-hidden="true"
-      className="relative z-[1] w-[26px] shrink-0 overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(90deg, var(--paper) 0%, var(--canvas) 50%, var(--page) 100%)",
-      }}
+      className="pointer-events-none absolute inset-y-0 left-0 z-[1] w-[70px] overflow-hidden"
     >
-      <div className="absolute inset-0 flex flex-col items-center gap-3 pt-3">
+      <div
+        className="absolute inset-0"
+        style={{ background: "linear-gradient(90deg, var(--paper) 0%, transparent 75%)" }}
+      />
+      <div className="absolute inset-y-0 left-0 flex w-[26px] flex-col items-center gap-3 pt-3">
         {MARKS.map((shape, i) =>
           shape === "diamond" ? (
             <div

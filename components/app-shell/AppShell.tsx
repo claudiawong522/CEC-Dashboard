@@ -143,17 +143,18 @@ export function AppShell({
         />
       </aside>
 
-      <SidebarSeam />
-
-      <main
-        className="min-w-0 flex-1 overflow-y-auto"
+      <div
+        className="relative min-w-0 flex-1"
         style={{
           background:
             "radial-gradient(ellipse 1100px 760px at 50% 30%, var(--page) 55%, var(--canvas) 100%)",
         }}
       >
-        <div className="mx-auto w-full max-w-[1120px] px-10 py-8">{children}</div>
-      </main>
+        <SidebarSeam />
+        <main className="relative z-10 h-full overflow-y-auto">
+          <div className="mx-auto w-full max-w-[1120px] py-8 pr-10 pl-[66px]">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }
