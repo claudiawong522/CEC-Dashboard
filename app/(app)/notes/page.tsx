@@ -20,7 +20,7 @@ export default async function NotesPage() {
   const content = Array.isArray(doc?.content) ? doc.content : [];
 
   return (
-    <div className="relative mx-auto flex max-w-[760px] flex-col gap-[22px] px-2">
+    <div className="relative flex flex-col gap-[22px]">
       <Sticker
         floatVariant="float3"
         floatDuration="17s"
@@ -35,6 +35,7 @@ export default async function NotesPage() {
       </h1>
 
       <div className="relative z-10">
+        <span className="absolute top-0.5 bottom-0.5 -left-4 w-[2.5px] rounded-full bg-amber/50" />
         <NotesEditor initialContent={content} editable={editable} />
       </div>
 

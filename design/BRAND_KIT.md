@@ -363,3 +363,23 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   the new frequency/end date. Since there's no more "done" checkbox for it, `event_recurring` rows are
   now inserted pre-satisfied (`done: true`) so recurrence can never block `events.is_complete` — no DB
   migration needed, the completion trigger already just reads that column.
+- **Notes — dropped the second narrow column, the drag-handle side menu, and the boxed editor
+  surface (2026-07-30).** The page had its own inner `max-w-[760px] mx-auto` wrapper on top of the
+  app shell's already-narrower `max-w-[1120px]` content pane — no other screen double-narrows like
+  this, so Notes read as a small island in a sea of empty canvas instead of filling the page like
+  Calendar/Todo/Admin do. Removed that wrapper; the doc column now uses the same width as every
+  other screen. Also disabled BlockNote's default side menu (`sideMenu={false}` on `BlockNoteView`)
+  — the drag-handle/`+` button floated in the 8px gutter of the old narrow column and read as an
+  awkward floating tab; the kit's minimal spec doesn't call for it anyway. Finally, the editor's
+  `theme.colors.editor.background` was `var(--paper)`, a hair whiter than the page's `var(--page)`
+  wash behind it — a barely-there but real color mismatch that made the text area read as its own
+  boxed panel. Set to `transparent` so it blends into the page, and replaced the "this is the
+  editable area" signal with a thin `bg-amber/50` vertical bar to the left of the doc (same
+  `w-[2.5px] rounded-full` accent pattern as the sidebar's active-nav indicator), matching the
+  Food/Notes amber section colour instead of a filled background.
+- **Notes — text still sat indented from the "Notes" header (follow-up, 2026-07-30).** BlockNote's
+  `.bn-editor` ships a hardcoded `padding-inline: 54px` (gutter reserved for its side menu, which is
+  now disabled) — overridden in `globals.css` to `0` so body text starts flush with the header's
+  left edge instead of ~54px in from it. The amber gutter bar moved from `left-0` inside a `pl-5`
+  wrapper (which had been indenting the text to make room for it) to `-left-4` outside the now-flush
+  text column, so it reads as a margin mark rather than pushing content over.

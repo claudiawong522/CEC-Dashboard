@@ -402,9 +402,15 @@
   color: var(--faint);
 }
 
-/* Notes' text caret — BlockNote's theme API doesn't expose caret-color. */
+/* Notes' text caret — BlockNote's theme API doesn't expose caret-color.
+   padding-inline overrides BlockNote's own 54px default gutter (reserved for
+   its side menu), so the text starts flush with the "Notes" header instead
+   of indented from it. Mantine's own stylesheet loads after this one and
+   redeclares `.bn-editor` at the same specificity, so it wins ties without
+   !important — same issue as the suggestion-menu box-shadow above. */
 .bn-editor {
   caret-color: var(--coral);
+  padding-inline: 0 !important;
 }
 
 /* Notes' BlockNote slash menu — the theme API (NotesEditor.tsx) covers colors,

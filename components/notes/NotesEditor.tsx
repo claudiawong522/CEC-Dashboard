@@ -13,7 +13,7 @@ import { saveNotesDoc } from "@/lib/actions/notes";
 // the library's own customization surface, not a fork of its internals.
 const brandTheme = {
   colors: {
-    editor: { text: "var(--ink)", background: "var(--paper)" },
+    editor: { text: "var(--ink)", background: "transparent" },
     menu: { text: "var(--ink)", background: "var(--paper)" },
     tooltip: { text: "var(--page)", background: "var(--ink)" },
     hovered: { text: "var(--ink)", background: "var(--hover)" },
@@ -21,7 +21,6 @@ const brandTheme = {
     disabled: { text: "var(--faint)", background: "var(--paper)" },
     shadow: "rgba(35,32,28,.5)",
     border: "rgba(35,32,28,.1)",
-    sideMenu: "var(--line-strong)",
     highlights: {
       orange: { text: "var(--ink)", background: "rgba(232,88,61,.26)" },
     },
@@ -61,6 +60,12 @@ export function NotesEditor({
   }
 
   return (
-    <BlockNoteView editor={editor} editable={editable} onChange={handleChange} theme={brandTheme} />
+    <BlockNoteView
+      editor={editor}
+      editable={editable}
+      onChange={handleChange}
+      theme={brandTheme}
+      sideMenu={false}
+    />
   );
 }
