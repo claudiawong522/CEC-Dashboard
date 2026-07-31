@@ -230,18 +230,36 @@ export async function setSectionDone(eventId: string, section: string, done: boo
   await requireRole("edit");
   const supabase = await createClient();
 
+  // Marking a section done/not-done applies to every occurrence of a
+  // recurring series at once — they were cloned from the same prep and
+  // should stay in sync, rather than re-doing the same checkbox each week.
+  const { data: event } = await supabase
+    .from("events")
+    .select("recurring_series_id")
+    .eq("id", eventId)
+    .single();
+
+  let eventIds = [eventId];
+  if (event?.recurring_series_id) {
+    const { data: seriesEvents } = await supabase
+      .from("events")
+      .select("id")
+      .eq("recurring_series_id", event.recurring_series_id);
+    if (seriesEvents?.length) eventIds = seriesEvents.map((e) => e.id);
+  }
+
   const eventColumn = DONE_ON_EVENTS[section];
   if (eventColumn) {
-    const { error } = await supabase.from("events").update({ [eventColumn]: done }).eq("id", eventId);
+    const { error } = await supabase.from("events").update({ [eventColumn]: done }).in("id", eventIds);
     if (error) throw new Error(error.message);
   } else {
     const table = DONE_CHILD_TABLES[section];
     if (!table) throw new Error(`Unknown section "${section}"`);
-    const { error } = await supabase.from(table).update({ done }).eq("event_id", eventId);
+    const { error } = await supabase.from(table).update({ done }).in("event_id", eventIds);
     if (error) throw new Error(error.message);
   }
 
-  revalidatePath(`/events/${eventId}`);
+  for (const id of eventIds) revalidatePath(`/events/${id}`);
   revalidatePath("/todo");
   revalidatePath("/past-events");
 }
