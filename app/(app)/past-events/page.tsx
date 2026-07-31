@@ -7,7 +7,7 @@ export default async function PastEventsPage() {
 
   const { data: events, error } = await supabase
     .from("events")
-    .select("id, name, event_date, event_time, event_end_time, venue, has_speaker")
+    .select("id, name, event_date, event_time, event_end_time, venue, has_speaker, has_media")
     .eq("is_complete", true)
     .order("event_date", { ascending: false })
     .order("event_time", { ascending: false });
@@ -49,6 +49,28 @@ export default async function PastEventsPage() {
     }
   }
 
+  const mediaEventIds = past.filter((e) => e.has_media).map((e) => e.id);
+  const photoByEvent = new Map<string, string>();
+
+  if (mediaEventIds.length > 0) {
+    const { data: mediaFiles } = await supabase
+      .from("event_files")
+      .select("event_id, bucket, storage_path, mime_type, created_at")
+      .in("event_id", mediaEventIds)
+      .eq("section", "media")
+      .like("mime_type", "image/%")
+      .order("created_at", { ascending: true });
+
+    // First image uploaded per event becomes its cover — mediaFiles is
+    // ordered oldest-first, so the first time we see an event_id wins and
+    // later duplicates are skipped.
+    for (const file of mediaFiles ?? []) {
+      if (!photoByEvent.has(file.event_id)) {
+        photoByEvent.set(file.event_id, publicFileUrl(file.bucket, file.storage_path));
+      }
+    }
+  }
+
   const gridEvents = past.map((event) => ({
     id: event.id,
     name: event.name,
@@ -56,7 +78,9 @@ export default async function PastEventsPage() {
     event_time: event.event_time,
     event_end_time: event.event_end_time,
     venue: event.venue,
-    portraitUrl: portraitByEvent.get(event.id) ?? null,
+    // An actual event photo is more representative than the speaker
+    // headshot, so it wins when both exist.
+    iconUrl: photoByEvent.get(event.id) ?? portraitByEvent.get(event.id) ?? null,
   }));
 
   return <PastEventsGrid events={gridEvents} />;
