@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 
 export type Role = "view" | "edit" | "admin";
-export type ProfileStatus = "invited" | "active";
+export type ProfileStatus = "invited" | "active" | "revoked";
 
 export type Profile = {
   id: string;
@@ -32,6 +32,15 @@ export async function getSession(): Promise<Session | null> {
     .single();
 
   if (!profile) return null;
+
+  // Only an active profile gets a session. This is the single choke point
+  // that makes "remove access" real: a revoked member may still be holding a
+  // perfectly valid Supabase cookie, but every page and every server action
+  // reaches its role through here, so they get treated as signed out on the
+  // very next request rather than at token expiry. An 'invited' row lands
+  // here too — that's a person who hasn't finished accepting yet, and
+  // lib/actions/auth.ts flips them to active without going through this.
+  if (profile.status !== "active") return null;
 
   return {
     user: { id: user.id, email: user.email },

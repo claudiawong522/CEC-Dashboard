@@ -12,6 +12,7 @@ type StickerKey = "mark" | "s1" | "s2" | "s3" | "s4" | "s5" | "s6" | "s7";
 
 const ERROR_MESSAGES: Record<string, string> = {
   not_invited: "This app is invite-only — ask an admin to invite your email first.",
+  removed: "Your access to this app was removed. Ask an admin if you think that's a mistake.",
   unknown: "Something went wrong signing you in. Please try again.",
 };
 

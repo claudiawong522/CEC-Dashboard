@@ -23,6 +23,15 @@ export async function acceptInvitedSession() {
     .eq("id", user.id)
     .maybeSingle();
 
+  // A revoked member clicking an old invite link would otherwise sit here
+  // with a live session and no profile flip — harmless on its own, since
+  // getSession() refuses them, but sign them out so they land on the login
+  // screen with an explanation instead of a blank redirect loop.
+  if (profile?.status === "revoked") {
+    await supabase.auth.signOut();
+    redirect("/login?error=removed");
+  }
+
   if (profile?.status === "invited") {
     await admin
       .from("profiles")

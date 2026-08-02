@@ -19,7 +19,11 @@ export default async function ExternalPage() {
       .select("*, external_idea_people(id, name, email), external_idea_owners(profile_id)")
       .order("created_at", { ascending: false })
       .returns<IdeaWithRelations[]>(),
-    supabase.from("profiles").select("id, full_name, email").eq("role", "admin"),
+    supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .eq("role", "admin")
+      .eq("status", "active"),
   ]);
 
   const adminsById = Object.fromEntries(

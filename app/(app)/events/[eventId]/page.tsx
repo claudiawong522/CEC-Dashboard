@@ -78,9 +78,13 @@ export default async function EventDetailsPage({
       )
       .eq("event_id", eventId)
       .returns<TaggedMemberRow[]>(),
+    // Removed members drop out of the picker, but any tag they already have
+    // stays — the fetch above is unfiltered on purpose, since who was tagged
+    // on a past event is a record of what happened, not a live permission.
     supabase
       .from("profiles")
       .select("id, email, full_name, avatar_url, role, status")
+      .eq("status", "active")
       .order("full_name", { ascending: true, nullsFirst: false })
       .returns<Profile[]>(),
   ]);

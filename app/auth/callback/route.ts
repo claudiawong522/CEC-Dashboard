@@ -41,6 +41,16 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/login?error=not_invited`);
   }
 
+  // An admin removed them. The row is still here (it has to be — other
+  // tables reference it), so the "already invited" check above waves them
+  // through; this is what actually turns them away. Distinct from
+  // not_invited so the message can tell them it was revoked rather than
+  // never granted.
+  if (existing?.status === "revoked") {
+    await supabase.auth.signOut();
+    return NextResponse.redirect(`${origin}/login?error=removed`);
+  }
+
   const googleName = user.user_metadata?.full_name ?? user.user_metadata?.name ?? null;
   const googleAvatar = user.user_metadata?.avatar_url ?? null;
 

@@ -91,3 +91,74 @@ export async function revokeInvite(userId: string) {
 
   revalidatePath("/admin");
 }
+
+// Removing an accepted member, as opposed to cancelling an unaccepted invite
+// above. This one can't delete anything: profiles.id cascades from
+// auth.users, and events.created_by / files.uploaded_by / notes.updated_by /
+// external_ideas.created_by / event_tagged_members.tagged_by / invited_by all
+// reference profiles(id) with no on-delete rule, so the delete is refused for
+// anyone who has ever done anything in here. Flipping status to 'revoked'
+// keeps their name attached to the work they did while getSession() stops
+// building a session for them — see lib/auth/getSession.ts.
+export async function removeAccess(userId: string) {
+  const session = await requireRole("admin");
+  const supabase = await createClient();
+
+  if (userId === session.profile.id) {
+    throw new Error("You can't remove your own access");
+  }
+
+  const { data: target } = await supabase
+    .from("profiles")
+    .select("id, role, status")
+    .eq("id", userId)
+    .maybeSingle<{ id: string; role: Role; status: string }>();
+  if (!target) throw new Error("That person no longer exists — refresh the page");
+  if (target.status === "revoked") {
+    throw new Error("Their access was already removed — refresh the page");
+  }
+
+  // Nobody can be left without a way back in. Counting active admins rather
+  // than all admins matters: a revoked admin can't sign in to promote anyone,
+  // so they don't count toward the app still having someone in charge.
+  if (target.role === "admin") {
+    const { count } = await supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("role", "admin")
+      .eq("status", "active");
+    if ((count ?? 0) <= 1) {
+      throw new Error("This is the only admin left — make someone else an admin first");
+    }
+  }
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({ status: "revoked" })
+    .eq("id", userId);
+  if (error) throw new Error(error.message);
+
+  revalidatePath("/admin");
+}
+
+// The counterpart to removeAccess. Necessary rather than merely convenient:
+// inviteUser refuses an email that already has a profile row, and a revoked
+// person still has one, so without this an accidental removal couldn't be
+// undone from the UI at all. Their old role comes back with them.
+export async function restoreAccess(userId: string) {
+  await requireRole("admin");
+  const supabase = await createClient();
+
+  const { data: restored, error } = await supabase
+    .from("profiles")
+    .update({ status: "active" })
+    .eq("id", userId)
+    .eq("status", "revoked")
+    .select("id");
+  if (error) throw new Error(error.message);
+  if (!restored || restored.length === 0) {
+    throw new Error("They aren't removed — refresh the page");
+  }
+
+  revalidatePath("/admin");
+}

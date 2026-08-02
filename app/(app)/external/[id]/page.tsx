@@ -29,7 +29,11 @@ export default async function ExternalDetailPage({ params }: { params: Promise<{
       .order("created_at", { ascending: true })
       .returns<IdeaPersonRow[]>(),
     supabase.from("external_idea_owners").select("profile_id").eq("idea_id", id),
-    supabase.from("profiles").select("id, full_name, email").eq("role", "admin"),
+    supabase
+      .from("profiles")
+      .select("id, full_name, email")
+      .eq("role", "admin")
+      .eq("status", "active"),
   ]);
 
   return (
