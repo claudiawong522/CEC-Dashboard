@@ -73,7 +73,9 @@ export default async function EventDetailsPage({
       .returns<MarketingCustomItemRow[]>(),
     supabase
       .from("event_tagged_members")
-      .select("profile_id, tagged_at, profiles(id, full_name, avatar_url, email, role, status)")
+      .select(
+        "profile_id, tagged_at, profiles!event_tagged_members_profile_id_fkey(id, full_name, avatar_url, email, role, status)",
+      )
       .eq("event_id", eventId)
       .returns<TaggedMemberRow[]>(),
     supabase

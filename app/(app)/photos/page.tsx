@@ -11,7 +11,7 @@ export default async function PhotosPage() {
     supabase
       .from("event_files")
       .select(
-        "id, event_id, bucket, storage_path, file_name, mime_type, events(name, event_date, event_tagged_members(profiles(id, full_name, avatar_url, email)))",
+        "id, event_id, bucket, storage_path, file_name, mime_type, events(name, event_date, event_tagged_members(profiles!event_tagged_members_profile_id_fkey(id, full_name, avatar_url, email)))",
       )
       .eq("section", "media")
       .order("created_at", { ascending: false })

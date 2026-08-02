@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
@@ -189,6 +190,12 @@ export function DetailsForm({
 
   return (
     <div className="flex max-w-[1180px] flex-col gap-[19px]">
+      <Link
+        href="/calendar"
+        className="w-fit font-mono text-[10.5px] tracking-[0.08em] text-faint uppercase transition-colors duration-200 ease-brand hover:text-ink"
+      >
+        ← Calendar
+      </Link>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <span className="font-mono text-[10px] tracking-[0.14em] text-faint uppercase">

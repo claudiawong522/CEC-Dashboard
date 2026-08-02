@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { publicFileUrl } from "@/lib/utils/storage";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -41,7 +42,23 @@ function fileTypeLabel(file: MediaFile) {
 }
 
 export function PhotoGrid({ files }: { files: MediaFile[] }) {
-  const [openFile, setOpenFile] = useState<MediaFile | null>(null);
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const openFile = openIndex !== null ? files[openIndex] : null;
+
+  function go(delta: number) {
+    setOpenIndex((i) => (i === null ? i : (i + delta + files.length) % files.length));
+  }
+
+  useEffect(() => {
+    if (openIndex === null) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === "ArrowLeft") go(-1);
+      else if (e.key === "ArrowRight") go(1);
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openIndex, files.length]);
 
   return (
     <>
@@ -57,7 +74,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
             >
               <button
                 type="button"
-                onClick={() => setOpenFile(file)}
+                onClick={() => setOpenIndex(i)}
                 className="group relative aspect-square w-full overflow-hidden rounded-[9px] border border-[rgba(35,32,28,0.07)]"
               >
                 {isImage ? (
@@ -93,36 +110,63 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
         })}
       </div>
 
-      <Dialog open={!!openFile} onOpenChange={(next) => !next && setOpenFile(null)}>
+      <Dialog open={openIndex !== null} onOpenChange={(next) => !next && setOpenIndex(null)}>
         <DialogContent
           showCloseButton
           className="max-w-[min(92vw,880px)] border-none bg-transparent p-0 shadow-none ring-0 sm:max-w-[min(92vw,880px)]"
         >
           {openFile && (
             <div className="flex flex-col gap-2.5">
-              {openFile.mime_type?.startsWith("image/") ? (
-                <div className="relative h-[78vh] w-full overflow-hidden rounded-[9px] bg-ink/5">
-                  <Image
+              <div className="relative">
+                {files.length > 1 && (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => go(-1)}
+                      aria-label="Previous photo"
+                      className="absolute top-1/2 left-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-ink/50 text-paper backdrop-blur-sm transition-colors duration-200 hover:bg-ink/70"
+                    >
+                      <ChevronLeft className="size-5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => go(1)}
+                      aria-label="Next photo"
+                      className="absolute top-1/2 right-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-ink/50 text-paper backdrop-blur-sm transition-colors duration-200 hover:bg-ink/70"
+                    >
+                      <ChevronRight className="size-5" />
+                    </button>
+                  </>
+                )}
+                {openFile.mime_type?.startsWith("image/") ? (
+                  <div className="relative h-[78vh] w-full overflow-hidden rounded-[9px] bg-ink/5">
+                    <Image
+                      src={publicFileUrl(openFile.bucket, openFile.storage_path)}
+                      alt={openFile.file_name ?? "media"}
+                      fill
+                      sizes="92vw"
+                      className="object-contain"
+                    />
+                  </div>
+                ) : openFile.mime_type?.startsWith("video/") ? (
+                  <video
                     src={publicFileUrl(openFile.bucket, openFile.storage_path)}
-                    alt={openFile.file_name ?? "media"}
-                    fill
-                    sizes="92vw"
-                    className="object-contain"
+                    controls
+                    autoPlay
+                    className="max-h-[78vh] w-full rounded-[9px] bg-ink/5"
                   />
-                </div>
-              ) : openFile.mime_type?.startsWith("video/") ? (
-                <video
-                  src={publicFileUrl(openFile.bucket, openFile.storage_path)}
-                  controls
-                  autoPlay
-                  className="max-h-[78vh] w-full rounded-[9px] bg-ink/5"
-                />
-              ) : (
-                <div className="flex h-[40vh] items-center justify-center rounded-[9px] bg-ink/5 font-sans text-[13px] text-faint">
-                  Preview not available
-                </div>
-              )}
+                ) : (
+                  <div className="flex h-[40vh] items-center justify-center rounded-[9px] bg-ink/5 font-sans text-[13px] text-faint">
+                    Preview not available
+                  </div>
+                )}
+              </div>
               <div className="flex flex-wrap items-center gap-2.5">
+                {files.length > 1 && (
+                  <span className="self-start font-mono text-[10px] tracking-[0.1em] text-faint">
+                    {(openIndex ?? 0) + 1} / {files.length}
+                  </span>
+                )}
                 <Link
                   href={`/events/${openFile.event_id}`}
                   className="self-start rounded-btn bg-paper px-2.5 py-1.5 font-sans text-[12px] text-faint transition-colors duration-150 hover:text-ink"
