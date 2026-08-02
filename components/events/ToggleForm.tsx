@@ -90,7 +90,11 @@ export function ToggleForm({
   function onSubmit(values: ToggleFormValues) {
     startTransition(async () => {
       try {
-        await createEvent(values, ideaId);
+        if (ideaId) {
+          await createEvent(values, ideaId);
+        } else {
+          await createEvent(values);
+        }
       } catch (err) {
         if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
         toast.error("Couldn't create event — try again");
