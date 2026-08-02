@@ -37,7 +37,7 @@ const BASE_NAV_ITEMS = [
   { href: "/calendar", label: "Calendar", icon: CalendarDaysIcon },
   { href: "/todo", label: "Todo", icon: CheckSquareIcon },
   { href: "/past-events", label: "Past Events", icon: ArchiveIcon },
-  { href: "/photos", label: "Photos", icon: ImageIcon },
+  { href: "/photos", label: "Gallery", icon: ImageIcon },
   { href: "/notes", label: "Notes", icon: NotebookPenIcon },
 ];
 

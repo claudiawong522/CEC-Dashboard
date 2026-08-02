@@ -13,7 +13,7 @@ export function MediaSection({
   return (
     <SectionCard title="Media" eventId={eventId} section="media" done={done}>
       <p className="font-sans text-[12.5px] text-faint">
-        Photos, videos, and zip files dropped here also show up in the Photos gallery.
+        Photos, videos, and zip files dropped here also show up in Gallery.
       </p>
       <EvidenceUploader
         eventId={eventId}
