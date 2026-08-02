@@ -41,29 +41,38 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/login?error=not_invited`);
   }
 
+  const googleName = user.user_metadata?.full_name ?? user.user_metadata?.name ?? null;
+  const googleAvatar = user.user_metadata?.avatar_url ?? null;
+
   if (!existing) {
     // Only reachable by the seed admin's very first sign-in.
     await admin.from("profiles").insert({
       id: user.id,
       email,
-      full_name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
-      avatar_url: user.user_metadata?.avatar_url ?? null,
+      full_name: googleName,
+      avatar_url: googleAvatar,
       role: "admin",
       status: "active",
     });
-  } else if (existing.status === "invited") {
-    // An admin-issued invite already created this row (with the role the
-    // admin chose) ahead of the person's first sign-in — just mark it
-    // active and fill in the profile fields Google now gives us. Don't
-    // touch `role`, so the invite's grant survives.
-    await admin
-      .from("profiles")
-      .update({
-        status: "active",
-        full_name: user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
-        avatar_url: user.user_metadata?.avatar_url ?? null,
-      })
-      .eq("id", user.id);
+  } else {
+    // Refresh the Google-sourced fields on every sign-in, not just on the
+    // invited -> active flip. Someone who accepted by clicking the invite
+    // email's own link has no Google metadata at that moment
+    // (inviteUserByEmail creates a bare auth user with none), so their name
+    // would otherwise read "—" forever, with no later sign-in able to fill
+    // it in. Keeps names and photos current after that, too.
+    //
+    // `role` is deliberately untouched, so an invite's role grant survives.
+    // Null values are skipped rather than written, so a sign-in that somehow
+    // arrives without metadata can't blank out a name we already have.
+    const patch = {
+      ...(existing.status === "invited" ? { status: "active" } : {}),
+      ...(googleName ? { full_name: googleName } : {}),
+      ...(googleAvatar ? { avatar_url: googleAvatar } : {}),
+    };
+    if (Object.keys(patch).length > 0) {
+      await admin.from("profiles").update(patch).eq("id", user.id);
+    }
   }
 
   return NextResponse.redirect(`${origin}/calendar`);
