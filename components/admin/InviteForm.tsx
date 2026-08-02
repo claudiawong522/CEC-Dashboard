@@ -76,8 +76,8 @@ export function InviteForm() {
             </SelectItem>
           </SelectContent>
         </Select>
-        <Button type="submit" disabled={isPending || !email.trim()}>
-          <Mail data-icon="inline-start" />
+        <Button type="submit" disabled={!email.trim()} loading={isPending}>
+          {!isPending && <Mail data-icon="inline-start" />}
           {isPending ? "Sending…" : "Send invite"}
         </Button>
       </div>

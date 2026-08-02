@@ -42,9 +42,13 @@ function SectionFlag({ color }: { color: string }) {
 export function ToggleForm({
   defaultMediaOn = false,
   defaultDate,
+  defaultName,
+  ideaId,
 }: {
   defaultMediaOn?: boolean;
   defaultDate?: string;
+  defaultName?: string;
+  ideaId?: string;
 }) {
   const [isPending, startTransition] = useTransition();
   const endDateTouched = useRef(false);
@@ -58,14 +62,14 @@ export function ToggleForm({
   } = useForm<ToggleFormValues>({
     resolver: zodResolver(toggleFormSchema),
     defaultValues: {
-      name: "",
+      name: defaultName ?? "",
       eventDate: defaultDate ?? "",
       eventEndDate: defaultDate ?? "",
       allDay: false,
       eventStartTime: "",
       eventEndTime: "",
       venue: "",
-      hasSpeaker: false,
+      hasSpeaker: !!ideaId,
       hasAttendees: false,
       hasMoney: false,
       hasFood: false,
@@ -86,7 +90,7 @@ export function ToggleForm({
   function onSubmit(values: ToggleFormValues) {
     startTransition(async () => {
       try {
-        await createEvent(values);
+        await createEvent(values, ideaId);
       } catch (err) {
         if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
         toast.error("Couldn't create event — try again");
@@ -350,8 +354,8 @@ export function ToggleForm({
       </div>
 
       <div className="flex items-center gap-[14px]">
-        <Button type="submit" disabled={isPending} className="px-5 py-2.5 text-[13px]">
-          {isPending ? "Creating..." : "Continue"}
+        <Button type="submit" loading={isPending} className="px-5 py-2.5 text-[13px]">
+          {isPending ? "Creating…" : "Continue"}
         </Button>
         <span className="font-sans text-[12.5px] text-faint">
           {sectionsSelected} sections selected

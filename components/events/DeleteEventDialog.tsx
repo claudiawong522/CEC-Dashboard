@@ -88,7 +88,7 @@ export function DeleteEventDialog({
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
-          <Button type="button" variant="destructive" disabled={isPending} onClick={confirmDelete}>
+          <Button type="button" variant="destructive" loading={isPending} onClick={confirmDelete}>
             {isPending ? "Deleting…" : "Delete"}
           </Button>
         </div>
