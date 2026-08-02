@@ -1,10 +1,11 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState, useTransition } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/app-shell/BrandMark";
+import { acceptInvitedSession } from "@/lib/actions/auth";
 import { cn } from "@/lib/utils";
 
 type StickerKey = "mark" | "s1" | "s2" | "s3" | "s4" | "s5" | "s6" | "s7";
@@ -40,13 +41,60 @@ export default function LoginPage() {
     setPops((prev) => ({ ...prev, [key]: prev[key] + 1 }));
   }
 
+  const [isAccepting, startAccepting] = useTransition();
+
+  // Someone who clicked the invite email's own link (rather than "Sign in
+  // with Google") lands here with the session tokens in the URL hash.
+  useEffect(() => {
+    const supabase = createClient();
+    const hashParams = new URLSearchParams(window.location.hash.slice(1));
+    const accessToken = hashParams.get("access_token");
+    const refreshToken = hashParams.get("refresh_token");
+
+    async function finishAccept() {
+      try {
+        await acceptInvitedSession();
+      } catch (err) {
+        if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
+      }
+    }
+
+    if (accessToken && refreshToken) {
+      // These tokens are the whole point of the visit — set them
+      // explicitly so they win over any *other* session already sitting in
+      // this browser (e.g. testing the invite as the admin who sent it),
+      // rather than relying on auto-detection, which can end up preferring
+      // the pre-existing session instead of the one being accepted.
+      window.history.replaceState(null, "", window.location.pathname);
+      startAccepting(async () => {
+        const { error } = await supabase.auth.setSession({
+          access_token: accessToken,
+          refresh_token: refreshToken,
+        });
+        if (error) return;
+        await finishAccept();
+      });
+    }
+    // No invite tokens in the URL — always show the login screen, even if
+    // some other session already exists in this browser. Auto-skipping past
+    // it here previously fought with people trying to consciously sign in
+    // as a *different* account (e.g. accepting an invite while already
+    // signed in as the admin who sent it).
+  }, []);
+
   async function signInWithGoogle() {
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
-        queryParams: { hd: "cornell.edu" },
+        // Always show Google's account picker, even if this browser already
+        // has an active Google session — otherwise Google silently reuses
+        // whichever account is already signed in instead of letting the
+        // person choose. No `hd` domain hint anymore either: invites (see
+        // lib/actions/admin.ts) aren't limited to @cornell.edu, so hinting
+        // one domain would just hide other valid accounts from the list.
+        queryParams: { prompt: "select_account" },
       },
     });
   }
@@ -289,15 +337,19 @@ export default function LoginPage() {
           Sign in with your @cornell.edu account
         </p>
 
-        <Button
-          onClick={signInWithGoogle}
-          className="gap-2.5 rounded-login px-[22px] py-[11px] text-[13.5px] font-medium"
-        >
-          <span className="flex size-[19px] items-center justify-center rounded-full bg-page">
-            <GoogleIcon className="size-3" />
-          </span>
-          Sign in with Google
-        </Button>
+        {isAccepting ? (
+          <p className="font-sans text-[13.5px] text-body">Signing you in…</p>
+        ) : (
+          <Button
+            onClick={signInWithGoogle}
+            className="gap-2.5 rounded-login px-[22px] py-[11px] text-[13.5px] font-medium"
+          >
+            <span className="flex size-[19px] items-center justify-center rounded-full bg-page">
+              <GoogleIcon className="size-3" />
+            </span>
+            Sign in with Google
+          </Button>
+        )}
 
         <Suspense fallback={null}>
           <LoginError />

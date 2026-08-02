@@ -70,12 +70,22 @@ export async function revokeInvite(userId: string) {
   await requireRole("admin");
   const admin = createAdminClient();
 
-  const { error } = await admin
+  // Scoping the delete to status='invited' silently matches zero rows if
+  // this invite was already accepted (e.g. the person accepted it in
+  // another tab right before this ran) — deleting the auth user
+  // unconditionally afterward would then destroy their now-active,
+  // fully-working account instead of a stale invite. Only proceed if a
+  // pending-invite row genuinely existed and was removed.
+  const { data: deleted, error } = await admin
     .from("profiles")
     .delete()
     .eq("id", userId)
-    .eq("status", "invited");
+    .eq("status", "invited")
+    .select("id");
   if (error) throw new Error(error.message);
+  if (!deleted || deleted.length === 0) {
+    throw new Error("This invite was already accepted — refresh to see their current access");
+  }
 
   await admin.auth.admin.deleteUser(userId);
 

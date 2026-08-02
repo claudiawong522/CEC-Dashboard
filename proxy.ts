@@ -50,9 +50,13 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (user && request.nextUrl.pathname === "/login") {
-    return NextResponse.redirect(new URL("/calendar", request.url));
-  }
+  // No "already logged in, bounce away from /login" redirect here on
+  // purpose: an invite-accept link lands on /login with its session token
+  // in the URL hash, which never reaches the server, so this request looks
+  // identical to a plain already-authenticated visit — a server-side
+  // redirect here would fire before the browser ever gets to read the hash
+  // and could swap onto the invited account. The login page handles the
+  // "already signed in" redirect itself, client-side, after checking.
 
   return response;
 }
