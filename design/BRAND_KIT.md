@@ -40,7 +40,9 @@ state, a section flag, today. Everything else is neutral.
   bloom ring (as a conic variant from 200deg).
 - **Tint 10–24%:** done states, active section pill (15%), "done" badges (20%), highlighter (26%).
 - **Pastel:** switches use `linear-gradient(95deg,#F3B5A6,#EFDCA8,#AEDACA,#B7CBEB)` when on;
-  `#EAE4D7` when off.
+  `#EAE4D7` when off. Also `bg-cent-pastel` for frequent small accents that would read as loud at
+  full strength — External's stage stepper connector/passed-nodes and its time-picker's selected row
+  (2026-07-31, see changelog).
 - Never a full-bleed background, never behind body text at full strength.
 
 ## Type
@@ -401,3 +403,29 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   behind a confirm dialog. The name column shows italic faint "Invite pending" in place of the
   usual name/em-dash, since an invited profile has no `full_name` yet — Google only supplies that
   on first sign-in.
+- **New surface: External (2026-07-31).** Speaker-outreach pipeline — admin-only end to end (nav
+  item, both pages, all three tables' RLS), since `external_idea_people` carries outside contacts'
+  emails that never opted into club-wide visibility the way event logistics did. Two views: a flat
+  list (`/external`) grouped by nothing — every lead regardless of stage, a `StageTag` pill plus
+  overlapping avatar-ring owner chips per row, and stage filter pills with live counts — and a
+  detail view (`/external/[id]`) with autosaving fields throughout (`useAutoSave` + `SaveIndicator`,
+  same pattern as `NotesField`). Reuses Speaker/Marketing's coral rather than inventing a new
+  section colour, since External is fundamentally speaker outreach. Stage is a 5-node stepper
+  (Idea → Reached Out → Responded → Agreed → Date Set) instead of a segmented control — any node is
+  clickable at any time, so moving backward (a speaker flaking) or forward both just work. Declined
+  is a sixth, off-stepper state reachable from anywhere via a footer button that reads "Decline" or
+  "Reactivate" depending on current stage; reactivating restores whichever stage it was in right
+  before declining (`prev_stage` column) rather than resetting to Idea. Converting a lead at Date Set
+  routes to the existing New Event form (`/events/new?ideaId=...`) pre-filled with the lead's name,
+  target date, and a speaker description assembled from its people/notes — nothing is written back
+  until the form is actually submitted, at which point `createEvent` (`lib/actions/events.ts`) tags
+  the lead `converted` and links `converted_event_id`. An abandoned form leaves no trace.
+- **Added `--cent-pastel` for low-stakes decorative gradient use.** The stepper's connector line/
+  passed-node fill and the time-picker's selected-row highlight originally used the full-strength
+  `--cent` gradient like a progress fill or checked checkbox — but at that size and frequency (every
+  stage move, every open time picker) full saturation read as loud rather than a rare "this is the
+  bright thing" moment. `cent-pastel` (`#F3B5A6, #EFDCA8, #AEDACA, #B7CBEB`) is the same stop order
+  desaturated toward the existing switch-on pastel, giving these frequent small accents room without
+  competing with the mark/progress/checkbox's full-strength moments elsewhere. Selected-row text
+  flips to `ink` on this background instead of `page`, since the pastel fill is light rather than
+  saturated.
