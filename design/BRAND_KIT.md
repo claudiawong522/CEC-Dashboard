@@ -164,11 +164,14 @@ Only two shadows: primary-button hover glow `0 9px 20px -10px rgba(232,88,61,.9)
 Easings: `cubic-bezier(.2,.8,.2,1)` default · `cubic-bezier(.2,.9,.2,1)` tab indicator ·
 `cubic-bezier(.34,1.6,.4,1)` switches (only spring) · `cubic-bezier(.4,0,.2,1)` check draw ·
 `cubic-bezier(.34,1.5,.4,1)` sticker pop.
-No motion on calendar cells, with one exception: the **sun on today's cell** drifts in the 11–18s
-ambient band (currently 14s, `linear` — an eased loop lurches at the cycle seam). The rule exists so
-that scanning dates stays calm, so the motion is confined to the sticker itself; the cell, its number
-and its event chips never move. Anything slower and livelier than that band on a calendar cell is
-still out. Respect `prefers-reduced-motion`.
+No motion on calendar cells, with one exception: the **sun on today's cell** breathes on an 8s
+`ease-in-out` loop (scale 1→1.3, opacity .7→1, a 2px rise). Note it is *not* in the 11–18s ambient
+band — that band is tuned for large decorative stickers, and at this sticker's 17px blurred size it
+produced motion that ran but could not be seen. Small stickers need amplitude and pace to carry;
+borrowing a duration meant for big ones just yields invisible animation. The rule exists so that
+scanning dates stays calm, so the motion stays confined to the sticker itself; the cell, its number
+and its event chips never move. That containment, not the duration, is what keeps the exception
+narrow. Respect `prefers-reduced-motion`.
 
 ## Implementation gotchas learned while prototyping
 1. Animate the tab indicator with `top`, not `transform`.
@@ -433,12 +436,15 @@ still out. Respect `prefers-reduced-motion`.
   competing with the mark/progress/checkbox's full-strength moments elsewhere. Selected-row text
   flips to `ink` on this background instead of `page`, since the pastel fill is light rather than
   saturated.
-- **Today's sun now drifts — the one carve-out from "no motion on calendar cells."** The sun on
+- **Today's sun now breathes — the one carve-out from "no motion on calendar cells."** The sun on
   today's cell was the only always-on marker in the grid that sat completely still, which made the
-  "today" cue easy to lose while scanning a dense month. It now runs a 14s loop: the circle rotates,
-  which orbits its off-centre gradient highlight, plus a gentle breathe (scale 1→1.1, opacity
-  .92→1). `linear`, not one of the kit's easings — an eased infinite loop visibly lurches where the
-  cycle restarts. The original rule was about keeping date-scanning calm, so the exception is drawn
-  as narrowly as possible: only the sticker moves, never the cell, the date number or the event
-  chips, and it stays inside the existing 11–18s ambient-drift band rather than introducing a new
-  duration. Disabled under `prefers-reduced-motion`.
+  "today" cue easy to lose while scanning a dense month. It runs an 8s `ease-in-out` loop: scale
+  1→1.3, opacity .7→1, and a 2px rise. A first pass tried to stay inside the kit's 11–18s
+  ambient-drift band with a 14s rotate-and-breathe, and that was a mistake worth recording — the
+  band is calibrated for large decorative stickers, and on a 17px dot blurred by 1.5px it produced
+  an animation that was genuinely running and completely invisible. Rotation contributed nothing
+  for the same reason: the blur smooths the off-centre gradient highlight away, so orbiting it
+  showed no change. The lesson is that small stickers need amplitude and pace to carry, and reusing
+  a duration tuned for big ones is not a safe default. What keeps the exception narrow is
+  containment, not slowness: only the sticker moves, never the cell, the date number or the event
+  chips. Disabled under `prefers-reduced-motion`.

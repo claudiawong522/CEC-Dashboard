@@ -353,34 +353,26 @@
     transparent
   );
   /* The one exception to "no motion on calendar cells" (BRAND_KIT.md
-     § Motion): the sun itself drifts, the cell around it doesn't. Sits in
-     the 11–18s ambient-sticker-drift band, slow enough to read as weather
-     rather than as a thing demanding attention while you scan dates. The
-     gradient highlight is off-centre, so rotating the circle orbits it —
-     that, plus a gentle breathe, is the whole effect. Linear, because an
-     eased loop lurches at the cycle seam. */
-  animation: today-sun 14s linear infinite;
+     § Motion): the sun itself breathes, the cell around it doesn't.
+     Deliberately not the 11–18s ambient-drift band — that band is tuned for
+     large decorative stickers, and on a 17px blurred dot it produced motion
+     that was technically running and completely imperceptible. Amplitude
+     and pace both have to carry at this size, hence 8s and a real
+     scale/opacity swing. Rotation was dropped for the same reason: the
+     1.5px blur smooths the off-centre highlight away, so orbiting it showed
+     nothing. ease-in-out is safe on a symmetric loop — velocity is zero at
+     both ends, so there's no seam to lurch at. */
+  animation: today-sun 8s ease-in-out infinite;
 }
 @keyframes today-sun {
-  0% {
-    transform: rotate(0deg) scale(1);
-    opacity: 0.92;
-  }
-  25% {
-    transform: rotate(90deg) scale(1.1);
-    opacity: 1;
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.7;
   }
   50% {
-    transform: rotate(180deg) scale(1);
-    opacity: 0.92;
-  }
-  75% {
-    transform: rotate(270deg) scale(1.1);
+    transform: translateY(-2px) scale(1.3);
     opacity: 1;
-  }
-  100% {
-    transform: rotate(360deg) scale(1);
-    opacity: 0.92;
   }
 }
 @media (prefers-reduced-motion: reduce) {
