@@ -164,7 +164,11 @@ Only two shadows: primary-button hover glow `0 9px 20px -10px rgba(232,88,61,.9)
 Easings: `cubic-bezier(.2,.8,.2,1)` default · `cubic-bezier(.2,.9,.2,1)` tab indicator ·
 `cubic-bezier(.34,1.6,.4,1)` switches (only spring) · `cubic-bezier(.4,0,.2,1)` check draw ·
 `cubic-bezier(.34,1.5,.4,1)` sticker pop.
-No motion on calendar cells. Respect `prefers-reduced-motion`.
+No motion on calendar cells, with one exception: the **sun on today's cell** drifts in the 11–18s
+ambient band (currently 14s, `linear` — an eased loop lurches at the cycle seam). The rule exists so
+that scanning dates stays calm, so the motion is confined to the sticker itself; the cell, its number
+and its event chips never move. Anything slower and livelier than that band on a calendar cell is
+still out. Respect `prefers-reduced-motion`.
 
 ## Implementation gotchas learned while prototyping
 1. Animate the tab indicator with `top`, not `transform`.
@@ -429,3 +433,12 @@ No motion on calendar cells. Respect `prefers-reduced-motion`.
   competing with the mark/progress/checkbox's full-strength moments elsewhere. Selected-row text
   flips to `ink` on this background instead of `page`, since the pastel fill is light rather than
   saturated.
+- **Today's sun now drifts — the one carve-out from "no motion on calendar cells."** The sun on
+  today's cell was the only always-on marker in the grid that sat completely still, which made the
+  "today" cue easy to lose while scanning a dense month. It now runs a 14s loop: the circle rotates,
+  which orbits its off-centre gradient highlight, plus a gentle breathe (scale 1→1.1, opacity
+  .92→1). `linear`, not one of the kit's easings — an eased infinite loop visibly lurches where the
+  cycle restarts. The original rule was about keeping date-scanning calm, so the exception is drawn
+  as narrowly as possible: only the sticker moves, never the cell, the date number or the event
+  chips, and it stays inside the existing 11–18s ambient-drift band rather than introducing a new
+  duration. Disabled under `prefers-reduced-motion`.
