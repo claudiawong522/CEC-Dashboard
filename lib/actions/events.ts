@@ -59,11 +59,38 @@ async function insertChildRows(
   if (toggles.hasRecurring) await supabase.from("event_recurring").insert({ event_id: eventId, done: true });
 }
 
-export async function createEvent(values: ToggleFormValues) {
+// Converting an External lead lands here on the same path as any other new
+// event, just with a speaker description pre-assembled from the lead's
+// people/notes and hasSpeaker forced on — the lead itself only gets marked
+// converted once the event actually exists, so an abandoned form leaves no
+// trace and the lead just sits at Date Set as if nothing happened.
+async function buildIdeaSpeakerContext(supabase: Awaited<ReturnType<typeof createClient>>, ideaId: string) {
+  const [{ data: idea }, { data: people }] = await Promise.all([
+    supabase.from("external_ideas").select("notes").eq("id", ideaId).maybeSingle<{ notes: string | null }>(),
+    supabase
+      .from("external_idea_people")
+      .select("name, email")
+      .eq("idea_id", ideaId)
+      .returns<{ name: string; email: string | null }[]>(),
+  ]);
+  if (!idea) return null;
+
+  const names = (people ?? [])
+    .filter((p) => p.name)
+    .map((p) => (p.email ? `${p.name} (${p.email})` : p.name))
+    .join(", ");
+  const description = [names, idea.notes].filter(Boolean).join("\n\n");
+  return description ? { description } : { description: "" };
+}
+
+export async function createEvent(values: ToggleFormValues, ideaId?: string) {
   const session = await requireRole("edit");
   const parsed = toggleFormSchema.parse(values);
   const supabase = await createClient();
   const repeats = !!parsed.repeatsFrequency;
+
+  const ideaContext = ideaId ? await buildIdeaSpeakerContext(supabase, ideaId) : null;
+  const hasSpeaker = parsed.hasSpeaker || !!ideaContext;
 
   const { data: event, error } = await supabase
     .from("events")
@@ -75,7 +102,7 @@ export async function createEvent(values: ToggleFormValues) {
       event_time: parsed.eventStartTime,
       event_end_time: parsed.eventEndTime,
       venue: parsed.venue,
-      has_speaker: parsed.hasSpeaker,
+      has_speaker: hasSpeaker,
       has_attendees: parsed.hasAttendees,
       has_money: parsed.hasMoney,
       has_food: parsed.hasFood,
@@ -90,7 +117,21 @@ export async function createEvent(values: ToggleFormValues) {
 
   if (error || !event) throw new Error(error?.message ?? "Failed to create event");
 
-  await insertChildRows(supabase, event.id, { ...parsed, hasRecurring: repeats });
+  await insertChildRows(supabase, event.id, { ...parsed, hasSpeaker, hasRecurring: repeats });
+
+  if (ideaContext) {
+    await supabase
+      .from("event_speaker")
+      .update({ description: ideaContext.description || null })
+      .eq("event_id", event.id);
+    // RLS backstops this the same way requireRole does everywhere else — a
+    // non-admin can reach createEvent (it only needs "edit"), but this
+    // write silently no-ops for them since external_ideas is admin-only.
+    await supabase
+      .from("external_ideas")
+      .update({ stage: "converted", converted_event_id: event.id })
+      .eq("id", ideaId!);
+  }
 
   if (repeats && parsed.repeatsFrequency) {
     await generateRecurringOccurrences(event.id, {
@@ -102,6 +143,7 @@ export async function createEvent(values: ToggleFormValues) {
   }
 
   revalidatePath("/calendar");
+  if (ideaId) revalidatePath("/external");
   redirect(parsed.hasMedia ? `/events/${event.id}?tab=media` : `/events/${event.id}`);
 }
 
