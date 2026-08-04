@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { DatePicker } from "@/components/ui/date-picker";
 import { TimePicker } from "@/components/ui/time-picker";
 import { SaveIndicator } from "@/components/events/SaveIndicator";
+import { DeleteIdeaDialog } from "@/components/external/DeleteIdeaDialog";
 import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { STAGES, STAGE_LABELS, type StageValue } from "@/lib/validation/external-schemas";
 import {
@@ -224,9 +225,12 @@ export function ExternalDetail({
 
   return (
     <div className="relative z-10 flex flex-col gap-5">
-      <Link href="/external" className="w-fit font-mono text-[10.5px] tracking-[0.08em] text-faint uppercase transition-colors duration-200 ease-brand hover:text-ink">
-        ← All leads
-      </Link>
+      <div className="flex items-center justify-between gap-3">
+        <Link href="/external" className="w-fit font-mono text-[10.5px] tracking-[0.08em] text-faint uppercase transition-colors duration-200 ease-brand hover:text-ink">
+          ← All leads
+        </Link>
+        <DeleteIdeaDialog ideaId={idea.id} pitch={pitch} isConverted={isConverted} returnToList />
+      </div>
 
       <div className="flex flex-col gap-1.5">
         <FieldLabel indicator={<SaveIndicator status={pitchStatus} />}>Idea</FieldLabel>

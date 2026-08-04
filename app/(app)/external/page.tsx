@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { ExternalDecor } from "@/components/external/ExternalDecor";
 import { QuickAdd } from "@/components/external/QuickAdd";
 import { ExternalList } from "@/components/external/ExternalList";
+import { sortIdeas } from "@/lib/utils/external-stage";
 import type { IdeaWithRelations } from "@/lib/types/external";
 
 export default async function ExternalPage() {
@@ -42,7 +43,7 @@ export default async function ExternalPage() {
         </p>
       </div>
       <QuickAdd />
-      <ExternalList ideas={ideas ?? []} adminsById={adminsById} />
+      <ExternalList ideas={sortIdeas(ideas ?? [])} adminsById={adminsById} />
     </div>
   );
 }

@@ -448,3 +448,22 @@ narrow. Respect `prefers-reduced-motion`.
   a duration tuned for big ones is not a safe default. What keeps the exception narrow is
   containment, not slowness: only the sticker moves, never the cell, the date number or the event
   chips. Disabled under `prefers-reduced-motion`.
+- **External list now sorts by pipeline position, with closed leads banded below.** Created-at order
+  was the wrong signal for a funnel: the lead closest to becoming a real event is the one worth
+  seeing first, and a lead that died six weeks ago was sitting above live outreach purely because it
+  was added later. Rows now rank Date Set → Agreed → Responded → Reached Out → Idea, newest first
+  inside a rank, then Converted, then Declined (`sortIdeas`, `lib/utils/external-stage.ts`). The
+  first closed row is preceded by a banded divider — `bg-wash/60`, 6px vertical padding, a 9px/0.13em
+  mono `faint` "Closed" label and a hairline rule filling the rest of the row — so the drop from live
+  pipeline to history reads as a section break rather than as more list. The filter pills keep
+  reading in pipeline order (Idea → Date Set) since they're a funnel readout, but Converted moved
+  ahead of Declined so Declined is last in both places.
+- **Row-level destructive actions stay hidden until hover on pointer devices.** A lead can now be
+  deleted from either the list or its detail page, sharing one `DeleteIdeaDialog` (same dialog shape
+  as `DeleteEventDialog`: `sm:max-w-[360px]`, paper card, hairline border, Cancel + destructive
+  confirm). In the list the trash trigger holds its 32px of layout at all times but sits at
+  `opacity-0` until the row is hovered or the trigger is focused, keeping the scannable line — pitch,
+  stage tag, owners — free of a repeated red-adjacent icon. Below `md` it stays at full opacity,
+  since hover never arrives on touch and the control would otherwise be unreachable there. The row
+  itself became a `div` with a full-bleed absolute `Link` behind `pointer-events-none` content, so a
+  real button can live inside a row that is otherwise entirely a link.

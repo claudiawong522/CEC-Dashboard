@@ -5,7 +5,9 @@ import { z } from "zod";
 // only ever has to render the happy path.
 export const STAGES = ["idea", "reached_out", "responded", "agreed", "date_set"] as const;
 export type Stage = (typeof STAGES)[number];
-export const STAGE_VALUES = [...STAGES, "declined", "converted"] as const;
+// Ordered the way the list and the filter pills read: the live pipeline
+// first, then the two closed outcomes, with declined dead last everywhere.
+export const STAGE_VALUES = [...STAGES, "converted", "declined"] as const;
 export type StageValue = (typeof STAGE_VALUES)[number];
 
 export const STAGE_LABELS: Record<StageValue, string> = {

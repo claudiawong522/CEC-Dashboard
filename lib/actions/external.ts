@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 import { requireRole } from "@/lib/auth/requireRole";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -98,6 +99,28 @@ export async function setIdeaStage(ideaId: string, stage: StageValue) {
   const { error } = await supabase.from("external_ideas").update(update).eq("id", ideaId);
   if (error) throw new Error(error.message);
   revalidateIdea(ideaId);
+}
+
+// Hard delete — people and owners cascade with the row. A converted lead's
+// event is deliberately left alone: it lives on its own in /calendar once
+// it exists, and nuking a real event from the outreach list would surprise.
+export async function deleteIdea(ideaId: string) {
+  await requireRole("admin");
+  const supabase = await createClient();
+  const { error } = await supabase.from("external_ideas").delete().eq("id", ideaId);
+  if (error) throw new Error(error.message);
+  revalidatePath("/external");
+}
+
+// Deleting from a list row can stay on /external — the revalidate above
+// re-renders this route and the row just goes. Deleting from the lead's own
+// page can't: revalidating re-renders the current route too, which would run
+// /external/[id] straight into notFound() before we could leave. So this
+// variant navigates instead, and does it with `replace` (Server Actions
+// default to `push`) so Back doesn't return to a lead that no longer exists.
+export async function deleteIdeaAndReturnToList(ideaId: string) {
+  await deleteIdea(ideaId);
+  redirect("/external", "replace");
 }
 
 export async function addPerson(ideaId: string) {
