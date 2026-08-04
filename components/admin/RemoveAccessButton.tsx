@@ -8,10 +8,14 @@ import { removeAccess } from "@/lib/actions/admin";
 export function RemoveAccessButton({ userId, email }: { userId: string; email: string }) {
   async function confirmRemove() {
     try {
-      await removeAccess(userId);
-      toast.success("Access removed");
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Couldn't remove access — try again");
+      const result = await removeAccess(userId);
+      if (result.ok) toast.success("Access removed");
+      else toast.error(result.message);
+    } catch {
+      // Only the unexpected reaches here — a thrown error's message is
+      // replaced by a generic Next.js string in production, so showing it
+      // would be worse than this. See lib/actions/result.ts.
+      toast.error("Couldn't remove access — try again");
     }
   }
 

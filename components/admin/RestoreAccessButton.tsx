@@ -10,10 +10,11 @@ export function RestoreAccessButton({ userId }: { userId: string }) {
   function onRestore() {
     startTransition(async () => {
       try {
-        await restoreAccess(userId);
-        toast.success("Access restored");
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Couldn't restore access — try again");
+        const result = await restoreAccess(userId);
+        if (result.ok) toast.success("Access restored");
+        else toast.error(result.message);
+      } catch {
+        toast.error("Couldn't restore access — try again");
       }
     });
   }

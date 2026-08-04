@@ -21,7 +21,12 @@ export function RoleSelect({ userId, role }: { userId: string; role: Role }) {
     setValue(next);
     startTransition(async () => {
       try {
-        await updateUserRole(userId, next);
+        const result = await updateUserRole(userId, next);
+        if (!result.ok) {
+          setValue(previous);
+          toast.error(result.message);
+          return;
+        }
         toast.success("Role updated");
       } catch {
         setValue(previous);

@@ -28,12 +28,16 @@ export function InviteForm() {
 
     startTransition(async () => {
       try {
-        await inviteUser(trimmed, role);
+        const result = await inviteUser(trimmed, role);
+        if (!result.ok) {
+          toast.error(result.message);
+          return;
+        }
         toast.success(`Invite sent to ${trimmed}`);
         setEmail("");
         setRole("view");
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : "Couldn't send invite");
+      } catch {
+        toast.error("Couldn't send invite");
       }
     });
   }

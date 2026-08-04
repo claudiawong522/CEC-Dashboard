@@ -4,16 +4,27 @@ import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/requireRole";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { actionFailed, actionOk, type ActionResult } from "@/lib/actions/result";
 import type { Role } from "@/lib/auth/getSession";
 
-export async function updateUserRole(userId: string, role: Role) {
+// A database error isn't something the person clicking can do anything about,
+// and its text names columns and constraints, so they get a plain retry line
+// while the real message goes to the server log — which is where a failure
+// like a migration that never ran on production actually gets diagnosed.
+function databaseFailure(what: string, error: { message: string }): ActionResult {
+  console.error(`[admin] couldn't ${what}:`, error.message);
+  return actionFailed(`Couldn't ${what} — try again`);
+}
+
+export async function updateUserRole(userId: string, role: Role): Promise<ActionResult> {
   await requireRole("admin");
   const supabase = await createClient();
 
   const { error } = await supabase.from("profiles").update({ role }).eq("id", userId);
-  if (error) throw new Error(error.message);
+  if (error) return databaseFailure("update their role", error);
 
   revalidatePath("/admin");
+  return actionOk();
 }
 
 // There's no self-serve signup — every account starts from an admin invite
@@ -25,13 +36,13 @@ const INVITE_ALLOWED_DOMAINS = (process.env.INVITE_ALLOWED_DOMAINS ?? "cornell.e
   .map((domain) => domain.trim().toLowerCase())
   .filter(Boolean);
 
-export async function inviteUser(email: string, role: Role) {
+export async function inviteUser(email: string, role: Role): Promise<ActionResult> {
   const session = await requireRole("admin");
 
   const normalizedEmail = email.trim().toLowerCase();
   const domain = normalizedEmail.split("@")[1];
   if (!domain || !INVITE_ALLOWED_DOMAINS.includes(domain)) {
-    throw new Error(`Invites are limited to: ${INVITE_ALLOWED_DOMAINS.join(", ")}`);
+    return actionFailed(`Invites are limited to: ${INVITE_ALLOWED_DOMAINS.join(", ")}`);
   }
 
   const admin = createAdminClient();
@@ -41,13 +52,20 @@ export async function inviteUser(email: string, role: Role) {
     .select("id")
     .eq("email", normalizedEmail)
     .maybeSingle();
-  if (existingProfile) throw new Error("This person already has access");
+  if (existingProfile) return actionFailed("This person already has access");
 
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const { data, error } = await admin.auth.admin.inviteUserByEmail(normalizedEmail, {
     redirectTo: `${origin}/login`,
   });
-  if (error || !data.user) throw new Error(error?.message ?? "Couldn't send invite");
+  // The one place a Supabase message is worth passing through: these are
+  // about the email itself ("already been registered", "invalid format"),
+  // which the admin can act on, and the profiles check above can't catch an
+  // auth.users shell that outlived its profile row.
+  if (error || !data.user) {
+    console.error("[admin] couldn't send invite:", error?.message ?? "no user returned");
+    return actionFailed(error?.message ?? "Couldn't send invite");
+  }
 
   const { error: profileError } = await admin.from("profiles").insert({
     id: data.user.id,
@@ -60,13 +78,14 @@ export async function inviteUser(email: string, role: Role) {
   if (profileError) {
     // Don't leave an orphan auth.users shell if the profile row failed.
     await admin.auth.admin.deleteUser(data.user.id);
-    throw new Error(profileError.message);
+    return databaseFailure("send invite", profileError);
   }
 
   revalidatePath("/admin");
+  return actionOk();
 }
 
-export async function revokeInvite(userId: string) {
+export async function revokeInvite(userId: string): Promise<ActionResult> {
   await requireRole("admin");
   const admin = createAdminClient();
 
@@ -82,14 +101,15 @@ export async function revokeInvite(userId: string) {
     .eq("id", userId)
     .eq("status", "invited")
     .select("id");
-  if (error) throw new Error(error.message);
+  if (error) return databaseFailure("cancel the invite", error);
   if (!deleted || deleted.length === 0) {
-    throw new Error("This invite was already accepted — refresh to see their current access");
+    return actionFailed("This invite was already accepted — refresh to see their current access");
   }
 
   await admin.auth.admin.deleteUser(userId);
 
   revalidatePath("/admin");
+  return actionOk();
 }
 
 // Removing an accepted member, as opposed to cancelling an unaccepted invite
@@ -100,12 +120,12 @@ export async function revokeInvite(userId: string) {
 // anyone who has ever done anything in here. Flipping status to 'revoked'
 // keeps their name attached to the work they did while getSession() stops
 // building a session for them — see lib/auth/getSession.ts.
-export async function removeAccess(userId: string) {
+export async function removeAccess(userId: string): Promise<ActionResult> {
   const session = await requireRole("admin");
   const supabase = await createClient();
 
   if (userId === session.profile.id) {
-    throw new Error("You can't remove your own access");
+    return actionFailed("You can't remove your own access");
   }
 
   const { data: target } = await supabase
@@ -113,9 +133,9 @@ export async function removeAccess(userId: string) {
     .select("id, role, status")
     .eq("id", userId)
     .maybeSingle<{ id: string; role: Role; status: string }>();
-  if (!target) throw new Error("That person no longer exists — refresh the page");
+  if (!target) return actionFailed("That person no longer exists — refresh the page");
   if (target.status === "revoked") {
-    throw new Error("Their access was already removed — refresh the page");
+    return actionFailed("Their access was already removed — refresh the page");
   }
 
   // Nobody can be left without a way back in. Counting active admins rather
@@ -128,7 +148,7 @@ export async function removeAccess(userId: string) {
       .eq("role", "admin")
       .eq("status", "active");
     if ((count ?? 0) <= 1) {
-      throw new Error("This is the only admin left — make someone else an admin first");
+      return actionFailed("This is the only admin left — make someone else an admin first");
     }
   }
 
@@ -136,16 +156,17 @@ export async function removeAccess(userId: string) {
     .from("profiles")
     .update({ status: "revoked" })
     .eq("id", userId);
-  if (error) throw new Error(error.message);
+  if (error) return databaseFailure("remove access", error);
 
   revalidatePath("/admin");
+  return actionOk();
 }
 
 // The counterpart to removeAccess. Necessary rather than merely convenient:
 // inviteUser refuses an email that already has a profile row, and a revoked
 // person still has one, so without this an accidental removal couldn't be
 // undone from the UI at all. Their old role comes back with them.
-export async function restoreAccess(userId: string) {
+export async function restoreAccess(userId: string): Promise<ActionResult> {
   await requireRole("admin");
   const supabase = await createClient();
 
@@ -155,10 +176,11 @@ export async function restoreAccess(userId: string) {
     .eq("id", userId)
     .eq("status", "revoked")
     .select("id");
-  if (error) throw new Error(error.message);
+  if (error) return databaseFailure("restore access", error);
   if (!restored || restored.length === 0) {
-    throw new Error("They aren't removed — refresh the page");
+    return actionFailed("They aren't removed — refresh the page");
   }
 
   revalidatePath("/admin");
+  return actionOk();
 }

@@ -8,9 +8,10 @@ import { revokeInvite } from "@/lib/actions/admin";
 export function RevokeInviteButton({ userId, email }: { userId: string; email: string }) {
   async function confirmRevoke() {
     try {
-      await revokeInvite(userId);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Couldn't cancel invite — try again");
+      const result = await revokeInvite(userId);
+      if (!result.ok) toast.error(result.message);
+    } catch {
+      toast.error("Couldn't cancel invite — try again");
     }
   }
 
