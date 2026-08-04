@@ -1,11 +1,10 @@
 "use client";
 
-import { Suspense, useEffect, useState, useTransition } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { BrandMark } from "@/components/app-shell/BrandMark";
-import { acceptInvitedSession } from "@/lib/actions/auth";
 import { cn } from "@/lib/utils";
 
 type StickerKey = "mark" | "s1" | "s2" | "s3" | "s4" | "s5" | "s6" | "s7";
@@ -42,45 +41,35 @@ export default function LoginPage() {
     setPops((prev) => ({ ...prev, [key]: prev[key] + 1 }));
   }
 
-  const [isAccepting, startAccepting] = useTransition();
+  const [cameFromInvite, setCameFromInvite] = useState(false);
 
-  // Someone who clicked the invite email's own link (rather than "Sign in
-  // with Google") lands here with the session tokens in the URL hash.
+  // Someone clicking the invite email's own link lands here with usable
+  // session tokens in the URL hash. We deliberately throw them away and ask
+  // for a Google sign-in instead.
+  //
+  // Consuming them "works" — it signs the person in immediately — but a
+  // Supabase invite creates a bare auth user with no name attached, so an
+  // account accepted this way has nothing to show in Admin but a dash. And
+  // because sessions don't expire, that person may never sign in again for
+  // the name to be filled in later; two of the first three members ended up
+  // exactly there. Google is the only source of a real name, so it's the
+  // only door. The invite itself isn't wasted: the profiles row already
+  // exists with the admin's chosen role, and app/auth/callback/route.ts
+  // flips it to active on their first Google sign-in.
   useEffect(() => {
-    const supabase = createClient();
     const hashParams = new URLSearchParams(window.location.hash.slice(1));
-    const accessToken = hashParams.get("access_token");
-    const refreshToken = hashParams.get("refresh_token");
-
-    async function finishAccept() {
-      try {
-        await acceptInvitedSession();
-      } catch (err) {
-        if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
-      }
-    }
-
-    if (accessToken && refreshToken) {
-      // These tokens are the whole point of the visit — set them
-      // explicitly so they win over any *other* session already sitting in
-      // this browser (e.g. testing the invite as the admin who sent it),
-      // rather than relying on auto-detection, which can end up preferring
-      // the pre-existing session instead of the one being accepted.
+    if (hashParams.get("access_token") && hashParams.get("refresh_token")) {
+      // Strip the tokens from the address bar even though we never use
+      // them — they're live credentials until they expire, and they've no
+      // business sitting in browser history or a pasted URL.
       window.history.replaceState(null, "", window.location.pathname);
-      startAccepting(async () => {
-        const { error } = await supabase.auth.setSession({
-          access_token: accessToken,
-          refresh_token: refreshToken,
-        });
-        if (error) return;
-        await finishAccept();
-      });
+      setCameFromInvite(true);
     }
-    // No invite tokens in the URL — always show the login screen, even if
-    // some other session already exists in this browser. Auto-skipping past
-    // it here previously fought with people trying to consciously sign in
-    // as a *different* account (e.g. accepting an invite while already
-    // signed in as the admin who sent it).
+    // Otherwise show the normal login screen, even if some other session
+    // already exists in this browser. Auto-skipping past it previously
+    // fought with people trying to consciously sign in as a *different*
+    // account (e.g. accepting an invite while signed in as the admin who
+    // sent it).
   }, []);
 
   async function signInWithGoogle() {
@@ -335,22 +324,20 @@ export default function LoginPage() {
           CEC Dashboard
         </h1>
         <p className="font-sans text-[14px] text-body">
-          Sign in with your @cornell.edu account
+          {cameFromInvite
+            ? "You're invited — sign in with Google to finish setting up."
+            : "Sign in with your @cornell.edu account"}
         </p>
 
-        {isAccepting ? (
-          <p className="font-sans text-[13.5px] text-body">Signing you in…</p>
-        ) : (
-          <Button
-            onClick={signInWithGoogle}
-            className="gap-2.5 rounded-login px-[22px] py-[11px] text-[13.5px] font-medium"
-          >
-            <span className="flex size-[19px] items-center justify-center rounded-full bg-page">
-              <GoogleIcon className="size-3" />
-            </span>
-            Sign in with Google
-          </Button>
-        )}
+        <Button
+          onClick={signInWithGoogle}
+          className="gap-2.5 rounded-login px-[22px] py-[11px] text-[13.5px] font-medium"
+        >
+          <span className="flex size-[19px] items-center justify-center rounded-full bg-page">
+            <GoogleIcon className="size-3" />
+          </span>
+          Sign in with Google
+        </Button>
 
         <Suspense fallback={null}>
           <LoginError />

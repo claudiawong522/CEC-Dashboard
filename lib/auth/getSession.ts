@@ -38,8 +38,8 @@ export async function getSession(): Promise<Session | null> {
   // perfectly valid Supabase cookie, but every page and every server action
   // reaches its role through here, so they get treated as signed out on the
   // very next request rather than at token expiry. An 'invited' row lands
-  // here too — that's a person who hasn't finished accepting yet, and
-  // lib/actions/auth.ts flips them to active without going through this.
+  // here too — that's a person who hasn't signed in with Google yet, and
+  // app/auth/callback/route.ts flips them to active when they do.
   if (profile.status !== "active") return null;
 
   return {
