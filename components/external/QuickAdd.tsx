@@ -19,9 +19,14 @@ export function QuickAdd() {
 
     startTransition(async () => {
       try {
-        await createIdea(trimmed);
+        const id = await createIdea(trimmed);
         setName("");
-        router.refresh();
+        // Straight to the new lead's page rather than back to the list: a
+        // name on its own is a stub, and the next thing anyone wants is the
+        // contact and the pitch. It also sidesteps the new lead landing at
+        // the bottom of the list — Idea is the last live rank — where it
+        // can sit below the fold and read as "nothing happened".
+        router.push(`/external/${id}`);
       } catch {
         toast.error("Couldn't add that lead — try again");
       }

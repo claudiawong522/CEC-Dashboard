@@ -20,8 +20,9 @@ function revalidateIdea(ideaId: string) {
 }
 
 // Quick-add only ever needs a name — everything else (pitch detail, contact
-// info, owners) gets filled in later from the detail view. The typed name
-// doubles as both the idea's pitch title and its first person.
+// info, owners) gets filled in on the detail view, which the caller navigates
+// to with the id returned here. The typed name doubles as both the idea's
+// pitch title and its first person.
 export async function createIdea(name: string) {
   const session = await requireRole("admin");
   const parsed = quickAddSchema.parse({ name });

@@ -467,3 +467,12 @@ narrow. Respect `prefers-reduced-motion`.
   since hover never arrives on touch and the control would otherwise be unreachable there. The row
   itself became a `div` with a full-bleed absolute `Link` behind `pointer-events-none` content, so a
   real button can live inside a row that is otherwise entirely a link.
+- **Quick-add now lands on the new lead's detail page instead of staying on the list.** Adding a name
+  used to clear the input and refresh the list in place, which worked while the list was newest-first
+  and the new row appeared at the top. Under pipeline ordering a new lead sorts into Idea — the last
+  live rank — so it lands at the bottom of the list, potentially below the fold, and the only
+  feedback for a successful add was an input clearing itself. Submitting now pushes to
+  `/external/[id]`. The navigation runs inside the same transition as the action, so the button stays
+  disabled until the destination is actually there rather than flicking back to enabled mid-flight.
+  This also matches what the form is for: a name alone is a stub, and contact info is the next thing
+  anyone needs to enter.
