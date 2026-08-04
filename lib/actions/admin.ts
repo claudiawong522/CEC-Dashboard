@@ -49,9 +49,34 @@ export async function inviteUser(email: string, role: Role): Promise<ActionResul
 
   const { data: existingProfile } = await admin
     .from("profiles")
-    .select("id")
+    .select("id, status")
     .eq("email", normalizedEmail)
-    .maybeSingle();
+    .maybeSingle<{ id: string; status: string }>();
+
+  // Inviting someone who was removed is how they come back — there's no
+  // restore button any more, because /admin doesn't show removed people at
+  // all. Their profile row and their auth.users row both still exist (that's
+  // why removal isn't a delete), so this revives what's there rather than
+  // creating anything: back to 'invited' with whatever role this invite
+  // grants, and the Google sign-in flips them to active exactly as it would
+  // a newcomer. No mail goes out — inviteUserByEmail below would reject the
+  // address, since the auth user never went away — so say so.
+  if (existingProfile?.status === "revoked") {
+    const { error: reviveError } = await admin
+      .from("profiles")
+      .update({
+        role,
+        status: "invited",
+        invited_by: session.profile.id,
+        invited_at: new Date().toISOString(),
+      })
+      .eq("id", existingProfile.id);
+    if (reviveError) return databaseFailure("send invite", reviveError);
+
+    revalidatePath("/admin");
+    return actionOk(`${normalizedEmail} can sign in again — no new email was sent`);
+  }
+
   if (existingProfile) return actionFailed("This person already has access");
 
   const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
@@ -101,7 +126,25 @@ export async function revokeInvite(userId: string): Promise<ActionResult> {
     .eq("id", userId)
     .eq("status", "invited")
     .select("id");
-  if (error) return databaseFailure("cancel the invite", error);
+  if (error) {
+    // A re-invited former member can't be deleted: the events, photos and
+    // notes they made before being removed still reference this row, which
+    // is the whole reason removal is a revoke rather than a delete. Cancel
+    // their invite by putting them back to removed — same outcome on screen,
+    // nothing of theirs destroyed, and their auth user is left alone.
+    if (error.code === "23503") {
+      const { error: revokeError } = await admin
+        .from("profiles")
+        .update({ status: "revoked" })
+        .eq("id", userId)
+        .eq("status", "invited");
+      if (revokeError) return databaseFailure("cancel the invite", revokeError);
+
+      revalidatePath("/admin");
+      return actionOk();
+    }
+    return databaseFailure("cancel the invite", error);
+  }
   if (!deleted || deleted.length === 0) {
     return actionFailed("This invite was already accepted — refresh to see their current access");
   }
@@ -120,6 +163,10 @@ export async function revokeInvite(userId: string): Promise<ActionResult> {
 // anyone who has ever done anything in here. Flipping status to 'revoked'
 // keeps their name attached to the work they did while getSession() stops
 // building a session for them — see lib/auth/getSession.ts.
+//
+// It reads as a delete from /admin, though: the row is filtered out of that
+// page, so there's no trace of them and no restore. Undoing it means
+// inviting the address again, which inviteUser handles above.
 export async function removeAccess(userId: string): Promise<ActionResult> {
   const session = await requireRole("admin");
   const supabase = await createClient();
@@ -157,29 +204,6 @@ export async function removeAccess(userId: string): Promise<ActionResult> {
     .update({ status: "revoked" })
     .eq("id", userId);
   if (error) return databaseFailure("remove access", error);
-
-  revalidatePath("/admin");
-  return actionOk();
-}
-
-// The counterpart to removeAccess. Necessary rather than merely convenient:
-// inviteUser refuses an email that already has a profile row, and a revoked
-// person still has one, so without this an accidental removal couldn't be
-// undone from the UI at all. Their old role comes back with them.
-export async function restoreAccess(userId: string): Promise<ActionResult> {
-  await requireRole("admin");
-  const supabase = await createClient();
-
-  const { data: restored, error } = await supabase
-    .from("profiles")
-    .update({ status: "active" })
-    .eq("id", userId)
-    .eq("status", "revoked")
-    .select("id");
-  if (error) return databaseFailure("restore access", error);
-  if (!restored || restored.length === 0) {
-    return actionFailed("They aren't removed — refresh the page");
-  }
 
   revalidatePath("/admin");
   return actionOk();

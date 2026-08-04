@@ -13,9 +13,14 @@ export default async function AdminPage() {
   if (!session) redirect("/login");
 
   const supabase = await createClient();
+  // Removed people are gone from this screen entirely. Their row survives in
+  // the database because everything they authored points at it, but nothing
+  // here should hint that they were ever members — inviting them again is
+  // what brings them back, and it looks like any other first-time invite.
   const { data: users } = await supabase
     .from("profiles")
     .select("id, email, full_name, avatar_url, role, status")
+    .neq("status", "revoked")
     .order("full_name", { ascending: true, nullsFirst: false })
     .returns<Profile[]>();
 

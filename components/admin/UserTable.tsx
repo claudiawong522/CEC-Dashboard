@@ -1,8 +1,13 @@
 import { RoleSelect } from "@/components/admin/RoleSelect";
 import { RevokeInviteButton } from "@/components/admin/RevokeInviteButton";
 import { RemoveAccessButton } from "@/components/admin/RemoveAccessButton";
-import { RestoreAccessButton } from "@/components/admin/RestoreAccessButton";
 import type { Profile } from "@/lib/auth/getSession";
+
+// Removed people never arrive here — app/(app)/admin/page.tsx filters
+// status='revoked' out of the query, so this table only ever shows invited
+// and active rows. Their profile row still exists in the database, since
+// everything they authored references it; it just isn't anyone's business
+// on this screen. Getting them back is a fresh invite, not a restore.
 
 export function UserTable({
   users,
@@ -15,7 +20,7 @@ export function UserTable({
 }) {
   return (
     <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
-      <div className="grid grid-cols-[1.3fr_1.6fr_0.9fr_72px] gap-3 border-b border-[rgba(35,32,28,0.08)] px-[15px] py-2.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+      <div className="grid grid-cols-[1.3fr_1.6fr_0.9fr_24px] gap-3 border-b border-[rgba(35,32,28,0.08)] px-[15px] py-2.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
         <span>name</span>
         <span>email</span>
         <span>access</span>
@@ -24,31 +29,22 @@ export function UserTable({
       {users.map((user, i) => {
         const isSelf = user.id === currentUserId;
         const isPending = user.status === "invited";
-        const isRemoved = user.status === "revoked";
         return (
           <div
             key={user.id}
-            className={`grid grid-cols-[1.3fr_1.6fr_0.9fr_72px] items-center gap-3 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
+            className={`grid grid-cols-[1.3fr_1.6fr_0.9fr_24px] items-center gap-3 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
               i < users.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
             }`}
           >
             <span
               className={`truncate font-sans text-[12.5px] ${
-                isPending || isRemoved ? "text-faint italic" : "text-ink"
+                isPending ? "text-faint italic" : "text-ink"
               } ${isSelf ? "font-medium" : "font-normal"}`}
             >
               {isPending ? "Invite pending" : (user.full_name ?? "—")}
             </span>
-            <span
-              className={`truncate font-sans text-[12px] ${isRemoved ? "text-faint line-through" : "text-body"}`}
-            >
-              {user.email}
-            </span>
-            {isRemoved ? (
-              <span className="justify-self-start rounded-[20px] border border-line-input bg-page px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-faint uppercase">
-                removed
-              </span>
-            ) : isPending ? (
+            <span className="truncate font-sans text-[12px] text-body">{user.email}</span>
+            {isPending ? (
               <span
                 className="justify-self-start rounded-[20px] border border-[rgba(224,185,74,0.4)] bg-amber/10 px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-strong uppercase"
                 title={`Will become ${user.role} on accept`}
@@ -77,8 +73,6 @@ export function UserTable({
                   anyway, so offering the button would only ever produce an error. */}
               {!canManageRoles || isSelf ? null : isPending ? (
                 <RevokeInviteButton userId={user.id} email={user.email} />
-              ) : isRemoved ? (
-                <RestoreAccessButton userId={user.id} />
               ) : (
                 <RemoveAccessButton userId={user.id} email={user.email} />
               )}

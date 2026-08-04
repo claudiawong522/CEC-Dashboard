@@ -11,10 +11,13 @@
 // Throwing is still right for what should never happen — a non-admin reaching
 // an admin action, a client that lost its session. Callers catch those and show
 // a generic fallback while the real error stays in the server logs.
-export type ActionResult = { ok: true } | { ok: false; message: string };
+// A successful action can carry a message too, for the cases where "it
+// worked" isn't the whole story — re-inviting someone who was removed puts
+// them back without sending a new email, and the admin needs telling.
+export type ActionResult = { ok: true; message?: string } | { ok: false; message: string };
 
-export function actionOk(): ActionResult {
-  return { ok: true };
+export function actionOk(message?: string): ActionResult {
+  return { ok: true, message };
 }
 
 export function actionFailed(message: string): ActionResult {

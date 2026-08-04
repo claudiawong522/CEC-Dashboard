@@ -33,7 +33,9 @@ export function InviteForm() {
           toast.error(result.message);
           return;
         }
-        toast.success(`Invite sent to ${trimmed}`);
+        // Re-inviting someone who was removed puts them straight back without
+        // sending mail, and says so in its own message.
+        toast.success(result.message ?? `Invite sent to ${trimmed}`);
         setEmail("");
         setRole("view");
       } catch {
