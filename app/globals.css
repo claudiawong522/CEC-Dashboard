@@ -400,6 +400,12 @@
 }
 .fc-cec .fc-event-title {
   font-weight: 400;
+  /* FullCalendar clips the title with `overflow: hidden` but sets no
+     `text-overflow`, so a title too long for the cell stops mid-word with no
+     sign it was cut. Cell width is fluid (the grid fills a max-1120px
+     column), so how much gets cut changes with the window — an ellipsis is
+     what makes that read as truncation rather than as a typo. */
+  text-overflow: ellipsis;
 }
 .fc-cec .fc-daygrid-event-dot {
   border: none;
