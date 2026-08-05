@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- The CENT gradient triangle, geometry and stops identical to
+       components/app-shell/BrandMark.tsx. Colours are literal here rather
+       than var(--coral) etc: a favicon is fetched standalone, with no
+       stylesheet in scope to resolve the tokens against. Keep in sync with
+       design/brand-tokens.css if the accent stops ever move. -->
+  <defs>
+    <linearGradient id="cent" gradientUnits="userSpaceOnUse" x1="0" y1="32" x2="32" y2="0">
+      <stop offset="0%" stop-color="#E8583D" />
+      <stop offset="35%" stop-color="#E0B94A" />
+      <stop offset="65%" stop-color="#3FA789" />
+      <stop offset="100%" stop-color="#3B6FC2" />
+    </linearGradient>
+  </defs>
+  <path d="M16 3 L29 27 L3 27 Z" fill="url(#cent)" />
+</svg>
