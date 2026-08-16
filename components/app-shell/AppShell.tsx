@@ -13,6 +13,8 @@ import {
   UsersIcon,
   UsersRoundIcon,
   CoffeeIcon,
+  MegaphoneIcon,
+  ClipboardCheckIcon,
   ShieldCheckIcon,
 } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
@@ -43,6 +45,7 @@ const BASE_NAV_ITEMS = [
   { href: "/notes", label: "Notes", icon: NotebookPenIcon },
   { href: "/members", label: "Members", icon: UsersRoundIcon },
   { href: "/coffee-chats", label: "Coffee Chats", icon: CoffeeIcon },
+  { href: "/shoutouts", label: "Shoutouts", icon: MegaphoneIcon },
 ];
 
 export function AppShell({
@@ -61,10 +64,20 @@ export function AppShell({
     profile.role === "admin"
       ? [
           ...BASE_NAV_ITEMS,
+          { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
           { href: "/external", label: "External", icon: UsersIcon },
           { href: "/admin", label: "Admin", icon: ShieldCheckIcon },
         ]
-      : [...BASE_NAV_ITEMS, { href: "/admin", label: "Admin", icon: ShieldCheckIcon }];
+      : [
+          ...BASE_NAV_ITEMS,
+          // Taking attendance is an edit-role action, so a view-only account
+          // (alumni, anyone who should read without writing) doesn't get the
+          // nav item and the page redirects them away too.
+          ...(profile.role === "edit"
+            ? [{ href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon }]
+            : []),
+          { href: "/admin", label: "Admin", icon: ShieldCheckIcon },
+        ];
   const router = useRouter();
   const signOutFormRef = useRef<HTMLFormElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
