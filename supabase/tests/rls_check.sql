@@ -13,6 +13,42 @@
 -- grants either, and adding them for only the new tables would diverge.
 grant select, insert, update, delete on all tables in schema public to authenticated;
 
+-- Re-runnable: clear anything a previous run left behind, in dependency
+-- order. Several tables reference profiles(id) with no on-delete rule (that is
+-- deliberate — it is why removing a member is a revoke rather than a delete),
+-- so the rows pointing at the fixtures have to go before the fixtures do.
+do $$
+declare
+  v_fixtures uuid[] := array[
+    '11111111-1111-1111-1111-111111111111'::uuid,
+    '22222222-2222-2222-2222-222222222222'::uuid
+  ];
+begin
+  delete from interactions where profile_id = any(v_fixtures);
+  delete from interactions where contact_id in (
+    select id from outreach_contacts where name in ('Secret Speaker', 'Public Alum')
+  );
+  delete from ask_logs where profile_id = any(v_fixtures);
+  delete from attendance where profile_id = any(v_fixtures) or recorded_by = any(v_fixtures);
+  delete from shoutouts where giver_id = any(v_fixtures) or receiver_id = any(v_fixtures);
+  delete from coffee_chats where submitter_id = any(v_fixtures) or partner_id = any(v_fixtures);
+  delete from coffee_chat_categories where name = 'Another subteam';
+  delete from chat_requests where profile_id = any(v_fixtures);
+  delete from brain_notes
+    where title in ('Demo Day retrospective', 'Sponsorship playbook', 'Demo Day retro');
+  delete from external_idea_people where idea_id in (
+    select id from external_ideas where pitch = 'Panel on hardware startups'
+  );
+  delete from external_ideas where pitch = 'Panel on hardware startups';
+  delete from interview_slots where cycle_id in (
+    select id from interview_cycles where name = 'Fall 26'
+  );
+  delete from interview_cycles where name = 'Fall 26';
+  delete from outreach_contacts where name in ('Secret Speaker', 'Public Alum');
+  -- profiles cascades from auth.users.
+  delete from auth.users where id = any(v_fixtures);
+end $$;
+
 -- Two members and one outsider. auth.users rows first, since profiles.id
 -- references them.
 insert into auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at)
