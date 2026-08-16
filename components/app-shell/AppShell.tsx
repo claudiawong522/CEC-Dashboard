@@ -19,6 +19,7 @@ import {
   BrainIcon,
   SparklesIcon,
   MessagesSquareIcon,
+  UserRoundCheckIcon,
   ShieldCheckIcon,
 } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
@@ -72,6 +73,7 @@ export function AppShell({
       ? [
           ...BASE_NAV_ITEMS,
           { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
+          { href: "/interviews", label: "Interviews", icon: UserRoundCheckIcon },
           { href: "/crm", label: "CRM", icon: ContactIcon },
           { href: "/external", label: "External", icon: UsersIcon },
           { href: "/admin", label: "Admin", icon: ShieldCheckIcon },
