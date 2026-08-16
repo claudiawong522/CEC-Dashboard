@@ -18,6 +18,7 @@ import {
   ContactIcon,
   BrainIcon,
   SparklesIcon,
+  MessagesSquareIcon,
   ShieldCheckIcon,
 } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
@@ -51,6 +52,7 @@ const BASE_NAV_ITEMS = [
   { href: "/members", label: "Members", icon: UsersRoundIcon },
   { href: "/coffee-chats", label: "Coffee Chats", icon: CoffeeIcon },
   { href: "/shoutouts", label: "Shoutouts", icon: MegaphoneIcon },
+  { href: "/chat-requests", label: "Chat Requests", icon: MessagesSquareIcon },
 ];
 
 export function AppShell({

@@ -20,10 +20,11 @@ values
   ('11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@cornell.edu', '', now(), now(), now()),
   ('22222222-2222-2222-2222-222222222222', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'member@cornell.edu', '', now(), now(), now());
 
-insert into profiles (id, email, full_name, role, status)
+insert into profiles (id, email, full_name, role, status, open_to_chats, chat_blurb)
 values
-  ('11111111-1111-1111-1111-111111111111', 'admin@cornell.edu', 'Ada Admin', 'admin', 'active'),
-  ('22222222-2222-2222-2222-222222222222', 'member@cornell.edu', 'Mo Member', 'edit', 'active');
+  ('11111111-1111-1111-1111-111111111111', 'admin@cornell.edu', 'Ada Admin', 'admin', 'active', false, null),
+  -- Opted in, because 0018 refuses a chat request aimed at someone who isn't.
+  ('22222222-2222-2222-2222-222222222222', 'member@cornell.edu', 'Mo Member', 'edit', 'active', true, 'Happy to talk hardware.');
 
 create or replace function become(p_user uuid, p_email text) returns void language plpgsql as $$
 begin
@@ -322,6 +323,80 @@ begin
 
   if v_rows <> 0 then raise exception 'FAIL: the shared-doc policy leaked to retros'; end if;
   raise notice 'PASS: 0 rows touched';
+end $$;
+
+\echo '--- 18. a student cannot read the members table at all ---'
+do $$
+declare v_seen int;
+begin
+  perform become_outsider('prospect@cornell.edu');
+  select count(*) into v_seen from profiles;
+  reset role;
+  -- Before 0018 this returned every member, with their emails and netids.
+  if v_seen <> 0 then raise exception 'FAIL: student read % profiles rows', v_seen; end if;
+  raise notice 'PASS: 0 rows visible';
+end $$;
+
+\echo '--- 19. a student CAN read the opted-in directory, and it has no email ---'
+do $$
+declare v_seen int; v_has_email boolean;
+begin
+  perform become_outsider('prospect@cornell.edu');
+  select count(*) into v_seen from chat_directory;
+  reset role;
+
+  if v_seen <> 1 then raise exception 'FAIL: directory showed % members, expected 1', v_seen; end if;
+
+  select exists (
+    select 1 from information_schema.columns
+    where table_schema = 'public' and table_name = 'chat_directory'
+      and column_name in ('email', 'netid')
+  ) into v_has_email;
+  if v_has_email then raise exception 'FAIL: chat_directory exposes email or netid'; end if;
+  raise notice 'PASS: one opted-in member, no contact details';
+end $$;
+
+\echo '--- 20. a student cannot ask a member who never opted in ---'
+do $$
+begin
+  perform become_outsider('prospect@cornell.edu');
+  begin
+    insert into chat_requests (student_email, student_name, prompt, profile_id)
+    values ('prospect@cornell.edu', 'Pat', 'hi', '11111111-1111-1111-1111-111111111111');
+    raise exception 'FAIL: request landed on a member who is not open to chats';
+  exception when insufficient_privilege then
+    raise notice 'PASS: blocked by RLS';
+  end;
+  reset role;
+end $$;
+
+\echo '--- 21. a signed-in non-Cornell account is not the student tier ---'
+do $$
+begin
+  perform become_outsider('someone@gmail.com');
+  begin
+    insert into chat_requests (student_email, student_name, prompt, profile_id)
+    values ('someone@gmail.com', 'Rando', 'let me in', '22222222-2222-2222-2222-222222222222');
+    raise exception 'FAIL: a non-Cornell account created a chat request';
+  exception when insufficient_privilege then
+    raise notice 'PASS: blocked by RLS';
+  end;
+  reset role;
+end $$;
+
+\echo '--- 22. a student cannot ask the same member twice while one is open ---'
+do $$
+begin
+  perform become_outsider('prospect@cornell.edu');
+  begin
+    -- Check 4 already created a pending request to this member.
+    insert into chat_requests (student_email, student_name, prompt, profile_id)
+    values ('prospect@cornell.edu', 'Pat Prospect', 'again?', '22222222-2222-2222-2222-222222222222');
+    raise exception 'FAIL: duplicate open request allowed';
+  exception when unique_violation then
+    raise notice 'PASS: blocked by the partial unique index';
+  end;
+  reset role;
 end $$;
 
 \echo 'ALL CHECKS PASSED'

@@ -32,11 +32,23 @@ export async function GET(request: Request) {
   const seedAdminEmail = process.env.SEED_ADMIN_EMAIL?.toLowerCase();
   const isSeedAdmin = email.toLowerCase() === seedAdminEmail;
 
-  // No self-serve signup: the only ways in are (1) an admin already invited
-  // this email (a `profiles` row exists), or (2) this is the one bootstrap
-  // admin identity configured out-of-band via SEED_ADMIN_EMAIL — every other
-  // first-time Google sign-in gets turned away here, Cornell email or not.
+  // No self-serve signup *into the club*: the only ways to become a member
+  // are (1) an admin already invited this email (a `profiles` row exists), or
+  // (2) this is the one bootstrap admin identity configured out-of-band via
+  // SEED_ADMIN_EMAIL.
+  //
+  // A Cornell address with no invite is now let through as the student tier
+  // rather than turned away — a prospective member who wants to ask someone
+  // for a coffee chat. They are given a session and NO profiles row, which is
+  // the entire definition of the tier: getSession() returns null for them, so
+  // every members-only page and action already treats them as signed out, and
+  // app_user_role() is null in the database, so RLS does too. All they can
+  // reach is /matching. Any non-Cornell address with no invite is still
+  // turned away exactly as before.
   if (!existing && !isSeedAdmin) {
+    if (email.toLowerCase().endsWith("@cornell.edu")) {
+      return NextResponse.redirect(`${origin}/matching`);
+    }
     await supabase.auth.signOut();
     return NextResponse.redirect(`${origin}/login?error=not_invited`);
   }
