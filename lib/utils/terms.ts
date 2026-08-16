@@ -12,3 +12,22 @@ export function getEventTerm(dateStr: string): Term {
     ? { key: `F${yy}`, season: "Fall", color: "var(--coral)" }
     : { key: `S${yy}`, season: "Spring", color: "var(--teal)" };
 }
+
+// Coffee chats, shoutouts and attendance all store a semester, unlike events
+// which derive theirs from a date. They use this same F25/S26 key so one
+// person's bingo board, their shoutouts and their attendance all agree on
+// which semester they belong to, and so a term seal renders identically
+// wherever it appears.
+export function currentTermKey(today: Date = new Date()): string {
+  const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-01`;
+  return getEventTerm(dateStr).key;
+}
+
+export function termFromKey(key: string): Term {
+  const season = key.startsWith("F") ? "Fall" : "Spring";
+  return {
+    key,
+    season,
+    color: season === "Fall" ? "var(--coral)" : "var(--teal)",
+  };
+}

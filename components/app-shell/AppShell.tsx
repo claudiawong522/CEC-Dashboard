@@ -12,6 +12,7 @@ import {
   NotebookPenIcon,
   UsersIcon,
   UsersRoundIcon,
+  CoffeeIcon,
   ShieldCheckIcon,
 } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
@@ -41,6 +42,7 @@ const BASE_NAV_ITEMS = [
   { href: "/photos", label: "Gallery", icon: ImageIcon },
   { href: "/notes", label: "Notes", icon: NotebookPenIcon },
   { href: "/members", label: "Members", icon: UsersRoundIcon },
+  { href: "/coffee-chats", label: "Coffee Chats", icon: CoffeeIcon },
 ];
 
 export function AppShell({
