@@ -4,16 +4,20 @@ import { NotesEditor } from "@/components/notes/NotesEditor";
 import { Sticker } from "@/components/stickers/Sticker";
 import { StarPolygon, HighlighterBar } from "@/components/stickers/shapes";
 
-const NOTES_DOC_ID = "00000000-0000-0000-0000-000000000001";
+import { saveNotesDoc } from "@/lib/actions/notes";
+import { CLUB_NOTES_ID } from "@/lib/types/brain";
 
 export default async function NotesPage() {
   const supabase = await createClient();
   const session = await getSession();
 
+  // Since 0017 this doc is a brain note of kind 'doc', so everything written
+  // here is searchable and answerable rather than sitting in a table nothing
+  // else reads.
   const { data: doc } = await supabase
-    .from("notes_doc")
+    .from("brain_notes")
     .select("content")
-    .eq("id", NOTES_DOC_ID)
+    .eq("id", CLUB_NOTES_ID)
     .maybeSingle();
 
   const editable = session?.profile.role === "edit" || session?.profile.role === "admin";
@@ -36,7 +40,7 @@ export default async function NotesPage() {
 
       <div className="relative z-10">
         <span className="absolute top-0.5 bottom-0.5 -left-4 w-[2.5px] rounded-full bg-amber/50" />
-        <NotesEditor initialContent={content} editable={editable} />
+        <NotesEditor initialContent={content} editable={editable} onSave={saveNotesDoc} />
       </div>
 
       <div className="flex items-center gap-2.5">

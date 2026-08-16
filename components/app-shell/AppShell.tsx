@@ -16,6 +16,7 @@ import {
   MegaphoneIcon,
   ClipboardCheckIcon,
   ContactIcon,
+  BrainIcon,
   ShieldCheckIcon,
 } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
@@ -44,6 +45,7 @@ const BASE_NAV_ITEMS = [
   { href: "/past-events", label: "Past Events", icon: ArchiveIcon },
   { href: "/photos", label: "Gallery", icon: ImageIcon },
   { href: "/notes", label: "Notes", icon: NotebookPenIcon },
+  { href: "/brain", label: "Brain", icon: BrainIcon },
   { href: "/members", label: "Members", icon: UsersRoundIcon },
   { href: "/coffee-chats", label: "Coffee Chats", icon: CoffeeIcon },
   { href: "/shoutouts", label: "Shoutouts", icon: MegaphoneIcon },

@@ -252,4 +252,76 @@ begin
   raise notice 'PASS: contact and timeline survived';
 end $$;
 
+\echo '--- 15. the editor document keeps the searchable body in sync ---'
+do $$
+declare v_note uuid; v_body text; v_hits int;
+begin
+  insert into brain_notes (kind, title, body, content, visibility)
+  values (
+    'note', 'Sponsorship playbook', '',
+    '[{"type":"paragraph","content":[{"type":"text","text":"Ask sponsors in August."}]},
+      {"type":"bulletListItem","content":[{"type":"text","text":"Catering quotes need two weeks."}]}]'::jsonb,
+    'club'
+  ) returning id into v_note;
+
+  select body into v_body from brain_notes where id = v_note;
+  if v_body not like '%Ask sponsors in August.%' then
+    raise exception 'FAIL: body not derived from the document, got %', v_body;
+  end if;
+  -- Nested blocks count too, not just top-level paragraphs.
+  if v_body not like '%Catering quotes need two weeks.%' then
+    raise exception 'FAIL: nested block text was dropped, got %', v_body;
+  end if;
+
+  -- And the search index followed it, without the app flattening anything.
+  select count(*) into v_hits from brain_notes
+  where id = v_note and search_vector @@ websearch_to_tsquery('english', 'catering quote');
+  if v_hits <> 1 then raise exception 'FAIL: derived body is not searchable'; end if;
+
+  -- Editing the document rewrites the body rather than leaving the old text.
+  update brain_notes
+  set content = '[{"type":"paragraph","content":[{"type":"text","text":"Ask sponsors in June instead."}]}]'::jsonb
+  where id = v_note;
+  select body into v_body from brain_notes where id = v_note;
+  if v_body like '%August%' then raise exception 'FAIL: stale body survived an edit'; end if;
+  raise notice 'PASS: body tracks the document, including on edit';
+end $$;
+
+\echo '--- 16. the club doc survived the move and is still shared-editable ---'
+do $$
+declare v_kind text; v_rows int;
+begin
+  select kind into v_kind from brain_notes where id = '00000000-0000-0000-0000-000000000002';
+  if v_kind is distinct from 'doc' then raise exception 'FAIL: club doc missing after 0017'; end if;
+
+  -- An edit-role member is not its author, and 0012's policy is
+  -- author-or-admin, so without the shared-doc policy this writes 0 rows.
+  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
+  update brain_notes
+  set content = '[{"type":"paragraph","content":[{"type":"text","text":"Everyone can write here."}]}]'::jsonb
+  where id = '00000000-0000-0000-0000-000000000002';
+  get diagnostics v_rows = ROW_COUNT;
+  reset role;
+
+  if v_rows <> 1 then raise exception 'FAIL: an edit member could not write to the shared doc'; end if;
+  raise notice 'PASS: club doc is a brain note and stayed shared-editable';
+end $$;
+
+\echo '--- 17. a member still cannot edit someone else''s retro ---'
+do $$
+declare v_note uuid; v_rows int;
+begin
+  insert into brain_notes (author_id, kind, title, body, visibility)
+  values ('11111111-1111-1111-1111-111111111111', 'retro', 'Demo Day retro', 'went fine', 'club')
+  returning id into v_note;
+
+  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
+  update brain_notes set title = 'hijacked' where id = v_note;
+  get diagnostics v_rows = ROW_COUNT;
+  reset role;
+
+  if v_rows <> 0 then raise exception 'FAIL: the shared-doc policy leaked to retros'; end if;
+  raise notice 'PASS: 0 rows touched';
+end $$;
+
 \echo 'ALL CHECKS PASSED'
