@@ -219,4 +219,37 @@ begin
   raise notice 'PASS: stemmed search matched';
 end $$;
 
+\echo '--- 13. a contact can only be named once on the same pitch ---'
+do $$
+declare v_idea uuid; v_contact uuid;
+begin
+  insert into external_ideas (pitch) values ('Panel on hardware startups') returning id into v_idea;
+  select id into v_contact from outreach_contacts where name = 'Secret Speaker';
+
+  insert into external_idea_people (idea_id, contact_id) values (v_idea, v_contact);
+  begin
+    insert into external_idea_people (idea_id, contact_id) values (v_idea, v_contact);
+    raise exception 'FAIL: same contact added to a pitch twice';
+  exception when unique_violation then
+    raise notice 'PASS: blocked by the unique index';
+  end;
+end $$;
+
+\echo '--- 14. taking someone off a pitch keeps the contact and their history ---'
+do $$
+declare v_contact uuid; v_still int; v_interactions int;
+begin
+  select c.id into v_contact from outreach_contacts c where c.name = 'Secret Speaker';
+  insert into interactions (contact_id, profile_id, kind, occurred_at, summary)
+  values (v_contact, '11111111-1111-1111-1111-111111111111', 'email', now(), 'asked about the panel');
+
+  delete from external_idea_people where contact_id = v_contact;
+
+  select count(*) into v_still from outreach_contacts where id = v_contact;
+  select count(*) into v_interactions from interactions where contact_id = v_contact;
+  if v_still <> 1 then raise exception 'FAIL: contact was destroyed with the link'; end if;
+  if v_interactions <> 1 then raise exception 'FAIL: history was destroyed'; end if;
+  raise notice 'PASS: contact and timeline survived';
+end $$;
+
 \echo 'ALL CHECKS PASSED'

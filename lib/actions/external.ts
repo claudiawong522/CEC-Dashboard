@@ -35,9 +35,18 @@ export async function createIdea(name: string) {
     .single();
   if (error || !idea) throw new Error(error?.message ?? "Failed to add lead");
 
+  // Since 0016 a person on a pitch is a pointer at a CRM contact, so the
+  // quick-add's name creates the contact and the join row points at it.
+  const { data: contact, error: contactError } = await supabase
+    .from("outreach_contacts")
+    .insert({ name: parsed.name, type: "speaker", visibility: "exec", source: "external pipeline" })
+    .select("id")
+    .single();
+  if (contactError || !contact) throw new Error(contactError?.message ?? "Failed to add contact");
+
   const { error: personError } = await supabase
     .from("external_idea_people")
-    .insert({ idea_id: idea.id, name: parsed.name });
+    .insert({ idea_id: idea.id, contact_id: contact.id });
   if (personError) throw new Error(personError.message);
 
   revalidatePath("/external");
@@ -124,31 +133,66 @@ export async function deleteIdeaAndReturnToList(ideaId: string) {
   redirect("/external", "replace");
 }
 
+// Adds an empty stub the admin then types into, exactly as before — the stub
+// is now a blank CRM contact plus a join row rather than a blank name on the
+// join row.
 export async function addPerson(ideaId: string) {
   await requireRole("admin");
   const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("external_idea_people")
-    .insert({ idea_id: ideaId, name: "" })
+
+  const { data: contact, error: contactError } = await supabase
+    .from("outreach_contacts")
+    .insert({ name: "", type: "speaker", visibility: "exec", source: "external pipeline" })
     .select("id")
     .single();
-  if (error || !data) throw new Error(error?.message ?? "Failed to add person");
+  if (contactError || !contact) throw new Error(contactError?.message ?? "Failed to add person");
+
+  const { data, error } = await supabase
+    .from("external_idea_people")
+    .insert({ idea_id: ideaId, contact_id: contact.id })
+    .select("id")
+    .single();
+  if (error || !data) {
+    // Don't leave a nameless contact behind if the link failed.
+    await supabase.from("outreach_contacts").delete().eq("id", contact.id);
+    throw new Error(error?.message ?? "Failed to add person");
+  }
+
   revalidateIdea(ideaId);
-  return data.id as string;
+  // Both ids come back: the join row's, which the detail screen keys and
+  // edits by, and the contact's, so the optimistic row it inserts locally is
+  // the same shape as one that came from the database.
+  return { id: data.id as string, contactId: contact.id as string };
 }
 
+// Editing a person on a pitch edits the contact behind it, so the same edit
+// shows up in the CRM and on that person's interaction timeline. `personId`
+// is still the join row's id, which keeps the detail screen unchanged; the
+// contact it points at is resolved here.
 export async function updatePerson(ideaId: string, personId: string, values: { name: string; email: string }) {
   await requireRole("admin");
   const parsed = personSchema.parse(values);
   const supabase = await createClient();
-  const { error } = await supabase
+
+  const { data: link } = await supabase
     .from("external_idea_people")
+    .select("contact_id")
+    .eq("id", personId)
+    .maybeSingle<{ contact_id: string }>();
+  if (!link) throw new Error("That person is no longer on this lead");
+
+  const { error } = await supabase
+    .from("outreach_contacts")
     .update({ name: parsed.name, email: parsed.email || null })
-    .eq("id", personId);
+    .eq("id", link.contact_id);
   if (error) throw new Error(error.message);
   revalidateIdea(ideaId);
+  revalidatePath("/crm");
 }
 
+// Removes the person from this pitch only. The contact survives, along with
+// whatever has already been said to them — taking someone off a panel idea
+// is not a reason to forget the conversation.
 export async function removePerson(ideaId: string, personId: string) {
   await requireRole("admin");
   const supabase = await createClient();
