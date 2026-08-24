@@ -20,8 +20,8 @@ grant select, insert, update, delete on all tables in schema public to authentic
 do $$
 declare
   v_fixtures uuid[] := array[
-    '11111111-1111-1111-1111-111111111111'::uuid,
-    '22222222-2222-2222-2222-222222222222'::uuid
+    '11111111-1111-4111-8111-111111111111'::uuid,
+    '22222222-2222-4222-8222-222222222222'::uuid
   ];
 begin
   delete from interactions where profile_id = any(v_fixtures);
@@ -55,16 +55,23 @@ end $$;
 
 -- Two members and one outsider. auth.users rows first, since profiles.id
 -- references them.
+--
+-- The ids are real version-4 UUIDs (note the `4` and `8` nibbles) rather than
+-- the more readable all-ones/all-twos. Zod 4's .uuid() enforces the RFC 4122
+-- version and variant bits, so a fixture like 1111-1111-1111 is rejected by
+-- every schema in lib/validation the moment one of these rows reaches a form
+-- picker -- which they do, because this harness clears its fixtures at the
+-- start of a run rather than the end, leaving them in the local database.
 insert into auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, created_at, updated_at)
 values
-  ('11111111-1111-1111-1111-111111111111', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@cornell.edu', '', now(), now(), now()),
-  ('22222222-2222-2222-2222-222222222222', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'member@cornell.edu', '', now(), now(), now());
+  ('11111111-1111-4111-8111-111111111111', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@cornell.edu', '', now(), now(), now()),
+  ('22222222-2222-4222-8222-222222222222', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'member@cornell.edu', '', now(), now(), now());
 
 insert into profiles (id, email, full_name, role, status, open_to_chats, chat_blurb)
 values
-  ('11111111-1111-1111-1111-111111111111', 'admin@cornell.edu', 'Ada Admin', 'admin', 'active', false, null),
+  ('11111111-1111-4111-8111-111111111111', 'admin@cornell.edu', 'Ada Admin', 'admin', 'active', false, null),
   -- Opted in, because 0018 refuses a chat request aimed at someone who isn't.
-  ('22222222-2222-2222-2222-222222222222', 'member@cornell.edu', 'Mo Member', 'edit', 'active', true, 'Happy to talk hardware.');
+  ('22222222-2222-4222-8222-222222222222', 'member@cornell.edu', 'Mo Member', 'edit', 'active', true, 'Happy to talk hardware.');
 
 create or replace function become(p_user uuid, p_email text) returns void language plpgsql as $$
 begin
@@ -77,15 +84,15 @@ create or replace function become_outsider(p_email text) returns void language p
 begin
   perform set_config('role', 'authenticated', true);
   perform set_config('request.jwt.claims',
-    json_build_object('sub', '33333333-3333-3333-3333-333333333333', 'role', 'authenticated', 'email', p_email)::text, true);
+    json_build_object('sub', '33333333-3333-4333-8333-333333333333', 'role', 'authenticated', 'email', p_email)::text, true);
 end $$;
 
 \echo '--- 1. a member cannot promote themselves to admin ---'
 do $$
 begin
-  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
   begin
-    update profiles set role = 'admin' where id = '22222222-2222-2222-2222-222222222222';
+    update profiles set role = 'admin' where id = '22222222-2222-4222-8222-222222222222';
     raise exception 'FAIL: member escalated to admin';
   exception when raise_exception then
     if sqlerrm like 'FAIL:%' then raise; end if;
@@ -98,9 +105,9 @@ end $$;
 do $$
 declare v_about text;
 begin
-  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
-  update profiles set about = 'builds robots' where id = '22222222-2222-2222-2222-222222222222';
-  select about into v_about from profiles where id = '22222222-2222-2222-2222-222222222222';
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
+  update profiles set about = 'builds robots' where id = '22222222-2222-4222-8222-222222222222';
+  select about into v_about from profiles where id = '22222222-2222-4222-8222-222222222222';
   reset role;
   if v_about is distinct from 'builds robots' then raise exception 'FAIL: own bio not saved'; end if;
   raise notice 'PASS: own bio saved';
@@ -110,8 +117,8 @@ end $$;
 do $$
 declare v_rows int;
 begin
-  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
-  update profiles set about = 'hacked' where id = '11111111-1111-1111-1111-111111111111';
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
+  update profiles set about = 'hacked' where id = '11111111-1111-4111-8111-111111111111';
   get diagnostics v_rows = ROW_COUNT;
   reset role;
   if v_rows <> 0 then raise exception 'FAIL: wrote to another profile'; end if;
@@ -127,7 +134,7 @@ begin
   if v_role is not null then raise exception 'FAIL: outsider resolved a role: %', v_role; end if;
 
   insert into chat_requests (student_email, student_name, prompt, profile_id)
-  values ('prospect@cornell.edu', 'Pat Prospect', 'How do I join?', '22222222-2222-2222-2222-222222222222');
+  values ('prospect@cornell.edu', 'Pat Prospect', 'How do I join?', '22222222-2222-4222-8222-222222222222');
   get diagnostics v_rows = ROW_COUNT;
   reset role;
   if v_rows <> 1 then raise exception 'FAIL: student could not request a chat'; end if;
@@ -140,7 +147,7 @@ begin
   perform become_outsider('prospect@cornell.edu');
   begin
     insert into chat_requests (student_email, student_name, prompt, profile_id)
-    values ('someone.else@cornell.edu', 'Not Them', 'hi', '22222222-2222-2222-2222-222222222222');
+    values ('someone.else@cornell.edu', 'Not Them', 'hi', '22222222-2222-4222-8222-222222222222');
     raise exception 'FAIL: student impersonated another student';
   exception when insufficient_privilege then
     raise notice 'PASS: blocked by RLS';
@@ -167,11 +174,11 @@ begin
   insert into coffee_chat_categories (name, semester, board_position)
   values ('Another subteam', 'F26', 0) returning id into v_cat;
 
-  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
   insert into coffee_chats (submitter_id, partner_id, category_id, selfie_url, semester)
-  values ('22222222-2222-2222-2222-222222222222', '11111111-1111-1111-1111-111111111111', v_cat, 'p/1.jpg', 'F26');
+  values ('22222222-2222-4222-8222-222222222222', '11111111-1111-4111-8111-111111111111', v_cat, 'p/1.jpg', 'F26');
 
-  update coffee_chats set status = 'approved' where submitter_id = '22222222-2222-2222-2222-222222222222';
+  update coffee_chats set status = 'approved' where submitter_id = '22222222-2222-4222-8222-222222222222';
   get diagnostics v_rows = ROW_COUNT;
   reset role;
   if v_rows <> 0 then raise exception 'FAIL: member self-approved'; end if;
@@ -185,7 +192,7 @@ begin
   insert into outreach_contacts (name, type, visibility) values ('Secret Speaker', 'speaker', 'exec');
   insert into outreach_contacts (name, type, visibility) values ('Public Alum', 'speaker', 'club');
 
-  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
   select count(*) into v_seen from outreach_contacts;
   reset role;
   if v_seen <> 1 then raise exception 'FAIL: member saw % contacts, expected 1', v_seen; end if;
@@ -236,9 +243,9 @@ declare v_contact uuid; v_touched timestamptz;
 begin
   select id into v_contact from outreach_contacts where name = 'Public Alum';
   insert into interactions (contact_id, profile_id, kind, occurred_at, summary)
-  values (v_contact, '11111111-1111-1111-1111-111111111111', 'email', '2026-06-01', 'first note');
+  values (v_contact, '11111111-1111-4111-8111-111111111111', 'email', '2026-06-01', 'first note');
   insert into interactions (contact_id, profile_id, kind, occurred_at, summary)
-  values (v_contact, '11111111-1111-1111-1111-111111111111', 'email', '2026-01-01', 'backfilled older note');
+  values (v_contact, '11111111-1111-4111-8111-111111111111', 'email', '2026-01-01', 'backfilled older note');
 
   select last_touched_at into v_touched from outreach_contacts where id = v_contact;
   if v_touched::date <> date '2026-06-01' then
@@ -282,7 +289,7 @@ declare v_contact uuid; v_still int; v_interactions int;
 begin
   select c.id into v_contact from outreach_contacts c where c.name = 'Secret Speaker';
   insert into interactions (contact_id, profile_id, kind, occurred_at, summary)
-  values (v_contact, '11111111-1111-1111-1111-111111111111', 'email', now(), 'asked about the panel');
+  values (v_contact, '11111111-1111-4111-8111-111111111111', 'email', now(), 'asked about the panel');
 
   delete from external_idea_people where contact_id = v_contact;
 
@@ -337,7 +344,7 @@ begin
 
   -- An edit-role member is not its author, and 0012's policy is
   -- author-or-admin, so without the shared-doc policy this writes 0 rows.
-  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
   update brain_notes
   set content = '[{"type":"paragraph","content":[{"type":"text","text":"Everyone can write here."}]}]'::jsonb
   where id = '00000000-0000-0000-0000-000000000002';
@@ -353,10 +360,10 @@ do $$
 declare v_note uuid; v_rows int;
 begin
   insert into brain_notes (author_id, kind, title, body, visibility)
-  values ('11111111-1111-1111-1111-111111111111', 'retro', 'Demo Day retro', 'went fine', 'club')
+  values ('11111111-1111-4111-8111-111111111111', 'retro', 'Demo Day retro', 'went fine', 'club')
   returning id into v_note;
 
-  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
   update brain_notes set title = 'hijacked' where id = v_note;
   get diagnostics v_rows = ROW_COUNT;
   reset role;
@@ -402,7 +409,7 @@ begin
   perform become_outsider('prospect@cornell.edu');
   begin
     insert into chat_requests (student_email, student_name, prompt, profile_id)
-    values ('prospect@cornell.edu', 'Pat', 'hi', '11111111-1111-1111-1111-111111111111');
+    values ('prospect@cornell.edu', 'Pat', 'hi', '11111111-1111-4111-8111-111111111111');
     raise exception 'FAIL: request landed on a member who is not open to chats';
   exception when insufficient_privilege then
     raise notice 'PASS: blocked by RLS';
@@ -416,7 +423,7 @@ begin
   perform become_outsider('someone@gmail.com');
   begin
     insert into chat_requests (student_email, student_name, prompt, profile_id)
-    values ('someone@gmail.com', 'Rando', 'let me in', '22222222-2222-2222-2222-222222222222');
+    values ('someone@gmail.com', 'Rando', 'let me in', '22222222-2222-4222-8222-222222222222');
     raise exception 'FAIL: a non-Cornell account created a chat request';
   exception when insufficient_privilege then
     raise notice 'PASS: blocked by RLS';
@@ -431,7 +438,7 @@ begin
   begin
     -- Check 4 already created a pending request to this member.
     insert into chat_requests (student_email, student_name, prompt, profile_id)
-    values ('prospect@cornell.edu', 'Pat Prospect', 'again?', '22222222-2222-2222-2222-222222222222');
+    values ('prospect@cornell.edu', 'Pat Prospect', 'again?', '22222222-2222-4222-8222-222222222222');
     raise exception 'FAIL: duplicate open request allowed';
   exception when unique_violation then
     raise notice 'PASS: blocked by the partial unique index';
@@ -461,7 +468,7 @@ declare
   v_seen int;
   v_touched int;
 begin
-  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
 
   select count(*) into v_seen from guests;
   if v_seen < 1 then
