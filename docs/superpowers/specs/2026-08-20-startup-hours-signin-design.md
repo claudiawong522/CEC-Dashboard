@@ -97,13 +97,19 @@ public page goes through a server action at all.
 
 ## Surfaces
 
-**Public sign in** at `/checkin`, added to `PUBLIC_PATHS` in `proxy.ts`. The host
-view is `/signins` and the two deliberately share no prefix: `PUBLIC_PATHS` is
-matched with `startsWith`, so a host view named `/checkin-board` would have
-published the guest list. Resolves
-tonight's event, shows the form, confirms with the person's name so a host can
-glance at the screen. Recognises a returning email and skips straight to the per
-night question.
+**Public sign in** at `/checkin`, added to `PUBLIC_PATHS` in `proxy.ts`. It
+resolves tonight's event, shows the form, and recognises a returning email so it
+can skip straight to the per night question.
+
+The host view is `/signins`, and the two deliberately share no prefix:
+`PUBLIC_PATHS` is matched with `startsWith`, so a host view named
+`/checkin-board` would have published the guest list.
+
+**The confirmation is the food pass.** It is a card in the brand's green with a
+thick outline, readable at arm's length across a room, because what actually
+happens at 7pm is that someone holds up their phone at the food table. That is
+also why it has no way back to the form: one phone, one sign in, and a green
+screen that cannot be cleared by a stray tap while it is being shown.
 
 **Kiosk mode**, the same route with a flag that keeps the form short, name and
 email only, and returns to a blank form after each submission instead of a personal
