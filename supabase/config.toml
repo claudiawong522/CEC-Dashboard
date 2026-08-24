@@ -160,7 +160,15 @@ site_url = "http://127.0.0.1:3000"
 # The public URL that Auth serves on. Defaults to the API external URL with `/auth/v1` appended.
 # external_url = ""
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
-additional_redirect_urls = ["https://127.0.0.1:3000"]
+additional_redirect_urls = [
+  "http://127.0.0.1:3000/**",
+  "http://localhost:3000/**",
+  # `next dev` falls through to 3001 whenever 3000 is already taken, and a
+  # redirect URL that is not on this list is rejected after Google has already
+  # authenticated, which reads as "sign in silently did nothing".
+  "http://127.0.0.1:3001/**",
+  "http://localhost:3001/**",
+]
 # How long tokens are valid for, in seconds. Defaults to 3600 (1 hour), maximum 604,800 (1 week).
 jwt_expiry = 3600
 # JWT issuer URL. If not set, defaults to auth.external_url.
@@ -319,6 +327,33 @@ max_frequency = "5s"
 # Use an external OAuth provider. The full list of providers are: `apple`, `azure`, `bitbucket`,
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin_oidc`, `notion`, `twitch`,
 # `twitter`, `x`, `slack`, `spotify`, `workos`, `zoom`.
+# Google is the only door into this app: app/login/page.tsx offers no other
+# provider, and app/auth/callback/route.ts reads the name off the Google
+# profile. The hosted project has it configured in the Supabase dashboard;
+# without this block the local stack answers a sign-in attempt with
+# {"error_code":"validation_failed","msg":"Unsupported provider: provider is
+# not enabled"}.
+#
+# Both values are required for local sign in to work. Put them in
+# supabase/.env (gitignored, read by the CLI) or export them before
+# `supabase start`, then restart the stack:
+#
+#   SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID=...apps.googleusercontent.com
+#   SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET=...
+#
+# Use the same Google Cloud OAuth client production uses, with
+# http://127.0.0.1:54321/auth/v1/callback added to its authorised redirect
+# URIs. Never paste the secret into this file: it is committed.
+[auth.external.google]
+enabled = true
+client_id = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID)"
+secret = "env(SUPABASE_AUTH_EXTERNAL_GOOGLE_SECRET)"
+redirect_uri = ""
+url = ""
+# Required for local sign in with Google auth, per the note on the Apple block
+# below: the local flow does not carry a nonce Google will echo back.
+skip_nonce_check = true
+
 [auth.external.apple]
 enabled = false
 client_id = ""
