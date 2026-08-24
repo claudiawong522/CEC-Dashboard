@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { setEventSignIn } from "@/lib/actions/signin";
+import { composition } from "@/lib/utils/signin-copy";
 import type { SignInBoardRow } from "@/lib/types/signin";
 
 // A host is watching this while standing at the door, so it refreshes itself
@@ -97,7 +98,7 @@ export function SignInBoard({
             {roster.length}
           </span>
           <span className="font-sans text-[12.5px] text-faint">
-            {newcomers > 0 ? `${newcomers} first-timer${newcomers === 1 ? "" : "s"}` : "all returning"}
+            {composition(roster.length, newcomers)}
           </span>
         </div>
       </div>
