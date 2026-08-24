@@ -58,7 +58,17 @@ export async function deleteFile(fileId: string, eventId: string) {
     .single();
 
   if (file) {
-    await supabase.storage.from(file.bucket).remove([file.storage_path]);
+    const { data: removed, error: removeError } = await supabase.storage
+      .from(file.bucket)
+      .remove([file.storage_path]);
+    // Same silent-success trap as deleteEvent: an unmatched path comes back as
+    // an empty array rather than an error.
+    if (removeError || !removed?.length) {
+      console.error(
+        `[files] couldn't remove ${file.storage_path} from ${file.bucket}:`,
+        removeError?.message ?? "no error reported, the object did not match",
+      );
+    }
     await supabase.from("event_files").delete().eq("id", fileId);
   }
 
