@@ -28,6 +28,10 @@ begin
   delete from interactions where contact_id in (
     select id from outreach_contacts where name in ('Secret Speaker', 'Public Alum')
   );
+  delete from guest_signins where guest_id in (
+    select id from guests where email in ('walkin@example.com', 'member@cornell.edu')
+  );
+  delete from guests where email in ('walkin@example.com', 'member@cornell.edu');
   delete from ask_logs where profile_id = any(v_fixtures);
   delete from attendance where profile_id = any(v_fixtures) or recorded_by = any(v_fixtures);
   delete from shoutouts where giver_id = any(v_fixtures) or receiver_id = any(v_fixtures);
@@ -433,6 +437,71 @@ begin
     raise notice 'PASS: blocked by the partial unique index';
   end;
   reset role;
+end $$;
+
+\echo '--- 23. a student cannot read the guest list ---'
+do $$
+declare v_seen int;
+begin
+  -- Written as the table owner, which is how the service-role sign in action
+  -- writes it in production.
+  insert into guests (email, full_name) values ('walkin@example.com', 'Wanda Walkin');
+
+  perform become_outsider('prospect@cornell.edu');
+  select count(*) into v_seen from guests;
+  reset role;
+
+  if v_seen <> 0 then raise exception 'FAIL: a student saw % guest rows', v_seen; end if;
+  raise notice 'PASS: guests are members only';
+end $$;
+
+\echo '--- 24. a member reads the guest list but cannot rewrite it ---'
+do $$
+declare
+  v_seen int;
+  v_touched int;
+begin
+  perform become('22222222-2222-2222-2222-222222222222', 'member@cornell.edu');
+
+  select count(*) into v_seen from guests;
+  if v_seen < 1 then
+    reset role;
+    raise exception 'FAIL: a member could not read the guest list';
+  end if;
+
+  -- An UPDATE whose USING clause matches nothing is not an error, it is a
+  -- no-op. Counting the rows it touched is the only way to tell "blocked"
+  -- from "worked" here; an exception test would pass whether or not the
+  -- policy existed.
+  update guests set full_name = 'Tampered' where email = 'walkin@example.com';
+  get diagnostics v_touched = row_count;
+  if v_touched <> 0 then
+    reset role;
+    raise exception 'FAIL: a non-admin member rewrote % guest rows', v_touched;
+  end if;
+
+  -- An INSERT that fails its WITH CHECK does raise, so this half is a
+  -- straight exception test.
+  begin
+    insert into guests (email, full_name) values ('sneaky@example.com', 'Sneaky');
+    reset role;
+    raise exception 'FAIL: a non-admin member created a guest';
+  exception when insufficient_privilege then
+    raise notice 'PASS: read yes, write no';
+  end;
+
+  reset role;
+end $$;
+
+\echo '--- 25. a student cannot read who signed in ---'
+do $$
+declare v_seen int;
+begin
+  perform become_outsider('prospect@cornell.edu');
+  select count(*) into v_seen from guest_signins;
+  reset role;
+  if v_seen <> 0 then raise exception 'FAIL: a student saw % sign in rows', v_seen; end if;
+  raise notice 'PASS: sign ins are members only';
 end $$;
 
 \echo 'ALL CHECKS PASSED'
