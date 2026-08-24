@@ -1,7 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/signout"];
+// `/checkin` is the walk-in sign in: no account, no session, by design.
+// Matched with startsWith below, which is why the members-only host view is
+// named `/signins` and not `/checkin-board`: a shared prefix here would have
+// quietly published the guest list.
+const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/signout", "/checkin"];
 
 // Belt-and-suspenders alongside proxyConfig.matcher below: static asset
 // requests (CSS/JS chunks, images, fonts) must never hit the auth check —

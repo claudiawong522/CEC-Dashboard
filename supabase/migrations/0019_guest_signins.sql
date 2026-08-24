@@ -99,3 +99,24 @@ create policy "guest_signins_write_admin"
   on guest_signins for all to authenticated
   using (app_user_role() = 'admin')
   with check (app_user_role() = 'admin');
+
+-- ---------------------------------------------------------------------------
+-- Grants for the public path
+-- ---------------------------------------------------------------------------
+-- Said out loud rather than inherited. Every other table in this schema leans
+-- on Supabase Cloud's default privileges, which quietly grant service_role;
+-- the local stack image does not, so the walk-in sign in works in production
+-- and returns "permission denied for table events" on a laptop. Since this is
+-- the one feature in the app whose entire write path is the service role, the
+-- privilege it needs belongs in the migration where it can be read.
+--
+-- Note what is absent: `anon`. It has zero grants and zero policies on this
+-- project and that is the reason the public page goes through a server action
+-- at all.
+grant select, insert, update on guests to service_role;
+grant select, insert on guest_signins to service_role;
+
+-- Reads the service role already performs, made explicit for the same reason:
+-- resolving tonight's event, and matching a typed email to a member.
+grant select on events to service_role;
+grant select on profiles to service_role;
