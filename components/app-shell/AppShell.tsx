@@ -15,6 +15,7 @@ import {
   CoffeeIcon,
   MegaphoneIcon,
   ClipboardCheckIcon,
+  DoorOpenIcon,
   ContactIcon,
   BrainIcon,
   SparklesIcon,
@@ -74,6 +75,7 @@ export function AppShell({
       ? [
           ...BASE_NAV_ITEMS,
           { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
+          { href: "/signins", label: "Sign ins", icon: DoorOpenIcon },
           { href: "/interviews", label: "Interviews", icon: UserRoundCheckIcon },
           { href: "/crm", label: "CRM", icon: ContactIcon },
           { href: "/agent", label: "Agent", icon: BotIcon },
@@ -86,7 +88,10 @@ export function AppShell({
           // (alumni, anyone who should read without writing) doesn't get the
           // nav item and the page redirects them away too.
           ...(profile.role === "edit"
-            ? [{ href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon }]
+            ? [
+                { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
+                { href: "/signins", label: "Sign ins", icon: DoorOpenIcon },
+              ]
             : []),
           { href: "/admin", label: "Admin", icon: ShieldCheckIcon },
         ];

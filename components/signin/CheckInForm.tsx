@@ -106,27 +106,38 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
 
   if (step === "done" && confirmation) {
     return (
-      <div className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
-        <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
-          signed in
+      /* Deliberately loud. This screen gets held up at arm's length in front
+         of whoever is guarding the food, so the whole card is the signal: a
+         thick green outline readable across a room, not a small tick that has
+         to be squinted at in a queue. --teal is the brand's green; a new one
+         would only make the app less consistent to say the same thing. */
+      <div className="flex flex-col items-center gap-[13px] rounded-[14px] border-[3px] border-teal bg-teal/[0.07] p-[27px] text-center shadow-[0_0_0_6px_rgba(63,167,137,0.12)]">
+        <span
+          aria-hidden
+          className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-teal"
+        >
+          <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="white" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 12.5l5.5 5.5L20 7" />
+          </svg>
         </span>
-        <p className="font-sans text-[23px] leading-[1.3] font-medium tracking-[-0.02em] text-ink">
-          {kiosk ? "You're in." : `You're in, ${confirmation.firstName}.`}
+
+        <div className="flex flex-col gap-[5px]">
+          <span className="font-mono text-[9px] tracking-[0.13em] text-teal uppercase">
+            signed in
+          </span>
+          <p className="font-sans text-[27px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+            {kiosk ? "You're in." : `You're in, ${confirmation.firstName}.`}
+          </p>
+          <p className="font-sans text-[13.5px] leading-[1.7] text-body">
+            {confirmation.visitNumber > 1
+              ? `Visit number ${confirmation.visitNumber}. Good to see you back.`
+              : "First time here, welcome."}
+          </p>
+        </div>
+
+        <p className="font-sans text-[13px] leading-[1.6] text-body">
+          Show this green screen at the food table.
         </p>
-        <p className="font-sans text-[13.5px] leading-[1.75] text-body">
-          {confirmation.visitNumber > 1
-            ? `Visit number ${confirmation.visitNumber}. Good to see you back.`
-            : "First time here, welcome. Grab food and find someone to talk to."}
-        </p>
-        {!kiosk && (
-          <button
-            type="button"
-            onClick={reset}
-            className="mt-1 self-start font-sans text-[12px] text-faint transition-colors duration-200 hover:text-ink"
-          >
-            Sign someone else in
-          </button>
-        )}
       </div>
     );
   }
