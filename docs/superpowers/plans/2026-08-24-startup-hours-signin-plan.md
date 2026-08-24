@@ -439,7 +439,7 @@ export type SignInResult = ActionResult & { firstName?: string; visitNumber?: nu
 
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[signin] couldn't ${what}:`, error.message);
-  return actionFailed(`Couldn't ${what} — try again`);
+  return actionFailed(`Couldn't ${what}, try again`);
 }
 
 // The whole public path runs on the service role, because `anon` has no

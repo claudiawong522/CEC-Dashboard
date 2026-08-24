@@ -55,7 +55,13 @@ regenerate.
 
 **Sign in stays open past 7pm.** Claudia: "if they come at 7, they still have to
 sign in". So 6:30 to 7 is guidance to attendees, not an enforced close. The window
-opens at the event's start time and closes three hours later.
+opens at the event's start time and closes at `event_end_time`, or three hours
+after the start when that column is null.
+
+(Corrected during implementation on 2026-08-24. This section first said a flat
+three hours because the schema was read as having no end time. `events` does have
+one, `event_end_time`, nullable, added by 0002. The flat three hours survives as
+the fallback.)
 
 ## Data model
 
@@ -82,9 +88,19 @@ already taken by the per section checklist table from 0001.
 RLS: both tables readable by members, writable by admins. The public path does not
 go through RLS at all, it goes through the service role action.
 
+The migration also states the `service_role` grants out loud rather than
+inheriting them. Every other table in the schema leans on Supabase Cloud's
+default privileges, which the local stack image does not reproduce, so without
+this the walk-in sign in works in production and returns "permission denied for
+table events" on a laptop. `anon` is granted nothing, which is the reason the
+public page goes through a server action at all.
+
 ## Surfaces
 
-**Public sign in**, one route, added to `PUBLIC_PATHS` in `proxy.ts`. Resolves
+**Public sign in** at `/checkin`, added to `PUBLIC_PATHS` in `proxy.ts`. The host
+view is `/signins` and the two deliberately share no prefix: `PUBLIC_PATHS` is
+matched with `startsWith`, so a host view named `/checkin-board` would have
+published the guest list. Resolves
 tonight's event, shows the form, confirms with the person's name so a host can
 glance at the screen. Recognises a returning email and skips straight to the per
 night question.

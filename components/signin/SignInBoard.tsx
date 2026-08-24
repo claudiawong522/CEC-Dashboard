@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useOptimistic, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
@@ -23,24 +23,23 @@ function timeOfDay(iso: string) {
 }
 
 export function SignInToggle({ eventId, enabled }: { eventId: string; enabled: boolean }) {
-  const [on, setOn] = useState(enabled);
+  // Optimistic rather than mirrored local state: the switch shows the flip
+  // immediately, and React drops back to the server's value when the
+  // transition ends. That covers both halves for free, a failed action and a
+  // toggle flipped in another tab, with no effect syncing props into state.
+  const [on, setOn] = useOptimistic(enabled);
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
-
-  // The server value wins whenever the page revalidates, so a toggle flipped in
-  // another tab doesn't leave this one showing a stale switch.
-  useEffect(() => setOn(enabled), [enabled]);
 
   return (
     <Switch
       checked={on}
       disabled={isPending}
       onCheckedChange={(checked) => {
-        setOn(checked);
         startTransition(async () => {
+          setOn(checked);
           const result = await setEventSignIn(eventId, checked);
           if (!result.ok) {
-            setOn(!checked);
             toast.error(result.message);
             return;
           }
