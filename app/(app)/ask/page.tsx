@@ -1,12 +1,17 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/getSession";
 import { AskBar } from "@/components/ask/AskBar";
+import { MissingKeyNotice } from "@/components/ui/missing-key-notice";
 import { Sticker } from "@/components/stickers/Sticker";
 import { Sparkle } from "@/components/stickers/shapes";
 
 export default async function AskPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+
+  // Read here rather than in the client component: the variable is server-only
+  // and must never be shipped to the browser, so only the boolean crosses over.
+  const hasKey = !!process.env.ANTHROPIC_API_KEY;
 
   return (
     <div className="relative flex flex-col gap-[17px]">
@@ -32,6 +37,16 @@ export default async function AskPage() {
           Questions about members, events, outreach, and anything the club has written down.
         </span>
       </div>
+
+      {!hasKey && (
+        <div className="relative z-10">
+          <MissingKeyNotice
+            feature="Ask"
+            isAdmin={session.profile.role === "admin"}
+            stillWorks="Everything else in the dashboard is unaffected."
+          />
+        </div>
+      )}
 
       <div className="relative z-10">
         <AskBar />

@@ -4,6 +4,7 @@ import { AlarmClockIcon } from "lucide-react";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
 import { suggestFollowUps } from "@/lib/actions/agent";
+import { MissingKeyNotice } from "@/components/ui/missing-key-notice";
 import { CaptureCard } from "@/components/agent/CaptureCard";
 import { DraftCard } from "@/components/agent/DraftCard";
 import { Sticker } from "@/components/stickers/Sticker";
@@ -14,6 +15,8 @@ export default async function AgentPage() {
   if (!session) redirect("/login");
   // Everything here reads and writes the CRM, which is admin-only end to end.
   if (session.profile.role !== "admin") redirect("/calendar");
+
+  const hasKey = !!process.env.ANTHROPIC_API_KEY;
 
   const supabase = await createClient();
   const [{ data: contacts }, followUps] = await Promise.all([
@@ -50,6 +53,16 @@ export default async function AgentPage() {
           Drafts emails and turns notes into CRM records. It proposes; you confirm.
         </span>
       </div>
+
+      {!hasKey && (
+        <div className="relative z-10">
+          <MissingKeyNotice
+            feature="The agent's drafting and capture"
+            isAdmin
+            stillWorks="The follow-up suggestions below are worked out from the CRM timeline, not a model, so they still work."
+          />
+        </div>
+      )}
 
       <div className="relative z-10 flex flex-col gap-[15px]">
         {followUps.length > 0 && (
