@@ -108,18 +108,18 @@ export function AttendanceRecorder({
             value={eventId}
             onValueChange={(value) => setEventId(value ?? NO_EVENT)}
           >
-            <SelectTrigger className="w-full rounded-input border-line-input bg-page px-3 py-2.5 font-sans text-[13.5px] text-ink">
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="max-h-[260px] rounded-card border-line bg-paper shadow-menu ring-0">
-              <SelectItem value={NO_EVENT} className="font-sans text-[12.5px] focus:bg-wash">
+            <SelectContent className="max-h-[260px]">
+              <SelectItem value={NO_EVENT}>
                 Not on the calendar
               </SelectItem>
               {events.map((event) => (
                 <SelectItem
                   key={event.id}
                   value={event.id}
-                  className="font-sans text-[12.5px] focus:bg-wash focus:text-ink"
+                 
                 >
                   {event.name}
                 </SelectItem>
@@ -147,15 +147,15 @@ export function AttendanceRecorder({
             value={eventType}
             onValueChange={(value) => setEventType((value ?? "other") as AttendanceEventType)}
           >
-            <SelectTrigger className="w-full rounded-input border-line-input bg-page px-3 py-2.5 font-sans text-[13.5px] text-ink">
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="rounded-card border-line bg-paper shadow-menu ring-0">
+            <SelectContent>
               {EVENT_TYPES.map((type) => (
                 <SelectItem
                   key={type}
                   value={type}
-                  className="font-sans text-[12.5px] focus:bg-wash focus:text-ink"
+                 
                 >
                   {EVENT_TYPE_LABELS[type]}
                 </SelectItem>

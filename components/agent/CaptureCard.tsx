@@ -169,15 +169,14 @@ export function CaptureCard() {
                 value={proposal.interaction.kind}
                 onValueChange={(value) => setInteraction("kind", value ?? "note")}
               >
-                <SelectTrigger className="w-full rounded-input border-line-input bg-paper px-3 py-2.5 font-sans text-[13.5px] text-ink">
+                <SelectTrigger className="w-full">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="rounded-card border-line bg-paper shadow-menu ring-0">
+                <SelectContent>
                   {INTERACTION_KINDS.map((kind) => (
                     <SelectItem
                       key={kind}
                       value={kind}
-                      className="font-sans text-[12.5px] focus:bg-wash focus:text-ink"
                     >
                       {INTERACTION_KIND_LABELS[kind]}
                     </SelectItem>

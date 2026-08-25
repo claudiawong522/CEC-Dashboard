@@ -151,18 +151,18 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
             value={draft.team}
             onValueChange={(value) => set("team", value as Team | "none")}
           >
-            <SelectTrigger className="w-full rounded-input border-line-input bg-paper px-3 py-2.5 font-sans text-[13.5px] text-ink">
+            <SelectTrigger className="w-full">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="rounded-card border-line bg-paper shadow-menu ring-0">
-              <SelectItem value="none" className="font-sans text-[12.5px] focus:bg-wash">
+            <SelectContent>
+              <SelectItem value="none">
                 No subteam
               </SelectItem>
               {TEAMS.map((team) => (
                 <SelectItem
                   key={team}
                   value={team}
-                  className="font-sans text-[12.5px] focus:bg-wash focus:text-ink"
+                 
                 >
                   {TEAM_LABELS[team]}
                 </SelectItem>

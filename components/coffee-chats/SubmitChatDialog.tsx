@@ -157,15 +157,15 @@ export function SubmitChatDialog({
               value={partnerId}
               onValueChange={(value) => setPartnerId(value ?? "")}
             >
-              <SelectTrigger className="w-full rounded-input border-line-input bg-page px-3 py-2.5 font-sans text-[13.5px] text-ink">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Pick a member" />
               </SelectTrigger>
-              <SelectContent className="max-h-[260px] rounded-card border-line bg-paper shadow-menu ring-0">
+              <SelectContent className="max-h-[260px]">
                 {members.map((member) => (
                   <SelectItem
                     key={member.id}
                     value={member.id}
-                    className="font-sans text-[12.5px] focus:bg-wash focus:text-ink"
+                   
                   >
                     {member.full_name ?? member.email}
                   </SelectItem>
@@ -177,7 +177,7 @@ export function SubmitChatDialog({
                   <SelectItem
                     key={guest.id}
                     value={`${GUEST_PREFIX}${guest.id}`}
-                    className="font-sans text-[12.5px] focus:bg-wash focus:text-ink"
+                   
                   >
                     {guest.full_name ?? guest.email} (prospective)
                   </SelectItem>

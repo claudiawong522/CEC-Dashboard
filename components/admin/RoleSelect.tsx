@@ -44,14 +44,14 @@ export function RoleSelect({ userId, role }: { userId: string; role: Role }) {
       >
         <SelectValue />
       </SelectTrigger>
-      <SelectContent className="rounded-card border-line bg-paper shadow-menu ring-0">
-        <SelectItem value="view" className="font-sans text-[12.5px] focus:bg-wash focus:text-ink">
+      <SelectContent>
+        <SelectItem value="view">
           View
         </SelectItem>
-        <SelectItem value="edit" className="font-sans text-[12.5px] focus:bg-wash focus:text-ink">
+        <SelectItem value="edit">
           Edit
         </SelectItem>
-        <SelectItem value="admin" className="font-sans text-[12.5px] focus:bg-wash focus:text-ink">
+        <SelectItem value="admin">
           Admin
         </SelectItem>
       </SelectContent>

@@ -63,15 +63,14 @@ export function DraftCard({ contacts }: { contacts: { id: string; name: string }
                 value={contactId}
                 onValueChange={(value) => setContactId(value ?? "")}
               >
-                <SelectTrigger className="w-full rounded-input border-line-input bg-page px-3 py-2.5 font-sans text-[13.5px] text-ink">
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pick a contact" />
                 </SelectTrigger>
-                <SelectContent className="max-h-[260px] rounded-card border-line bg-paper shadow-menu ring-0">
+                <SelectContent className="max-h-[260px]">
                   {contacts.map((contact) => (
                     <SelectItem
                       key={contact.id}
                       value={contact.id}
-                      className="font-sans text-[12.5px] focus:bg-wash focus:text-ink"
                     >
                       {contact.name}
                     </SelectItem>

@@ -268,12 +268,12 @@ function Picker({
       value={value}
       onValueChange={(next) => onChange(next ?? NONE)}
     >
-      <SelectTrigger className="w-full rounded-input border-line-input bg-paper px-3 py-2.5 font-sans text-[13.5px] text-ink">
+      <SelectTrigger className="w-full">
         <SelectValue />
       </SelectTrigger>
-      <SelectContent className="max-h-[260px] rounded-card border-line bg-paper shadow-menu ring-0">
+      <SelectContent className="max-h-[260px]">
         {placeholder && (
-          <SelectItem value={NONE} className="font-sans text-[12.5px] focus:bg-wash">
+          <SelectItem value={NONE}>
             {placeholder}
           </SelectItem>
         )}
@@ -281,7 +281,7 @@ function Picker({
           <SelectItem
             key={option.value}
             value={option.value}
-            className="font-sans text-[12.5px] capitalize focus:bg-wash focus:text-ink"
+            className="capitalize"
           >
             {option.label}
           </SelectItem>
