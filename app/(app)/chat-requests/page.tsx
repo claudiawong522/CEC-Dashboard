@@ -1,67 +1,101 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
-import { RequestInbox, type IncomingRequest } from "@/components/matching/RequestInbox";
-import { Sticker } from "@/components/stickers/Sticker";
-import { Cherries } from "@/components/stickers/shapes";
+import { rankRequests } from "@/lib/utils/chat-matching";
+import { RequestPool } from "@/components/matching/RequestPool";
+import type { ClaimedRequest, OpenRequest } from "@/lib/types/chat-requests";
+
+export const dynamic = "force-dynamic";
+
+type RequestRow = {
+  id: string;
+  student_name: string;
+  student_email: string;
+  prompt: string;
+  interests: string[] | null;
+  status: string;
+  created_at: string;
+  claimed_at: string | null;
+  claimed_by: string | null;
+  guest_id: string | null;
+  claimer: { full_name: string | null } | null;
+};
 
 export default async function ChatRequestsPage() {
   const session = await getSession();
   if (!session) redirect("/login");
 
   const supabase = await createClient();
-  // No filter by member here: the RLS policy already returns the caller's own
-  // requests, plus everything for an admin. Repeating it in the query is how
-  // the two drift apart.
-  const { data: requests } = await supabase
-    .from("chat_requests")
-    .select(
-      "id, student_email, student_name, prompt, tags, status, created_at, profile_id, " +
-        "member:profiles!chat_requests_profile_id_fkey(full_name, email)",
-    )
-    .order("created_at", { ascending: false })
-    .returns<IncomingRequest[]>();
 
-  const rows = requests ?? [];
-  const pending = rows.filter((request) => request.status === "pending");
+  const [{ data: rows }, { data: me }] = await Promise.all([
+    supabase
+      .from("chat_requests")
+      .select(
+        "id, student_name, student_email, prompt, interests, status, created_at, claimed_at, claimed_by, guest_id, " +
+          "claimer:profiles!chat_requests_claimed_by_fkey(full_name)",
+      )
+      .in("status", ["pending", "claimed"])
+      .order("created_at", { ascending: true })
+      .returns<RequestRow[]>(),
+    supabase
+      .from("profiles")
+      .select("interests")
+      .eq("id", session.profile.id)
+      .maybeSingle<{ interests: string[] | null }>(),
+  ]);
+
+  const all = rows ?? [];
+
+  // How many times this person has been to something. A request from someone on
+  // their fourth Startup Hours is a different proposition to a cold one, and the
+  // guests table already knows because both flows write to it.
+  const guestIds = all.map((r) => r.guest_id).filter((id): id is string => !!id);
+  const { data: visits } = guestIds.length
+    ? await supabase
+        .from("guest_signins")
+        .select("guest_id")
+        .in("guest_id", guestIds)
+        .returns<{ guest_id: string }[]>()
+    : { data: [] as { guest_id: string }[] };
+
+  const visitCount = new Map<string, number>();
+  for (const row of visits ?? []) {
+    visitCount.set(row.guest_id, (visitCount.get(row.guest_id) ?? 0) + 1);
+  }
+
+  const toOpen = (r: RequestRow): OpenRequest => ({
+    id: r.id,
+    full_name: r.student_name,
+    netid: r.student_email.split("@")[0],
+    grad_year: null,
+    major: null,
+    interests: r.interests ?? [],
+    prompt: r.prompt,
+    created_at: r.created_at,
+    visit_count: r.guest_id ? (visitCount.get(r.guest_id) ?? 0) : 0,
+  });
+
+  const ranked = rankRequests(
+    all.filter((r) => r.status === "pending").map(toOpen),
+    me?.interests,
+  );
+
+  const claimed: ClaimedRequest[] = all
+    .filter((r) => r.status === "claimed")
+    .map((r) => ({
+      ...toOpen(r),
+      claimed_at: r.claimed_at ?? r.created_at,
+      claimed_by_name: r.claimer?.full_name ?? null,
+      is_mine: r.claimed_by === session.profile.id,
+    }));
 
   return (
-    <div className="relative flex flex-col gap-[17px]">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 -top-3 z-0 h-28 overflow-hidden"
-      >
-        <Sticker
-          floatVariant="float2"
-          floatDuration="16s"
-          wrapperClassName="pointer-events-none absolute right-[11%] top-1"
-          className="pointer-events-auto opacity-[0.38]"
-        >
-          <Cherries size={54} />
-        </Sticker>
-      </div>
-
-      <div className="relative z-10 flex items-end justify-between gap-4">
-        <div className="flex flex-col gap-[5px]">
-          <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-            Chat requests
-          </h1>
-          <span className="font-sans text-[12.5px] text-body">
-            Prospective members asking to talk{pending.length > 0 && ` · ${pending.length} waiting`}.
-          </span>
-        </div>
-        <Link
-          href="/profile"
-          className="shrink-0 rounded-btn border border-[rgba(35,32,28,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(35,32,28,0.24)] hover:bg-wash hover:text-ink"
-        >
-          Chat settings
-        </Link>
-      </div>
-
-      <div className="relative z-10">
-        <RequestInbox requests={rows} isAdmin={session.profile.role === "admin"} />
-      </div>
-    </div>
+    <RequestPool
+      ranked={ranked}
+      claimed={claimed}
+      myInterests={me?.interests ?? []}
+      canClaim={session.profile.role !== "view"}
+      isAdmin={session.profile.role === "admin"}
+    />
   );
 }

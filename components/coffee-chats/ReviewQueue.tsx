@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { reviewChat } from "@/lib/actions/coffeeChats";
-import type { CoffeeChat } from "@/lib/types/coffee-chats";
+import { partnerName, type CoffeeChat } from "@/lib/types/coffee-chats";
 
 export function ReviewQueue({
   chats,
@@ -48,7 +48,7 @@ export function ReviewQueue({
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={selfie}
-                alt={`${chat.submitter?.full_name ?? "Member"} and ${chat.partner?.full_name ?? "their partner"}`}
+                alt={`${chat.submitter?.full_name ?? "Member"} and ${partnerName(chat)}`}
                 className="h-[76px] w-[104px] shrink-0 rounded-[8px] object-cover"
               />
             ) : (
@@ -61,7 +61,7 @@ export function ReviewQueue({
               <span className="font-sans text-[13.5px] text-ink">
                 {chat.submitter?.full_name ?? chat.submitter?.email} chatted with{" "}
                 <span className="font-medium">
-                  {chat.partner?.full_name ?? chat.partner?.email}
+                  {partnerName(chat)}
                 </span>
               </span>
               <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">

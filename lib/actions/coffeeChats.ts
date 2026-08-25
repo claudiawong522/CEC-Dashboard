@@ -29,7 +29,7 @@ export async function submitChat(input: SubmitChatInput): Promise<ActionResult> 
   if (!parsed.success) {
     return actionFailed(parsed.error.issues[0]?.message ?? "Check the form");
   }
-  const { partnerId, categoryId, storagePath } = parsed.data;
+  const { partnerId, partnerGuestId, categoryId, storagePath } = parsed.data;
 
   if (partnerId === session.profile.id) {
     return actionFailed("Pick someone other than yourself");
@@ -45,6 +45,7 @@ export async function submitChat(input: SubmitChatInput): Promise<ActionResult> 
   const { error } = await supabase.from("coffee_chats").insert({
     submitter_id: session.profile.id,
     partner_id: partnerId,
+    partner_guest_id: partnerGuestId,
     category_id: categoryId,
     selfie_url: storagePath,
     semester,

@@ -29,15 +29,17 @@ begin
     select id from outreach_contacts where name in ('Secret Speaker', 'Public Alum')
   );
   delete from guest_signins where guest_id in (
-    select id from guests where email in ('walkin@example.com', 'member@cornell.edu')
+    select id from guests where email in ('walkin@example.com', 'member@cornell.edu', 'prospect@cornell.edu')
   );
-  delete from guests where email in ('walkin@example.com', 'member@cornell.edu');
+  delete from guests where email in ('walkin@example.com', 'member@cornell.edu', 'prospect@cornell.edu');
   delete from ask_logs where profile_id = any(v_fixtures);
   delete from attendance where profile_id = any(v_fixtures) or recorded_by = any(v_fixtures);
   delete from shoutouts where giver_id = any(v_fixtures) or receiver_id = any(v_fixtures);
-  delete from coffee_chats where submitter_id = any(v_fixtures) or partner_id = any(v_fixtures);
+  delete from coffee_chats where submitter_id = any(v_fixtures) or partner_id = any(v_fixtures)
+     or partner_guest_id in (select id from guests where email = 'prospect@cornell.edu');
   delete from coffee_chat_categories where name = 'Another subteam';
-  delete from chat_requests where profile_id = any(v_fixtures);
+  delete from chat_requests where student_email = 'prospect@cornell.edu'
+     or profile_id = any(v_fixtures) or claimed_by = any(v_fixtures);
   delete from brain_notes
     where title in ('Demo Day retrospective', 'Sponsorship playbook', 'Demo Day retro');
   delete from external_idea_people where idea_id in (
@@ -125,45 +127,116 @@ begin
   raise notice 'PASS: 0 rows touched';
 end $$;
 
-\echo '--- 4. a signed-in non-member is the student tier: no role, can request a chat ---'
+\echo '--- 4. a prospective member cannot write a chat request through RLS ---'
 do $$
-declare v_role text; v_rows int;
+declare v_role text; v_guest uuid;
 begin
   perform become_outsider('prospect@cornell.edu');
   select app_user_role() into v_role;
+  reset role;
   if v_role is not null then raise exception 'FAIL: outsider resolved a role: %', v_role; end if;
 
-  insert into chat_requests (student_email, student_name, prompt, profile_id)
-  values ('prospect@cornell.edu', 'Pat Prospect', 'How do I join?', '22222222-2222-4222-8222-222222222222');
-  get diagnostics v_rows = ROW_COUNT;
-  reset role;
-  if v_rows <> 1 then raise exception 'FAIL: student could not request a chat'; end if;
-  raise notice 'PASS: app_user_role() is null and the request landed';
-end $$;
+  insert into guests (email, full_name) values ('prospect@cornell.edu', 'Pat Prospect')
+    on conflict (email) do update set full_name = excluded.full_name
+    returning id into v_guest;
 
-\echo '--- 5. a student cannot request a chat in someone else''s name ---'
-do $$
-begin
+  -- Signup is a public form with no session at all, so it writes through the
+  -- service role exactly like the Startup Hours sign in. Nobody holding a
+  -- session should be able to insert here, student tier included.
   perform become_outsider('prospect@cornell.edu');
   begin
-    insert into chat_requests (student_email, student_name, prompt, profile_id)
-    values ('someone.else@cornell.edu', 'Not Them', 'hi', '22222222-2222-4222-8222-222222222222');
-    raise exception 'FAIL: student impersonated another student';
+    insert into chat_requests (guest_id, student_email, student_name, prompt, interests)
+    values (v_guest, 'prospect@cornell.edu', 'Pat Prospect', 'How do I join?', array['hardware']);
+    raise exception 'FAIL: a signed-in outsider inserted a chat request';
+  exception when insufficient_privilege then
+    raise notice 'PASS: app_user_role() is null and RLS refused the insert';
+  end;
+  reset role;
+
+  -- Seed the row the later checks read, as the owner.
+  insert into chat_requests (guest_id, student_email, student_name, prompt, interests)
+  values (v_guest, 'prospect@cornell.edu', 'Pat Prospect', 'How do I join?', array['hardware', 'climate']);
+end $$;
+
+\echo '--- 5. a prospective member cannot read the request pool ---'
+do $$
+declare v_seen int;
+begin
+  perform become_outsider('prospect@cornell.edu');
+  select count(*) into v_seen from chat_requests;
+  reset role;
+  if v_seen <> 0 then raise exception 'FAIL: an outsider saw % requests', v_seen; end if;
+  raise notice 'PASS: the pool is members only';
+end $$;
+
+\echo '--- 6a. an ordinary member CAN claim an open request ---'
+do $$
+declare v_rows int; v_id uuid;
+begin
+  select id into v_id from chat_requests where student_email = 'prospect@cornell.edu';
+
+  -- The check that would have caught 0022 shipping an admin-only UPDATE
+  -- policy: claiming is the entire feature, and an 'edit' member does it.
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
+  update chat_requests
+     set claimed_by = '22222222-2222-4222-8222-222222222222',
+         claimed_at = now(), status = 'claimed'
+   where id = v_id and claimed_by is null;
+  get diagnostics v_rows = ROW_COUNT;
+  reset role;
+
+  if v_rows <> 1 then raise exception 'FAIL: a member could not claim an open request'; end if;
+  raise notice 'PASS: claimed';
+
+  -- Put it back so the next check starts from an open request.
+  update chat_requests set claimed_by = null, claimed_at = null, status = 'pending' where id = v_id;
+end $$;
+
+\echo '--- 6b. a member cannot claim a request on someone else''s behalf ---'
+do $$
+declare v_id uuid;
+begin
+  select id into v_id from chat_requests where student_email = 'prospect@cornell.edu';
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
+  -- Refused rather than filtered: USING decides which rows are visible to the
+  -- update, WITH CHECK inspects the row it would leave behind, and failing
+  -- that raises instead of quietly matching nothing.
+  begin
+    update chat_requests
+       set claimed_by = '11111111-1111-4111-8111-111111111111',
+           claimed_at = now(), status = 'claimed'
+     where id = v_id and claimed_by is null;
+    reset role;
+    raise exception 'FAIL: a member assigned a request to someone else';
   exception when insufficient_privilege then
     raise notice 'PASS: blocked by RLS';
   end;
   reset role;
 end $$;
 
-\echo '--- 6. a student cannot accept their own chat request ---'
+\echo '--- 6. a member cannot steal a request another member claimed ---'
 do $$
-declare v_rows int;
+declare v_rows int; v_id uuid;
 begin
-  perform become_outsider('prospect@cornell.edu');
-  update chat_requests set status = 'accepted' where student_email = 'prospect@cornell.edu';
+  select id into v_id from chat_requests where student_email = 'prospect@cornell.edu';
+
+  -- Ada claims it first, the way the server action does.
+  update chat_requests
+     set claimed_by = '11111111-1111-4111-8111-111111111111',
+         claimed_at = now(), status = 'claimed'
+   where id = v_id and claimed_by is null;
+
+  -- Mo tries to take it. The `claimed_by is null` filter is the whole
+  -- concurrency story: the second writer matches no rows rather than
+  -- overwriting the first.
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
+  update chat_requests
+     set claimed_by = '22222222-2222-4222-8222-222222222222'
+   where id = v_id and claimed_by is null;
   get diagnostics v_rows = ROW_COUNT;
   reset role;
-  if v_rows <> 0 then raise exception 'FAIL: student accepted their own request'; end if;
+
+  if v_rows <> 0 then raise exception 'FAIL: a claimed request was stolen'; end if;
   raise notice 'PASS: 0 rows touched';
 end $$;
 
@@ -384,66 +457,72 @@ begin
   raise notice 'PASS: 0 rows visible';
 end $$;
 
-\echo '--- 19. a student CAN read the opted-in directory, and it has no email ---'
+\echo '--- 19. chat_directory is gone ---'
 do $$
-declare v_seen int; v_has_email boolean;
 begin
-  perform become_outsider('prospect@cornell.edu');
-  select count(*) into v_seen from chat_directory;
-  reset role;
-
-  if v_seen <> 1 then raise exception 'FAIL: directory showed % members, expected 1', v_seen; end if;
-
-  select exists (
-    select 1 from information_schema.columns
-    where table_schema = 'public' and table_name = 'chat_directory'
-      and column_name in ('email', 'netid')
-  ) into v_has_email;
-  if v_has_email then raise exception 'FAIL: chat_directory exposes email or netid'; end if;
-  raise notice 'PASS: one opted-in member, no contact details';
+  -- It existed so a student could browse members and pick one. Nobody picks a
+  -- member any more, and it was the only path from a non-member to anything
+  -- derived from profiles.
+  if exists (select 1 from information_schema.views
+             where table_schema = 'public' and table_name = 'chat_directory') then
+    raise exception 'FAIL: chat_directory still exists';
+  end if;
+  raise notice 'PASS: the browse view is dropped';
 end $$;
 
-\echo '--- 20. a student cannot ask a member who never opted in ---'
+\echo '--- 20. a member reads the pool but cannot rewrite it ---'
 do $$
+declare v_seen int; v_rows int;
 begin
-  perform become_outsider('prospect@cornell.edu');
-  begin
-    insert into chat_requests (student_email, student_name, prompt, profile_id)
-    values ('prospect@cornell.edu', 'Pat', 'hi', '11111111-1111-4111-8111-111111111111');
-    raise exception 'FAIL: request landed on a member who is not open to chats';
-  exception when insufficient_privilege then
-    raise notice 'PASS: blocked by RLS';
-  end;
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
+  select count(*) into v_seen from chat_requests;
+  update chat_requests set prompt = 'Tampered' where student_email = 'prospect@cornell.edu';
+  get diagnostics v_rows = ROW_COUNT;
   reset role;
+
+  if v_seen < 1 then raise exception 'FAIL: a member could not read the pool'; end if;
+  if v_rows <> 0 then raise exception 'FAIL: a non-admin rewrote % request(s)', v_rows; end if;
+  raise notice 'PASS: read yes, write no';
 end $$;
 
-\echo '--- 21. a signed-in non-Cornell account is not the student tier ---'
+\echo '--- 21. one open request per person ---'
 do $$
+declare v_guest uuid;
 begin
-  perform become_outsider('someone@gmail.com');
+  select id into v_guest from guests where email = 'prospect@cornell.edu';
+  -- Check 6 moved the first request to 'claimed', so a second pending one is
+  -- allowed. A third while that one is pending is not.
+  insert into chat_requests (guest_id, student_email, student_name, prompt)
+  values (v_guest, 'prospect@cornell.edu', 'Pat Prospect', 'second ask');
   begin
-    insert into chat_requests (student_email, student_name, prompt, profile_id)
-    values ('someone@gmail.com', 'Rando', 'let me in', '22222222-2222-4222-8222-222222222222');
-    raise exception 'FAIL: a non-Cornell account created a chat request';
-  exception when insufficient_privilege then
-    raise notice 'PASS: blocked by RLS';
-  end;
-  reset role;
-end $$;
-
-\echo '--- 22. a student cannot ask the same member twice while one is open ---'
-do $$
-begin
-  perform become_outsider('prospect@cornell.edu');
-  begin
-    -- Check 4 already created a pending request to this member.
-    insert into chat_requests (student_email, student_name, prompt, profile_id)
-    values ('prospect@cornell.edu', 'Pat Prospect', 'again?', '22222222-2222-4222-8222-222222222222');
-    raise exception 'FAIL: duplicate open request allowed';
+    insert into chat_requests (guest_id, student_email, student_name, prompt)
+    values (v_guest, 'prospect@cornell.edu', 'Pat Prospect', 'third ask');
+    raise exception 'FAIL: two open requests from one person';
   exception when unique_violation then
     raise notice 'PASS: blocked by the partial unique index';
   end;
-  reset role;
+end $$;
+
+\echo '--- 22. a coffee chat partner is a member or a guest, never both or neither ---'
+do $$
+declare v_guest uuid;
+begin
+  select id into v_guest from guests where email = 'prospect@cornell.edu';
+  begin
+    insert into coffee_chats (submitter_id, partner_id, partner_guest_id, selfie_url, semester)
+    values ('22222222-2222-4222-8222-222222222222',
+            '11111111-1111-4111-8111-111111111111', v_guest, 'x.jpg', 'F26');
+    raise exception 'FAIL: a chat had two partners';
+  exception when check_violation then
+    raise notice 'PASS: two partners refused';
+  end;
+  begin
+    insert into coffee_chats (submitter_id, selfie_url, semester)
+    values ('22222222-2222-4222-8222-222222222222', 'x.jpg', 'F26');
+    raise exception 'FAIL: a chat had no partner';
+  exception when check_violation then
+    raise notice 'PASS: no partner refused';
+  end;
 end $$;
 
 \echo '--- 23. a student cannot read the guest list ---'

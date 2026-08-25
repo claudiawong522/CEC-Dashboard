@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Scratch files the Supabase CLI writes when the local stack starts. Not
+    // ours, not committed (supabase/.gitignore covers them), and 205 lint
+    // problems deep, which drowns out anything real in `npm run lint`.
+    "supabase/.temp/**",
   ]),
 ]);
 

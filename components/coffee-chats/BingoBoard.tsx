@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CheckIcon, ClockIcon, PlusIcon, RotateCcwIcon } from "lucide-react";
+import { partnerName } from "@/lib/types/coffee-chats";
 import { SubmitChatDialog } from "@/components/coffee-chats/SubmitChatDialog";
 import { Sticker } from "@/components/stickers/Sticker";
 import { Confetti } from "@/components/stickers/shapes";
@@ -11,11 +12,13 @@ import { cn } from "@/lib/utils";
 export function BingoBoard({
   squares,
   members,
+  claimedGuests,
   viewerId,
   selfieUrls,
 }: {
   squares: BoardSquare[];
   members: ChatPerson[];
+  claimedGuests: ChatPerson[];
   viewerId: string;
   selfieUrls: Record<string, string>;
 }) {
@@ -117,7 +120,7 @@ export function BingoBoard({
                 {status === "approved" && (
                   <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.13em] text-strong uppercase">
                     <CheckIcon className="size-3" />
-                    {chat?.partner?.full_name ?? "Done"}
+                    {chat ? partnerName(chat) : "Done"}
                   </span>
                 )}
                 {status === "pending" && (
@@ -153,6 +156,7 @@ export function BingoBoard({
         categoryId={openSquare?.category.id ?? null}
         categoryName={openSquare?.category.name ?? ""}
         members={members}
+        claimedGuests={claimedGuests}
         viewerId={viewerId}
       />
 

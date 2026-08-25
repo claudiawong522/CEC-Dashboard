@@ -28,7 +28,7 @@ export default async function StudentLayout({ children }: { children: React.Reac
           <BrandMark className="h-[22px] w-6" />
         </Sticker>
         <Link
-          href="/matching"
+          href="/apply"
           className="font-sans text-[17px] font-medium tracking-[-0.014em] text-ink"
         >
           Cornell Entrepreneurship Club

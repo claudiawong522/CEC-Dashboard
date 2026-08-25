@@ -43,11 +43,11 @@ export async function GET(request: Request) {
   // the entire definition of the tier: getSession() returns null for them, so
   // every members-only page and action already treats them as signed out, and
   // app_user_role() is null in the database, so RLS does too. All they can
-  // reach is /matching. Any non-Cornell address with no invite is still
+  // reach is /apply. Any non-Cornell address with no invite is still
   // turned away exactly as before.
   if (!existing && !isSeedAdmin) {
     if (email.toLowerCase().endsWith("@cornell.edu")) {
-      return NextResponse.redirect(`${origin}/matching`);
+      return NextResponse.redirect(`${origin}/apply`);
     }
     await supabase.auth.signOut();
     return NextResponse.redirect(`${origin}/login?error=not_invited`);

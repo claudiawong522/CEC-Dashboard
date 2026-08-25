@@ -13,9 +13,10 @@ import { Seal, Sparkle } from "@/components/stickers/shapes";
 
 const CHAT_COLUMNS =
   "id, submitter_id, partner_id, category_id, selfie_url, status, review_note, " +
-  "submitted_at, reviewed_at, semester, " +
+  "submitted_at, reviewed_at, semester, partner_guest_id, " +
   "submitter:profiles!coffee_chats_submitter_id_fkey(id, full_name, email), " +
-  "partner:profiles!coffee_chats_partner_id_fkey(id, full_name, email)";
+  "partner:profiles!coffee_chats_partner_id_fkey(id, full_name, email), " +
+  "partner_guest:guests!coffee_chats_partner_guest_id_fkey(id, full_name, email)";
 
 export default async function CoffeeChatsPage() {
   const session = await getSession();
@@ -26,7 +27,8 @@ export default async function CoffeeChatsPage() {
   const term = termFromKey(semester);
   const isAdmin = session.profile.role === "admin";
 
-  const [{ data: categories }, { data: chats }, { data: members }] = await Promise.all([
+  const [{ data: categories }, { data: chats }, { data: members }, { data: claimed }] =
+    await Promise.all([
     supabase
       .from("coffee_chat_categories")
       .select("id, name, description, semester, board_position")
@@ -50,7 +52,17 @@ export default async function CoffeeChatsPage() {
       .neq("id", session.profile.id)
       .order("full_name", { ascending: true, nullsFirst: false })
       .returns<ChatPerson[]>(),
-  ]);
+    // Prospective members this person took out of the request pool. They have
+    // no profiles row, so this is the only way they can be logged as a partner.
+    supabase
+      .from("chat_requests")
+      .select("guest:guests!chat_requests_guest_id_fkey(id, full_name, email)")
+      .eq("claimed_by", session.profile.id)
+      .eq("status", "claimed")
+      .returns<{ guest: ChatPerson | null }[]>(),
+    ]);
+
+  const claimedGuests = (claimed ?? []).flatMap((row) => (row.guest ? [row.guest] : []));
 
   const allChats = chats ?? [];
   const squares = buildBoard(categories ?? [], allChats, session.profile.id);
@@ -100,6 +112,7 @@ export default async function CoffeeChatsPage() {
         <BingoBoard
           squares={squares}
           members={members ?? []}
+        claimedGuests={claimedGuests}
           viewerId={session.profile.id}
           selfieUrls={selfieUrls}
         />

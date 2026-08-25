@@ -9,14 +9,23 @@ export const CHAT_STATUS_LABELS: Record<ChatStatus, string> = {
   rejected: "Needs another go",
 };
 
-export const submitChatSchema = z.object({
-  partnerId: z.string().uuid("Pick who you chatted with"),
-  // Null means an uncategorised chat: someone logging a coffee chat that
-  // doesn't fill a square. The board still shows it under past chats, so the
-  // record is kept even when there's no tile to colour in.
-  categoryId: z.string().uuid().nullable(),
-  storagePath: z.string().min(1, "Add a selfie"),
-});
+export const submitChatSchema = z
+  .object({
+    // A partner is a member, or a prospective member from the chat request
+    // pool who has no profiles row. Exactly one, mirroring the num_nonnulls
+    // check on the table.
+    partnerId: z.string().uuid().nullable().default(null),
+    partnerGuestId: z.string().uuid().nullable().default(null),
+    // Null means an uncategorised chat: someone logging a coffee chat that
+    // doesn't fill a square. The board still shows it under past chats, so the
+    // record is kept even when there's no tile to colour in.
+    categoryId: z.string().uuid().nullable(),
+    storagePath: z.string().min(1, "Add a selfie"),
+  })
+  .refine((value) => (value.partnerId === null) !== (value.partnerGuestId === null), {
+    message: "Pick who you chatted with",
+    path: ["partnerId"],
+  });
 export type SubmitChatInput = z.input<typeof submitChatSchema>;
 
 export const reviewChatSchema = z.object({

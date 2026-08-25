@@ -17,7 +17,8 @@ export type ChatPerson = {
 export type CoffeeChat = {
   id: string;
   submitter_id: string;
-  partner_id: string;
+  partner_id: string | null;
+  partner_guest_id: string | null;
   category_id: string | null;
   selfie_url: string;
   status: ChatStatus;
@@ -27,6 +28,9 @@ export type CoffeeChat = {
   semester: string;
   submitter: ChatPerson | null;
   partner: ChatPerson | null;
+  // A prospective member from the request pool, who has no profiles row. The
+  // table allows exactly one of partner / partner_guest to be set.
+  partner_guest: ChatPerson | null;
 };
 
 // A board square, resolved for one viewer: the category plus whatever that
@@ -58,4 +62,13 @@ export function buildBoard(
 // can't go down when a submission is rejected.
 export function approvedCount(squares: BoardSquare[]): number {
   return squares.filter((square) => square.chat?.status === "approved").length;
+}
+
+/** The other person in a chat, whether they are a member or a prospect. */
+export function partnerName(chat: {
+  partner: ChatPerson | null;
+  partner_guest: ChatPerson | null;
+}): string {
+  const person = chat.partner ?? chat.partner_guest;
+  return person?.full_name ?? person?.email ?? "someone";
 }

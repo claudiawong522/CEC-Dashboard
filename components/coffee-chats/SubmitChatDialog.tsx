@@ -24,12 +24,18 @@ import { submitChat } from "@/lib/actions/coffeeChats";
 import { selfieRejectionReason, SELFIE_BUCKET } from "@/lib/validation/coffee-chat-schemas";
 import type { ChatPerson } from "@/lib/types/coffee-chats";
 
+// The picker holds two kinds of person, so the option value carries which kind
+// it is. Without the prefix a guest id and a member id are both bare uuids and
+// the form cannot tell which column to write.
+const GUEST_PREFIX = "guest:";
+
 export function SubmitChatDialog({
   open,
   onOpenChange,
   categoryId,
   categoryName,
   members,
+  claimedGuests,
   viewerId,
 }: {
   open: boolean;
@@ -37,6 +43,7 @@ export function SubmitChatDialog({
   categoryId: string | null;
   categoryName: string;
   members: ChatPerson[];
+  claimedGuests: ChatPerson[];
   viewerId: string;
 }) {
   const [partnerId, setPartnerId] = useState("");
@@ -89,7 +96,13 @@ export function SubmitChatDialog({
         return;
       }
 
-      const result = await submitChat({ partnerId, categoryId, storagePath: path });
+      const isGuest = partnerId.startsWith(GUEST_PREFIX);
+      const result = await submitChat({
+        partnerId: isGuest ? null : partnerId,
+        partnerGuestId: isGuest ? partnerId.slice(GUEST_PREFIX.length) : null,
+        categoryId,
+        storagePath: path,
+      });
       if (!result.ok) {
         // The row didn't land, so the object we just uploaded has nothing
         // pointing at it. Clean it up rather than leaving it in the bucket.
@@ -141,6 +154,18 @@ export function SubmitChatDialog({
                     className="font-sans text-[12.5px] focus:bg-wash focus:text-ink"
                   >
                     {member.full_name ?? member.email}
+                  </SelectItem>
+                ))}
+                {/* Chat requests this member claimed. They have no profile, so
+                    they can only appear here once someone has taken them out
+                    of the pool. */}
+                {claimedGuests.map((guest) => (
+                  <SelectItem
+                    key={guest.id}
+                    value={`${GUEST_PREFIX}${guest.id}`}
+                    className="font-sans text-[12.5px] focus:bg-wash focus:text-ink"
+                  >
+                    {guest.full_name ?? guest.email} (prospective)
                   </SelectItem>
                 ))}
               </SelectContent>

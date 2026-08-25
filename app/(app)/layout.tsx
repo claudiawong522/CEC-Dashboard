@@ -14,7 +14,7 @@ export default async function AppLayout({
     // null for them. Sending them to /login would bounce them straight back
     // here (the login page redirects an already-signed-in visitor onward) and
     // loop; send them to the one area they're allowed instead.
-    if (await getStudent()) redirect("/matching");
+    if (await getStudent()) redirect("/apply");
     redirect("/login");
   }
 
