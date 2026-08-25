@@ -15,6 +15,7 @@ import {
 import { inviteUser } from "@/lib/actions/admin";
 import type { Role } from "@/lib/auth/getSession";
 
+import { ROLE_LABELS } from "@/lib/utils/role-labels";
 export function InviteForm() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role>("view");
@@ -63,7 +64,7 @@ export function InviteForm() {
           disabled={isPending}
           className="min-w-[220px] flex-1"
         />
-        <Select value={role} onValueChange={(v) => setRole(v as Role)}>
+        <Select items={ROLE_LABELS} value={role} onValueChange={(v) => setRole(v as Role)}>
           <SelectTrigger
             disabled={isPending}
             className="w-auto gap-1.5 rounded-[20px] border-line-input bg-page px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-body uppercase transition-colors duration-200 hover:border-[rgba(35,32,28,0.32)] hover:text-ink [&_svg]:text-faint"

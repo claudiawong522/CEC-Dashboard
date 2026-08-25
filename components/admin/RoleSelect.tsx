@@ -12,6 +12,7 @@ import {
 import { updateUserRole } from "@/lib/actions/admin";
 import type { Role } from "@/lib/auth/getSession";
 
+import { ROLE_LABELS } from "@/lib/utils/role-labels";
 export function RoleSelect({ userId, role }: { userId: string; role: Role }) {
   const [value, setValue] = useState<Role>(role);
   const [isPending, startTransition] = useTransition();
@@ -36,7 +37,7 @@ export function RoleSelect({ userId, role }: { userId: string; role: Role }) {
   }
 
   return (
-    <Select value={value} onValueChange={(v) => handleChange(v as Role)}>
+    <Select items={ROLE_LABELS} value={value} onValueChange={(v) => handleChange(v as Role)}>
       <SelectTrigger
         disabled={isPending}
         className="w-auto justify-self-start gap-1.5 rounded-[20px] border-line-input bg-page px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-body uppercase transition-colors duration-200 hover:border-[rgba(35,32,28,0.32)] hover:text-ink [&_svg]:text-faint"

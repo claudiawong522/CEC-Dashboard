@@ -142,7 +142,21 @@ export function SubmitChatDialog({
             </Label>
             {/* base-ui hands back null when a select is cleared; the empty
                 string is this form's "nothing picked yet". */}
-            <Select value={partnerId} onValueChange={(value) => setPartnerId(value ?? "")}>
+            <Select
+              items={{
+                ...Object.fromEntries(
+                  members.map((member) => [member.id, member.full_name ?? member.email]),
+                ),
+                ...Object.fromEntries(
+                  claimedGuests.map((guest) => [
+                    `${GUEST_PREFIX}${guest.id}`,
+                    `${guest.full_name ?? guest.email} (prospective)`,
+                  ]),
+                ),
+              }}
+              value={partnerId}
+              onValueChange={(value) => setPartnerId(value ?? "")}
+            >
               <SelectTrigger className="w-full rounded-input border-line-input bg-page px-3 py-2.5 font-sans text-[13.5px] text-ink">
                 <SelectValue placeholder="Pick a member" />
               </SelectTrigger>

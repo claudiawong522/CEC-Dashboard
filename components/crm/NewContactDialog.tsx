@@ -25,6 +25,10 @@ import {
 import { createContact } from "@/lib/actions/crm";
 import { CONTACT_TYPES, type ContactType } from "@/lib/validation/crm-schemas";
 
+const CONTACT_TYPE_ITEMS = Object.fromEntries(
+  CONTACT_TYPES.map((value) => [value, value.charAt(0).toUpperCase() + value.slice(1)]),
+);
+
 export function NewContactDialog() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
@@ -107,7 +111,11 @@ export function NewContactDialog() {
             </div>
             <div className="flex flex-col gap-1.5">
               <Label className="font-sans text-[12px] font-normal text-body">Kind</Label>
-              <Select value={type} onValueChange={(v) => setType((v ?? "speaker") as ContactType)}>
+              <Select
+                items={CONTACT_TYPE_ITEMS}
+                value={type}
+                onValueChange={(v) => setType((v ?? "speaker") as ContactType)}
+              >
                 <SelectTrigger className="w-full rounded-input border-line-input bg-page px-3 py-2.5 font-sans text-[13.5px] text-ink">
                   <SelectValue />
                 </SelectTrigger>

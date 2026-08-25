@@ -58,7 +58,11 @@ export function DraftCard({ contacts }: { contacts: { id: string; name: string }
           <div className="grid gap-[15px] sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
               <Label className="font-sans text-[12px] font-normal text-body">To</Label>
-              <Select value={contactId} onValueChange={(value) => setContactId(value ?? "")}>
+              <Select
+                items={Object.fromEntries(contacts.map((c) => [c.id, c.name]))}
+                value={contactId}
+                onValueChange={(value) => setContactId(value ?? "")}
+              >
                 <SelectTrigger className="w-full rounded-input border-line-input bg-page px-3 py-2.5 font-sans text-[13.5px] text-ink">
                   <SelectValue placeholder="Pick a contact" />
                 </SelectTrigger>

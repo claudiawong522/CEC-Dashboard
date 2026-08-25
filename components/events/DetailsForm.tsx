@@ -51,6 +51,9 @@ import type {
 } from "@/lib/types/events";
 import type { Profile } from "@/lib/auth/getSession";
 
+const REPEAT_LABELS = { weekly: "Weekly", biweekly: "Biweekly", monthly: "Monthly" };
+const ENDS_MODE_LABELS = { date: "On date", count: "After N times" };
+
 function filesFor(files: EventFileRow[], section: string) {
   return files
     .filter((f) => f.section === section)
@@ -291,6 +294,7 @@ export function DetailsForm({
             <div className="flex flex-1 flex-col gap-1.5">
               <Label className="font-sans text-[12px] font-normal text-body">Repeats</Label>
               <Select
+                items={REPEAT_LABELS}
                 value={repeatsFrequency}
                 onValueChange={(v) => setRepeatsFrequency(v as typeof repeatsFrequency)}
               >
@@ -307,6 +311,7 @@ export function DetailsForm({
             <div className="flex flex-1 flex-col gap-1.5">
               <Label className="font-sans text-[12px] font-normal text-body">Ends</Label>
               <Select
+                items={ENDS_MODE_LABELS}
                 value={repeatsEndsMode}
                 onValueChange={(v) => setRepeatsEndsMode(v as typeof repeatsEndsMode)}
               >

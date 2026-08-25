@@ -86,6 +86,11 @@ export function AttendanceRecorder({
     });
   }
 
+  const eventItems = {
+    [NO_EVENT]: "Not on the calendar",
+    ...Object.fromEntries(events.map((event) => [event.id, event.name])),
+  };
+
   return (
     <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[15px]">
       <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
@@ -95,7 +100,14 @@ export function AttendanceRecorder({
       <div className="grid gap-[15px] sm:grid-cols-3">
         <div className="flex flex-col gap-1.5">
           <Label className="font-sans text-[12px] font-normal text-body">Event</Label>
-          <Select value={eventId} onValueChange={(value) => setEventId(value ?? NO_EVENT)}>
+          {/* `items` is what makes <SelectValue /> show the label rather than
+              the raw value. Without it the trigger reads "__none__" and
+              "startup_hours" at people. */}
+          <Select
+            items={eventItems}
+            value={eventId}
+            onValueChange={(value) => setEventId(value ?? NO_EVENT)}
+          >
             <SelectTrigger className="w-full rounded-input border-line-input bg-page px-3 py-2.5 font-sans text-[13.5px] text-ink">
               <SelectValue />
             </SelectTrigger>
@@ -131,6 +143,7 @@ export function AttendanceRecorder({
         <div className="flex flex-col gap-1.5">
           <Label className="font-sans text-[12px] font-normal text-body">Kind</Label>
           <Select
+            items={EVENT_TYPE_LABELS}
             value={eventType}
             onValueChange={(value) => setEventType((value ?? "other") as AttendanceEventType)}
           >

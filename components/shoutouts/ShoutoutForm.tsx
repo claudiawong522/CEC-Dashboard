@@ -58,7 +58,17 @@ export function ShoutoutForm({ members }: { members: ChatPerson[] }) {
       <div className="grid gap-[15px] sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
           <Label className="font-sans text-[12px] font-normal text-body">Who?</Label>
-          <Select value={receiverId} onValueChange={(value) => setReceiverId(value ?? "")}>
+          {/* Without items the trigger showed the selected member's raw uuid. */}
+          <Select
+            items={{
+              ...Object.fromEntries(
+                members.map((member) => [member.id, member.full_name ?? member.email]),
+              ),
+              [OUTSIDER]: "Someone outside the club",
+            }}
+            value={receiverId}
+            onValueChange={(value) => setReceiverId(value ?? "")}
+          >
             <SelectTrigger className="w-full rounded-input border-line-input bg-page px-3 py-2.5 font-sans text-[13.5px] text-ink">
               <SelectValue placeholder="Pick a member" />
             </SelectTrigger>

@@ -165,6 +165,7 @@ export function CaptureCard() {
             </Field>
             <Field label="Kind">
               <Select
+                items={INTERACTION_KIND_LABELS}
                 value={proposal.interaction.kind}
                 onValueChange={(value) => setInteraction("kind", value ?? "note")}
               >

@@ -81,6 +81,7 @@ export function InteractionTimeline({
           <div className="flex flex-col gap-1.5">
             <Label className="font-sans text-[12px] font-normal text-body">Kind</Label>
             <Select
+              items={INTERACTION_KIND_LABELS}
               value={kind}
               onValueChange={(value) => setKind((value ?? "note") as InteractionKind)}
             >

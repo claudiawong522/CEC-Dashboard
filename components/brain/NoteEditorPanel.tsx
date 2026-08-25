@@ -229,7 +229,15 @@ function Picker({
   disabled?: boolean;
 }) {
   return (
-    <Select value={value} onValueChange={(next) => onChange(next ?? NONE)} disabled={disabled}>
+    <Select
+      items={{
+        ...(placeholder ? { [NONE]: placeholder } : {}),
+        ...Object.fromEntries(options.map((option) => [option.value, option.label])),
+      }}
+      value={value}
+      onValueChange={(next) => onChange(next ?? NONE)}
+      disabled={disabled}
+    >
       <SelectTrigger className="w-full rounded-input border-line-input bg-paper px-3 py-2.5 font-sans text-[13.5px] text-ink">
         <SelectValue />
       </SelectTrigger>

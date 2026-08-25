@@ -147,6 +147,7 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
         </Field>
         <Field label="Subteam">
           <Select
+            items={{ none: "No subteam", ...TEAM_LABELS }}
             value={draft.team}
             onValueChange={(value) => set("team", value as Team | "none")}
           >

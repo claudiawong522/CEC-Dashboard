@@ -168,7 +168,13 @@ export function ContactDetail({
             <Picker
               value={draft.type}
               onChange={(value) => set("type", value as ContactType)}
-              options={CONTACT_TYPES.map((value) => ({ value, label: value }))}
+              // Capitalised here rather than with a `capitalize` class: the
+              // class styled the dropdown but left the trigger showing the raw
+              // "speaker", since the label itself was the value.
+              options={CONTACT_TYPES.map((value) => ({
+                value,
+                label: value.charAt(0).toUpperCase() + value.slice(1),
+              }))}
             />
           </Field>
 
@@ -252,7 +258,16 @@ function Picker({
   placeholder?: string;
 }) {
   return (
-    <Select value={value} onValueChange={(next) => onChange(next ?? NONE)}>
+    <Select
+      // Without this the trigger shows the raw value: "identified", "exec",
+      // "__none__". The options are already here, so the label map is free.
+      items={{
+        ...(placeholder ? { [NONE]: placeholder } : {}),
+        ...Object.fromEntries(options.map((option) => [option.value, option.label])),
+      }}
+      value={value}
+      onValueChange={(next) => onChange(next ?? NONE)}
+    >
       <SelectTrigger className="w-full rounded-input border-line-input bg-paper px-3 py-2.5 font-sans text-[13.5px] text-ink">
         <SelectValue />
       </SelectTrigger>
