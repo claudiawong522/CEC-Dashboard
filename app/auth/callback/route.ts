@@ -7,6 +7,17 @@ export async function GET(request: Request) {
   const code = searchParams.get("code");
 
   if (!code) {
+    // Google itself turned them away, or the redirect arrived malformed.
+    // Both land here looking identical, and "unknown" on the login screen is
+    // all anyone ever saw — so say which it was, out loud, in the server log.
+    console.error(
+      "[auth/callback] no code in the redirect:",
+      JSON.stringify({
+        error: searchParams.get("error"),
+        error_code: searchParams.get("error_code"),
+        error_description: searchParams.get("error_description"),
+      }),
+    );
     return NextResponse.redirect(`${origin}/login?error=unknown`);
   }
 
@@ -14,6 +25,15 @@ export async function GET(request: Request) {
   const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error || !data.user?.email) {
+    // The failure this one usually hides is a stale sign-in secret: the app
+    // stores a one-time value when the person clicks "Sign in with Google"
+    // and checks it here, so an abandoned earlier attempt, a stale tab, or a
+    // cleared cookie breaks the exchange — and it works on the next try,
+    // which makes it maddening to chase without the real message.
+    console.error(
+      "[auth/callback] code exchange failed:",
+      error ? `${error.name}: ${error.message} (status ${error.status})` : "no email on the returned user",
+    );
     return NextResponse.redirect(`${origin}/login?error=unknown`);
   }
 
