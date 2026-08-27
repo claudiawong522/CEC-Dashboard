@@ -25,6 +25,16 @@ const localImageHosts = isDev
   : [];
 
 const nextConfig: NextConfig = {
+  // Testing the QR flow means opening the dev server from a phone on the same
+  // wifi, which is a different origin to localhost. Next blocks cross-origin
+  // dev resources by default, and the symptom is baffling: pages render, but
+  // every server action silently does nothing, so buttons look dead.
+  //
+  // Development only, and it never applies to a deployed build. Set
+  // DEV_LAN_HOST to your machine's LAN address when it changes.
+  allowedDevOrigins: isDev
+    ? [process.env.DEV_LAN_HOST ?? "10.48.143.150", "localhost", "127.0.0.1"]
+    : [],
   images: {
     // Next 16 refuses to optimise an image whose host resolves to a private
     // IP, which is a deliberate SSRF guard. The local Supabase stack is

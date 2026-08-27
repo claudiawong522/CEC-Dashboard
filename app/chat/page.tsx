@@ -9,8 +9,11 @@ import { CloudPuff } from "@/components/stickers/shapes";
 export const metadata = { title: "Chat with a member | CEC" };
 
 export default function ChatSignupPage() {
+  // overflow-hidden matters: the CloudPuff below is deliberately hung off the
+  // right edge, and unclipped it widens the document. On a 375px phone the page
+  // scrolled sideways to 455px.
   return (
-    <div className="relative flex min-h-svh flex-col bg-page">
+    <div className="relative flex min-h-svh flex-col overflow-hidden bg-page">
       <CloudPuff
         size={320}
         className="pointer-events-none absolute -top-24 -right-20 opacity-[0.16] blur-[2px]"
