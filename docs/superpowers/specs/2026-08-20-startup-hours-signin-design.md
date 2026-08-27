@@ -53,6 +53,12 @@ enabled event is running now and says nothing is on otherwise. A photographed
 poster is worthless on a non event night, and there is no per event QR to
 regenerate.
 
+**Correction, 2026-08-25.** This spec was written believing Startup Hours ran
+early evening with food around 7pm. The Luma listing for 2026-04-23 shows
+7:30pm to 9:00pm at eHub Collegetown, 90 minutes, with 81 marked as having gone.
+Every time below is read from the event row rather than assumed, so nothing in
+the code was wrong, but the reasoning about when people leave was.
+
 **Sign in stays open past 7pm.** Claudia: "if they come at 7, they still have to
 sign in". So 6:30 to 7 is guidance to attendees, not an enforced close. The window
 opens at the event's start time and closes at `event_end_time`, or three hours
@@ -121,13 +127,16 @@ count, plus each guest's history so a host can see this is someone's fourth visi
 
 ## Out of scope, deliberately
 
-**No blacklist.** Claudia asked to "check who's blacklisted" and this does not do
-it. Flagged during design and decided against for v1. Adding it later means a
-migration on `guests` plus an admin toggle, which is small, but it is not free.
+**No blacklist, and now deliberately never.** Claudia asked to "check who's
+blacklisted". Superseded on 2026-08-25 by gating the food instead: see
+`2026-08-25-food-gating-design.md`. A blacklist punishes after the fact, needs a
+maintained list of names, and asks a volunteer to make a judgement at the door.
+Releasing food partway through the event removes the incentive rather than
+policing it, and needs no list at all.
 
-**No detection of who took food and left.** The app cannot observe it. Any version
-of this needs either a second touch later in the evening or a host marking people
-by hand.
+**Detection of who took food and left** was listed here as impossible without
+"a second touch later in the evening". That second touch is exactly what the
+food gating adds.
 
 **No matchmaking.** `wants_to_meet` is captured so the data exists when matching is
 designed, but nothing reads it yet.
