@@ -15,12 +15,25 @@ export const CLUB_TIME_ZONE = "America/New_York";
 // to sign in.
 const DEFAULT_WINDOW_MINUTES = 180;
 
+// How long after the doors open before food is released, when an event has no
+// explicit time set. Startup Hours runs 7:30 to 9:00, so this lands at 8:15:
+// far enough in that leaving straight after eating still means having been
+// there for the half that matters.
+const DEFAULT_FOOD_DELAY_MINUTES = 45;
+
 export type WindowEvent = {
   id: string;
   event_date: string;
   event_time: string;
   event_end_time: string | null;
 };
+
+export type FoodEvent = WindowEvent & { food_opens_at: string | null };
+
+export type FoodState =
+  | { status: "not_yet"; opensAt: number }
+  | { status: "open" }
+  | { status: "too_late"; opensAt: number };
 
 export function normalizeEmail(raw: string): string {
   return raw.trim().toLowerCase();
@@ -97,4 +110,35 @@ export function pickCurrentEvent<T extends WindowEvent>(events: T[], nowMinutes:
   }
 
   return best?.event ?? null;
+}
+
+
+/** When food is released, in the same epoch-minute units as everything else. */
+export function foodOpensMinutes(event: FoodEvent): number {
+  const opens = dayNumber(event.event_date) * 1440;
+  if (event.food_opens_at) return opens + minutesIntoDay(event.food_opens_at);
+  return opens + minutesIntoDay(event.event_time) + DEFAULT_FOOD_DELAY_MINUTES;
+}
+
+/**
+ * Whether this person may collect food.
+ *
+ * The rule is deliberately one comparison: they had to be signed in *before*
+ * food opened. A rolling "you must have been here 45 minutes" window sounds
+ * fairer but drifts with the clock, so two people standing side by side can get
+ * different answers, which is impossible to defend at a food table.
+ *
+ * `signedInAtMinutes` is null for someone who never signed in tonight.
+ */
+export function foodState(
+  event: FoodEvent,
+  signedInAtMinutes: number | null,
+  nowMinutes: number,
+): FoodState {
+  const opensAt = foodOpensMinutes(event);
+  if (nowMinutes < opensAt) return { status: "not_yet", opensAt };
+  if (signedInAtMinutes === null || signedInAtMinutes > opensAt) {
+    return { status: "too_late", opensAt };
+  }
+  return { status: "open" };
 }

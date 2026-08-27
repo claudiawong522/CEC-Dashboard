@@ -5,6 +5,8 @@ import {
   pickCurrentEvent,
   wallClockNow,
   wallClockDate,
+  foodOpensMinutes,
+  foodState,
 } from "@/lib/utils/signin-window";
 
 const base = { id: "a", event_date: "2026-09-03", event_time: "18:30:00", event_end_time: null };
@@ -75,5 +77,58 @@ describe("pickCurrentEvent", () => {
   it("ignores an event on a different night", () => {
     const tomorrow = { ...base, id: "c", event_date: "2026-09-04" };
     expect(pickCurrentEvent([tomorrow], at("2026-09-03T23:00:00Z"))).toBeNull();
+  });
+});
+
+describe("foodOpensMinutes", () => {
+  const evening = {
+    id: "sh",
+    event_date: "2026-09-03",
+    event_time: "19:30:00",
+    event_end_time: "21:00:00",
+  };
+
+  it("defaults to 45 minutes after the doors, which is 8:15 for Startup Hours", () => {
+    const opens = foodOpensMinutes({ ...evening, food_opens_at: null });
+    const doors = signInWindow(evening).opensAt;
+    expect(opens - doors).toBe(45);
+  });
+
+  it("uses an explicit time when the event sets one", () => {
+    const opens = foodOpensMinutes({ ...evening, food_opens_at: "20:00:00" });
+    expect(opens - signInWindow(evening).opensAt).toBe(30);
+  });
+});
+
+describe("foodState", () => {
+  const evening = {
+    id: "sh",
+    event_date: "2026-09-03",
+    event_time: "19:30:00",
+    event_end_time: "21:00:00",
+    food_opens_at: null,
+  };
+  const opensAt = foodOpensMinutes(evening);
+  const doors = signInWindow(evening).opensAt;
+
+  it("is not open before the food time", () => {
+    expect(foodState(evening, doors, opensAt - 1).status).toBe("not_yet");
+  });
+
+  it("opens exactly on the minute", () => {
+    expect(foodState(evening, doors, opensAt).status).toBe("open");
+  });
+
+  it("feeds someone who signed in a minute before food opened", () => {
+    expect(foodState(evening, opensAt - 1, opensAt + 5).status).toBe("open");
+  });
+
+  it("refuses someone who signed in a minute after food opened", () => {
+    // The whole point: turning up at 8:16 for an 8:15 release gets nothing.
+    expect(foodState(evening, opensAt + 1, opensAt + 5).status).toBe("too_late");
+  });
+
+  it("refuses someone who never signed in at all", () => {
+    expect(foodState(evening, null, opensAt + 5).status).toBe("too_late");
   });
 });

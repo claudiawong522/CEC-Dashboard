@@ -4,7 +4,7 @@ import { useEffect, useOptimistic, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
-import { setEventSignIn } from "@/lib/actions/signin";
+import { setEventSignIn, setFoodClaimed } from "@/lib/actions/signin";
 import { composition } from "@/lib/utils/signin-copy";
 import type { SignInBoardRow } from "@/lib/types/signin";
 
@@ -51,11 +51,47 @@ export function SignInToggle({ eventId, enabled }: { eventId: string; enabled: b
   );
 }
 
+function FoodCell({ row }: { row: SignInBoardRow }) {
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  function toggle() {
+    startTransition(async () => {
+      const result = await setFoodClaimed(row.signinId, !row.foodClaimedAt);
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      router.refresh();
+    });
+  }
+
+  // A host marking someone fed by hand, for the dead phone case. The distinction
+  // between a self-scan and an override is kept in the database, so it shows
+  // here rather than both reading as a plain tick.
+  return (
+    <button
+      type="button"
+      disabled={isPending}
+      onClick={toggle}
+      className={`font-sans text-[11.5px] transition-colors duration-200 ${
+        row.foodClaimedAt
+          ? "text-teal hover:text-faint"
+          : "text-faint hover:text-ink"
+      }`}
+    >
+      {row.foodClaimedAt
+        ? `fed${row.foodClaimedByHost ? " by host" : ""} · undo`
+        : "mark fed"}
+    </button>
+  );
+}
+
 export function SignInBoard({
   event,
   roster,
 }: {
-  event: { name: string; venue: string } | null;
+  event: { name: string; venue: string; foodOpensAt: string; foodIsOpen: boolean } | null;
   roster: SignInBoardRow[];
 }) {
   const router = useRouter();
@@ -81,13 +117,15 @@ export function SignInBoard({
   }
 
   const newcomers = roster.filter((row) => row.visitNumber === 1).length;
+  const fed = roster.filter((row) => row.foodClaimedAt).length;
 
   return (
     <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div className="flex flex-col gap-[3px]">
           <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
-            signed in tonight · {event.venue}
+            signed in tonight · {event.venue} · food{" "}
+            {event.foodIsOpen ? `open, ${fed} of ${roster.length} fed` : `at ${event.foodOpensAt}`}
           </span>
           <p className="font-sans text-[19px] leading-[1.3] font-medium tracking-[-0.018em] text-ink">
             {event.name}
@@ -141,6 +179,7 @@ export function SignInBoard({
                 <span className="font-sans text-[12px] text-body">
                   {row.visitNumber === 1 ? "first visit" : `visit ${row.visitNumber}`}
                 </span>
+                <FoodCell row={row} />
               </div>
             </div>
           ))}

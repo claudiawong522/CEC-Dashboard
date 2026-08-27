@@ -28,6 +28,8 @@ begin
   delete from interactions where contact_id in (
     select id from outreach_contacts where name in ('Secret Speaker', 'Public Alum')
   );
+  delete from guest_signins where event_id in (select id from events where name = 'RLS Food Night');
+  delete from events where name = 'RLS Food Night';
   delete from guest_signins where guest_id in (
     select id from guests where email in ('walkin@example.com', 'member@cornell.edu', 'prospect@cornell.edu')
   );
@@ -588,6 +590,49 @@ begin
   reset role;
   if v_seen <> 0 then raise exception 'FAIL: a student saw % sign in rows', v_seen; end if;
   raise notice 'PASS: sign ins are members only';
+end $$;
+
+\echo '--- 26. a guest cannot mark themselves fed ---'
+do $$
+declare v_guest uuid; v_event uuid; v_signin uuid; v_rows int;
+begin
+  select id into v_guest from guests where email = 'walkin@example.com';
+  insert into events (name, event_date, event_end_date, event_time, event_end_time, venue, has_signin)
+  values ('RLS Food Night', current_date, current_date, '19:30', '21:00', 'eHub', true)
+  returning id into v_event;
+  insert into guest_signins (guest_id, event_id, signed_in_at)
+  values (v_guest, v_event, now() - interval '1 hour') returning id into v_signin;
+
+  -- The public path writes through the service role. Nobody holding a session
+  -- should be able to hand themselves food.
+  perform become_outsider('prospect@cornell.edu');
+  update guest_signins set food_claimed_at = now() where id = v_signin;
+  get diagnostics v_rows = ROW_COUNT;
+  reset role;
+  if v_rows <> 0 then raise exception 'FAIL: an outsider fed themselves'; end if;
+  raise notice 'PASS: 0 rows touched';
+end $$;
+
+\echo '--- 27. a member CAN mark someone fed, and only once ---'
+do $$
+declare v_signin uuid; v_rows int;
+begin
+  select s.id into v_signin from guest_signins s
+    join events e on e.id = s.event_id where e.name = 'RLS Food Night';
+
+  perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
+  update guest_signins
+     set food_claimed_at = now(), food_claimed_by = '22222222-2222-4222-8222-222222222222'
+   where id = v_signin and food_claimed_at is null;
+  get diagnostics v_rows = ROW_COUNT;
+  if v_rows <> 1 then reset role; raise exception 'FAIL: a member could not mark someone fed'; end if;
+
+  -- The conditional update is what stops a double claim.
+  update guest_signins set food_claimed_at = now() where id = v_signin and food_claimed_at is null;
+  get diagnostics v_rows = ROW_COUNT;
+  reset role;
+  if v_rows <> 0 then raise exception 'FAIL: food was claimed twice'; end if;
+  raise notice 'PASS: fed once, second claim matched nothing';
 end $$;
 
 \echo 'ALL CHECKS PASSED'

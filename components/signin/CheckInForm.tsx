@@ -5,13 +5,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { lookupGuest, submitSignIn } from "@/lib/actions/signin";
+import { claimFood, lookupGuest, submitSignIn } from "@/lib/actions/signin";
 import type { CurrentEvent } from "@/lib/types/signin";
 
 // Fields the person filling this in has no session and no account, so the
 // email is the whole identity. Everything stable about them is asked once,
 // ever; the per-night question is asked every time.
-type Step = "email" | "details" | "done";
+type Step = "email" | "details" | "done" | "food";
+
+// The netid of whoever last signed in on this device, so the food scan is one
+// tap rather than retyping. Never on the kiosk, which is shared: that laptop
+// must not offer the previous person's food.
+const REMEMBERED = "cec.checkin.email";
 
 const KIOSK_RESET_MS = 2500;
 
@@ -27,6 +32,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
   const [confirmation, setConfirmation] = useState<{ firstName: string; visitNumber: number } | null>(
     null,
   );
+  const [foodDone, setFoodDone] = useState(false);
   const [isPending, startTransition] = useTransition();
   const emailInput = useRef<HTMLInputElement>(null);
 
@@ -50,6 +56,51 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
     const timer = setTimeout(reset, KIOSK_RESET_MS);
     return () => clearTimeout(timer);
   }, [kiosk, step]);
+
+  useEffect(() => {
+    if (kiosk || !event.foodIsOpen) return;
+    try {
+      const remembered = window.localStorage.getItem(REMEMBERED);
+      if (remembered) {
+        // localStorage is exactly the "external system" this rule's own
+        // guidance carves out, and it cannot be read during render without a
+        // hydration mismatch: the server has no idea what this device knows.
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setEmail(remembered);
+        setStep("food");
+      }
+    } catch {
+      // Nothing remembered we can reach; they type it instead.
+    }
+  }, [kiosk, event.foodIsOpen]);
+
+  function getFood() {
+    setError(null);
+    startTransition(async () => {
+      const result = await claimFood(email);
+      switch (result.status) {
+        case "collected":
+          setConfirmation({ firstName: result.firstName, visitNumber: result.visitNumber });
+          setFoodDone(true);
+          setStep("food");
+          break;
+        case "already":
+          setError(`Already collected at ${result.at}.`);
+          break;
+        case "not_yet":
+          setError(`Food opens at ${result.opensAt}.`);
+          break;
+        case "not_signed_in":
+          setError("You need to have signed in before food opened.");
+          break;
+        case "closed":
+          setError("Nothing is running right now.");
+          break;
+        default:
+          setError(result.message);
+      }
+    });
+  }
 
   function continueFromEmail() {
     const typed = email.trim();
@@ -96,6 +147,15 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
         return;
       }
 
+      if (!kiosk) {
+        try {
+          window.localStorage.setItem(REMEMBERED, email.trim().toLowerCase());
+        } catch {
+          // Private browsing, or storage disabled. The food scan just asks for
+          // the address again, which is the pre-existing behaviour.
+        }
+      }
+
       setConfirmation({
         firstName: result.firstName ?? fullName.split(" ")[0],
         visitNumber: result.visitNumber ?? 1,
@@ -104,13 +164,11 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
     });
   }
 
-  if (step === "done" && confirmation) {
+  // The green pass, and only here. It used to fire the moment someone signed in,
+  // which handed out a food pass at the door: exactly the behaviour the gating
+  // exists to stop.
+  if (step === "food" && foodDone && confirmation) {
     return (
-      /* Deliberately loud. This screen gets held up at arm's length in front
-         of whoever is guarding the food, so the whole card is the signal: a
-         thick green outline readable across a room, not a small tick that has
-         to be squinted at in a queue. --teal is the brand's green; a new one
-         would only make the app less consistent to say the same thing. */
       <div className="flex flex-col items-center gap-[13px] rounded-[14px] border-[3px] border-teal bg-teal/[0.07] p-[27px] text-center shadow-[0_0_0_6px_rgba(63,167,137,0.12)]">
         <span
           aria-hidden
@@ -123,21 +181,87 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
 
         <div className="flex flex-col gap-[5px]">
           <span className="font-mono text-[9px] tracking-[0.13em] text-teal uppercase">
-            signed in
+            food
           </span>
-          <p className="font-sans text-[27px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-            {kiosk ? "You're in." : `You're in, ${confirmation.firstName}.`}
+          {/* The name is the anti-cheat: whoever is handing out food reads it,
+              so a screenshot of someone else's pass does not travel. */}
+          <p className="font-sans text-[31px] leading-[1.15] font-medium tracking-[-0.024em] text-ink">
+            {confirmation.firstName}
           </p>
           <p className="font-sans text-[13.5px] leading-[1.7] text-body">
             {confirmation.visitNumber > 1
-              ? `Visit number ${confirmation.visitNumber}. Good to see you back.`
+              ? `Visit number ${confirmation.visitNumber}.`
               : "First time here, welcome."}
           </p>
         </div>
 
         <p className="font-sans text-[13px] leading-[1.6] text-body">
-          Show this green screen at the food table.
+          Show this at the food table.
         </p>
+      </div>
+    );
+  }
+
+  // Signed in, waiting. Deliberately not green: nothing to collect yet.
+  if (step === "done" && confirmation) {
+    return (
+      <div className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
+        <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+          signed in
+        </span>
+        <p className="font-sans text-[23px] leading-[1.3] font-medium tracking-[-0.02em] text-ink">
+          {kiosk ? "You're in." : `You're in, ${confirmation.firstName}.`}
+        </p>
+        <p className="font-sans text-[13.5px] leading-[1.75] text-body">
+          {confirmation.visitNumber > 1
+            ? `Visit number ${confirmation.visitNumber}. Good to see you back.`
+            : "First time here, welcome."}
+        </p>
+        {!kiosk && (
+          <p className="font-sans text-[13px] leading-[1.7] text-body">
+            {event.foodIsOpen
+              ? "Food is out. Scan the code again to collect."
+              : `Food at ${event.foodOpensAt}. Scan this code again then and it'll turn green.`}
+          </p>
+        )}
+      </div>
+    );
+  }
+
+  // Food is open and this device knows who they are: one tap.
+  if (step === "food") {
+    return (
+      <div className="flex flex-col gap-[13px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
+        <div className="flex flex-col gap-[5px]">
+          <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+            {event.venue}
+          </span>
+          <p className="font-sans text-[23px] leading-[1.3] font-medium tracking-[-0.02em] text-ink">
+            Food is out.
+          </p>
+          <p className="font-sans text-[13.5px] leading-[1.75] text-body">
+            Collecting as {email}.
+          </p>
+        </div>
+
+        {error && <p className="font-sans text-[12px] text-destructive">{error}</p>}
+
+        <div className="flex items-center gap-[14px]">
+          <Button type="button" loading={isPending} onClick={getFood} className="px-5 py-3 text-[14px]">
+            Get food
+          </Button>
+          <button
+            type="button"
+            onClick={() => {
+              setStep("email");
+              setEmail("");
+              setError(null);
+            }}
+            className="font-sans text-[12.5px] text-faint transition-colors duration-200 hover:text-ink"
+          >
+            Not you?
+          </button>
+        </div>
       </div>
     );
   }

@@ -10,7 +10,12 @@ import { createServerClient } from "@supabase/ssr";
 // a single entry in this list. The same trap applies to `/checkin` and
 // `/signins`. Segment matching means a public route opens itself and its own
 // children, and nothing that merely starts with the same letters.
-const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/signout", "/checkin", "/chat"];
+// `/chat` is deliberately absent. The coffee chat signup is built and works,
+// but recruitment is settled for this semester and nobody is watching the
+// request pool. A public form feeding a queue no one reads is worse than no
+// form: someone writes in and waits for a reply that never comes. Put it back
+// here when recruitment reopens.
+const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/signout", "/checkin"];
 
 // Belt-and-suspenders alongside proxyConfig.matcher below: static asset
 // requests (CSS/JS chunks, images, fonts) must never hit the auth check —

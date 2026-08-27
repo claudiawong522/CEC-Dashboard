@@ -1,7 +1,13 @@
 // What the browser is allowed to know about tonight's event. Deliberately no
 // id: the public form has no use for one, and not sending it is what makes it
 // impossible for a tampered form to send one back.
-export type CurrentEvent = { name: string; venue: string };
+export type CurrentEvent = {
+  name: string;
+  venue: string;
+  /** Display clock, e.g. "8:15pm". */
+  foodOpensAt: string;
+  foodIsOpen: boolean;
+};
 
 export type GuestLookup = { known: boolean; fullName: string | null };
 
@@ -16,6 +22,8 @@ export type SignInBoardRow = {
   signedInAt: string;
   visitNumber: number;
   isMember: boolean;
+  foodClaimedAt: string | null;
+  foodClaimedByHost: boolean;
 };
 
 export type SignInEventRow = {
@@ -25,5 +33,6 @@ export type SignInEventRow = {
   event_date: string;
   event_time: string;
   event_end_time: string | null;
+  food_opens_at: string | null;
   has_signin: boolean;
 };

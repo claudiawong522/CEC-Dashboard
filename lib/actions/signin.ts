@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { requireRole } from "@/lib/auth/requireRole";
 import { actionFailed, actionOk, type ActionResult } from "@/lib/actions/result";
 import {
+  foodOpensMinutes,
+  foodState,
   normalizeEmail,
   pickCurrentEvent,
   wallClockDate,
@@ -39,7 +41,7 @@ async function resolveCurrentEvent(): Promise<SignInEventRow | null> {
   // disagreement between the server's date and Ithaca's.
   const { data, error } = await admin
     .from("events")
-    .select("id, name, venue, event_date, event_time, event_end_time, has_signin")
+    .select("id, name, venue, event_date, event_time, event_end_time, food_opens_at, has_signin")
     .eq("has_signin", true)
     .gte("event_date", shiftDate(today, -1))
     .lte("event_date", shiftDate(today, 1))
@@ -56,8 +58,130 @@ async function resolveCurrentEvent(): Promise<SignInEventRow | null> {
 export async function getCurrentSignInEvent(): Promise<CurrentEvent | null> {
   const event = await resolveCurrentEvent();
   if (!event) return null;
-  // Only what the poster on the door already says.
-  return { name: event.name, venue: event.venue };
+  // Only what the poster on the door already says, plus when food lands, which
+  // is the one thing everyone in the room wants to know.
+  return {
+    name: event.name,
+    venue: event.venue,
+    foodOpensAt: minutesToClock(foodOpensMinutes(event)),
+    foodIsOpen: wallClockNow() >= foodOpensMinutes(event),
+  };
+}
+
+/** "20:15" for a display clock, from the epoch-minute units used internally. */
+function minutesToClock(minutes: number): string {
+  const intoDay = ((minutes % 1440) + 1440) % 1440;
+  const h = Math.floor(intoDay / 60);
+  const m = intoDay % 60;
+  const display = h % 12 === 0 ? 12 : h % 12;
+  return `${display}:${String(m).padStart(2, "0")}${h < 12 ? "am" : "pm"}`;
+}
+
+export type FoodResult =
+  | { status: "collected"; firstName: string; visitNumber: number }
+  | { status: "already"; at: string }
+  | { status: "not_yet"; opensAt: string }
+  | { status: "not_signed_in" }
+  | { status: "closed" }
+  | { status: "error"; message: string };
+
+/**
+ * The second scan. Runs on the service role like the sign in, because the
+ * person holding the phone has no account.
+ *
+ * Everything is decided server side from the event row and their own sign in
+ * time. The browser sends an address and nothing else.
+ */
+export async function claimFood(rawEmail: string): Promise<FoodResult> {
+  const email = normalizeEmail(rawEmail);
+  if (!email.includes("@")) return { status: "not_signed_in" };
+
+  const event = await resolveCurrentEvent();
+  if (!event) return { status: "closed" };
+
+  const admin = createAdminClient();
+  const { data: guest } = await admin
+    .from("guests")
+    .select("id, full_name")
+    .eq("email", email)
+    .maybeSingle<{ id: string; full_name: string }>();
+
+  if (!guest) return { status: "not_signed_in" };
+
+  const { data: signin } = await admin
+    .from("guest_signins")
+    .select("id, signed_in_at, food_claimed_at")
+    .eq("guest_id", guest.id)
+    .eq("event_id", event.id)
+    .maybeSingle<{ id: string; signed_in_at: string; food_claimed_at: string | null }>();
+
+  if (!signin) return { status: "not_signed_in" };
+  if (signin.food_claimed_at) {
+    return { status: "already", at: clockFromIso(signin.food_claimed_at) };
+  }
+
+  const state = foodState(event, wallClockNow(new Date(signin.signed_in_at)), wallClockNow());
+  if (state.status === "not_yet") {
+    return { status: "not_yet", opensAt: minutesToClock(state.opensAt) };
+  }
+  if (state.status === "too_late") return { status: "not_signed_in" };
+
+  // `is null` is what makes a double tap safe: the second attempt matches no
+  // rows rather than overwriting the first claim's timestamp.
+  const { data: claimed, error } = await admin
+    .from("guest_signins")
+    .update({ food_claimed_at: new Date().toISOString() })
+    .eq("id", signin.id)
+    .is("food_claimed_at", null)
+    .select("id");
+
+  if (error) {
+    console.error("[signin] couldn't record a food claim:", error.message);
+    return { status: "error", message: "Couldn't do that, show this to a host" };
+  }
+  if (!claimed?.length) return { status: "already", at: "just now" };
+
+  const { count } = await admin
+    .from("guest_signins")
+    .select("id", { count: "exact", head: true })
+    .eq("guest_id", guest.id);
+
+  revalidatePath("/signins");
+  return {
+    status: "collected",
+    firstName: guest.full_name.split(" ")[0],
+    visitNumber: count ?? 1,
+  };
+}
+
+function clockFromIso(iso: string): string {
+  return new Date(iso)
+    .toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" })
+    .toLowerCase()
+    .replace(" ", "");
+}
+
+/** A host marking someone fed, or undoing it. Phones die. */
+export async function setFoodClaimed(
+  signinId: string,
+  claimed: boolean,
+): Promise<ActionResult> {
+  const session = await requireRole("edit");
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("guest_signins")
+    .update(
+      claimed
+        ? { food_claimed_at: new Date().toISOString(), food_claimed_by: session.profile.id }
+        : { food_claimed_at: null, food_claimed_by: null },
+    )
+    .eq("id", signinId);
+
+  if (error) return databaseFailure(claimed ? "mark them fed" : "undo that", error);
+
+  revalidatePath("/signins");
+  return actionOk();
 }
 
 /**

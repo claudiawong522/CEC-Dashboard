@@ -1,7 +1,12 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
-import { pickCurrentEvent, wallClockDate, wallClockNow } from "@/lib/utils/signin-window";
+import {
+  foodOpensMinutes,
+  pickCurrentEvent,
+  wallClockDate,
+  wallClockNow,
+} from "@/lib/utils/signin-window";
 import { formatEventDate, formatEventTime } from "@/lib/utils/format-event-time";
 import { SignInBoard, SignInToggle } from "@/components/signin/SignInBoard";
 import { Sticker } from "@/components/stickers/Sticker";
@@ -18,8 +23,19 @@ type SigninJoinRow = {
   wants_to_meet: string | null;
   source: "qr" | "kiosk";
   signed_in_at: string;
+  food_claimed_at: string | null;
+  food_claimed_by: string | null;
   guest: { full_name: string; email: string; profile_id: string | null } | null;
 };
+
+/** "8:15pm" from epoch minutes, for the header. */
+function minutesToClock(minutes: number): string {
+  const intoDay = ((minutes % 1440) + 1440) % 1440;
+  const h = Math.floor(intoDay / 60);
+  const m = intoDay % 60;
+  const display = h % 12 === 0 ? 12 : h % 12;
+  return `${display}:${String(m).padStart(2, "0")}${h < 12 ? "am" : "pm"}`;
+}
 
 function shiftDate(dateStr: string, days: number): string {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -38,7 +54,7 @@ export default async function SignInsPage() {
 
   const { data: nearby } = await supabase
     .from("events")
-    .select("id, name, venue, event_date, event_time, event_end_time, has_signin")
+    .select("id, name, venue, event_date, event_time, event_end_time, food_opens_at, has_signin")
     .gte("event_date", shiftDate(today, -1))
     .lte("event_date", shiftDate(today, 14))
     .order("event_date")
@@ -60,7 +76,7 @@ export default async function SignInsPage() {
     const { data: signins } = await supabase
       .from("guest_signins")
       .select(
-        "id, guest_id, wants_to_meet, source, signed_in_at, " +
+        "id, guest_id, wants_to_meet, source, signed_in_at, food_claimed_at, food_claimed_by, " +
           "guest:guests!guest_signins_guest_id_fkey(full_name, email, profile_id)",
       )
       .eq("event_id", tonight.id)
@@ -95,6 +111,8 @@ export default async function SignInsPage() {
       signedInAt: row.signed_in_at,
       visitNumber: visits.get(row.guest_id) ?? 1,
       isMember: !!row.guest?.profile_id,
+      foodClaimedAt: row.food_claimed_at,
+      foodClaimedByHost: !!row.food_claimed_by,
     }));
   }
 
@@ -117,7 +135,19 @@ export default async function SignInsPage() {
         </Sticker>
       </div>
 
-      <SignInBoard event={tonight ? { name: tonight.name, venue: tonight.venue } : null} roster={roster} />
+      <SignInBoard
+        event={
+          tonight
+            ? {
+                name: tonight.name,
+                venue: tonight.venue,
+                foodOpensAt: minutesToClock(foodOpensMinutes(tonight)),
+                foodIsOpen: wallClockNow() >= foodOpensMinutes(tonight),
+              }
+            : null
+        }
+        roster={roster}
+      />
 
       <div className="flex flex-col gap-[11px]">
         <div className="flex flex-col gap-[3px]">
