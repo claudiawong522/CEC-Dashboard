@@ -24,7 +24,9 @@ import {
   BotIcon,
   ShieldCheckIcon,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
+import { COFFEE_CHAT_SIGNUP_ENABLED } from "@/lib/features";
 import { BrandMark } from "@/components/app-shell/BrandMark";
 import { SidebarSeam } from "@/components/app-shell/SidebarSeam";
 import { Sticker } from "@/components/stickers/Sticker";
@@ -44,18 +46,30 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-const BASE_NAV_ITEMS = [
+// Grouped rather than one flat list. An admin sees eighteen destinations, and
+// undifferentiated they read as eighteen unrelated things: Notes and Brain sat
+// between Gallery and Members, CRM and External were separated by Agent. The
+// headings are the cheapest way to say what belongs with what.
+type NavItem = { href: string; label: string; icon: LucideIcon };
+type NavGroup = { heading: string; items: NavItem[] };
+
+const EVENT_ITEMS: NavItem[] = [
   { href: "/calendar", label: "Calendar", icon: CalendarDaysIcon },
   { href: "/todo", label: "Todo", icon: CheckSquareIcon },
   { href: "/past-events", label: "Past Events", icon: ArchiveIcon },
   { href: "/photos", label: "Gallery", icon: ImageIcon },
-  { href: "/notes", label: "Notes", icon: NotebookPenIcon },
-  { href: "/brain", label: "Brain", icon: BrainIcon },
-  { href: "/ask", label: "Ask", icon: SparklesIcon },
+];
+
+const PEOPLE_ITEMS: NavItem[] = [
   { href: "/members", label: "Members", icon: UsersRoundIcon },
   { href: "/coffee-chats", label: "Coffee Chats", icon: CoffeeIcon },
   { href: "/shoutouts", label: "Shoutouts", icon: MegaphoneIcon },
-  { href: "/chat-requests", label: "Chat Requests", icon: MessagesSquareIcon },
+];
+
+const KNOWLEDGE_ITEMS: NavItem[] = [
+  { href: "/notes", label: "Notes", icon: NotebookPenIcon },
+  { href: "/brain", label: "Brain", icon: BrainIcon },
+  { href: "/ask", label: "Ask", icon: SparklesIcon },
 ];
 
 export function AppShell({
@@ -70,31 +84,45 @@ export function AppShell({
   // External is a speaker-outreach pipeline with contact info that never
   // opted into being visible club-wide — admin-only end to end, unlike
   // every other nav destination, so it only appears for that role.
-  const navItems =
-    profile.role === "admin"
-      ? [
-          ...BASE_NAV_ITEMS,
+  // Attendance and Sign ins are the same job seen from two sides, so they sit
+  // together. Recruiting only appears when there is something in it.
+  const doorItems: NavItem[] =
+    profile.role === "view"
+      ? []
+      : [
           { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
           { href: "/signins", label: "Sign ins", icon: DoorOpenIcon },
-          { href: "/interviews", label: "Interviews", icon: UserRoundCheckIcon },
-          { href: "/crm", label: "CRM", icon: ContactIcon },
-          { href: "/agent", label: "Agent", icon: BotIcon },
-          { href: "/external", label: "External", icon: UsersIcon },
-          { href: "/admin", label: "Admin", icon: ShieldCheckIcon },
-        ]
-      : [
-          ...BASE_NAV_ITEMS,
-          // Taking attendance is an edit-role action, so a view-only account
-          // (alumni, anyone who should read without writing) doesn't get the
-          // nav item and the page redirects them away too.
-          ...(profile.role === "edit"
-            ? [
-                { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
-                { href: "/signins", label: "Sign ins", icon: DoorOpenIcon },
-              ]
-            : []),
-          { href: "/admin", label: "Admin", icon: ShieldCheckIcon },
         ];
+
+  const recruitingItems: NavItem[] = [
+    ...(COFFEE_CHAT_SIGNUP_ENABLED
+      ? [{ href: "/chat-requests", label: "Chat Requests", icon: MessagesSquareIcon }]
+      : []),
+    ...(profile.role === "admin"
+      ? [{ href: "/interviews", label: "Interviews", icon: UserRoundCheckIcon }]
+      : []),
+  ];
+
+  // Outreach is admin-only end to end: these hold contact details for people
+  // who never agreed to be visible club-wide.
+  const outreachItems: NavItem[] =
+    profile.role === "admin"
+      ? [
+          { href: "/crm", label: "CRM", icon: ContactIcon },
+          { href: "/external", label: "External", icon: UsersIcon },
+          { href: "/agent", label: "Agent", icon: BotIcon },
+        ]
+      : [];
+
+  const navGroups: NavGroup[] = [
+    { heading: "Events", items: EVENT_ITEMS },
+    { heading: "People", items: [...PEOPLE_ITEMS, ...doorItems] },
+    { heading: "Recruiting", items: recruitingItems },
+    { heading: "Outreach", items: outreachItems },
+    { heading: "Knowledge", items: KNOWLEDGE_ITEMS },
+    { heading: "Settings", items: [{ href: "/admin", label: "Admin", icon: ShieldCheckIcon }] },
+  ].filter((group) => group.items.length > 0);
+
   const router = useRouter();
   const signOutFormRef = useRef<HTMLFormElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -141,31 +169,40 @@ export function AppShell({
             />
           </form>
 
-          <nav className="flex flex-col gap-px">
-            {navItems.map((item) => {
-              const active =
-                pathname === item.href || pathname.startsWith(`${item.href}/`);
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={item.label}
-                  className={cn(
-                    "relative flex h-[42px] items-center justify-center gap-2.5 rounded-btn px-3.5 font-sans text-[14px] transition-colors duration-200 ease-brand md:justify-start",
-                    active
-                      ? "bg-cent-tint font-medium text-ink"
-                      : "font-normal text-faint hover:text-ink",
-                  )}
-                >
-                  {active && (
-                    <span className="absolute top-1.5 bottom-1.5 left-0 w-[2.5px] rounded-full bg-cent" />
-                  )}
-                  <Icon className="size-4 shrink-0" />
-                  <span className="hidden md:inline">{item.label}</span>
-                </Link>
-              );
-            })}
+          <nav className="flex flex-col gap-[13px]">
+            {navGroups.map((group) => (
+              <div key={group.heading} className="flex flex-col gap-px">
+                {/* Hidden on the icon-only rail, where a heading would be a
+                    truncated word above a column of glyphs. */}
+                <span className="hidden px-3.5 pb-1 font-mono text-[9px] tracking-[0.13em] text-faded uppercase md:block">
+                  {group.heading}
+                </span>
+                {group.items.map((item) => {
+                  const active =
+                    pathname === item.href || pathname.startsWith(`${item.href}/`);
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      title={item.label}
+                      className={cn(
+                        "relative flex h-[38px] items-center justify-center gap-2.5 rounded-btn px-3.5 font-sans text-[14px] transition-colors duration-200 ease-brand md:justify-start",
+                        active
+                          ? "bg-cent-tint font-medium text-ink"
+                          : "font-normal text-faint hover:text-ink",
+                      )}
+                    >
+                      {active && (
+                        <span className="absolute top-1.5 bottom-1.5 left-0 w-[2.5px] rounded-full bg-cent" />
+                      )}
+                      <Icon className="size-4 shrink-0" />
+                      <span className="hidden md:inline">{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            ))}
           </nav>
         </div>
 
