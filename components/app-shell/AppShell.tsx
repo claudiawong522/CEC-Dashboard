@@ -12,6 +12,8 @@ import {
   NotebookPenIcon,
   UsersIcon,
   ShieldCheckIcon,
+  DoorOpenIcon,
+  TrophyIcon,
 } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
 import { BrandMark } from "@/components/app-shell/BrandMark";
@@ -53,14 +55,31 @@ export function AppShell({
   // External is a speaker-outreach pipeline with contact info that never
   // opted into being visible club-wide — admin-only end to end, unlike
   // every other nav destination, so it only appears for that role.
+  // Working the door is edit-or-admin work, the same rule /signins enforces
+  // server side; a view-only account reads the club rather than running it.
+  // The leaderboard is the one half anyone signed in can see, because it is
+  // the thing being dangled in front of people who keep turning up.
+  const doorItems =
+    profile.role === "view"
+      ? [{ href: "/leaderboard", label: "Leaderboard", icon: TrophyIcon }]
+      : [
+          { href: "/signins", label: "Sign ins", icon: DoorOpenIcon },
+          { href: "/leaderboard", label: "Leaderboard", icon: TrophyIcon },
+        ];
+
   const navItems =
     profile.role === "admin"
       ? [
           ...BASE_NAV_ITEMS,
+          ...doorItems,
           { href: "/external", label: "External", icon: UsersIcon },
           { href: "/admin", label: "Admin", icon: ShieldCheckIcon },
         ]
-      : [...BASE_NAV_ITEMS, { href: "/admin", label: "Admin", icon: ShieldCheckIcon }];
+      : [
+          ...BASE_NAV_ITEMS,
+          ...doorItems,
+          { href: "/admin", label: "Admin", icon: ShieldCheckIcon },
+        ];
   const router = useRouter();
   const signOutFormRef = useRef<HTMLFormElement>(null);
   const [searchQuery, setSearchQuery] = useState("");
