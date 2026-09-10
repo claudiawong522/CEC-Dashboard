@@ -1,7 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/signout"];
+// Routes that work with no session at all. `/checkin` is the walk-in sign in:
+// the person holding the phone has no account and never will, which is the
+// whole point of it.
+const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/signout", "/checkin"];
 
 // Belt-and-suspenders alongside config.matcher below: static asset
 // requests (CSS/JS chunks, images, fonts) must never hit the auth check —
@@ -59,8 +62,14 @@ export async function proxy(request: NextRequest) {
   const { data: claims } = await supabase.auth.getClaims();
   const user = claims?.claims ?? null;
 
-  const isPublicPath = PUBLIC_PATHS.some((path) =>
-    request.nextUrl.pathname.startsWith(path),
+  // Matched per path segment, not by raw prefix. A plain startsWith would let
+  // "/checkin" here also open "/checkins-something", and the same trap is
+  // waiting for whoever adds "/signins" to this list next and quietly
+  // publishes the members-only door roster. Segment matching opens a public
+  // route and its own children, and nothing that merely starts with the same
+  // letters.
+  const isPublicPath = PUBLIC_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
   );
 
   if (!user && !isPublicPath) {
