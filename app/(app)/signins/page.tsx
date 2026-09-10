@@ -1,14 +1,9 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
-import {
-  foodOpensMinutes,
-  pickCurrentEvent,
-  wallClockDate,
-  wallClockNow,
-} from "@/lib/utils/signin-window";
+import { pickTodaysEvent, wallClockDate } from "@/lib/utils/signin-window";
 import { formatEventDate, formatEventTime } from "@/lib/utils/format-event-time";
-import { SignInBoard, SignInToggle } from "@/components/signin/SignInBoard";
+import { AttachSignIns, SignInBoard, SignInToggle } from "@/components/signin/SignInBoard";
 import { Sticker } from "@/components/stickers/Sticker";
 import { BeadRow } from "@/components/stickers/shapes";
 import type { SignInBoardRow, SignInEventRow } from "@/lib/types/signin";
@@ -20,22 +15,12 @@ export const dynamic = "force-dynamic";
 type SigninJoinRow = {
   id: string;
   guest_id: string;
-  wants_to_meet: string | null;
+  event_id: string | null;
+  answers: Record<string, string> | null;
   source: "qr" | "kiosk";
   signed_in_at: string;
-  food_claimed_at: string | null;
-  food_claimed_by: string | null;
   guest: { full_name: string; email: string; profile_id: string | null } | null;
 };
-
-/** "8:15pm" from epoch minutes, for the header. */
-function minutesToClock(minutes: number): string {
-  const intoDay = ((minutes % 1440) + 1440) % 1440;
-  const h = Math.floor(intoDay / 60);
-  const m = intoDay % 60;
-  const display = h % 12 === 0 ? 12 : h % 12;
-  return `${display}:${String(m).padStart(2, "0")}${h < 12 ? "am" : "pm"}`;
-}
 
 function shiftDate(dateStr: string, days: number): string {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -54,7 +39,7 @@ export default async function SignInsPage() {
 
   const { data: nearby } = await supabase
     .from("events")
-    .select("id, name, venue, event_date, event_time, event_end_time, food_opens_at, has_signin")
+    .select("id, name, venue, event_date, event_time, event_end_time, has_signin")
     .gte("event_date", shiftDate(today, -1))
     .lte("event_date", shiftDate(today, 14))
     .order("event_date")
@@ -62,60 +47,68 @@ export default async function SignInsPage() {
     .returns<SignInEventRow[]>();
 
   const events = nearby ?? [];
-  // Resolved exactly the way the public page resolves it, from the same clock
-  // and the same helper, so the two screens can never disagree about which
-  // event is running.
-  const tonight = pickCurrentEvent(
-    events.filter((event) => event.has_signin),
-    wallClockNow(),
+  // Resolved exactly the way the public page resolves it, from the same helper
+  // and the same date, so the two screens can never disagree about tonight.
+  const tonight = pickTodaysEvent(
+    events.filter((event) => event.has_signin && event.event_date === today),
   );
 
-  let roster: SignInBoardRow[] = [];
+  // Today's sign ins, by date rather than by event: the ones that arrived
+  // before anybody put the event on the calendar are still tonight's.
+  const { data: signins } = await supabase
+    .from("guest_signins")
+    .select(
+      "id, guest_id, event_id, answers, source, signed_in_at, " +
+        "guest:guests!guest_signins_guest_id_fkey(full_name, email, profile_id)",
+    )
+    .eq("signin_date", today)
+    .order("signed_in_at", { ascending: false })
+    .returns<SigninJoinRow[]>();
 
-  if (tonight) {
-    const { data: signins } = await supabase
-      .from("guest_signins")
-      .select(
-        "id, guest_id, wants_to_meet, source, signed_in_at, food_claimed_at, food_claimed_by, " +
-          "guest:guests!guest_signins_guest_id_fkey(full_name, email, profile_id)",
-      )
-      .eq("event_id", tonight.id)
-      .order("signed_in_at", { ascending: false })
-      .returns<SigninJoinRow[]>();
+  const rows = signins ?? [];
+  const guestIds = rows.map((row) => row.guest_id);
 
-    const rows = signins ?? [];
-    const guestIds = rows.map((row) => row.guest_id);
+  // "This is their fourth visit" is the single most useful thing on this
+  // screen, and it is one extra query rather than a count per row.
+  const { data: history } = guestIds.length
+    ? await supabase
+        .from("guest_signins")
+        .select("guest_id")
+        .in("guest_id", guestIds)
+        .returns<{ guest_id: string }[]>()
+    : { data: [] as { guest_id: string }[] };
 
-    // "This is their fourth visit" is the single most useful thing on this
-    // screen, and it is one extra query rather than a count per row.
-    const { data: history } = guestIds.length
-      ? await supabase
-          .from("guest_signins")
-          .select("guest_id")
-          .in("guest_id", guestIds)
-          .returns<{ guest_id: string }[]>()
-      : { data: [] as { guest_id: string }[] };
-
-    const visits = new Map<string, number>();
-    for (const row of history ?? []) {
-      visits.set(row.guest_id, (visits.get(row.guest_id) ?? 0) + 1);
-    }
-
-    roster = rows.map((row) => ({
-      signinId: row.id,
-      guestId: row.guest_id,
-      fullName: row.guest?.full_name ?? "Unknown",
-      email: row.guest?.email ?? "",
-      wantsToMeet: row.wants_to_meet,
-      source: row.source,
-      signedInAt: row.signed_in_at,
-      visitNumber: visits.get(row.guest_id) ?? 1,
-      isMember: !!row.guest?.profile_id,
-      foodClaimedAt: row.food_claimed_at,
-      foodClaimedByHost: !!row.food_claimed_by,
-    }));
+  const visits = new Map<string, number>();
+  for (const row of history ?? []) {
+    visits.set(row.guest_id, (visits.get(row.guest_id) ?? 0) + 1);
   }
 
+  // Answers are stored keyed by question id so a question can be reworded
+  // without orphaning them, which means the prompts have to be looked up to
+  // render. Inactive ones are included: last month's answers still deserve
+  // their question.
+  const { data: bank } = await supabase
+    .from("signin_questions")
+    .select("id, prompt")
+    .returns<{ id: string; prompt: string }[]>();
+
+  const prompts = new Map((bank ?? []).map((q) => [q.id, q.prompt]));
+
+  const roster: SignInBoardRow[] = rows.map((row) => ({
+    signinId: row.id,
+    guestId: row.guest_id,
+    fullName: row.guest?.full_name ?? "Unknown",
+    email: row.guest?.email ?? "",
+    answers: Object.entries(row.answers ?? {})
+      .filter(([, answer]) => !!answer)
+      .map(([id, answer]) => ({ prompt: prompts.get(id) ?? "Asked", answer })),
+    source: row.source,
+    signedInAt: row.signed_in_at,
+    visitNumber: visits.get(row.guest_id) ?? 1,
+    isMember: !!row.guest?.profile_id,
+  }));
+
+  const unattached = rows.filter((row) => !row.event_id).length;
   const upcoming = events.filter((event) => event.event_date >= today);
 
   return (
@@ -126,8 +119,9 @@ export default async function SignInsPage() {
             Sign ins
           </h1>
           <p className="max-w-[62ch] font-sans text-[13.5px] leading-[1.75] text-body">
-            Who walked in tonight. Anyone can sign in from the QR code, member or
-            not, Cornell or not. Member attendance still lives on Attendance.
+            Who walked in today. Anyone can sign in from the QR code, member or
+            not, Cornell or not, and food is open to everyone regardless. Member
+            attendance still lives on Attendance.
           </p>
         </div>
         <Sticker floatVariant="none" wrapperClassName="hidden shrink-0 sm:block">
@@ -136,25 +130,28 @@ export default async function SignInsPage() {
       </div>
 
       <SignInBoard
-        event={
-          tonight
-            ? {
-                name: tonight.name,
-                venue: tonight.venue,
-                foodOpensAt: minutesToClock(foodOpensMinutes(tonight)),
-                foodIsOpen: wallClockNow() >= foodOpensMinutes(tonight),
-              }
-            : null
-        }
+        event={tonight ? { name: tonight.name, venue: tonight.venue } : null}
         roster={roster}
       />
+
+      {/* Somebody forgot to add the event, and people are already signing in.
+          The sign ins are safe; this is the one click that files them. */}
+      {unattached > 0 && (
+        <AttachSignIns
+          date={today}
+          count={unattached}
+          events={upcoming
+            .filter((event) => event.event_date === today)
+            .map((event) => ({ id: event.id, name: event.name }))}
+        />
+      )}
 
       <div className="flex flex-col gap-[11px]">
         <div className="flex flex-col gap-[3px]">
           <p className="font-sans text-[14px] font-medium text-ink">Which events have a sign in</p>
           <p className="font-sans text-[12.5px] text-faint">
-            The QR code is permanent. It resolves whichever of these is running
-            when someone scans it, so a poster never needs reprinting.
+            The QR code is permanent and always works. Turning this on is what
+            files a day&rsquo;s sign ins under that event.
           </p>
         </div>
 

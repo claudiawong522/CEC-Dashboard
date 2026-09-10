@@ -5,11 +5,16 @@ import { Sticker } from "@/components/stickers/Sticker";
 import { CloudPuff } from "@/components/stickers/shapes";
 
 // One QR code, printed once, on a poster that gets reused every week. Which
-// event a scan belongs to is resolved from the clock rather than from the URL,
-// so there is nothing here to regenerate and a photographed poster is worthless
-// on a night with nothing on.
+// event a scan belongs to is resolved from today's date rather than from the
+// URL, so there is nothing here to regenerate.
 //
-// Never cached: the entire page is a question about what time it is.
+// The code always works. It used to open and close on a clock, which meant a
+// scan at 7:29, or at a one-off afternoon session nobody had added, showed
+// "nothing on" to somebody standing in the room. A sign in with no event
+// attached is a far smaller problem than a poster that looks broken, so the
+// form is always up and /signins attaches the strays afterwards.
+//
+// Never cached: the entire page is a question about what day it is.
 export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Sign in | CEC" };
@@ -43,22 +48,7 @@ export default async function CheckInPage({
       </header>
 
       <main className="relative z-10 mx-auto flex w-full max-w-[520px] flex-1 flex-col justify-center px-6 pt-4 pb-16">
-        {event ? (
-          <CheckInForm event={event} kiosk={isKiosk} />
-        ) : (
-          <div className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
-            <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
-              nothing on right now
-            </span>
-            <p className="font-sans text-[19px] leading-[1.35] font-medium tracking-[-0.018em] text-ink">
-              There&rsquo;s no event running at the moment.
-            </p>
-            <p className="font-sans text-[13.5px] leading-[1.75] text-body">
-              Startup Hours runs most weeks. Scan this same code again when
-              you&rsquo;re next in the room and it&rsquo;ll know which night it is.
-            </p>
-          </div>
-        )}
+        <CheckInForm event={event} kiosk={isKiosk} />
       </main>
     </div>
   );

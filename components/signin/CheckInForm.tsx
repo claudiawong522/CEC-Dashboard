@@ -5,20 +5,25 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { claimFood, lookupGuest, submitSignIn } from "@/lib/actions/signin";
+import { Sticker } from "@/components/stickers/Sticker";
+import { Confetti } from "@/components/stickers/shapes";
+import { lookupGuest, submitSignIn } from "@/lib/actions/signin";
+import { milestoneFor, visitLine, type SignInQuestion } from "@/lib/utils/signin-milestones";
 import type { CurrentEvent } from "@/lib/types/signin";
 
-// Fields the person filling this in has no session and no account, so the
-// email is the whole identity. Everything stable about them is asked once,
-// ever; the per-night question is asked every time.
-type Step = "email" | "details" | "done" | "food";
+// The person filling this in has no session and no account, so the email is
+// the whole identity, and it is asked first and on its own. Everything after
+// it depends on the answer: a returning attendee should never be handed a form
+// asking things they have already told us.
+type Step = "email" | "details" | "done";
 
-// The netid of whoever last signed in on this device, so the food scan is one
-// tap rather than retyping. Never on the kiosk, which is shared: that laptop
-// must not offer the previous person's food.
+// The address of whoever last signed in on this device, so a returning
+// attendee taps rather than types. Never on the kiosk, which is shared.
 const REMEMBERED = "cec.checkin.email";
 
-const KIOSK_RESET_MS = 2500;
+const KIOSK_RESET_MS = 3000;
+
+type Confirmation = { firstName: string; visitNumber: number; alreadyToday: boolean };
 
 export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: boolean }) {
   const [step, setStep] = useState<Step>("email");
@@ -26,13 +31,11 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
   const [fullName, setFullName] = useState("");
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [background, setBackground] = useState("");
-  const [wantsToMeet, setWantsToMeet] = useState("");
+  const [questions, setQuestions] = useState<SignInQuestion[]>([]);
+  const [answers, setAnswers] = useState<Record<string, string>>({});
   const [returning, setReturning] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [confirmation, setConfirmation] = useState<{ firstName: string; visitNumber: number } | null>(
-    null,
-  );
-  const [foodDone, setFoodDone] = useState(false);
+  const [confirmation, setConfirmation] = useState<Confirmation | null>(null);
   const [isPending, startTransition] = useTransition();
   const emailInput = useRef<HTMLInputElement>(null);
 
@@ -42,7 +45,8 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
     setFullName("");
     setLinkedinUrl("");
     setBackground("");
-    setWantsToMeet("");
+    setQuestions([]);
+    setAnswers({});
     setReturning(false);
     setError(null);
     setConfirmation(null);
@@ -57,50 +61,19 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
     return () => clearTimeout(timer);
   }, [kiosk, step]);
 
+  // Their own phone remembers them, so the second week is one tap on Continue.
   useEffect(() => {
-    if (kiosk || !event.foodIsOpen) return;
+    if (kiosk) return;
     try {
       const remembered = window.localStorage.getItem(REMEMBERED);
-      if (remembered) {
-        // localStorage is exactly the "external system" this rule's own
-        // guidance carves out, and it cannot be read during render without a
-        // hydration mismatch: the server has no idea what this device knows.
-        // eslint-disable-next-line react-hooks/set-state-in-effect
-        setEmail(remembered);
-        setStep("food");
-      }
+      // localStorage cannot be read during render without a hydration
+      // mismatch: the server has no idea what this device knows.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (remembered) setEmail(remembered);
     } catch {
-      // Nothing remembered we can reach; they type it instead.
+      // Private browsing, or storage disabled. They type it, as before.
     }
-  }, [kiosk, event.foodIsOpen]);
-
-  function getFood() {
-    setError(null);
-    startTransition(async () => {
-      const result = await claimFood(email);
-      switch (result.status) {
-        case "collected":
-          setConfirmation({ firstName: result.firstName, visitNumber: result.visitNumber });
-          setFoodDone(true);
-          setStep("food");
-          break;
-        case "already":
-          setError(`Already collected at ${result.at}.`);
-          break;
-        case "not_yet":
-          setError(`Food opens at ${result.opensAt}.`);
-          break;
-        case "not_signed_in":
-          setError("You need to have signed in before food opened.");
-          break;
-        case "closed":
-          setError("Nothing is running right now.");
-          break;
-        default:
-          setError(result.message);
-      }
-    });
-  }
+  }, [kiosk]);
 
   function continueFromEmail() {
     const typed = email.trim();
@@ -110,19 +83,37 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
     }
     setError(null);
 
-    // Kiosk mode never asks the long questions, so there is nothing to skip
-    // and no reason to make someone at a queue wait on a round trip.
-    if (kiosk) {
-      setStep("details");
-      return;
-    }
-
     startTransition(async () => {
       const found = await lookupGuest(typed);
+
+      // Already in tonight. A second scan, a new tab, a phone that lost the
+      // page: same visit, same tick, nothing to fill in again.
+      if (found.alreadyToday) {
+        remember(typed);
+        setConfirmation({
+          firstName: (found.fullName ?? "").split(" ")[0] || "you",
+          visitNumber: found.visitNumber,
+          alreadyToday: true,
+        });
+        setStep("done");
+        return;
+      }
+
       setReturning(found.known);
       if (found.fullName) setFullName(found.fullName);
+      // The kiosk is a queue at a door: it asks for a name and nothing else.
+      setQuestions(kiosk ? [] : found.questions);
       setStep("details");
     });
+  }
+
+  function remember(address: string) {
+    if (kiosk) return;
+    try {
+      window.localStorage.setItem(REMEMBERED, address.trim().toLowerCase());
+    } catch {
+      // Nothing to do; the next visit asks for the address again.
+    }
   }
 
   function submit() {
@@ -138,7 +129,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
         fullName,
         linkedinUrl,
         background,
-        wantsToMeet,
+        answers,
         source: kiosk ? "kiosk" : "qr",
       });
 
@@ -147,139 +138,104 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
         return;
       }
 
-      if (!kiosk) {
-        try {
-          window.localStorage.setItem(REMEMBERED, email.trim().toLowerCase());
-        } catch {
-          // Private browsing, or storage disabled. The food scan just asks for
-          // the address again, which is the pre-existing behaviour.
-        }
-      }
-
+      remember(email);
       setConfirmation({
         firstName: result.firstName ?? fullName.split(" ")[0],
         visitNumber: result.visitNumber ?? 1,
+        alreadyToday: false,
       });
       setStep("done");
     });
   }
 
-  // The green pass, and only here. It used to fire the moment someone signed in,
-  // which handed out a food pass at the door: exactly the behaviour the gating
-  // exists to stop.
-  if (step === "food" && foodDone && confirmation) {
-    return (
-      <div className="flex flex-col items-center gap-[13px] rounded-[14px] border-[3px] border-teal bg-teal/[0.07] p-[27px] text-center shadow-[0_0_0_6px_rgba(63,167,137,0.12)]">
-        <span
-          aria-hidden
-          className="flex h-[52px] w-[52px] items-center justify-center rounded-full bg-teal"
-        >
-          <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="white" strokeWidth={3} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 12.5l5.5 5.5L20 7" />
-          </svg>
-        </span>
-
-        <div className="flex flex-col gap-[5px]">
-          <span className="font-mono text-[9px] tracking-[0.13em] text-teal uppercase">
-            food
-          </span>
-          {/* The name is the anti-cheat: whoever is handing out food reads it,
-              so a screenshot of someone else's pass does not travel. */}
-          <p className="font-sans text-[31px] leading-[1.15] font-medium tracking-[-0.024em] text-ink">
-            {confirmation.firstName}
-          </p>
-          <p className="font-sans text-[13.5px] leading-[1.7] text-body">
-            {confirmation.visitNumber > 1
-              ? `Visit number ${confirmation.visitNumber}.`
-              : "First time here, welcome."}
-          </p>
-        </div>
-
-        <p className="font-sans text-[13px] leading-[1.6] text-body">
-          Show this at the food table.
-        </p>
-      </div>
-    );
-  }
-
-  // Signed in, waiting. Deliberately not green: nothing to collect yet.
+  // ---------------------------------------------------------------------------
+  // Signed in. This screen is the whole reward, and the only thing anyone is
+  // asked to show anybody, so it says who they are and how many nights they
+  // have been coming. Food is not mentioned: it is open to everyone, and a
+  // sign in screen that talks about food implies otherwise.
+  // ---------------------------------------------------------------------------
   if (step === "done" && confirmation) {
+    const milestone = milestoneFor(confirmation.visitNumber);
+
+    if (milestone && !kiosk) {
+      return (
+        <div className="relative flex flex-col items-center gap-[15px] overflow-hidden rounded-[14px] border border-[rgba(35,32,28,0.1)] bg-paper p-[27px] text-center">
+          {/* The one bright element on the page, per the kit: the CENT gradient,
+              here as the band that makes this feel like an occasion. */}
+          <span
+            aria-hidden
+            className="absolute inset-x-0 top-0 h-[3px]"
+            style={{ background: "var(--cent)" }}
+          />
+
+          <Sticker floatVariant="none" wrapperClassName="shrink-0">
+            <Confetti />
+          </Sticker>
+
+          <div className="flex flex-col gap-[7px]">
+            <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+              {confirmation.alreadyToday ? "already signed in" : "signed in"}
+            </span>
+            <p className="font-sans text-[31px] leading-[1.15] font-medium tracking-[-0.024em] text-ink">
+              {milestone.headline}
+            </p>
+            <p className="font-sans text-[15px] leading-[1.6] text-ink">
+              {confirmation.firstName}
+            </p>
+            <p className="mx-auto max-w-[34ch] font-sans text-[13.5px] leading-[1.75] text-body">
+              {milestone.note}
+            </p>
+          </div>
+
+          {confirmation.visitNumber > 1 && (
+            <p className="font-sans text-[12.5px] leading-[1.7] text-faint">
+              Every night you turn up counts toward the leaderboard.
+            </p>
+          )}
+        </div>
+      );
+    }
+
     return (
       <div className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
         <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
-          signed in
+          {confirmation.alreadyToday ? "already signed in" : "signed in"}
         </span>
         <p className="font-sans text-[23px] leading-[1.3] font-medium tracking-[-0.02em] text-ink">
           {kiosk ? "You're in." : `You're in, ${confirmation.firstName}.`}
         </p>
         <p className="font-sans text-[13.5px] leading-[1.75] text-body">
-          {confirmation.visitNumber > 1
-            ? `Visit number ${confirmation.visitNumber}. Good to see you back.`
-            : "First time here, welcome."}
+          {confirmation.alreadyToday
+            ? `Signed in already tonight. Visit number ${confirmation.visitNumber}.`
+            : visitLine(confirmation.visitNumber)}
         </p>
         {!kiosk && (
-          <p className="font-sans text-[13px] leading-[1.7] text-body">
-            {event.foodIsOpen
-              ? "Food is out. Scan the code again to collect."
-              : `Food at ${event.foodOpensAt}. Scan this code again then and it'll turn green.`}
+          <p className="font-sans text-[13px] leading-[1.7] text-faint">
+            Food&rsquo;s out for everyone, help yourself. Keep this page if you
+            need to show you signed in.
           </p>
         )}
       </div>
     );
   }
 
-  // Food is open and this device knows who they are: one tap.
-  if (step === "food") {
-    return (
-      <div className="flex flex-col gap-[13px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
-        <div className="flex flex-col gap-[5px]">
-          <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
-            {event.venue}
-          </span>
-          <p className="font-sans text-[23px] leading-[1.3] font-medium tracking-[-0.02em] text-ink">
-            Food is out.
-          </p>
-          <p className="font-sans text-[13.5px] leading-[1.75] text-body">
-            Collecting as {email}.
-          </p>
-        </div>
-
-        {error && <p className="font-sans text-[12px] text-destructive">{error}</p>}
-
-        <div className="flex items-center gap-[14px]">
-          <Button type="button" loading={isPending} onClick={getFood} className="px-5 py-3 text-[14px]">
-            Get food
-          </Button>
-          <button
-            type="button"
-            onClick={() => {
-              setStep("email");
-              setEmail("");
-              setError(null);
-            }}
-            className="font-sans text-[12.5px] text-faint transition-colors duration-200 hover:text-ink"
-          >
-            Not you?
-          </button>
-        </div>
-      </div>
-    );
-  }
-
+  // ---------------------------------------------------------------------------
+  // The form itself: email, then only what this particular person still owes us.
+  // ---------------------------------------------------------------------------
   return (
     <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
       <div className="flex flex-col gap-[5px]">
         <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
-          {event.venue}
+          {event ? event.venue : "cornell entrepreneurship club"}
         </span>
         <p className="font-sans text-[23px] leading-[1.3] font-medium tracking-[-0.02em] text-ink">
-          {event.name}
+          {event ? event.name : "Startup Hours"}
         </p>
         <p className="font-sans text-[13.5px] leading-[1.75] text-body">
           {step === "email"
             ? "Sign in with your email. No account needed."
             : returning
-              ? `Welcome back${fullName ? `, ${fullName.split(" ")[0]}` : ""}.`
+              ? `Welcome back${fullName ? `, ${fullName.split(" ")[0]}` : ""}. One question and you're done.`
               : "Just a couple of things, then you're done."}
         </p>
       </div>
@@ -363,22 +319,29 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
             </>
           )}
 
-          {!kiosk && (
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="wantsToMeet" className="font-sans text-[12px] font-normal text-body">
-                Anyone you&rsquo;re hoping to meet tonight?{" "}
-                <span className="text-faint">(optional)</span>
+          {/* Tonight's questions, drawn from the bank by audience. Everyone who
+              walks in on the same night gets the same ones, so the answers read
+              down the host's board as one conversation. */}
+          {questions.map((question) => (
+            <div key={question.id} className="flex flex-col gap-1.5">
+              <Label
+                htmlFor={`q-${question.id}`}
+                className="font-sans text-[12px] font-normal text-body"
+              >
+                {question.prompt} <span className="text-faint">(optional)</span>
               </Label>
               <Textarea
-                id="wantsToMeet"
+                id={`q-${question.id}`}
                 rows={2}
-                value={wantsToMeet}
-                onChange={(e) => setWantsToMeet(e.target.value)}
-                placeholder="Someone who's raised a pre-seed"
+                value={answers[question.id] ?? ""}
+                onChange={(e) =>
+                  setAnswers((prev) => ({ ...prev, [question.id]: e.target.value }))
+                }
+                placeholder={question.placeholder ?? ""}
                 className="text-[16px]"
               />
             </div>
-          )}
+          ))}
         </>
       )}
 

@@ -23,12 +23,12 @@ export const signInSchema = z.object({
     .max(500, "Keep it under 500 characters")
     .optional()
     .transform((v) => v || null),
-  wantsToMeet: z
-    .string()
-    .trim()
-    .max(500, "Keep it under 500 characters")
-    .optional()
-    .transform((v) => v || null),
+  // Answers to tonight's drawn questions, keyed by question id. The keys are
+  // checked against the bank server side; anything not in it is dropped rather
+  // than stored, so this cannot be used to write arbitrary JSON.
+  answers: z
+    .record(z.string().uuid(), z.string().trim().max(500, "Keep answers under 500 characters"))
+    .default({}),
   source: z.enum(["qr", "kiosk"]).default("qr"),
 });
 

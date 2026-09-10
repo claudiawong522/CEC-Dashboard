@@ -1,15 +1,27 @@
-// What the browser is allowed to know about tonight's event. Deliberately no
-// id: the public form has no use for one, and not sending it is what makes it
-// impossible for a tampered form to send one back.
+import type { SignInQuestion } from "@/lib/utils/signin-milestones";
+
+// What the browser is allowed to know about tonight. Deliberately no event id:
+// the public form has no use for one, and not sending it is what makes it
+// impossible for a tampered form to send one back. The sign in works whether
+// or not this is null, because somebody forgetting to put the event on the
+// calendar must not stop the door working.
 export type CurrentEvent = {
   name: string;
   venue: string;
-  /** Display clock, e.g. "8:15pm". */
-  foodOpensAt: string;
-  foodIsOpen: boolean;
-};
+} | null;
 
-export type GuestLookup = { known: boolean; fullName: string | null };
+// The answer to "have I seen this address before", which is the whole branch
+// the form turns on after the email step.
+export type GuestLookup = {
+  known: boolean;
+  fullName: string | null;
+  /** Already signed in today: there is nothing left to ask, show the tick. */
+  alreadyToday: boolean;
+  /** Which visit this is, or would be. Drives the milestone screen. */
+  visitNumber: number;
+  /** Tonight's questions for this person, drawn from the bank. */
+  questions: SignInQuestion[];
+};
 
 // One person on the host's live list.
 export type SignInBoardRow = {
@@ -17,13 +29,11 @@ export type SignInBoardRow = {
   guestId: string;
   fullName: string;
   email: string;
-  wantsToMeet: string | null;
+  answers: { prompt: string; answer: string }[];
   source: "qr" | "kiosk";
   signedInAt: string;
   visitNumber: number;
   isMember: boolean;
-  foodClaimedAt: string | null;
-  foodClaimedByHost: boolean;
 };
 
 export type SignInEventRow = {
@@ -33,6 +43,14 @@ export type SignInEventRow = {
   event_date: string;
   event_time: string;
   event_end_time: string | null;
-  food_opens_at: string | null;
   has_signin: boolean;
+};
+
+// One row of the semester leaderboard.
+export type LeaderboardRow = {
+  guestId: string;
+  fullName: string;
+  visits: number;
+  lastSeen: string;
+  isMember: boolean;
 };

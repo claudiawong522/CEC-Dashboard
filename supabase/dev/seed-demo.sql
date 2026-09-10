@@ -77,7 +77,9 @@ begin
          ('priya.q@cornell.edu','Priya Quinn','MechE, 2029')
   on conflict (email) do update set full_name = excluded.full_name;
 
-  insert into guest_signins (guest_id, event_id, source, signed_in_at)
-  select g.id, v_event, 'qr', now() - interval '90 min' from guests g
-  on conflict (guest_id, event_id) do nothing;
+  insert into guest_signins (guest_id, event_id, signin_date, source, signed_in_at)
+  select g.id, v_event, (now() at time zone 'America/New_York')::date, 'qr',
+         now() - interval '90 min'
+  from guests g
+  on conflict (guest_id, signin_date) do nothing;
 end $$;

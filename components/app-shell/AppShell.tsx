@@ -23,6 +23,7 @@ import {
   UserRoundCheckIcon,
   BotIcon,
   ShieldCheckIcon,
+  TrophyIcon,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
@@ -92,6 +93,7 @@ export function AppShell({
       : [
           { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
           { href: "/signins", label: "Sign ins", icon: DoorOpenIcon },
+          { href: "/leaderboard", label: "Leaderboard", icon: TrophyIcon },
         ];
 
   const recruitingItems: NavItem[] = [

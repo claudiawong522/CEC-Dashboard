@@ -1,39 +1,20 @@
-// Resolving "which event is running right now" is the one piece of the sign in
-// feature with no database in it, so it lives here and is tested directly.
+// Which event a scan belongs to, and what the confirmation screen says back.
+// The one part of the sign in with no database in it, so it lives here and is
+// tested directly.
 //
-// Everything is minutes since the Unix epoch *as read off a wall clock in
-// Ithaca*. `events` stores `event_date` (a date) and `event_time` (a time)
-// with no zone attached, so the naive `new Date(date + "T" + time)` reads them
-// in the server's zone, which is UTC in production and would put the window
-// four or five hours off. Comparing wall-clock minutes on both sides sidesteps
-// the whole problem without pulling in a timezone library.
+// The unit is the calendar day in Ithaca. `events` stores `event_date` (a
+// date) and `event_time` (a time) with no zone attached, and the server runs
+// in UTC in production, so anything that reads a clock has to say which clock.
+// Everything below that touches time is minutes since the Unix epoch *as read
+// off a wall clock in Ithaca*.
 
 export const CLUB_TIME_ZONE = "America/New_York";
 
-// How long a sign in stays open after the start when the event has no end time
-// recorded. Generous on purpose: people arrive late, take food, and still have
-// to sign in.
-const DEFAULT_WINDOW_MINUTES = 180;
-
-// How long after the doors open before food is released, when an event has no
-// explicit time set. Startup Hours runs 7:30 to 9:00, so this lands at 8:15:
-// far enough in that leaving straight after eating still means having been
-// there for the half that matters.
-const DEFAULT_FOOD_DELAY_MINUTES = 45;
-
-export type WindowEvent = {
+export type DayEvent = {
   id: string;
   event_date: string;
   event_time: string;
-  event_end_time: string | null;
 };
-
-export type FoodEvent = WindowEvent & { food_opens_at: string | null };
-
-export type FoodState =
-  | { status: "not_yet"; opensAt: number }
-  | { status: "open" }
-  | { status: "too_late"; opensAt: number };
 
 export function normalizeEmail(raw: string): string {
   return raw.trim().toLowerCase();
@@ -80,65 +61,31 @@ export function wallClockDate(now: Date = new Date(), timeZone: string = CLUB_TI
   }).format(now);
 }
 
-export function signInWindow(event: WindowEvent): { opensAt: number; closesAt: number } {
-  const start = minutesIntoDay(event.event_time);
-  const opensAt = dayNumber(event.event_date) * 1440 + start;
-
-  if (!event.event_end_time) return { opensAt, closesAt: opensAt + DEFAULT_WINDOW_MINUTES };
-
-  const end = minutesIntoDay(event.event_end_time);
-  // An event whose end reads earlier in the day than its start ran past
-  // midnight. All-day events (0004 writes 00:00 to 23:45) are unaffected.
-  const spansMidnight = end <= start;
-
-  return { opensAt, closesAt: opensAt + (spansMidnight ? end + 1440 - start : end - start) };
-}
-
 /**
- * The event a walk-in is signing in to. Only events already filtered to
- * `has_signin` should be passed in. When two windows overlap, the one that
- * started most recently wins, because that is the room the person is standing
- * in.
+ * The event a walk-in is signing in to: one of today's, with no window around
+ * it. A scan at 4pm for a one-off afternoon session finds the session, and a
+ * scan at 7:29 for a 7:30 start finds it too, because a poster that says
+ * "nothing on" while people are queuing at the door is the worse failure.
+ *
+ * Only events already filtered to `has_signin` and to today should be passed
+ * in. Two on the same day is the only case needing a rule: the one that has
+ * already started wins, and before any of them start, the first.
  */
-export function pickCurrentEvent<T extends WindowEvent>(events: T[], nowMinutes: number): T | null {
-  let best: { event: T; opensAt: number } | null = null;
+export function pickTodaysEvent<T extends DayEvent>(
+  events: T[],
+  nowMinutes: number = wallClockNow(),
+): T | null {
+  if (events.length === 0) return null;
 
-  for (const event of events) {
-    const { opensAt, closesAt } = signInWindow(event);
-    if (nowMinutes < opensAt || nowMinutes > closesAt) continue;
-    if (!best || opensAt > best.opensAt) best = { event, opensAt };
+  const byStart = [...events].sort(
+    (a, b) => minutesIntoDay(a.event_time) - minutesIntoDay(b.event_time),
+  );
+
+  let started: T | null = null;
+  for (const event of byStart) {
+    const startsAt = dayNumber(event.event_date) * 1440 + minutesIntoDay(event.event_time);
+    if (startsAt <= nowMinutes) started = event;
   }
 
-  return best?.event ?? null;
-}
-
-
-/** When food is released, in the same epoch-minute units as everything else. */
-export function foodOpensMinutes(event: FoodEvent): number {
-  const opens = dayNumber(event.event_date) * 1440;
-  if (event.food_opens_at) return opens + minutesIntoDay(event.food_opens_at);
-  return opens + minutesIntoDay(event.event_time) + DEFAULT_FOOD_DELAY_MINUTES;
-}
-
-/**
- * Whether this person may collect food.
- *
- * The rule is deliberately one comparison: they had to be signed in *before*
- * food opened. A rolling "you must have been here 45 minutes" window sounds
- * fairer but drifts with the clock, so two people standing side by side can get
- * different answers, which is impossible to defend at a food table.
- *
- * `signedInAtMinutes` is null for someone who never signed in tonight.
- */
-export function foodState(
-  event: FoodEvent,
-  signedInAtMinutes: number | null,
-  nowMinutes: number,
-): FoodState {
-  const opensAt = foodOpensMinutes(event);
-  if (nowMinutes < opensAt) return { status: "not_yet", opensAt };
-  if (signedInAtMinutes === null || signedInAtMinutes > opensAt) {
-    return { status: "too_late", opensAt };
-  }
-  return { status: "open" };
+  return started ?? byStart[0];
 }
