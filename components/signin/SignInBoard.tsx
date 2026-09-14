@@ -197,6 +197,29 @@ export function SignInBoard({
                 <span className="truncate font-mono text-[10px] tracking-[0.04em] text-faint">
                   {row.email}
                 </span>
+                {/* The standing facts, which is the point of the sign in
+                    asking for them. A host scanning this list wants to know
+                    who is in the room, not to go and look everyone up. */}
+                {(row.affiliation || row.linkedinUrl) && (
+                  <span className="flex flex-wrap items-baseline gap-x-2 gap-y-[2px] font-sans text-[12.5px] leading-[1.6] text-body">
+                    {row.affiliation && <span>{row.affiliation}</span>}
+                    {row.linkedinUrl && (
+                      <a
+                        href={row.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-[10px] tracking-[0.06em] text-faint uppercase underline decoration-[rgba(35,32,28,0.25)] underline-offset-[3px] transition-colors duration-200 hover:text-ink"
+                      >
+                        linkedin
+                      </a>
+                    )}
+                  </span>
+                )}
+                {row.background && (
+                  <span className="max-w-[52ch] font-sans text-[12.5px] leading-[1.6] text-body">
+                    {row.background}
+                  </span>
+                )}
                 {row.answers.map((answer) => (
                   <span
                     key={answer.prompt}

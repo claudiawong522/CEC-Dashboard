@@ -19,7 +19,14 @@ type SigninJoinRow = {
   answers: Record<string, string> | null;
   source: "qr" | "kiosk";
   signed_in_at: string;
-  guest: { full_name: string; email: string; profile_id: string | null } | null;
+  guest: {
+    full_name: string;
+    email: string;
+    profile_id: string | null;
+    linkedin_url: string | null;
+    affiliation: string | null;
+    background: string | null;
+  } | null;
 };
 
 function shiftDate(dateStr: string, days: number): string {
@@ -59,7 +66,8 @@ export default async function SignInsPage() {
     .from("guest_signins")
     .select(
       "id, guest_id, event_id, answers, source, signed_in_at, " +
-        "guest:guests!guest_signins_guest_id_fkey(full_name, email, profile_id)",
+        "guest:guests!guest_signins_guest_id_fkey(" +
+        "full_name, email, profile_id, linkedin_url, affiliation, background)",
     )
     .eq("signin_date", today)
     .order("signed_in_at", { ascending: false })
@@ -99,6 +107,9 @@ export default async function SignInsPage() {
     guestId: row.guest_id,
     fullName: row.guest?.full_name ?? "Unknown",
     email: row.guest?.email ?? "",
+    linkedinUrl: row.guest?.linkedin_url ?? null,
+    affiliation: row.guest?.affiliation ?? null,
+    background: row.guest?.background ?? null,
     answers: Object.entries(row.answers ?? {})
       .filter(([, answer]) => !!answer)
       .map(([id, answer]) => ({ prompt: prompts.get(id) ?? "Asked", answer })),

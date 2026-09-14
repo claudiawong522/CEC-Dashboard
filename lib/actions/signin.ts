@@ -13,7 +13,12 @@ import {
   type SignInQuestion,
 } from "@/lib/utils/signin-milestones";
 import { signInSchema, type SignInInput } from "@/lib/validation/signin-schemas";
-import type { CurrentEvent, GuestLookup, SignInEventRow } from "@/lib/types/signin";
+import type {
+  CurrentEvent,
+  GuestLookup,
+  MissingProfile,
+  SignInEventRow,
+} from "@/lib/types/signin";
 
 export type SignInResult = ActionResult & {
   firstName?: string;
@@ -78,6 +83,26 @@ async function questionBank(): Promise<SignInQuestion[]> {
   return data ?? [];
 }
 
+type GuestProfileRow = {
+  id: string;
+  full_name: string;
+  linkedin_url: string | null;
+  affiliation: string | null;
+  background: string | null;
+};
+
+// What is still blank on somebody's row. This, and not "are they new", is what
+// the form asks for: the people who signed in while these fields were optional
+// are returning guests with nothing on file, and the only way to ever fill
+// that in is to ask them the next time they scan.
+function missingProfile(guest: Partial<GuestProfileRow> | null): MissingProfile {
+  return {
+    linkedin: !guest?.linkedin_url?.trim(),
+    affiliation: !guest?.affiliation?.trim(),
+    background: !guest?.background?.trim(),
+  };
+}
+
 /**
  * The email step, which is the whole branch of the form.
  *
@@ -95,6 +120,7 @@ export async function lookupGuest(rawEmail: string): Promise<GuestLookup> {
     alreadyToday: false,
     visitNumber: 1,
     questions: [],
+    missing: { linkedin: true, affiliation: true, background: true },
   };
 
   const email = normalizeEmail(rawEmail);
@@ -106,9 +132,9 @@ export async function lookupGuest(rawEmail: string): Promise<GuestLookup> {
 
   const { data: guest } = await admin
     .from("guests")
-    .select("id, full_name")
+    .select("id, full_name, linkedin_url, affiliation, background")
     .eq("email", email)
-    .maybeSingle<{ id: string; full_name: string }>();
+    .maybeSingle<GuestProfileRow>();
 
   if (!guest) {
     return { ...empty, questions: pickQuestions(bank, "new", today, QUESTIONS_FOR_NEW) };
@@ -116,12 +142,22 @@ export async function lookupGuest(rawEmail: string): Promise<GuestLookup> {
 
   const { data: visits } = await admin
     .from("guest_signins")
-    .select("signin_date")
+    .select("signin_date, answers")
     .eq("guest_id", guest.id)
-    .returns<{ signin_date: string }[]>();
+    .returns<{ signin_date: string; answers: Record<string, string> | null }[]>();
 
   const history = visits ?? [];
   const alreadyToday = history.some((row) => row.signin_date === today);
+
+  // Everything this person has ever answered, so the bank hands them something
+  // new each week and eventually runs out. A blank answer does not count as
+  // asked: they skipped it, and it can come round again.
+  const answered = new Set<string>();
+  for (const visit of history) {
+    for (const [id, answer] of Object.entries(visit.answers ?? {})) {
+      if (answer?.trim()) answered.add(id);
+    }
+  }
 
   return {
     known: true,
@@ -130,7 +166,8 @@ export async function lookupGuest(rawEmail: string): Promise<GuestLookup> {
     // Already in tonight: this *is* their nth visit. Otherwise it is the one
     // they are about to make.
     visitNumber: alreadyToday ? history.length : history.length + 1,
-    questions: pickQuestions(bank, "returning", today, QUESTIONS_FOR_RETURNING),
+    questions: pickQuestions(bank, "returning", today, QUESTIONS_FOR_RETURNING, answered),
+    missing: missingProfile(guest),
   };
 }
 
@@ -138,10 +175,33 @@ export async function submitSignIn(input: SignInInput): Promise<SignInResult> {
   const parsed = signInSchema.safeParse(input);
   if (!parsed.success) return actionFailed(parsed.error.issues[0]?.message ?? "Check the form");
 
-  const { fullName, linkedinUrl, background, answers, source } = parsed.data;
+  const { fullName, linkedinUrl, affiliation, background, answers, source } = parsed.data;
   const email = normalizeEmail(parsed.data.email);
   const admin = createAdminClient();
   const today = wallClockDate();
+
+  // What we already hold on them, which decides two things: whether this
+  // submission is allowed to leave a required field blank, and whether their
+  // form was right to have hidden it in the first place.
+  const { data: existing } = await admin
+    .from("guests")
+    .select("id, full_name, linkedin_url, affiliation, background")
+    .eq("email", email)
+    .maybeSingle<GuestProfileRow>();
+
+  // The one rule that makes these fields required at all. The form already
+  // enforces it, but the form is a browser and this is not: a submission that
+  // would leave somebody's row as blank as it started is refused here.
+  const owed = missingProfile(existing);
+  const stillMissing: string[] = [];
+  if (owed.linkedin && !linkedinUrl) stillMissing.push("your LinkedIn");
+  if (owed.affiliation && !affiliation) stillMissing.push("your year and major");
+  if (owed.background && !background) stillMissing.push("what you're into");
+  if (stillMissing.length > 0) {
+    const last = stillMissing.pop() as string;
+    const list = stillMissing.length ? `${stillMissing.join(", ")} and ${last}` : last;
+    return actionFailed(`Add ${list} to sign in`);
+  }
 
   // Null when nobody added the event. The sign in still lands, keyed to the
   // day, and /signins offers to attach it.
@@ -162,10 +222,12 @@ export async function submitSignIn(input: SignInInput): Promise<SignInResult> {
       {
         email,
         full_name: fullName,
-        // A returning attendee whose form skipped the optional fields must not
-        // have last time's answers wiped, so blanks are omitted from the
-        // update rather than written as nulls.
+        // A returning attendee is only shown the fields still blank on their
+        // row, so everything they already told us arrives here empty. Blanks
+        // are omitted from the update rather than written as nulls, or every
+        // sign in would erase the visit before it.
         ...(linkedinUrl ? { linkedin_url: linkedinUrl } : {}),
+        ...(affiliation ? { affiliation } : {}),
         ...(background ? { background } : {}),
         ...(profile ? { profile_id: profile.id } : {}),
         updated_at: new Date().toISOString(),
