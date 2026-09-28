@@ -86,10 +86,14 @@ export function AppShell({
   // opted into being visible club-wide — admin-only end to end, unlike
   // every other nav destination, so it only appears for that role.
   // Attendance and Sign ins are the same job seen from two sides, so they sit
-  // together. Recruiting only appears when there is something in it.
+  // together. Working the door is edit-or-admin work, the same rule /signins
+  // enforces server side, so a view-only account gets none of it -- except the
+  // leaderboard, which anyone signed in can see, because it is the thing being
+  // dangled in front of people who keep turning up. Recruiting only appears
+  // when there is something in it.
   const doorItems: NavItem[] =
     profile.role === "view"
-      ? []
+      ? [{ href: "/leaderboard", label: "Leaderboard", icon: TrophyIcon }]
       : [
           { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
           { href: "/signins", label: "Sign ins", icon: DoorOpenIcon },

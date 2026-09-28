@@ -23,6 +23,42 @@ const REMEMBERED = "cec.checkin.email";
 
 const KIOSK_RESET_MS = 3000;
 
+// Where the next one is. The confirmation screen is the only moment we have
+// someone's attention with nothing left to ask them, and "when is the next
+// one" is the question a first-timer actually leaves with. Luma already
+// answers it and already handles the reminder email, so this hands off rather
+// than rebuilding any of that here.
+//
+// lu.ma/cornellec is the live calendar. The old lu.ma/cornell-entrepreneurship
+// slug 404s, and was hardcoded on the club site for a while before anyone
+// noticed, so it is worth not reintroducing.
+const LUMA_URL = "https://lu.ma/cornellec";
+
+function UpcomingEventsLink() {
+  return (
+    <a
+      href={LUMA_URL}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-[7px] rounded-[8px] border border-[rgba(35,32,28,0.14)] bg-page px-[15px] py-[9px] font-sans text-[13px] text-ink transition-colors duration-200 hover:bg-wash"
+    >
+      See what&rsquo;s coming up
+      <svg
+        aria-hidden
+        viewBox="0 0 24 24"
+        className="h-[13px] w-[13px] text-faint"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={2}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M7 17L17 7M17 7H8M17 7v9" />
+      </svg>
+    </a>
+  );
+}
+
 type Confirmation = { firstName: string; visitNumber: number; alreadyToday: boolean };
 
 export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: boolean }) {
@@ -192,6 +228,8 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
               Every night you turn up counts toward the leaderboard.
             </p>
           )}
+
+          <UpcomingEventsLink />
         </div>
       );
     }
@@ -214,6 +252,15 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
             Food&rsquo;s out for everyone, help yourself. Keep this page if you
             need to show you signed in.
           </p>
+        )}
+
+        {/* Not on the kiosk: that laptop is shared and resets in three
+            seconds, so a link nobody has time to tap is just clutter, and it
+            would open a browser tab on a machine at the door. */}
+        {!kiosk && (
+          <div className="pt-[3px]">
+            <UpcomingEventsLink />
+          </div>
         )}
       </div>
     );

@@ -2,14 +2,10 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 // Routes that work with no session at all: the walk-in sign in and the
-// prospective-member chat form, both by design.
+// prospective-member chat form, both by design. `/checkin` is the walk-in
+// sign in, where the person holding the phone has no account and never will,
+// which is the whole point of it.
 //
-// Matched per path segment, not by raw prefix. A plain startsWith would make
-// `/chat` here also match `/chat-requests`, which is the members-only pool of
-// prospective members and their contact details -- published to the internet by
-// a single entry in this list. The same trap applies to `/checkin` and
-// `/signins`. Segment matching means a public route opens itself and its own
-// children, and nothing that merely starts with the same letters.
 // `/chat` is deliberately absent. The coffee chat signup is built and works,
 // but recruitment is settled for this semester and nobody is watching the
 // request pool. A public form feeding a queue no one reads is worse than no
@@ -17,7 +13,7 @@ import { createServerClient } from "@supabase/ssr";
 // here when recruitment reopens.
 const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/signout", "/checkin"];
 
-// Belt-and-suspenders alongside proxyConfig.matcher below: static asset
+// Belt-and-suspenders alongside config.matcher below: static asset
 // requests (CSS/JS chunks, images, fonts) must never hit the auth check —
 // if they do, an unauthenticated request gets redirected to /login instead
 // of returning the asset, and the whole app renders unstyled.
@@ -51,10 +47,34 @@ export async function proxy(request: NextRequest) {
     },
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims(), not getUser(). getUser() is a network round-trip to the
+  // Supabase Auth server on *every* request this proxy sees — and that is
+  // every navigation, every RSC payload fetch, and every <Link> prefetch the
+  // sidebar fires on hover, so one page view could touch the auth API a
+  // dozen times before the page even settled. getClaims() verifies the
+  // access token's signature locally against the project's ES256 JWKS
+  // (fetched once and cached process-wide), so the check costs microseconds.
+  //
+  // It still calls getSession() underneath, which is what refreshes an
+  // expired token and writes the new cookies through setAll above — this
+  // proxy is the only place that refresh can be persisted, because
+  // lib/supabase/server.ts has to swallow cookie writes from Server
+  // Components. So the refresh behaviour is unchanged.
+  //
+  // A locally-verified token says "this signature is genuinely ours", not
+  // "this account is still allowed in". That second question is answered by
+  // lib/auth/getSession.ts, which checks profiles.status on every page and
+  // every server action. This gate is only the optimistic first pass, which
+  // is exactly what Next's docs say a proxy should be.
+  const { data: claims } = await supabase.auth.getClaims();
+  const user = claims?.claims ?? null;
 
+  // Matched per path segment, not by raw prefix. A plain startsWith would let
+  // "/checkin" here also open "/checkins-something", and the same trap is
+  // waiting for whoever adds "/signins" to this list next and quietly
+  // publishes the members-only door roster. Segment matching opens a public
+  // route and its own children, and nothing that merely starts with the same
+  // letters.
   const isPublicPath = PUBLIC_PATHS.some(
     (path) => pathname === path || pathname.startsWith(`${path}/`),
   );
@@ -75,11 +95,16 @@ export async function proxy(request: NextRequest) {
   return response;
 }
 
-export const proxyConfig = {
+export const config = {
   matcher: [
     /*
      * Run on everything except static assets and the favicon, so the
      * Supabase session cookie stays fresh on every navigation.
+     *
+     * The export has to be named `config` — Next reads that exact name out
+     * of the file at build time. It was `proxyConfig` before, which Next
+     * silently ignored, so this matcher never applied and the proxy ran on
+     * every single request.
      */
     "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
