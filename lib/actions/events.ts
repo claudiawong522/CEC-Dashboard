@@ -190,7 +190,7 @@ export async function deleteEvent(eventId: string, scope: "single" | "following"
       // The Storage API answers a remove it could not match with an empty
       // array and no error, so "nothing was deleted" and "everything was
       // deleted" look identical unless the count is checked. That is how the
-      // missing SELECT policy fixed in 0021 went unnoticed: the files stayed
+      // missing SELECT policy fixed in 0029 went unnoticed: the files stayed
       // in a public bucket while the UI said they were gone for good.
       if (removeError || (removed?.length ?? 0) < paths.length) {
         console.error(

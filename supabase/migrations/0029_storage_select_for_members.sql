@@ -15,8 +15,11 @@
 -- Reading is opened to any member rather than to edit/admin: the buckets are
 -- public already, so this grants no visibility that a plain URL did not, and
 -- deletion stays restricted by the existing storage_delete_edit_or_admin
--- policy. coffee-chats is untouched, having carried its own SELECT policy
--- since 0014.
+-- policy.
+--
+-- Numbered 0029 rather than alongside the fix it belongs to, because prod has
+-- already applied through 0027 and a lower number would never be picked up by
+-- `supabase db push`. 0028 is spoken for by the required-signin-details work.
 create policy "storage_select_members"
   on storage.objects for select to authenticated
   using (
