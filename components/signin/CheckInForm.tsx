@@ -9,7 +9,9 @@ import { Sticker } from "@/components/stickers/Sticker";
 import { Confetti } from "@/components/stickers/shapes";
 import { lookupGuest, submitSignIn } from "@/lib/actions/signin";
 import { milestoneFor, visitLine, type SignInQuestion } from "@/lib/utils/signin-milestones";
-import type { CurrentEvent } from "@/lib/types/signin";
+import { thingsLeft } from "@/lib/utils/signin-copy";
+import { normalizeLinkedIn } from "@/lib/utils/linkedin";
+import type { CurrentEvent, MissingProfile } from "@/lib/types/signin";
 
 // The person filling this in has no session and no account, so the email is
 // the whole identity, and it is asked first and on its own. Everything after
@@ -59,14 +61,22 @@ function UpcomingEventsLink() {
   );
 }
 
+// Nobody we know: everything is owed.
+const ALL_MISSING: MissingProfile = { linkedin: true, affiliation: true, background: true };
+
 type Confirmation = { firstName: string; visitNumber: number; alreadyToday: boolean };
 
 export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: boolean }) {
   const [step, setStep] = useState<Step>("email");
   const [email, setEmail] = useState("");
   const [fullName, setFullName] = useState("");
+  const [knownName, setKnownName] = useState(false);
   const [linkedinUrl, setLinkedinUrl] = useState("");
+  const [affiliation, setAffiliation] = useState("");
   const [background, setBackground] = useState("");
+  // Which standing fields this person still owes us. Everything starts owed,
+  // which is the right default for somebody we have never seen.
+  const [missing, setMissing] = useState<MissingProfile>(ALL_MISSING);
   const [questions, setQuestions] = useState<SignInQuestion[]>([]);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [returning, setReturning] = useState(false);
@@ -79,8 +89,11 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
     setStep("email");
     setEmail("");
     setFullName("");
+    setKnownName(false);
     setLinkedinUrl("");
+    setAffiliation("");
     setBackground("");
+    setMissing(ALL_MISSING);
     setQuestions([]);
     setAnswers({});
     setReturning(false);
@@ -135,10 +148,53 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
         return;
       }
 
+      const name = found.fullName;
       setReturning(found.known);
-      if (found.fullName) setFullName(found.fullName);
-      // The kiosk is a queue at a door: it asks for a name and nothing else.
-      setQuestions(kiosk ? [] : found.questions);
+      if (name) setFullName(name);
+      setKnownName(!!name);
+      setMissing(found.missing);
+      // The kiosk is a queue at a door. It still collects the standing facts,
+      // which are asked once ever, but not the night's questions, which are
+      // asked every week and are what turns a queue into a wait.
+      const drawn = kiosk ? [] : found.questions;
+      setQuestions(drawn);
+
+      // Nothing left to ask: their row is complete and they have worked
+      // through the bank, so the form has no business standing between them
+      // and the tick. This is the intended end state for a regular, not an
+      // edge case, and it is why the questions are per person.
+      const nothingToAsk =
+        !!name &&
+        !found.missing.linkedin &&
+        !found.missing.affiliation &&
+        !found.missing.background &&
+        drawn.length === 0;
+
+      if (name && nothingToAsk) {
+        const result = await submitSignIn({
+          email: typed,
+          fullName: name,
+          source: kiosk ? "kiosk" : "qr",
+        });
+
+        if (!result.ok) {
+          // Something the browser could not have known about. Show them the
+          // form rather than a dead end.
+          setError(result.message);
+          setStep("details");
+          return;
+        }
+
+        remember(typed);
+        setConfirmation({
+          firstName: result.firstName ?? name.split(" ")[0],
+          visitNumber: result.visitNumber ?? found.visitNumber,
+          alreadyToday: false,
+        });
+        setStep("done");
+        return;
+      }
+
       setStep("details");
     });
   }
@@ -157,6 +213,26 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
       setError("Enter your name");
       return;
     }
+    // Required, in the order they appear on screen, so the message always
+    // points at the first field somebody actually skipped.
+    if (missing.linkedin) {
+      if (!linkedinUrl.trim()) {
+        setError("Add your LinkedIn to sign in");
+        return;
+      }
+      if (!normalizeLinkedIn(linkedinUrl)) {
+        setError("That doesn't look like a LinkedIn profile. Paste the link from your profile page.");
+        return;
+      }
+    }
+    if (missing.affiliation && !affiliation.trim()) {
+      setError("Tell us your year and major, or what you do");
+      return;
+    }
+    if (missing.background && !background.trim()) {
+      setError("Tell us what you're into, a few words is plenty");
+      return;
+    }
     setError(null);
 
     startTransition(async () => {
@@ -164,6 +240,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
         email,
         fullName,
         linkedinUrl,
+        affiliation,
         background,
         answers,
         source: kiosk ? "kiosk" : "qr",
@@ -269,6 +346,20 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
   // ---------------------------------------------------------------------------
   // The form itself: email, then only what this particular person still owes us.
   // ---------------------------------------------------------------------------
+
+  // A returning guest whose name we hold is never asked for it again, on the
+  // kiosk either: the lookup already put it in state, and a box with your own
+  // name in it is a question you cannot answer wrong or usefully.
+  const showName = !knownName;
+  // Counted off what is actually rendered below, so the copy cannot promise
+  // "one question" above a form with none.
+  const asking =
+    (showName ? 1 : 0) +
+    (missing.linkedin ? 1 : 0) +
+    (missing.affiliation ? 1 : 0) +
+    (missing.background ? 1 : 0) +
+    questions.length;
+
   return (
     <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
       <div className="flex flex-col gap-[5px]">
@@ -282,8 +373,8 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
           {step === "email"
             ? "Sign in with your email. No account needed."
             : returning
-              ? `Welcome back${fullName ? `, ${fullName.split(" ")[0]}` : ""}. One question and you're done.`
-              : "Just a couple of things, then you're done."}
+              ? `Welcome back${fullName ? `, ${fullName.split(" ")[0]}` : ""}. ${thingsLeft(asking)}`
+              : "Just a few things, then you're done."}
         </p>
       </div>
 
@@ -313,9 +404,9 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
 
       {step === "details" && (
         <>
-          {/* A returning attendee already told us their name and background.
-              Asking again is how a sign in starts feeling like paperwork. */}
-          {(!returning || kiosk) && (
+          {/* A returning attendee already told us their name. Asking again is
+              how a sign in starts feeling like paperwork. */}
+          {showName && (
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="fullName" className="font-sans text-[12px] font-normal text-body">
                 Name
@@ -332,43 +423,72 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
             </div>
           )}
 
-          {!returning && !kiosk && (
-            <>
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="linkedinUrl" className="font-sans text-[12px] font-normal text-body">
-                  LinkedIn <span className="text-faint">(optional)</span>
-                </Label>
-                <Input
-                  id="linkedinUrl"
-                  type="url"
-                  inputMode="url"
-                  autoCapitalize="none"
-                  value={linkedinUrl}
-                  onChange={(e) => setLinkedinUrl(e.target.value)}
-                  placeholder="https://linkedin.com/in/…"
-                  className="py-3 text-[16px]"
-                />
-              </div>
-
-              <div className="flex flex-col gap-1.5">
-                <Label htmlFor="background" className="font-sans text-[12px] font-normal text-body">
-                  What are you into? <span className="text-faint">(optional)</span>
-                </Label>
-                <Textarea
-                  id="background"
-                  rows={2}
-                  value={background}
-                  onChange={(e) => setBackground(e.target.value)}
-                  placeholder="CS junior, building something in climate hardware"
-                  className="text-[16px]"
-                />
-              </div>
-            </>
+          {/* The standing facts. Asked of anybody whose row is still blank,
+              which includes regulars from the weeks when these were optional
+              and therefore, almost without exception, empty. Each one is asked
+              once ever: fill it in and no later sign in mentions it again. */}
+          {missing.linkedin && (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="linkedinUrl" className="font-sans text-[12px] font-normal text-body">
+                LinkedIn
+              </Label>
+              <Input
+                id="linkedinUrl"
+                type="text"
+                inputMode="url"
+                autoFocus={!showName}
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                value={linkedinUrl}
+                onChange={(e) => setLinkedinUrl(e.target.value)}
+                placeholder="linkedin.com/in/adalovelace"
+                className="py-3 text-[16px]"
+              />
+              <span className="font-sans text-[11.5px] leading-[1.6] text-faint">
+                Your profile link, or just your handle.
+              </span>
+            </div>
           )}
 
-          {/* Tonight's questions, drawn from the bank by audience. Everyone who
-              walks in on the same night gets the same ones, so the answers read
-              down the host's board as one conversation. */}
+          {missing.affiliation && (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="affiliation" className="font-sans text-[12px] font-normal text-body">
+                Year and major
+              </Label>
+              <Input
+                id="affiliation"
+                autoFocus={!showName && !missing.linkedin}
+                value={affiliation}
+                onChange={(e) => setAffiliation(e.target.value)}
+                placeholder="CS '27, or where you work"
+                className="py-3 text-[16px]"
+              />
+            </div>
+          )}
+
+          {missing.background && (
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="background" className="font-sans text-[12px] font-normal text-body">
+                What are you into?
+              </Label>
+              <Textarea
+                id="background"
+                rows={2}
+                autoFocus={!showName && !missing.linkedin && !missing.affiliation}
+                value={background}
+                onChange={(e) => setBackground(e.target.value)}
+                placeholder="Building something in climate hardware, or just curious"
+                className="text-[16px]"
+              />
+            </div>
+          )}
+
+          {/* Tonight's questions, drawn from the bank by audience and minus
+              everything this person has already answered, so a regular works
+              through the bank a couple at a time and eventually gets asked
+              nothing. Optional, unlike the fields above: an unanswered one
+              comes round again, a blank standing fact never does. */}
           {questions.map((question) => (
             <div key={question.id} className="flex flex-col gap-1.5">
               <Label

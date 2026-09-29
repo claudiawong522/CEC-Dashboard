@@ -74,4 +74,24 @@ describe("pickQuestions", () => {
   it("never asks for more than the bank holds", () => {
     expect(pickQuestions(bank, "returning", "2026-09-10", 9)).toHaveLength(2);
   });
+
+  it("never asks the same person the same question twice", () => {
+    const answered = new Set(["b"]);
+    const asked = pickQuestions(bank, "returning", "2026-09-10", 4, answered).map((x) => x.id);
+    expect(asked).toEqual(["c"]);
+  });
+
+  it("runs out for someone who has worked through the bank", () => {
+    // The end state the form is built around: a regular with nothing left to
+    // answer goes straight to the tick.
+    const answered = new Set(["b", "c"]);
+    expect(pickQuestions(bank, "returning", "2026-09-10", 4, answered)).toEqual([]);
+  });
+
+  it("still fills the ask from what is left", () => {
+    const answered = new Set(["a"]);
+    const asked = pickQuestions(bank, "new", "2026-09-10", 2, answered).map((x) => x.id);
+    expect(asked).toHaveLength(2);
+    expect(asked).not.toContain("a");
+  });
 });

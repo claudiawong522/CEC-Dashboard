@@ -70,26 +70,40 @@ function hash(input: string): number {
 /**
  * Which questions tonight asks this person.
  *
- * Seeded by the date, so everyone who walks in on the same night answers the
- * same questions and the answers read down the host's board as one
- * conversation rather than a pile of unrelated ones. Change the bank and
- * tomorrow shuffles; nobody's night changes under them mid-event.
+ * Two rules, and the order they are applied in is the whole design.
+ *
+ * Nothing already answered is ever asked again. A regular works through the
+ * bank a couple of questions at a time and then, having answered all of it,
+ * is asked nothing and signs in on one tap. That is the intended end state,
+ * not a degenerate one: the reward for turning up every week is a form that
+ * gets shorter, and the bank grows when there is something new worth asking.
+ *
+ * What is left is ordered by a hash of the date, so the people who walk in on
+ * the same night with the same questions still owing get them in the same
+ * order, and the host's board reads as one conversation rather than a pile of
+ * unrelated ones. Change the bank and tomorrow reshuffles; nobody's night
+ * changes under them mid-event.
  */
 export function pickQuestions(
   bank: SignInQuestion[],
   audience: "new" | "returning",
   seed: string,
   count: number,
+  /** Question ids this person has already answered, on any past visit. */
+  answered: ReadonlySet<string> = new Set(),
 ): SignInQuestion[] {
-  const eligible = bank.filter((q) => q.audience === audience || q.audience === "both");
+  const eligible = bank.filter(
+    (q) => (q.audience === audience || q.audience === "both") && !answered.has(q.id),
+  );
 
   return [...eligible]
     .sort((a, b) => hash(seed + a.id) - hash(seed + b.id))
     .slice(0, count);
 }
 
-// How many to ask. A first-timer is telling us who they are and will sit
-// through two; someone on their ninth visit standing in a doorway will not, so
-// they get one.
+// How many to ask per visit. A first-timer is already handing over a name, a
+// LinkedIn and what they are into, so two on top of that is the ceiling.
+// Someone returning owes none of that and can spare the same two, which is
+// what works a regular through the bank in a few weeks rather than a year.
 export const QUESTIONS_FOR_NEW = 2;
-export const QUESTIONS_FOR_RETURNING = 1;
+export const QUESTIONS_FOR_RETURNING = 2;
