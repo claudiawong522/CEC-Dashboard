@@ -12,6 +12,7 @@ import {
   type CycleInput,
   type SlotInput,
 } from "@/lib/validation/interview-schemas";
+import { ithacaInstant } from "@/lib/utils/signin-window";
 
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[interviews] couldn't ${what}:`, error.message);
@@ -72,7 +73,11 @@ export async function addSlots(input: SlotInput): Promise<ActionResult> {
   }
   const { cycleId, date, startTime, durationMinutes, count, location, interviewerId } = parsed.data;
 
-  const start = new Date(`${date}T${startTime}:00`);
+  // An interviewer types a date and a time meaning Ithaca, and these columns
+  // are timestamptz. `new Date(`${date}T${startTime}:00`)` has no zone, so it
+  // meant the server's, which is UTC on Vercel: every slot was stored four or
+  // five hours early and an applicant would have seen a 2pm interview as 9am.
+  const start = ithacaInstant(date, startTime);
   if (Number.isNaN(start.getTime())) return actionFailed("That date and time don't parse");
 
   // A block of back-to-back slots, because that is how interview days are

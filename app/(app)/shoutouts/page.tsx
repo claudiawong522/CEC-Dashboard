@@ -41,7 +41,17 @@ export default async function ShoutoutsPage() {
 
   // Hidden shoutouts are filtered here rather than by policy, so an admin can
   // still see them in order to put one back.
-  const visible = (shoutouts ?? []).filter((shoutout) => isAdmin || !shoutout.hidden);
+  const visible = (shoutouts ?? [])
+    .filter((shoutout) => isAdmin || !shoutout.hidden)
+    // Anonymity has to happen here, not at render. ShoutoutWall is a client
+    // component, so anything handed to it is serialized into the page for the
+    // browser to read, and it was being handed the giver's name and email on
+    // every anonymous shoutout. It drew "someone" for non-admins while the
+    // real name sat in the payload underneath. An admin still gets the name,
+    // because moderating the wall is the whole reason for hiding one.
+    .map((shoutout) =>
+      shoutout.is_anonymous && !isAdmin ? { ...shoutout, giver: null } : shoutout,
+    );
 
   return (
     <div className="relative flex flex-col gap-[17px]">

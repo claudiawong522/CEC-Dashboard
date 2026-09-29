@@ -2,6 +2,8 @@
 // There's no stored "term" column, so it's derived from the event date: Aug-Dec is Fall of that
 // year, Jan-Jul is Spring of that year (Cornell doesn't run CEC programming in summer, so the
 // spring/summer boundary doesn't need its own bucket).
+import { wallClockDate } from "@/lib/utils/signin-window";
+
 export type Term = { key: string; season: "Fall" | "Spring"; color: string };
 
 export function getEventTerm(dateStr: string): Term {
@@ -18,9 +20,14 @@ export function getEventTerm(dateStr: string): Term {
 // person's bingo board, their shoutouts and their attendance all agree on
 // which semester they belong to, and so a term seal renders identically
 // wherever it appears.
+// The date is read off an Ithaca wall clock, not the server's. getMonth() and
+// getFullYear() are local to whatever zone the process runs in, which is UTC on
+// Vercel, so between 19:00 and midnight on 31 December the server had already
+// rolled into January and filed shoutouts, coffee chats and attendance under
+// S27 instead of F26. Those rows carry no date to re-derive a term from, so the
+// misfile is silent and permanent. Same story each 31 July in reverse.
 export function currentTermKey(today: Date = new Date()): string {
-  const dateStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-01`;
-  return getEventTerm(dateStr).key;
+  return getEventTerm(wallClockDate(today)).key;
 }
 
 export function termFromKey(key: string): Term {
