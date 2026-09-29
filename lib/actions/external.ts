@@ -35,7 +35,7 @@ export async function createIdea(name: string) {
     .single();
   if (error || !idea) throw new Error(error?.message ?? "Failed to add lead");
 
-  // Since 0016 a person on a pitch is a pointer at a CRM contact, so the
+  // Since 0037 a person on a pitch is a pointer at a CRM contact, so the
   // quick-add's name creates the contact and the join row points at it.
   const { data: contact, error: contactError } = await supabase
     .from("outreach_contacts")

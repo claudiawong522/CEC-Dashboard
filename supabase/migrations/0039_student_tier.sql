@@ -7,7 +7,7 @@
 -- The problem: 0001's profiles select policy is `using (true)` for anyone
 -- authenticated. Members are the only authenticated callers today, so that is
 -- currently fine. The moment a non-member can hold a session, it hands them
--- the entire directory — every member's email and, after 0009, their netid.
+-- the entire directory — every member's email and, after 0030, their netid.
 -- Introducing the student tier without changing this would be the leak.
 --
 -- RLS gates rows, not columns, so this needs both halves: restrict the table
@@ -91,7 +91,7 @@ create unique index chat_requests_one_open_per_pair_idx
 -- ---------------------------------------------------------------------------
 -- 4. The chat request itself must name a member who is actually open
 -- ---------------------------------------------------------------------------
--- 0013's insert policy checks that the student is writing in their own name.
+-- 0034's insert policy checks that the student is writing in their own name.
 -- It does not check the other side: nothing stopped a request being addressed
 -- to a member who never opted in, or who has left.
 create or replace function app_member_open_to_chats(p_profile uuid)

@@ -1,4 +1,4 @@
--- Verifies the access rules added by 0009-0015 by acting as real callers.
+-- Verifies the access rules added by 0030-0036 by acting as real callers.
 -- Runs as the `authenticated` role with a JWT claim set, which is exactly how
 -- PostgREST executes a request, so the policies are exercised, not described.
 \set ON_ERROR_STOP on
@@ -28,8 +28,8 @@ begin
   delete from interactions where contact_id in (
     select id from outreach_contacts where name in ('Secret Speaker', 'Public Alum')
   );
-  delete from guest_signins where event_id in (select id from events where name = 'RLS Food Night');
-  delete from events where name = 'RLS Food Night';
+  delete from guest_signins where event_id in (select id from events where name = 'RLS Door Night');
+  delete from events where name = 'RLS Door Night';
   delete from guest_signins where guest_id in (
     select id from guests where email in ('walkin@example.com', 'member@cornell.edu', 'prospect@cornell.edu')
   );
@@ -74,7 +74,7 @@ values
 insert into profiles (id, email, full_name, role, status, open_to_chats, chat_blurb)
 values
   ('11111111-1111-4111-8111-111111111111', 'admin@cornell.edu', 'Ada Admin', 'admin', 'active', false, null),
-  -- Opted in, because 0018 refuses a chat request aimed at someone who isn't.
+  -- Opted in, because 0039 refuses a chat request aimed at someone who isn't.
   ('22222222-2222-4222-8222-222222222222', 'member@cornell.edu', 'Mo Member', 'edit', 'active', true, 'Happy to talk hardware.');
 
 create or replace function become(p_user uuid, p_email text) returns void language plpgsql as $$
@@ -177,7 +177,7 @@ declare v_rows int; v_id uuid;
 begin
   select id into v_id from chat_requests where student_email = 'prospect@cornell.edu';
 
-  -- The check that would have caught 0022 shipping an admin-only UPDATE
+  -- The check that would have caught 0041 shipping an admin-only UPDATE
   -- policy: claiming is the entire feature, and an 'edit' member does it.
   perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
   update chat_requests
@@ -415,9 +415,9 @@ do $$
 declare v_kind text; v_rows int;
 begin
   select kind into v_kind from brain_notes where id = '00000000-0000-0000-0000-000000000002';
-  if v_kind is distinct from 'doc' then raise exception 'FAIL: club doc missing after 0017'; end if;
+  if v_kind is distinct from 'doc' then raise exception 'FAIL: club doc missing after 0038'; end if;
 
-  -- An edit-role member is not its author, and 0012's policy is
+  -- An edit-role member is not its author, and 0033's policy is
   -- author-or-admin, so without the shared-doc policy this writes 0 rows.
   perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
   update brain_notes
@@ -454,7 +454,7 @@ begin
   perform become_outsider('prospect@cornell.edu');
   select count(*) into v_seen from profiles;
   reset role;
-  -- Before 0018 this returned every member, with their emails and netids.
+  -- Before 0039 this returned every member, with their emails and netids.
   if v_seen <> 0 then raise exception 'FAIL: student read % profiles rows', v_seen; end if;
   raise notice 'PASS: 0 rows visible';
 end $$;
@@ -592,47 +592,42 @@ begin
   raise notice 'PASS: sign ins are members only';
 end $$;
 
-\echo '--- 26. a guest cannot mark themselves fed ---'
+\echo '--- 26. an outsider cannot rewrite a sign in ---'
 do $$
 declare v_guest uuid; v_event uuid; v_signin uuid; v_rows int;
 begin
   select id into v_guest from guests where email = 'walkin@example.com';
   insert into events (name, event_date, event_end_date, event_time, event_end_time, venue, has_signin)
-  values ('RLS Food Night', current_date, current_date, '19:30', '21:00', 'eHub', true)
+  values ('RLS Door Night', current_date, current_date, '19:30', '21:00', 'eHub', true)
   returning id into v_event;
   insert into guest_signins (guest_id, event_id, signed_in_at)
   values (v_guest, v_event, now() - interval '1 hour') returning id into v_signin;
 
-  -- The public path writes through the service role. Nobody holding a session
-  -- should be able to hand themselves food.
+  -- The public sign in writes through the service role. Nobody holding an
+  -- ordinary session should be able to edit what it recorded.
   perform become_outsider('prospect@cornell.edu');
-  update guest_signins set food_claimed_at = now() where id = v_signin;
+  update guest_signins set wants_to_meet = 'anyone at all' where id = v_signin;
   get diagnostics v_rows = ROW_COUNT;
   reset role;
-  if v_rows <> 0 then raise exception 'FAIL: an outsider fed themselves'; end if;
+  if v_rows <> 0 then raise exception 'FAIL: an outsider rewrote a sign in'; end if;
   raise notice 'PASS: 0 rows touched';
 end $$;
 
-\echo '--- 27. a member CAN mark someone fed, and only once ---'
+\echo '--- 27. a member working the door CAN ---'
 do $$
 declare v_signin uuid; v_rows int;
 begin
   select s.id into v_signin from guest_signins s
-    join events e on e.id = s.event_id where e.name = 'RLS Food Night';
+    join events e on e.id = s.event_id where e.name = 'RLS Door Night';
 
+  -- 0025 widened this from admin-only to edit-or-admin, because working the
+  -- door is ordinary member work rather than an administrative act.
   perform become('22222222-2222-4222-8222-222222222222', 'member@cornell.edu');
-  update guest_signins
-     set food_claimed_at = now(), food_claimed_by = '22222222-2222-4222-8222-222222222222'
-   where id = v_signin and food_claimed_at is null;
-  get diagnostics v_rows = ROW_COUNT;
-  if v_rows <> 1 then reset role; raise exception 'FAIL: a member could not mark someone fed'; end if;
-
-  -- The conditional update is what stops a double claim.
-  update guest_signins set food_claimed_at = now() where id = v_signin and food_claimed_at is null;
+  update guest_signins set wants_to_meet = 'someone in hardware' where id = v_signin;
   get diagnostics v_rows = ROW_COUNT;
   reset role;
-  if v_rows <> 0 then raise exception 'FAIL: food was claimed twice'; end if;
-  raise notice 'PASS: fed once, second claim matched nothing';
+  if v_rows <> 1 then raise exception 'FAIL: a member could not edit a sign in'; end if;
+  raise notice 'PASS: 1 row touched';
 end $$;
 
 \echo 'ALL CHECKS PASSED'

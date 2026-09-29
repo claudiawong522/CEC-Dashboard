@@ -4,7 +4,7 @@
 -- sharpest access rule: applicants are not members. An applicant is identified
 -- by netid against `approved_netids` on the active cycle, and can see and
 -- claim slots without a `profiles` row, the same way the student tier works in
--- 0013.
+-- 0034.
 
 create table interview_cycles (
   id uuid primary key default gen_random_uuid(),

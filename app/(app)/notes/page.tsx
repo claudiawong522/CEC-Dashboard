@@ -11,7 +11,7 @@ export default async function NotesPage() {
   const supabase = await createClient();
   const session = await getSession();
 
-  // Since 0017 this doc is a brain note of kind 'doc', so everything written
+  // Since 0038 this doc is a brain note of kind 'doc', so everything written
   // here is searchable and answerable rather than sitting in a table nothing
   // else reads.
   const { data: doc } = await supabase

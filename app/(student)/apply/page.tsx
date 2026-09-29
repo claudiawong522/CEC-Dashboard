@@ -11,9 +11,9 @@ export default async function ApplyPage() {
   const supabase = await createClient();
 
   // No interviewer names and no cycle details here. The applicant policy in
-  // 0015 returns slots in a cycle they're approved for; who is interviewing
+  // 0036 returns slots in a cycle they're approved for; who is interviewing
   // and who else is booked are not theirs to see, and profiles is
-  // members-only since 0018 anyway.
+  // members-only since 0039 anyway.
   const { data: slots } = await supabase
     .from("interview_slots")
     .select("id, start_time, end_time, location, is_claimed, applicant_netid")

@@ -36,7 +36,7 @@ export async function createNote(
       author_id: session.profile.id,
       kind: values.kind,
       title: values.title,
-      // Empty for now. The trigger from 0017 fills it from `content` the
+      // Empty for now. The trigger from 0038 fills it from `content` the
       // moment anything is typed into the editor, so search stays correct
       // without the app having to remember to flatten the document.
       body: "",

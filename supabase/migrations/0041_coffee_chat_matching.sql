@@ -45,7 +45,7 @@ create index chat_requests_open_idx on chat_requests (created_at) where claimed_
 create index chat_requests_guest_idx on chat_requests (guest_id);
 
 -- One open request per guest. They can ask again once the first is resolved,
--- which replaces 0018's cap of three open requests per student email.
+-- which replaces 0039's cap of three open requests per student email.
 create unique index chat_requests_one_open_per_guest_idx
   on chat_requests (guest_id) where status = 'pending';
 
@@ -57,14 +57,14 @@ create unique index chat_requests_one_open_per_guest_idx
 -- actually happens, and it counts toward their board like any other.
 --
 -- Exactly one of the two partner columns is set, the same shape shoutouts has
--- used since 0010 for a receiver who is either a member or a plain name.
+-- used since 0031 for a receiver who is either a member or a plain name.
 alter table coffee_chats add column partner_guest_id uuid references guests(id) on delete cascade;
 alter table coffee_chats alter column partner_id drop not null;
 
 alter table coffee_chats add constraint coffee_chats_partner_present
   check (num_nonnulls(partner_id, partner_guest_id) = 1);
 
--- 0014's check compared two non-null columns. It has to tolerate a null
+-- 0035's check compared two non-null columns. It has to tolerate a null
 -- partner_id now, and null <> null is null rather than false, which a check
 -- constraint treats as passing. Spelled out so that is deliberate.
 alter table coffee_chats drop constraint coffee_chats_distinct_people;
@@ -73,7 +73,7 @@ alter table coffee_chats add constraint coffee_chats_distinct_people
 
 create index coffee_chats_partner_guest_idx on coffee_chats (partner_guest_id);
 
--- 0014's select policy names partner_id = auth.uid(). A guest partner holds no
+-- 0035's select policy names partner_id = auth.uid(). A guest partner holds no
 -- session, so there is nothing to widen for them; the policy is left alone.
 
 -- ---------------------------------------------------------------------------
@@ -84,7 +84,7 @@ create index coffee_chats_partner_guest_idx on coffee_chats (partner_guest_id);
 -- read anything derived from profiles.
 drop view if exists chat_directory;
 
--- 0013 and 0018 let a signed-in student insert their own request. The form is
+-- 0034 and 0039 let a signed-in student insert their own request. The form is
 -- public now and writes through a service-role action, exactly like the
 -- Startup Hours sign in, so no anon or student insert path is wanted here.
 drop policy if exists "chat_requests_insert_student" on chat_requests;

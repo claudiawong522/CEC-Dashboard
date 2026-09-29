@@ -9,7 +9,7 @@ claim the ones they want.
 `/matching` shows a prospective member the `chat_directory` view and asks them to
 choose. That puts the burden on the person with the least information: someone
 who has never met the club is asked to judge which member is worth an hour. It
-also needs a Cornell Google login, which is why the whole student tier in 0018
+also needs a Cornell Google login, which is why the whole student tier in 0039
 exists.
 
 ## Decisions

@@ -24,7 +24,7 @@ function databaseFailure(what: string, error: { message: string }): ActionResult
 //
 // Nothing here can touch role or status even if it were passed: the schema
 // doesn't carry those fields, the RLS policy scopes the row to auth.uid(),
-// and the trigger from 0009 rejects the change outright. Three layers on
+// and the trigger from 0030 rejects the change outright. Three layers on
 // purpose — this is the one place a member writes to their own profiles row.
 export async function updateOwnProfile(values: ProfileInput): Promise<ActionResult> {
   const session = await getSession();

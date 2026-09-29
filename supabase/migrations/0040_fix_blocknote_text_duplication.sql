@@ -1,6 +1,6 @@
 -- blocknote_text() was counting every run of text twice.
 --
--- 0017 derived the flat `body` column from the block document with
+-- 0038 derived the flat `body` column from the block document with
 -- `jsonb_path_query(doc, '$.**.text')`. In lax mode, which is the default, two
 -- things happen at once: `$.**` matches the `content` array as well as each
 -- element inside it, and a member accessor applied to an array is silently
@@ -32,6 +32,6 @@ as $$
 $$;
 
 -- Rewrite the bodies that were derived by the old expression. The trigger from
--- 0017 fires on `update of content`, so assigning the column to itself is
+-- 0038 fires on `update of content`, so assigning the column to itself is
 -- enough to re-derive `body` and, through it, the generated search vector.
 update brain_notes set content = content where content is not null;

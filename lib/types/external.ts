@@ -15,7 +15,7 @@ export type IdeaRow = {
 };
 
 // A person on a pitch, as the UI wants them: a name and an email sitting on
-// the row. Since 0016 those two live on the CRM contact the row points at
+// the row. Since 0037 those two live on the CRM contact the row points at
 // rather than on the row itself, so this is the flattened shape and
 // `flattenPeople` is what produces it. Keeping the flat shape means the
 // detail screen's inline editing didn't have to change at all.

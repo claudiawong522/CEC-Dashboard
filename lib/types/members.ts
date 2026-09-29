@@ -3,7 +3,7 @@ import type { Team } from "@/lib/validation/member-schemas";
 
 // The directory half of a profile. `Profile` (lib/auth/getSession.ts) stays
 // the small shape every page already gets from the session — id, email, role,
-// status — and this extends it with the columns 0009 added. Kept separate so
+// status — and this extends it with the columns 0030 added. Kept separate so
 // the session payload doesn't grow a bio and a hometown on every request.
 export type MemberProfile = Profile & {
   netid: string | null;

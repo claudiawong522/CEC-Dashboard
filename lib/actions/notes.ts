@@ -5,7 +5,7 @@ import { requireRole } from "@/lib/auth/requireRole";
 import { createClient } from "@/lib/supabase/server";
 import { CLUB_NOTES_ID } from "@/lib/types/brain";
 
-// Since 0017 the shared club doc is a row in brain_notes of kind 'doc',
+// Since 0038 the shared club doc is a row in brain_notes of kind 'doc',
 // carrying a fixed id so this stays a direct lookup rather than a search.
 // Everything written here is now readable by the ask bar, which was the
 // entire reason for folding it in: `body` is kept in sync with `content` by
@@ -21,7 +21,7 @@ export async function saveNotesDoc(content: unknown) {
     .from("brain_notes")
     // No author_id: the club doc is the one note with no single
     // author, and stamping the last editor there would also be the thing
-    // that decides who may edit it under 0012's author-or-admin policy.
+    // that decides who may edit it under 0033's author-or-admin policy.
     .update({ content })
     .eq("id", CLUB_NOTES_ID);
 

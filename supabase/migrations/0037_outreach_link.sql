@@ -2,7 +2,7 @@
 --
 -- external_ideas (0008) is pitch-first: a pitch moves idea -> reached_out ->
 -- ... -> converted, and one card can hold a whole panel. outreach_contacts
--- (0011) is contact-first: a person belongs to an organization, carries an
+-- (0032) is contact-first: a person belongs to an organization, carries an
 -- append-only interaction timeline, and feeds dedupe and follow-up.
 --
 -- Neither is a subset of the other. Collapsing them loses something either

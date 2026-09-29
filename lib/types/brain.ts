@@ -1,7 +1,7 @@
 import type { BrainKind } from "@/lib/validation/brain-schemas";
 import type { Visibility } from "@/lib/validation/crm-schemas";
 
-// The shared club doc, folded into brain_notes by 0017 with a fixed id so
+// The shared club doc, folded into brain_notes by 0038 with a fixed id so
 // /notes stays a direct lookup rather than a search for "the doc one".
 export const CLUB_NOTES_ID = "00000000-0000-0000-0000-000000000002";
 

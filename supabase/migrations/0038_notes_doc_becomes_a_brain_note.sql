@@ -1,7 +1,7 @@
 -- The shared doc becomes one note among many.
 --
 -- notes_doc was a single BlockNote document the whole club edits. brain_notes
--- (0012) is many typed, searchable rows. Keeping both would mean the one
+-- (0033) is many typed, searchable rows. Keeping both would mean the one
 -- document everyone actually writes in is the one thing the ask bar cannot
 -- read, which is exactly backwards.
 --
@@ -80,7 +80,7 @@ drop table notes_doc;
 
 -- The shared doc needs a shared-write policy.
 --
--- 0012's update policy is author-or-admin, which is right for a retro or a
+-- 0033's update policy is author-or-admin, which is right for a retro or a
 -- personal note: nobody should edit someone else's write-up out from under
 -- them. It is wrong for the club doc, which is the one note the whole club
 -- edits together and which has no single author. Without this, folding it

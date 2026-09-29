@@ -3,7 +3,7 @@
 -- This is the *contact-first* half of outreach. The pitch-first half already
 -- exists as `external_ideas` (0008) and is kept: neither is a subset of the
 -- other. A pitch answers "where has this idea got to"; a contact answers "who
--- is this person and what have we already said to them". 0013 is where the two
+-- is this person and what have we already said to them". 0034 is where the two
 -- are joined by a foreign key — this migration only stands the CRM up.
 --
 -- Nothing renders off these tables yet.

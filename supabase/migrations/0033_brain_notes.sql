@@ -3,7 +3,7 @@
 -- This sits alongside `notes_doc` (0001) rather than replacing it yet. The doc
 -- is one shared BlockNote document the whole club edits; a brain note is one
 -- row per thing worth remembering, carrying a kind, a semester and a
--- visibility, and indexed so the ask bar can retrieve it. 0016 folds the
+-- visibility, and indexed so the ask bar can retrieve it. 0037 folds the
 -- shared doc in as a single note of kind 'doc' once the editor is wired up.
 --
 -- Two text columns on purpose:

@@ -39,7 +39,7 @@ export function NotesEditor({
   initialContent,
   editable,
   // Which document this editor is writing to. Passed in rather than baked in
-  // since 0017: the club doc is now one brain note among many, and every
+  // since 0038: the club doc is now one brain note among many, and every
   // other note uses the same editor.
   onSave,
 }: {
