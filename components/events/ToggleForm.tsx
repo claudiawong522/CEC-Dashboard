@@ -21,6 +21,17 @@ import { createEvent } from "@/lib/actions/events";
 import { toggleFormSchema, type ToggleFormValues } from "@/lib/validation/event-schemas";
 import { SECTION_COLORS } from "@/lib/utils/section-colors";
 
+// The literal option sets, named once so the trigger can show a label instead
+// of the raw value ("none", "biweekly").
+const REPEAT_LABELS = {
+  none: "Does not repeat",
+  weekly: "Weekly",
+  biweekly: "Biweekly",
+  monthly: "Monthly",
+};
+
+const ENDS_MODE_LABELS = { date: "On date", count: "After N times" };
+
 const TOGGLE_ITEMS: { key: keyof ToggleFormValues; label: keyof typeof SECTION_COLORS }[] = [
   { key: "hasSpeaker", label: "Speaker" },
   { key: "hasAttendees", label: "Attendees" },
@@ -224,6 +235,7 @@ export function ToggleForm({
             control={control}
             render={({ field }) => (
               <Select
+                items={REPEAT_LABELS}
                 value={field.value ?? "none"}
                 onValueChange={(v) => field.onChange(v === "none" ? null : v)}
               >
@@ -249,7 +261,7 @@ export function ToggleForm({
               name="repeatsEndsMode"
               control={control}
               render={({ field }) => (
-                <Select value={field.value ?? "date"} onValueChange={field.onChange}>
+                <Select items={ENDS_MODE_LABELS} value={field.value ?? "date"} onValueChange={field.onChange}>
                   <SelectTrigger id="repeatsEndsMode" className="w-full">
                     <SelectValue />
                   </SelectTrigger>
