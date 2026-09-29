@@ -33,15 +33,23 @@ begin
   v_admin := gen_random_uuid();
   v_member := gen_random_uuid();
 
+  -- confirmation_token, recovery_token, email_change_token_new and email_change
+  -- are empty strings rather than left to default, which is null. GoTrue scans
+  -- them into Go strings, and a null there is not a quiet inconsistency: every
+  -- call to the admin API answers 500 "Database error finding users" for as
+  -- long as one such row exists, which takes the invite flow down with it. The
+  -- other token columns already default to ''.
   insert into auth.users (id, instance_id, aud, role, email, encrypted_password,
                           email_confirmed_at, created_at, updated_at,
+                          confirmation_token, recovery_token,
+                          email_change_token_new, email_change,
                           raw_app_meta_data, raw_user_meta_data)
   values
     (v_admin, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-     'dev.host@cornell.edu', '', now(), now(), now(),
+     'dev.host@cornell.edu', '', now(), now(), now(), '', '', '', '',
      '{"provider":"email","providers":["email"]}', '{"full_name":"Dev Host"}'),
     (v_member, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
-     'dev.member@cornell.edu', '', now(), now(), now(),
+     'dev.member@cornell.edu', '', now(), now(), now(), '', '', '', '',
      '{"provider":"email","providers":["email"]}', '{"full_name":"Dev Member"}');
 
   insert into profiles (id, email, full_name, role, status)
