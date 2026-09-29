@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Mail } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -83,13 +83,16 @@ export function InviteForm() {
           </SelectContent>
         </Select>
         <Button type="submit" disabled={!email.trim()} loading={isPending}>
-          {!isPending && <Mail data-icon="inline-start" />}
-          {isPending ? "Sending…" : "Send invite"}
+          {!isPending && <UserPlus data-icon="inline-start" />}
+          {isPending ? "Adding…" : "Give access"}
         </Button>
       </div>
+      {/* No email is sent. Access is granted the moment this succeeds, and the
+          person picks it up by signing in, so the copy has to say that plainly
+          or an admin sits waiting for a delivery that never happens. */}
       <span className="font-sans text-[11.5px] text-faint">
-        They&apos;ll get an email to accept, then sign in with their Cornell Google account with
-        the access you picked already granted.
+        No email goes out. Tell them to sign in with their Cornell Google account at this site,
+        and the access you picked is already waiting.
       </span>
     </form>
   );

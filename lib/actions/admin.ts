@@ -59,8 +59,8 @@ export async function inviteUser(email: string, role: Role): Promise<ActionResul
   // why removal isn't a delete), so this revives what's there rather than
   // creating anything: back to 'invited' with whatever role this invite
   // grants, and the Google sign-in flips them to active exactly as it would
-  // a newcomer. No mail goes out — inviteUserByEmail below would reject the
-  // address, since the auth user never went away — so say so.
+  // a newcomer. No mail goes out, here or anywhere else in this action, so
+  // say so rather than leaving them waiting for one.
   if (existingProfile?.status === "revoked") {
     const { error: reviveError } = await admin
       .from("profiles")
@@ -79,21 +79,23 @@ export async function inviteUser(email: string, role: Role): Promise<ActionResul
 
   if (existingProfile) return actionFailed("This person already has access");
 
-  const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const { data, error } = await admin.auth.admin.inviteUserByEmail(normalizedEmail, {
-    redirectTo: `${origin}/login`,
-  });
-  // The one place a Supabase message is worth passing through: these are
-  // about the email itself ("already been registered", "invalid format"),
-  // which the admin can act on, and the profiles check above can't catch an
-  // auth.users shell that outlived its profile row.
-  if (error || !data.user) {
-    console.error("[admin] couldn't send invite:", error?.message ?? "no user returned");
-    return actionFailed(error?.message ?? "Couldn't send invite");
+  // No mail goes out, and the invite no longer depends on any being sent.
+  //
+  // inviteUserByEmail used to do this, but it creates the account and mails
+  // about it in one call, so the mailer's limit (2/hour on this project, with
+  // no custom SMTP) decided whether the account came into existence at all.
+  // Nothing about access needs that email: an invite *is* a profiles row at
+  // status 'invited', and app/auth/callback flips it to active when the person
+  // signs in with Google. The email only ever told them to do a thing they
+  // could be told in person.
+  const { userId, adopted, error: userError } = await ensureAuthUser(admin, normalizedEmail);
+  if (!userId) {
+    console.error("[admin] couldn't create the account:", userError ?? "no user returned");
+    return actionFailed(userError ?? "Couldn't create their account");
   }
 
   const { error: profileError } = await admin.from("profiles").insert({
-    id: data.user.id,
+    id: userId,
     email: normalizedEmail,
     role,
     status: "invited",
@@ -101,13 +103,69 @@ export async function inviteUser(email: string, role: Role): Promise<ActionResul
     invited_at: new Date().toISOString(),
   });
   if (profileError) {
-    // Don't leave an orphan auth.users shell if the profile row failed.
-    await admin.auth.admin.deleteUser(data.user.id);
+    // Only clean up a shell this call made. Adopting someone's existing
+    // Google account and then deleting it over a failed insert would sign
+    // them out of an account that was not ours to remove.
+    if (!adopted) await admin.auth.admin.deleteUser(userId);
     return databaseFailure("send invite", profileError);
   }
 
   revalidatePath("/admin");
-  return actionOk();
+  return actionOk(`${normalizedEmail} can sign in now. Tell them to use Google at this site`);
+}
+
+// The auth.users row for this email, creating it if there isn't one.
+//
+// Someone who signs in with Google *before* being invited leaves a shell
+// behind: app/auth/callback bounces them to /login?error=not_invited, but
+// Google has already created the account by the time that check runs. That
+// shell used to lock the person out of the club permanently. The profiles
+// lookup above sees nothing, so this fell through to creating an account,
+// which failed with "already been registered", so no profiles row was ever
+// written, so their next sign-in bounced them again, forever.
+//
+// Adopting the shell is the fix: it is their account, it just never had a
+// profile attached. createUser is tried first because it is one call and the
+// common case is a genuine newcomer; the listUsers scan only runs when the
+// address is already taken.
+//
+// `adopted` says whether the account predates this call, because the caller
+// may only delete one it created itself.
+async function ensureAuthUser(
+  admin: ReturnType<typeof createAdminClient>,
+  email: string,
+): Promise<{ userId: string | null; adopted: boolean; error: string | null }> {
+  const { data, error } = await admin.auth.admin.createUser({
+    email,
+    email_confirm: true,
+  });
+  if (data?.user) return { userId: data.user.id, adopted: false, error: null };
+
+  // Anything other than "that address is taken" is a real failure.
+  if (!error || !/already|registered|exists/i.test(error.message)) {
+    return { userId: null, adopted: false, error: error?.message ?? null };
+  }
+
+  // No getUserByEmail in supabase-js, so page through. This club is a dozen
+  // accounts; the loop is bounded so a future one of any size still ends.
+  for (let page = 1; page <= 20; page += 1) {
+    const { data: list, error: listError } = await admin.auth.admin.listUsers({
+      page,
+      perPage: 200,
+    });
+    if (listError) return { userId: null, adopted: false, error: listError.message };
+
+    const match = list.users.find((user) => user.email?.toLowerCase() === email);
+    if (match) return { userId: match.id, adopted: true, error: null };
+    if (list.users.length < 200) break;
+  }
+
+  // Taken, but not findable. Nothing sensible left to do but say so.
+  return {
+    userId: null,
+    adopted: false,
+    error: "That address already has an account we can't reach. Ask for help",
+  };
 }
 
 export async function revokeInvite(userId: string): Promise<ActionResult> {
