@@ -4,6 +4,7 @@ import {
   pickTodaysEvent,
   wallClockNow,
   wallClockDate,
+  wallClockAt,
 } from "@/lib/utils/signin-window";
 
 const at = (date: string, time: string) => ({ id: `${date}-${time}`, event_date: date, event_time: time });
@@ -68,5 +69,32 @@ describe("wall clock", () => {
   it("handles midnight rendering as 24", () => {
     const midnight = new Date("2026-09-10T04:00:00Z");
     expect(wallClockNow(midnight)).toBe(clock(0, 0));
+  });
+});
+
+describe("wallClockAt", () => {
+  it("puts a stored date and time on the same scale as wallClockNow", () => {
+    // 2026-09-10 19:30 in Ithaca, as an instant, is 23:30 UTC.
+    const asInstant = new Date("2026-09-10T19:30:00-04:00");
+    expect(wallClockAt("2026-09-10", "19:30:00")).toBe(wallClockNow(asInstant));
+  });
+
+  it("reads the same whatever zone the server runs in", () => {
+    // The whole point: no Date parsing, so no ambient timezone to pick up.
+    expect(wallClockAt("2026-12-03", "23:00:00")).toBe(wallClockAt("2026-12-03", "23:00"));
+  });
+
+  it("does not file an evening event as past while it is still running", () => {
+    // The Past Events bug: a 19:30-23:00 night on a UTC server used to count as
+    // past from 18:01 Ithaca, ninety minutes before its doors opened.
+    const end = wallClockAt("2026-12-03", "23:00:00");
+    const sixOhOnePm = wallClockNow(new Date("2026-12-03T18:01:00-05:00"));
+    const elevenOhOnePm = wallClockNow(new Date("2026-12-03T23:01:00-05:00"));
+    expect(end < sixOhOnePm).toBe(false);
+    expect(end < elevenOhOnePm).toBe(true);
+  });
+
+  it("orders a multi-day event by its end date", () => {
+    expect(wallClockAt("2026-12-05", "12:00")).toBeGreaterThan(wallClockAt("2026-12-03", "23:00"));
   });
 });
