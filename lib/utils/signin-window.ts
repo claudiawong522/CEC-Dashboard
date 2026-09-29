@@ -104,3 +104,26 @@ export function pickTodaysEvent<T extends DayEvent>(
 
   return started ?? byStart[0];
 }
+
+/**
+ * The instant at which a given wall-clock date and time occurs in `timeZone`.
+ *
+ * The inverse of `wallClockNow`, and the one thing this module was missing.
+ * Anything storing a `timestamptz` from a date and a time typed by a person
+ * needs it, because `new Date(`${date}T${time}`)` means "in the server's own
+ * zone", which is UTC on Vercel, so the stored instant lands four or five
+ * hours early.
+ *
+ * Works by guessing, measuring the offset at the guess, then correcting. The
+ * only times it cannot resolve are the ones that do not exist or happen twice,
+ * inside a DST transition. Nothing in this app is scheduled at 2am.
+ */
+export function ithacaInstant(
+  dateStr: string,
+  timeStr: string,
+  timeZone: string = CLUB_TIME_ZONE,
+): Date {
+  const guess = new Date(`${dateStr}T${timeStr}:00Z`);
+  const offsetMinutes = wallClockNow(guess, timeZone) - Math.round(guess.getTime() / 60_000);
+  return new Date(guess.getTime() - offsetMinutes * 60_000);
+}

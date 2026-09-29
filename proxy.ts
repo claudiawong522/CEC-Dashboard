@@ -1,9 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-// Routes that work with no session at all. `/checkin` is the walk-in sign in:
-// the person holding the phone has no account and never will, which is the
-// whole point of it.
+// Routes that work with no session at all: the walk-in sign in and the
+// prospective-member chat form, both by design. `/checkin` is the walk-in
+// sign in, where the person holding the phone has no account and never will,
+// which is the whole point of it.
+//
+// `/chat` is deliberately absent. The coffee chat signup is built and works,
+// but recruitment is settled for this semester and nobody is watching the
+// request pool. A public form feeding a queue no one reads is worse than no
+// form: someone writes in and waits for a reply that never comes. Put it back
+// here when recruitment reopens.
 const PUBLIC_PATHS = ["/login", "/auth/callback", "/auth/signout", "/checkin"];
 
 // Belt-and-suspenders alongside config.matcher below: static asset

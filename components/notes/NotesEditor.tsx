@@ -7,7 +7,6 @@ import type { PartialBlock } from "@blocknote/core";
 import { en } from "@blocknote/core/locales";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
-import { saveNotesDoc } from "@/lib/actions/notes";
 
 // design/BRAND_KIT.md colours, mapped onto BlockNote's theme API — this is
 // the library's own customization surface, not a fork of its internals.
@@ -39,9 +38,14 @@ const dictionary = {
 export function NotesEditor({
   initialContent,
   editable,
+  // Which document this editor is writing to. Passed in rather than baked in
+  // since 0038: the club doc is now one brain note among many, and every
+  // other note uses the same editor.
+  onSave,
 }: {
   initialContent: PartialBlock[];
   editable: boolean;
+  onSave: (content: unknown) => Promise<void>;
 }) {
   const editor = useCreateBlockNote({
     initialContent: initialContent.length > 0 ? initialContent : undefined,
@@ -53,7 +57,7 @@ export function NotesEditor({
     if (!editable) return;
     if (saveTimeout.current) clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(() => {
-      saveNotesDoc(editor.document).catch(() => {
+      onSave(editor.document).catch(() => {
         // Autosave is best-effort; the next successful edit will retry.
       });
     }, 1000);

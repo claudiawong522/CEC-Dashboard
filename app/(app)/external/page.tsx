@@ -5,6 +5,7 @@ import { ExternalDecor } from "@/components/external/ExternalDecor";
 import { QuickAdd } from "@/components/external/QuickAdd";
 import { ExternalList } from "@/components/external/ExternalList";
 import { sortIdeas } from "@/lib/utils/external-stage";
+import { PERSON_EMBED } from "@/lib/types/external";
 import type { IdeaWithRelations } from "@/lib/types/external";
 
 export default async function ExternalPage() {
@@ -17,7 +18,7 @@ export default async function ExternalPage() {
   const [{ data: ideas }, { data: admins }] = await Promise.all([
     supabase
       .from("external_ideas")
-      .select("*, external_idea_people(id, name, email), external_idea_owners(profile_id)")
+      .select(`*, external_idea_people(${PERSON_EMBED}), external_idea_owners(profile_id)`)
       .order("created_at", { ascending: false })
       .returns<IdeaWithRelations[]>(),
     supabase

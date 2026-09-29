@@ -2,7 +2,8 @@ import { redirect, notFound } from "next/navigation";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
 import { ExternalDetail } from "@/components/external/ExternalDetail";
-import type { IdeaRow, IdeaPersonRow, AdminInfo } from "@/lib/types/external";
+import { flattenPeople, PERSON_EMBED } from "@/lib/types/external";
+import type { IdeaRow, IdeaPersonJoin, AdminInfo } from "@/lib/types/external";
 
 export default async function ExternalDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -24,10 +25,10 @@ export default async function ExternalDetailPage({ params }: { params: Promise<{
   const [{ data: people }, { data: owners }, { data: admins }] = await Promise.all([
     supabase
       .from("external_idea_people")
-      .select("*")
+      .select(PERSON_EMBED)
       .eq("idea_id", id)
       .order("created_at", { ascending: true })
-      .returns<IdeaPersonRow[]>(),
+      .returns<IdeaPersonJoin[]>(),
     supabase.from("external_idea_owners").select("profile_id").eq("idea_id", id),
     supabase
       .from("profiles")
@@ -39,7 +40,7 @@ export default async function ExternalDetailPage({ params }: { params: Promise<{
   return (
     <ExternalDetail
       idea={idea}
-      people={people ?? []}
+      people={flattenPeople(people)}
       ownerIds={(owners ?? []).map((o) => o.profile_id)}
       admins={(admins ?? []) as (AdminInfo & { id: string })[]}
     />

@@ -186,8 +186,8 @@ export function ExternalDetail({
   function handleAddPerson() {
     startTransition(async () => {
       try {
-        const id = await addPerson(idea.id);
-        setLocalPeople((prev) => [...prev, { id, idea_id: idea.id, name: "", email: null }]);
+        const { id, contactId } = await addPerson(idea.id);
+        setLocalPeople((prev) => [...prev, { id, idea_id: idea.id, contact_id: contactId, name: "", email: null }]);
       } catch {
         toast.error("Couldn't add person — try again");
       }
