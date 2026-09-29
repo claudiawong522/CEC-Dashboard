@@ -12,9 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // Scratch files the Supabase CLI writes when the local stack starts. Not
-    // ours, not committed (supabase/.gitignore covers them), and 205 lint
-    // problems deep, which drowns out anything real in `npm run lint`.
+    // The local Supabase stack writes a bundled, minified edge runtime here
+    // while it is running. It is gitignored but eslint still walked it, so
+    // `npm run lint` reported 183 errors about single-letter variables in
+    // somebody else's build output and buried the one real error in ours.
     "supabase/.temp/**",
   ]),
 ]);

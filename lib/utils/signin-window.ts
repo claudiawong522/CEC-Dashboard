@@ -30,6 +30,21 @@ function minutesIntoDay(timeStr: string): number {
   return h * 60 + min;
 }
 
+/**
+ * Minutes since the epoch for a stored date and time, on the same scale as
+ * `wallClockNow`, so the two compare directly.
+ *
+ * `event_date` and `event_time` carry no zone, and neither does this: both
+ * sides are wall-clock readings in Ithaca. The alternative,
+ * `new Date(\`${date}T${time}\`)`, silently means "in whatever zone the server
+ * runs in", which is UTC on Vercel and the author's own zone on a laptop. That
+ * is the shape of bug this module exists to prevent, and it is why this lives
+ * here rather than being written out at each call site.
+ */
+export function wallClockAt(dateStr: string, timeStr: string): number {
+  return dayNumber(dateStr) * 1440 + minutesIntoDay(timeStr);
+}
+
 /** Minutes since the epoch, read off a wall clock in `timeZone`. */
 export function wallClockNow(now: Date = new Date(), timeZone: string = CLUB_TIME_ZONE): number {
   const parts = new Intl.DateTimeFormat("en-CA", {

@@ -190,7 +190,7 @@ export async function deleteEvent(eventId: string, scope: "single" | "following"
       // The Storage API answers a remove it could not match with an empty
       // array and no error, so "nothing was deleted" and "everything was
       // deleted" look identical unless the count is checked. That is how the
-      // missing SELECT policy on storage.objects went unnoticed: the files stayed
+      // missing SELECT policy fixed in 0029 went unnoticed: the files stayed
       // in a public bucket while the UI said they were gone for good.
       if (removeError || (removed?.length ?? 0) < paths.length) {
         console.error(
@@ -511,10 +511,23 @@ function occurrenceDate(anchor: Date, frequency: RecurringValues["frequency"], n
 // Ends-by-date: every occurrence up to and including endDate.
 // Ends-by-count: `count` occurrences total, counting the anchor itself as
 // the first — so `count` child events are (count - 1) more after it.
-function occurrenceDatesAfter(anchor: Date, values: RecurringValues) {
+/**
+ * The dates to create after `anchor`.
+ *
+ * `alreadyInSeries` is how many occurrences will still exist once this runs,
+ * and it is what makes "ends after N times" mean N in total rather than N more.
+ * Creating a series passes the default of 1, the parent. Editing one passes
+ * everything it is keeping: the parent plus every occurrence already in the
+ * past. Without that, editing a 12-week series five weeks in generated a fresh
+ * 11 after the anchor and left 17 events behind a `occurrence_count` that still
+ * said 12, and editing again grew it again.
+ *
+ * Date mode needs no equivalent, because an end date is absolute.
+ */
+function occurrenceDatesAfter(anchor: Date, values: RecurringValues, alreadyInSeries = 1) {
   const dates: Date[] = [];
   if (values.endsMode === "count") {
-    const remaining = (values.occurrenceCount ?? 1) - 1;
+    const remaining = (values.occurrenceCount ?? 1) - alreadyInSeries;
     for (let n = 1; n <= remaining && n <= 104; n++) dates.push(occurrenceDate(anchor, values.frequency, n));
     return dates;
   }
@@ -676,7 +689,9 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
 
   const createdIds: string[] = [];
   const spanDays = differenceInCalendarDays(parseISO(anchor.event_end_date), parseISO(anchor.event_date));
-  const dates = occurrenceDatesAfter(parseISO(anchor.event_date), parsed);
+  // protectedEvents is exactly what survives the delete above, so "ends after
+  // N times" counts the nights already held rather than starting over.
+  const dates = occurrenceDatesAfter(parseISO(anchor.event_date), parsed, protectedEvents.length);
   for (const date of dates) {
     const { data: child, error: childError } = await supabase
       .from("events")
