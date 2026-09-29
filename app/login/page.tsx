@@ -70,6 +70,13 @@ export default function LoginPage() {
       // them — they're live credentials until they expire, and they've no
       // business sitting in browser history or a pasted URL.
       window.history.replaceState(null, "", window.location.pathname);
+      // react-hooks/set-state-in-effect is right in general and wrong here.
+      // The fragment is never sent to the server, so this cannot be derived
+      // during render: the server would say false, the client true, and the
+      // page would fail hydration. An effect is the only place this is
+      // knowable, and it runs once on mount for the small number of people
+      // arriving from an invite link.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCameFromInvite(true);
     }
     // Otherwise show the normal login screen, even if some other session
