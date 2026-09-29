@@ -6,18 +6,90 @@
 --   docker exec -i supabase_db_cec-dashboard psql -U postgres -d postgres \
 --     < supabase/dev/seed-demo.sql
 --
--- Re-runnable: everything either checks for its own existence or upserts, so
--- running it twice does not fail on a unique constraint.
+-- Re-runnable: each block returns early if its own data is already there, so
+-- a second run neither fails nor doubles anything.
 --
--- It assumes a profile exists for dev.host@cornell.edu and at least one other
--- member, plus some events. Nothing here is intended for production.
+-- Needs nothing in place. It creates two local accounts and an event to hang
+-- the rest off if the database is empty, so `supabase db reset` followed by
+-- this file is a working app from scratch. If you have already signed in
+-- locally it uses the profiles it finds instead. Nothing here is intended for
+-- production.
+
+-- Two accounts to hang everything off, if the database has none.
+--
+-- This used to assume you had already signed in locally, which made a fresh
+-- `db reset` land on "null value in column giver_id" a dozen statements later
+-- rather than saying what was actually missing. It also only ever looked for
+-- dev.host@cornell.edu, so signing in with a real Cornell address left it
+-- looking for a profile that was never going to exist.
+--
+-- Local stacks only. These rows have no usable password: sign-in here is
+-- Google, and these exist to own demo data, not to be logged into.
+do $$
+declare v_admin uuid; v_member uuid;
+begin
+  if exists (select 1 from profiles) then return; end if;
+
+  v_admin := gen_random_uuid();
+  v_member := gen_random_uuid();
+
+  insert into auth.users (id, instance_id, aud, role, email, encrypted_password,
+                          email_confirmed_at, created_at, updated_at,
+                          raw_app_meta_data, raw_user_meta_data)
+  values
+    (v_admin, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+     'dev.host@cornell.edu', '', now(), now(), now(),
+     '{"provider":"email","providers":["email"]}', '{"full_name":"Dev Host"}'),
+    (v_member, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated',
+     'dev.member@cornell.edu', '', now(), now(), now(),
+     '{"provider":"email","providers":["email"]}', '{"full_name":"Dev Member"}');
+
+  insert into profiles (id, email, full_name, role, status)
+  values (v_admin, 'dev.host@cornell.edu', 'Dev Host', 'admin', 'active'),
+         (v_member, 'dev.member@cornell.edu', 'Dev Member', 'edit', 'active');
+
+  raise notice 'seeded two local accounts: dev.host@cornell.edu, dev.member@cornell.edu';
+end $$;
+
+-- Something for attendance and sign-ins to attach to. Everything below reaches
+-- for the most recent event and assumes it found one.
+do $$
+begin
+  if exists (select 1 from events) then return; end if;
+
+  insert into events (name, event_date, event_end_date, event_time, event_end_time,
+                      venue, has_signin, has_speaker, has_attendees)
+  values ('Startup Hours', current_date, current_date, '19:30', '21:00',
+          'eHub Collegetown', true, true, true);
+
+  raise notice 'seeded one event to hang demo data off';
+end $$;
 
 -- Realistic data in every table, so every page has something to exercise.
 do $$
 declare v_admin uuid; v_member uuid; v_event uuid; v_contact uuid; v_org uuid; v_cat uuid; v_cycle uuid;
 begin
+  -- Prefer the fixture host, but fall back to whoever is actually here, so a
+  -- database seeded from a real Google sign-in still works.
   select id into v_admin from profiles where email='dev.host@cornell.edu';
-  select id into v_member from profiles where email <> 'dev.host@cornell.edu' limit 1;
+  if v_admin is null then
+    select id into v_admin from profiles order by created_at limit 1;
+  end if;
+  select id into v_member from profiles where id <> v_admin order by created_at limit 1;
+  if v_admin is null or v_member is null then
+    raise exception 'seed needs two profiles and found % ', (select count(*) from profiles);
+  end if;
+
+  -- One guard for the whole block rather than a condition per insert. Most of
+  -- what follows keys on a generated uuid, so a second run would not fail on
+  -- these, it would quietly double the shoutouts, notes and interactions. The
+  -- attendance index was the only thing that noticed, and it noticed by
+  -- aborting halfway through, leaving a half-seeded database behind.
+  if exists (select 1 from organizations where name = 'Sequoia') then
+    raise notice 'demo data is already here, leaving it alone';
+    return;
+  end if;
+
   select id into v_event from events order by event_date desc limit 1;
 
   update profiles set interests = array['hardware','climate','fintech'], open_to_chats = true,
