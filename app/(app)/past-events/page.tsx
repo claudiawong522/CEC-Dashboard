@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { publicFileUrl } from "@/lib/utils/storage";
+import { wallClockAt, wallClockNow } from "@/lib/utils/signin-window";
 import { PastEventsGrid } from "@/components/past-events/PastEventsGrid";
 
 export default async function PastEventsPage() {
@@ -7,7 +8,9 @@ export default async function PastEventsPage() {
 
   const { data: events, error } = await supabase
     .from("events")
-    .select("id, name, event_date, event_time, event_end_time, venue, has_speaker, has_media")
+    .select(
+      "id, name, event_date, event_end_date, event_time, event_end_time, venue, has_speaker, has_media",
+    )
     .eq("is_complete", true)
     .order("event_date", { ascending: false })
     .order("event_time", { ascending: false });
@@ -15,12 +18,20 @@ export default async function PastEventsPage() {
   if (error) console.error("[past-events] failed to load events:", error.message);
 
   // This route is always dynamically rendered (createClient() reads
-  // cookies()), so reading the current time per-request is safe — the
-  // purity rule is guarding against future static/cached rendering.
-  // eslint-disable-next-line react-hooks/purity
-  const now = Date.now();
+  // cookies()), so reading the current time per-request is safe.
+  //
+  // Both sides of this comparison are Ithaca wall-clock minutes. It used to be
+  // `new Date(\`${event_date}T${event_end_time}\`)`, which has no zone and so
+  // meant UTC on Vercel: a 19:30-23:00 night was filed as past from 18:01
+  // Ithaca, ninety minutes before its doors opened, and nobody noticed because
+  // on a laptop in New York it was exactly right.
+  //
+  // An event also ends on `event_end_date`, not `event_date`. Using the start
+  // date dropped a multi-day event into Past Events on its first day.
+  const nowInIthaca = wallClockNow();
   const past = (events ?? []).filter(
-    (e) => new Date(`${e.event_date}T${e.event_end_time ?? e.event_time}`).getTime() < now,
+    (e) =>
+      wallClockAt(e.event_end_date ?? e.event_date, e.event_end_time ?? e.event_time) < nowInIthaca,
   );
 
   const speakerEventIds = past.filter((e) => e.has_speaker).map((e) => e.id);
