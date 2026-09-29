@@ -13,15 +13,21 @@ const ERROR_MESSAGES: Record<string, string> = {
   not_invited: "This app is invite-only — ask an admin to invite your email first.",
   removed: "Your access to this app was removed. Ask an admin if you think that's a mistake.",
   unknown: "Something went wrong signing you in. Please try again.",
+  provider_disabled:
+    "Google sign-in isn't switched on for this environment yet. On a local stack that means SUPABASE_AUTH_EXTERNAL_GOOGLE_CLIENT_ID and _SECRET are missing from supabase/.env.",
 };
 
 function LoginError() {
   const params = useSearchParams();
   const error = params.get("error");
   if (!error) return null;
+  return <LoginErrorText code={error} />;
+}
+
+function LoginErrorText({ code }: { code: string }) {
   return (
-    <p className="font-sans text-[12px] text-destructive">
-      {ERROR_MESSAGES[error] ?? ERROR_MESSAGES.unknown}
+    <p className="max-w-[46ch] font-sans text-[12px] leading-[1.6] text-destructive">
+      {ERROR_MESSAGES[code] ?? ERROR_MESSAGES.unknown}
     </p>
   );
 }
@@ -42,6 +48,7 @@ export default function LoginPage() {
   }
 
   const [cameFromInvite, setCameFromInvite] = useState(false);
+  const [signInError, setSignInError] = useState<string | null>(null);
 
   // Someone clicking the invite email's own link lands here with usable
   // session tokens in the URL hash. We deliberately throw them away and ask
@@ -63,6 +70,13 @@ export default function LoginPage() {
       // them — they're live credentials until they expire, and they've no
       // business sitting in browser history or a pasted URL.
       window.history.replaceState(null, "", window.location.pathname);
+      // react-hooks/set-state-in-effect is right in general and wrong here.
+      // The fragment is never sent to the server, so this cannot be derived
+      // during render: the server would say false, the client true, and the
+      // page would fail hydration. An effect is the only place this is
+      // knowable, and it runs once on mount for the small number of people
+      // arriving from an invite link.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCameFromInvite(true);
     }
     // Otherwise show the normal login screen, even if some other session
@@ -74,6 +88,35 @@ export default function LoginPage() {
 
   async function signInWithGoogle() {
     const supabase = createClient();
+
+    // Ask whether the provider is actually enabled before redirecting.
+    //
+    // signInWithOAuth navigates the browser straight to GoTrue's /authorize,
+    // so when the provider is off the person lands on a raw
+    // {"code":400,...,"msg":"Unsupported provider: provider is not enabled"}
+    // JSON body with no way back. The app never gets to handle it, because by
+    // then it is not the page any more. /auth/v1/settings is public and lists
+    // which providers are on, so the check costs one request and keeps the
+    // failure inside the app, where it can say something useful. This also
+    // covers the provider being switched off in production by accident.
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SUPABASE_URL}/auth/v1/settings`,
+        { headers: { apikey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY! } },
+      );
+      if (response.ok) {
+        const settings = (await response.json()) as { external?: Record<string, boolean> };
+        if (settings.external?.google === false) {
+          setSignInError("provider_disabled");
+          return;
+        }
+      }
+    } catch {
+      // Unreachable settings endpoint is not a reason to block a sign-in that
+      // might otherwise work: fall through and let the redirect try.
+    }
+
+    setSignInError(null);
     await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -342,6 +385,10 @@ export default function LoginPage() {
         <Suspense fallback={null}>
           <LoginError />
         </Suspense>
+
+        {/* Raised by the click itself rather than carried in the querystring,
+            so it has no redirect to arrive on. */}
+        {signInError && <LoginErrorText code={signInError} />}
       </div>
     </main>
   );

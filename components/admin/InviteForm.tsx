@@ -2,7 +2,7 @@
 
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
-import { Mail } from "lucide-react";
+import { UserPlus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +15,7 @@ import {
 import { inviteUser } from "@/lib/actions/admin";
 import type { Role } from "@/lib/auth/getSession";
 
+import { ROLE_LABELS } from "@/lib/utils/role-labels";
 export function InviteForm() {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<Role>("view");
@@ -63,33 +64,36 @@ export function InviteForm() {
           disabled={isPending}
           className="min-w-[220px] flex-1"
         />
-        <Select value={role} onValueChange={(v) => setRole(v as Role)}>
+        <Select items={ROLE_LABELS} value={role} onValueChange={(v) => setRole(v as Role)}>
           <SelectTrigger
             disabled={isPending}
             className="w-auto gap-1.5 rounded-[20px] border-line-input bg-page px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-body uppercase transition-colors duration-200 hover:border-[rgba(35,32,28,0.32)] hover:text-ink [&_svg]:text-faint"
           >
             <SelectValue />
           </SelectTrigger>
-          <SelectContent className="rounded-card border-line bg-paper shadow-menu ring-0">
-            <SelectItem value="view" className="font-sans text-[12.5px] focus:bg-wash focus:text-ink">
+          <SelectContent>
+            <SelectItem value="view">
               View
             </SelectItem>
-            <SelectItem value="edit" className="font-sans text-[12.5px] focus:bg-wash focus:text-ink">
+            <SelectItem value="edit">
               Edit
             </SelectItem>
-            <SelectItem value="admin" className="font-sans text-[12.5px] focus:bg-wash focus:text-ink">
+            <SelectItem value="admin">
               Admin
             </SelectItem>
           </SelectContent>
         </Select>
         <Button type="submit" disabled={!email.trim()} loading={isPending}>
-          {!isPending && <Mail data-icon="inline-start" />}
-          {isPending ? "Sending…" : "Send invite"}
+          {!isPending && <UserPlus data-icon="inline-start" />}
+          {isPending ? "Adding…" : "Give access"}
         </Button>
       </div>
+      {/* No email is sent. Access is granted the moment this succeeds, and the
+          person picks it up by signing in, so the copy has to say that plainly
+          or an admin sits waiting for a delivery that never happens. */}
       <span className="font-sans text-[11.5px] text-faint">
-        They&apos;ll get an email to accept, then sign in with their Cornell Google account with
-        the access you picked already granted.
+        No email goes out. Tell them to sign in with their Cornell Google account at this site,
+        and the access you picked is already waiting.
       </span>
     </form>
   );
