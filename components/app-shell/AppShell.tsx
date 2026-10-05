@@ -154,7 +154,12 @@ export function AppShell({
           className="pointer-events-none absolute -top-16 -left-20 opacity-[0.14] blur-[2px]"
         />
 
-        <div className="relative flex flex-col gap-8">
+        {/* min-h-0 so this column may shrink below its content height. Without
+            it a flex child refuses to go under its intrinsic size, the nav
+            grows past the viewport, and `overflow-hidden` on the shell simply
+            cuts the last groups off: Admin was unreachable on a laptop once
+            the nav grew to six groups. */}
+        <div className="relative flex min-h-0 flex-1 flex-col gap-8">
           <Link href="/calendar" className="flex items-center justify-center gap-2.5 px-2 md:justify-start">
             <Sticker floatVariant="none" wrapperClassName="shrink-0">
               <BrandMark className="h-[22px] w-6" />
@@ -175,7 +180,11 @@ export function AppShell({
             />
           </form>
 
-          <nav className="flex flex-col gap-[13px]">
+          {/* The nav is the part that scrolls, so the brand, the search and the
+              account row below stay put. `-mr-1 pr-1` keeps the scrollbar off
+              the labels, and the thin warm bar is quieter than the platform
+              default against paper. */}
+          <nav className="-mr-1 flex min-h-0 flex-1 flex-col gap-[13px] overflow-y-auto pr-1 [scrollbar-color:rgba(35,32,28,0.14)_transparent] [scrollbar-width:thin]">
             {navGroups.map((group) => (
               <div key={group.heading} className="flex flex-col gap-px">
                 {/* Hidden on the icon-only rail, where a heading would be a
@@ -212,7 +221,7 @@ export function AppShell({
           </nav>
         </div>
 
-        <div className="relative flex items-center gap-2">
+        <div className="relative flex shrink-0 items-center gap-2 pt-4">
           <Sticker
             floatVariant="none"
             wrapperClassName="hidden shrink-0 md:block"
@@ -245,6 +254,16 @@ export function AppShell({
                   </span>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="-mx-3.5 my-2.5 bg-line" />
+                {/* The only way into /profile. It is deliberately not a nav
+                    destination, because it belongs to the person rather than to
+                    the club, but with no link at all people could not find the
+                    page that fills in the directory they are asked to fill in. */}
+                <DropdownMenuItem
+                  className="-mx-1.5 rounded-chip px-1.5 py-1.5 font-sans text-[12.5px] text-body focus:bg-wash focus:text-ink"
+                  onClick={() => router.push("/profile")}
+                >
+                  Your profile
+                </DropdownMenuItem>
                 <DropdownMenuItem
                   className="-mx-1.5 rounded-chip px-1.5 py-1.5 font-sans text-[12.5px] text-body focus:bg-wash focus:text-ink"
                   onClick={() => signOutFormRef.current?.requestSubmit()}
