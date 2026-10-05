@@ -1,24 +1,23 @@
 import { z } from "zod";
 
-export const TEAMS = ["events", "media", "builders", "operations"] as const;
+export const TEAMS = ["events", "media", "generalist"] as const;
 export type Team = (typeof TEAMS)[number];
 
 export const TEAM_LABELS: Record<Team, string> = {
   events: "Events",
   media: "Media",
-  builders: "Builders",
-  operations: "Operations",
+  generalist: "Generalist",
 };
 
-// Subteam colours reuse the fixed section palette rather than inventing a
-// fifth: Events is the club's calendar work (teal, same as Venue/Attendees),
-// Media matches Marketing's coral, Builders takes Money's blue, Operations
-// takes Food/Notes' amber.
+// Subteam colours reuse the fixed section palette rather than inventing new
+// ones: Events is the club's calendar work (teal, same as Venue/Attendees),
+// Media matches Marketing's coral. Generalist keeps the amber that Operations
+// had, since it is the catch-all the way Operations was, and blue is freed up
+// by Builders going away.
 export const TEAM_COLORS: Record<Team, string> = {
   events: "var(--teal)",
   media: "var(--coral)",
-  builders: "var(--blue)",
-  operations: "var(--amber)",
+  generalist: "var(--amber)",
 };
 
 // An optional free-text field arrives from a form as "" when the person

@@ -102,7 +102,7 @@ begin
 
   update profiles set interests = array['hardware','climate','fintech'], open_to_chats = true,
     chat_blurb = 'Happy to talk hardware.', netid = 'dh1', major = 'CS', graduation_year = '2027',
-    team = 'builders', hometown = 'Ithaca'
+    team = 'generalist', hometown = 'Ithaca'
   where id = v_admin;
 
   insert into shoutouts (giver_id, receiver_id, message, semester)

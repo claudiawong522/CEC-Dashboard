@@ -8,7 +8,7 @@ import type { Citation } from "@/lib/ask/tools";
 import { cn } from "@/lib/utils";
 
 const SUGGESTIONS = [
-  "Who is on the builders subteam?",
+  "Who is on the generalist subteam?",
   "What did we learn from the last demo day?",
   "What's coming up this month?",
   "Who has we already reached out to at a VC?",

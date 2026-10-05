@@ -9,7 +9,7 @@ const validProfile = {
   minor: "",
   college: "Engineering",
   graduation_year: "2027",
-  team: "builders" as const,
+  team: "generalist" as const,
   position: "Member",
   hometown: "Bethpage, NY",
   about: "",
