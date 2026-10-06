@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth/getSession";
 import { requireRole } from "@/lib/auth/requireRole";
 import { createClient } from "@/lib/supabase/server";
+import { pingSiteRevalidate } from "@/lib/site-sync";
 import { actionFailed, actionOk, type ActionResult } from "@/lib/actions/result";
 import {
   matchingSchema,
@@ -55,6 +56,35 @@ export async function updateOwnProfile(values: ProfileInput): Promise<ActionResu
   revalidatePath("/profile");
   revalidatePath("/members");
   revalidatePath(`/members/${session.profile.id}`);
+  pingSiteRevalidate();
+  return actionOk();
+}
+
+// The photo is uploaded straight from the browser into the public
+// `portraits` bucket (components/members/AvatarUploader.tsx); this only
+// records where it landed. null clears it. Same three layers as above keep
+// it to the person's own row.
+export async function updateOwnAvatar(avatarUrl: string | null): Promise<ActionResult> {
+  const session = await getSession();
+  if (!session) throw new Error("Not signed in");
+
+  if (avatarUrl !== null) {
+    const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
+    const expected = `${base}/storage/v1/object/public/portraits/avatars/${session.profile.id}/`;
+    if (!avatarUrl.startsWith(expected)) return actionFailed("That photo isn't yours to use");
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("profiles")
+    .update({ avatar_url: avatarUrl })
+    .eq("id", session.profile.id);
+  if (error) return databaseFailure("save your photo", error);
+
+  revalidatePath("/profile");
+  revalidatePath("/members");
+  revalidatePath(`/members/${session.profile.id}`);
+  pingSiteRevalidate();
   return actionOk();
 }
 

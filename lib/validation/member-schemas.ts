@@ -71,8 +71,16 @@ export const profileSchema = z.object({
   position: z.string().trim().min(1, "Required"),
   hometown: optionalText,
   about: optionalText,
+  hobbies: optionalText,
+  // "loadstonelabs.com" or a sentence; the site links it when it looks like
+  // a domain, so it stays free text here.
+  building: optionalText,
   linkedin_url: optionalUrl,
   portfolio_url: optionalUrl,
+  github_url: optionalUrl,
+  // Opt-out from cornellec.com's members page. On by default because the
+  // site already lists every member; this is the way to leave it.
+  show_on_site: z.boolean().default(true),
 });
 // Two types, not one. The form holds what an <input> gives back — every field
 // a string, including the year — and the schema's transforms are what turn

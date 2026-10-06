@@ -12,11 +12,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { SaveIndicator } from "@/components/events/SaveIndicator";
+import { AvatarUploader } from "@/components/members/AvatarUploader";
 import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { updateOwnProfile } from "@/lib/actions/members";
 import { TEAMS, TEAM_LABELS, type Team } from "@/lib/validation/member-schemas";
-import type { MemberProfile } from "@/lib/types/members";
+import { memberInitials, type MemberProfile } from "@/lib/types/members";
 
 // Everything on this card auto-saves 700ms after the last keystroke, the same
 // contract as the event-details fields. A Save button here would be the only
@@ -38,8 +40,12 @@ type Draft = {
   position: string;
   hometown: string;
   about: string;
+  hobbies: string;
+  building: string;
   linkedin_url: string;
   portfolio_url: string;
+  github_url: string;
+  show_on_site: boolean;
 };
 
 function toDraft(member: MemberProfile): Draft {
@@ -55,8 +61,12 @@ function toDraft(member: MemberProfile): Draft {
     position: member.position,
     hometown: member.hometown ?? "",
     about: member.about ?? "",
+    hobbies: member.hobbies ?? "",
+    building: member.building ?? "",
     linkedin_url: member.linkedin_url ?? "",
     portfolio_url: member.portfolio_url ?? "",
+    github_url: member.github_url ?? "",
+    show_on_site: member.show_on_site,
   };
 }
 
@@ -96,8 +106,12 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
       graduation_year: value.graduation_year,
       hometown: value.hometown,
       about: value.about,
+      hobbies: value.hobbies,
+      building: value.building,
       linkedin_url: value.linkedin_url,
       portfolio_url: value.portfolio_url,
+      github_url: value.github_url,
+      show_on_site: value.show_on_site,
     });
     if (!result.ok) {
       toast.error(result.message);
@@ -119,6 +133,12 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
         </span>
         <SaveIndicator status={status} />
       </div>
+
+      <AvatarUploader
+        memberId={member.id}
+        initialUrl={member.avatar_url}
+        initials={memberInitials(member)}
+      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Name">
@@ -205,6 +225,23 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Hobbies">
+          <Input
+            value={draft.hobbies}
+            placeholder="Hiking, lifting, music"
+            onChange={(e) => set("hobbies", e.target.value)}
+          />
+        </Field>
+        <Field label="Building" hint="A startup, a project, or a domain.">
+          <Input
+            value={draft.building}
+            placeholder="loadstonelabs.com"
+            onChange={(e) => set("building", e.target.value)}
+          />
+        </Field>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-3">
         <Field label="LinkedIn">
           <Input
             value={draft.linkedin_url}
@@ -219,6 +256,27 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
             onChange={(e) => set("portfolio_url", e.target.value)}
           />
         </Field>
+        <Field label="GitHub">
+          <Input
+            value={draft.github_url}
+            placeholder="https://github.com/…"
+            onChange={(e) => set("github_url", e.target.value)}
+          />
+        </Field>
+      </div>
+
+      <div className="flex items-center justify-between gap-4 border-t border-line pt-4">
+        <div className="flex flex-col gap-0.5">
+          <Label>Show on cornellec.com</Label>
+          <span className="font-sans text-[11.5px] text-foreground/50">
+            Your photo, name, major, year, about, hobbies and links appear on the public members page.
+            Email and netid never do.
+          </span>
+        </div>
+        <Switch
+          checked={draft.show_on_site}
+          onCheckedChange={(checked) => set("show_on_site", checked)}
+        />
       </div>
     </div>
   );
