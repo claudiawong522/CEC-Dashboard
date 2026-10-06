@@ -7,15 +7,15 @@ import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
 import { MEMBER_COLUMNS, classLabel, memberInitials, type MemberProfile } from "@/lib/types/members";
 import { TEAM_COLORS, TEAM_LABELS } from "@/lib/validation/member-schemas";
-import { Sticker } from "@/components/stickers/Sticker";
-import { Sprig } from "@/components/stickers/shapes";
+import { TriangleScatter } from "@/components/decor/shapes";
+import { buttonVariants } from "@/components/ui/button";
 
 function Field({ label, value }: { label: string; value: string | null }) {
   if (!value) return null;
   return (
     <div className="flex flex-col gap-1">
-      <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">{label}</span>
-      <span className="font-sans text-[13.5px] text-ink">{value}</span>
+      <span className="t-eyebrow text-foreground/50">{label}</span>
+      <span className="font-sans text-[13.5px] text-foreground">{value}</span>
     </div>
   );
 }
@@ -38,52 +38,34 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
   const isSelf = member.id === session.profile.id;
 
   return (
-    <div className="relative flex flex-col gap-[17px]">
+    <div className="relative flex flex-col gap-6">
       <Link
         href="/members"
-        className="flex w-fit items-center gap-1.5 font-sans text-[12px] text-faint transition-colors duration-200 hover:text-ink"
+        className="link-underline flex w-fit items-center gap-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-foreground"
       >
         <ArrowLeftIcon className="size-3.5" />
         Members
       </Link>
 
-      <div className="relative overflow-hidden rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
-        <Sticker
-          floatVariant="float1"
-          floatDuration="15s"
-          wrapperClassName="pointer-events-none absolute -top-2 right-4"
-          className="pointer-events-auto opacity-[0.3]"
-        >
-          <Sprig size={62} />
-        </Sticker>
+      <div className="relative overflow-hidden border border-line bg-background p-5 shadow-soft">
+        <TriangleScatter count={4} seed={21} opacity={0.18} />
 
-        <div className="relative z-10 flex flex-col gap-[15px]">
+        <div className="relative z-10 flex flex-col gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="relative flex size-[52px] shrink-0 items-center justify-center">
-              {member.open_to_chats && (
-                <div
-                  className="absolute -inset-[3px] rounded-full opacity-75 blur-[2px]"
-                  style={{
-                    background:
-                      "conic-gradient(from 200deg, var(--coral), var(--amber), var(--teal), var(--blue), var(--coral))",
-                  }}
-                />
-              )}
-              <div className="relative flex size-[52px] items-center justify-center rounded-full bg-wash font-sans text-[16px] font-medium text-strong">
-                {memberInitials(member)}
-              </div>
+            <div className="flex size-[52px] shrink-0 items-center justify-center border-2 border-foreground bg-muted/40 font-display text-[16px] font-bold text-foreground">
+              {memberInitials(member)}
             </div>
 
             <div className="flex min-w-0 flex-col gap-1">
-              <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+              <h1 className="t-display text-[28px] text-foreground">
                 {member.full_name ?? member.email}
                 {member.pronouns && (
-                  <span className="ml-2 text-[15px] font-normal text-faint">
+                  <span className="ml-2 font-sans text-[14px] font-normal normal-case tracking-normal text-foreground/50">
                     ({member.pronouns})
                   </span>
                 )}
               </h1>
-              <span className="font-sans text-[12.5px] text-body">
+              <span className="font-sans text-[12.5px] text-subtle">
                 {[member.position, classLabel(member.graduation_year), member.hometown]
                   .filter(Boolean)
                   .join(" · ")}
@@ -93,7 +75,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
             {isSelf && (
               <Link
                 href="/profile"
-                className="ml-auto shrink-0 rounded-btn border border-[rgba(0,0,0,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.24)] hover:bg-wash hover:text-ink"
+                className={buttonVariants({ variant: "outline", size: "sm", className: "ml-auto" })}
               >
                 Edit
               </Link>
@@ -101,9 +83,9 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
           </div>
 
           {member.team && (
-            <span className="flex w-fit items-center gap-1.5 rounded-[20px] border border-[rgba(0,0,0,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-body uppercase">
+            <span className="t-eyebrow flex w-fit items-center gap-1.5 border border-line px-2 py-0.5 text-foreground">
               <span
-                className="size-[7px] rounded-full"
+                className="size-2"
                 style={{ background: TEAM_COLORS[member.team] }}
               />
               {TEAM_LABELS[member.team]}
@@ -111,12 +93,12 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
           )}
 
           {member.about && (
-            <p className="max-w-[62ch] font-sans text-[13.5px] leading-[1.75] text-body">
+            <p className="max-w-[62ch] font-sans text-[13.5px] leading-[1.75] text-subtle">
               {member.about}
             </p>
           )}
 
-          <div className="grid gap-[15px] sm:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-3">
             <Field label="major" value={member.major} />
             <Field label="minor" value={member.minor} />
             <Field label="college" value={member.college} />
@@ -136,7 +118,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                   href={member.linkedin_url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="flex items-center gap-1.5 font-sans text-[12.5px] text-body underline-offset-2 transition-colors duration-200 hover:text-ink hover:underline"
+                  className="link-underline flex items-center gap-1.5 font-sans text-[12.5px] text-subtle transition-colors duration-200 hover:text-foreground"
                 >
                   <LinkIcon className="size-3.5" />
                   LinkedIn
@@ -147,7 +129,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                   href={member.portfolio_url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  className="flex items-center gap-1.5 font-sans text-[12.5px] text-body underline-offset-2 transition-colors duration-200 hover:text-ink hover:underline"
+                  className="link-underline flex items-center gap-1.5 font-sans text-[12.5px] text-subtle transition-colors duration-200 hover:text-foreground"
                 >
                   <GlobeIcon className="size-3.5" />
                   Portfolio
@@ -159,12 +141,12 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
       </div>
 
       {member.open_to_chats && member.chat_blurb && (
-        <div className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
+        <div className="border border-line bg-background p-5 shadow-soft">
           <div className="flex flex-col gap-2">
-            <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+            <span className="t-eyebrow text-foreground/50">
               open to coffee chats
             </span>
-            <p className="max-w-[62ch] font-sans text-[13.5px] leading-[1.75] text-body">
+            <p className="max-w-[62ch] font-sans text-[13.5px] leading-[1.75] text-subtle">
               {member.chat_blurb}
             </p>
             {member.interests.length > 0 && (
@@ -172,7 +154,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                 {member.interests.map((interest) => (
                   <span
                     key={interest}
-                    className="rounded-[20px] border border-[rgba(0,0,0,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-body uppercase"
+                    className="t-eyebrow border border-line px-2 py-0.5 text-foreground"
                   >
                     {interest}
                   </span>

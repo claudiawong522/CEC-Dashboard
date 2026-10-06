@@ -10,24 +10,25 @@ import type { DateClickArg } from "@fullcalendar/interaction";
 import type FullCalendarType from "@fullcalendar/react";
 import { addDays, addYears, format, isSameMonth, startOfWeek, subYears } from "date-fns";
 import { toast } from "sonner";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
 import { rescheduleEvent } from "@/lib/actions/events";
-import { Sticker } from "@/components/stickers/Sticker";
-import { Heart, Cherries, Flower, StarPolygon, TwinkleDiamondPair } from "@/components/stickers/shapes";
+import { TriangleScatter } from "@/components/decor/shapes";
 import { WeekView } from "./WeekView";
 import { YearView } from "./YearView";
 
 // FullCalendar renders directly to the DOM and its date formatting can
-// differ slightly between the server render and the client's timezone —
-// loading it client-only avoids hydration mismatches. next/dynamic's
+// differ slightly between the server render and the client's timezone,
+// so loading it client-only avoids hydration mismatches. next/dynamic's
 // inferred type drops ref support for class components, so it's cast back
 // to the real component type to keep the calendarRef (used to drive our
 // custom toolbar) type-checked.
 const FullCalendar = dynamic(() => import("@fullcalendar/react"), {
   ssr: false,
   loading: () => (
-    <div className="h-[732px] w-full animate-pulse rounded-[10px] bg-stone-100" />
+    <div className="h-[732px] w-full animate-pulse border border-line bg-muted/40" />
   ),
 }) as unknown as typeof FullCalendarType;
 
@@ -63,7 +64,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
   const [monthTitle, setMonthTitle] = useState("");
   const [viewType, setViewType] = useState<ViewKey>("month");
   const [currentDate, setCurrentDate] = useState(() => new Date());
-  // FullCalendar only exists in the DOM while viewType === "month" — it
+  // FullCalendar only exists in the DOM while viewType === "month": it
   // unmounts (and its ref goes stale) the moment you leave month view, so
   // jumping to a specific month from elsewhere (e.g. Year view) can't use
   // calendarRef.current.gotoDate(). Instead it remounts fresh from this
@@ -77,7 +78,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
     start: event.all_day ? event.event_date : `${event.event_date}T${event.event_time}`,
     // FullCalendar's `end` is exclusive for all-day events (needs the day
     // *after* the last day) but inclusive of the actual moment for timed
-    // ones — same event_end_date column, two different offsets.
+    // ones: same event_end_date column, two different offsets.
     end: event.all_day
       ? format(addDays(new Date(`${event.event_end_date}T00:00`), 1), "yyyy-MM-dd")
       : `${event.event_end_date}T${event.event_end_time ?? event.event_time}`,
@@ -140,64 +141,41 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
     viewType === "month" ? monthTitle : viewType === "week" ? weekTitle : format(currentDate, "yyyy");
 
   return (
-    <div className="flex flex-col gap-[18px]">
+    <div className="flex flex-col gap-6">
       <div className={cn("flex items-center justify-between", viewType === "year" && "mx-auto max-w-[1040px] w-full")}>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            aria-label="Previous"
-            onClick={goPrev}
-            className={cn(
-              "flex items-center justify-center rounded-input border border-line-input bg-paper font-sans text-body transition-colors duration-200 hover:bg-wash hover:text-ink",
-              viewType === "year" ? "size-[38px] text-[16px]" : "size-[31px] text-[13px]",
-            )}
-          >
-            ‹
-          </button>
-          <button
-            type="button"
-            aria-label="Next"
-            onClick={goNext}
-            className={cn(
-              "flex items-center justify-center rounded-input border border-line-input bg-paper font-sans text-body transition-colors duration-200 hover:bg-wash hover:text-ink",
-              viewType === "year" ? "size-[38px] text-[16px]" : "size-[31px] text-[13px]",
-            )}
-          >
-            ›
-          </button>
-          <button
-            type="button"
-            onClick={goToday}
-            className={cn(
-              "rounded-input border border-line-input bg-paper font-sans text-body transition-colors duration-200 hover:bg-wash hover:text-ink",
-              viewType === "year" ? "px-[16px] py-[9px] text-[14px]" : "px-[13px] py-[7px] text-[12.5px]",
-            )}
-          >
+          <Button variant="outline" size="icon-sm" aria-label="Previous" onClick={goPrev}>
+            <ChevronLeft />
+          </Button>
+          <Button variant="outline" size="icon-sm" aria-label="Next" onClick={goNext}>
+            <ChevronRight />
+          </Button>
+          <Button variant="outline" size="sm" onClick={goToday}>
             Today
-          </button>
+          </Button>
         </div>
 
         <div
           className={cn(
-            "font-sans tracking-[-0.012em] text-ink",
-            viewType === "year" ? "text-[22px]" : "text-[18px]",
+            "t-display text-foreground",
+            viewType === "year" ? "text-[24px]" : "text-[20px]",
           )}
         >
           {title}
         </div>
 
-        <div className="flex overflow-hidden rounded-input border border-line-input bg-paper">
+        {/* Segmented control: a 2px black group, the active segment inverted. */}
+        <div className="flex border-2 border-foreground">
           {VIEWS.map((v) => (
             <button
               key={v.key}
               type="button"
               onClick={() => setViewType(v.key)}
               className={cn(
-                "font-mono tracking-[0.12em] uppercase transition-colors duration-200",
-                viewType === "year" ? "px-[16px] py-[10px] text-[11px]" : "px-[13px] py-2 text-[10px]",
+                "t-eyebrow px-3 py-2 transition-colors duration-200 ease-fluid",
                 viewType === v.key
-                  ? "bg-ink text-page"
-                  : "text-faint hover:bg-wash hover:text-ink",
+                  ? "bg-foreground text-background"
+                  : "text-foreground/50 hover:bg-muted/60 hover:text-foreground",
               )}
             >
               {v.label}
@@ -207,87 +185,11 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
       </div>
 
       {viewType === "month" && (
-        <div className="relative overflow-hidden rounded-[10px] border border-line bg-page">
-          {/* S8-S10 + Heart/Cherries — ambient stickers, behind the day grid (per
-              BRAND_KIT.md's decorative-stickers-behind-opaque-content rule) so a
-              day cell's own link always wins the click over a sticker sitting on
-              top of it; each still pops on its own click where it peeks through. */}
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-[5]">
-            <Sticker
-              floatVariant="float1"
-              floatDuration="15s"
-              wrapperClassName="absolute left-[1%] bottom-[10%]"
-              className="pointer-events-auto opacity-[0.75]"
-            >
-              <Flower size={92} petal="var(--teal)" center="var(--amber)" />
-            </Sticker>
-
-            <Sticker
-              floatVariant="float2"
-              floatDuration="18s"
-              wrapperClassName="absolute right-[1%] top-[20%]"
-              className="pointer-events-auto opacity-[0.7]"
-            >
-              <StarPolygon size={54} />
-            </Sticker>
-
-            <Sticker
-              floatVariant="float3"
-              floatDuration="16s"
-              floatDelay="1.2s"
-              wrapperClassName="absolute left-[30%] bottom-[-2%]"
-              className="pointer-events-auto opacity-[0.7]"
-            >
-              <TwinkleDiamondPair size={62} />
-            </Sticker>
-
-            <Sticker
-              floatVariant="float1"
-              floatDuration="14s"
-              floatDelay="2.4s"
-              wrapperClassName="absolute left-[13%] top-[4%]"
-              className="pointer-events-auto opacity-[0.65]"
-            >
-              <Heart size={48} />
-            </Sticker>
-
-            <Sticker
-              floatVariant="float3"
-              floatDuration="19s"
-              floatDelay="0.6s"
-              wrapperClassName="absolute right-[18%] bottom-[2%]"
-              className="pointer-events-auto opacity-[0.65]"
-            >
-              <Cherries size={46} />
-            </Sticker>
-          </div>
-
-          <div aria-hidden="true" className="pointer-events-none absolute inset-0 z-0 opacity-45">
-            <div
-              className="absolute top-[22%] left-[5%] size-[150px] rounded-full blur-[32px]"
-              style={{
-                background: "radial-gradient(circle, rgba(217,80,112,.5), transparent 72%)",
-              }}
-            />
-            <div
-              className="absolute top-[56%] left-[46%] size-[190px] rounded-full blur-[38px]"
-              style={{
-                background: "radial-gradient(circle, rgba(42,157,143,.45), transparent 72%)",
-              }}
-            />
-            <div
-              className="absolute top-[6%] right-[6%] size-[170px] rounded-full blur-[34px]"
-              style={{
-                background: "radial-gradient(circle, rgba(59,111,194,.4), transparent 72%)",
-              }}
-            />
-            <div
-              className="absolute right-[28%] bottom-[-8%] size-[160px] rounded-full blur-[32px]"
-              style={{
-                background: "radial-gradient(circle, rgba(232,184,48,.5), transparent 72%)",
-              }}
-            />
-          </div>
+        <div className="relative overflow-hidden bg-background">
+          {/* Logo tiles behind the day grid: a day cell's own link always
+              wins the click, and each triangle still pops where it peeks
+              through. */}
+          <TriangleScatter count={5} seed={11} opacity={0.2} className="z-0" />
 
           <div className="fc-cec relative z-10">
             <FullCalendar

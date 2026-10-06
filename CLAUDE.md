@@ -1,10 +1,10 @@
 @AGENTS.md
 
-# CEC Dashboard — working agreement
+# CEC Dashboard: working agreement
 
 ## What this app is
 Internal web app for the Cornell Entrepreneurship Club: events, prep-work tracking, photos, shared notes,
-admin access. Next.js + Tailwind + shadcn/ui. Invite-only — members sign in with Google, but only after
+admin access. Next.js + Tailwind + shadcn/ui. Invite-only: members sign in with Google, but only after
 an admin has invited their email from `/admin`; there's no self-serve signup.
 
 ## Design system, read before any UI change
