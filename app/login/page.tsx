@@ -8,6 +8,7 @@ import { BrandMark } from "@/components/app-shell/BrandMark";
 import { TriangleScatter, Marquee } from "@/components/decor/shapes";
 import { Sticker } from "@/components/decor/Sticker";
 import { IntroPlane } from "@/components/app-shell/IntroPlane";
+import { ArrowUpRightIcon } from "lucide-react";
 
 const ERROR_MESSAGES: Record<string, string> = {
   not_invited: "This app is invite-only — ask an admin to invite your email first.",
@@ -132,7 +133,7 @@ export default function LoginPage() {
         <span className="font-display text-[14px] font-bold tracking-tight text-foreground uppercase">
           Cornell Entrepreneurship Club
         </span>
-        <span className="t-eyebrow ml-auto hidden text-foreground/40 sm:inline">Internal</span>
+        <span className="t-eyebrow ml-auto hidden text-foreground/40 sm:inline">Members and alumni only</span>
       </header>
 
       <div className="relative z-10 flex flex-1 flex-col justify-center px-6 py-16 sm:px-10">
@@ -153,7 +154,7 @@ export default function LoginPage() {
           <p className="max-w-[48ch] font-sans text-[17px] leading-[1.55] text-subtle sm:text-[20px]">
             {cameFromInvite
               ? "You're invited. Sign in with Google to finish setting up your account."
-              : "The club's internal dashboard. Sign in with the Google account an admin invited."}
+              : "The members' dashboard, for current CEC members and alumni only. Sign in with the Google account an admin invited; there is no sign-up."}
           </p>
 
           <div className="flex flex-wrap items-center gap-4">
@@ -161,12 +162,16 @@ export default function LoginPage() {
               <GoogleIcon className="size-4" />
               Sign in with Google
             </Button>
-            <a
-              href="https://cornellec.com"
-              className="link-underline font-display text-[12px] font-bold tracking-wide text-foreground uppercase"
+            <Button
+              variant="outline"
+              size="lg"
+              className="gap-2"
+              render={<a href="https://cornellec.com" />}
+              nativeButton={false}
             >
-              cornellec.com
-            </a>
+              Go back to main site
+              <ArrowUpRightIcon className="size-4" />
+            </Button>
           </div>
 
           <Suspense fallback={null}>
