@@ -488,6 +488,11 @@
   caret-color: var(--black);
   padding-inline: 0 !important;
 }
+/* BlockNote italicises its empty-block placeholder; the kit has no italics. */
+.bn-block-content:has(.ProseMirror-trailingBreak:only-child):after {
+  font-style: normal !important;
+  color: rgba(0, 0, 0, 0.35);
+}
 
 /* The slash menu's icon/subtitle/shortcut layout is Mantine's own component,
    not reachable via BlockNote's theme API, so it is restyled here to the

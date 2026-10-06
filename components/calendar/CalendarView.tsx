@@ -142,7 +142,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className={cn("flex items-center justify-between", viewType === "year" && "mx-auto max-w-[1040px] w-full")}>
+      <div className={cn("flex flex-wrap items-center justify-between gap-x-4 gap-y-3", viewType === "year" && "mx-auto max-w-[1040px] w-full")}>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon-sm" aria-label="Previous" onClick={goPrev}>
             <ChevronLeft />
@@ -157,7 +157,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
 
         <div
           className={cn(
-            "t-display text-foreground",
+            "t-display order-first w-full text-foreground sm:order-none sm:w-auto",
             viewType === "year" ? "text-[24px]" : "text-[20px]",
           )}
         >

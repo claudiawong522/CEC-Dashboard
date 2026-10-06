@@ -137,7 +137,7 @@ export default function LoginPage() {
 
       <div className="relative z-10 flex flex-1 flex-col justify-center px-6 py-16 sm:px-10">
         <div className="mx-auto flex w-full max-w-[880px] flex-col gap-8">
-          <h1 className="t-display text-[56px] text-balance text-foreground sm:text-[88px] md:text-[104px]">
+          <h1 className="t-display text-[34px] text-balance text-foreground sm:text-[56px] md:text-[72px] lg:text-[96px] xl:text-[104px]">
             Cornell
             <br />
             Entrepreneurship
