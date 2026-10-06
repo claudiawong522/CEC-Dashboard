@@ -1,3 +1,14 @@
+# Design folder
+
+**Current system: `BRAND_KIT.md` v2 (2026-10-06), a transcription of cornellec.com.** `brand-tokens.css`
+and `tailwind.brand.js` hold the v2 values. The spec behind the change is
+`docs/superpowers/specs/2026-10-06-cornellec-rehaul-design.md`.
+
+Everything below this line is the retired v1 handoff (cream paper, CENT gradient, stickers). The two
+`.dc.html` mockups still open in a browser but no longer describe the app.
+
+---
+
 # Handoff: CEC Dashboard visual redesign (brand kit v1)
 
 ## Overview
