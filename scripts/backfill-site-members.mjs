@@ -16,7 +16,7 @@
 // .env.local by default (pass --env <file> for another).
 
 import { readFileSync, existsSync } from "node:fs";
-import { resolve, join } from "node:path";
+import { join } from "node:path";
 import { createClient } from "@supabase/supabase-js";
 
 const args = process.argv.slice(2);
