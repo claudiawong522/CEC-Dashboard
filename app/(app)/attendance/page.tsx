@@ -5,8 +5,9 @@ import type { ChatPerson } from "@/lib/types/coffee-chats";
 import { currentTermKey, termFromKey } from "@/lib/utils/terms";
 import { EVENT_TYPE_LABELS, type AttendanceEventType } from "@/lib/validation/club-schemas";
 import { AttendanceRecorder, type EventOption } from "@/components/attendance/AttendanceRecorder";
-import { Sticker } from "@/components/stickers/Sticker";
-import { BeadRow, Seal } from "@/components/stickers/shapes";
+import { Sticker } from "@/components/decor/Sticker";
+import { Seal, TriangleScatter } from "@/components/decor/shapes";
+import { PageHeader } from "@/components/ui/page-header";
 
 type AttendanceRow = {
   id: string;
@@ -82,36 +83,22 @@ export default async function AttendancePage() {
   const sessions = Array.from(bySession.values());
 
   return (
-    <div className="relative flex flex-col gap-[17px]">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 -top-3 z-0 h-28 overflow-hidden"
+    <div className="relative flex flex-col gap-6">
+      <TriangleScatter count={5} seed={51} opacity={0.2} />
+
+      <PageHeader
+        className="relative z-10"
+        title="Attendance"
+        actions={
+          <Sticker floatVariant="none" wrapperClassName="shrink-0">
+            <Seal label={term.key} size={40} color={term.color} />
+          </Sticker>
+        }
       >
-        <Sticker
-          floatVariant="float1"
-          floatDuration="16s"
-          wrapperClassName="pointer-events-none absolute right-[13%] top-2"
-          className="pointer-events-auto opacity-[0.4]"
-        >
-          <BeadRow size={16} gap={9} />
-        </Sticker>
-      </div>
+        Who turned up, for the things worth counting.
+      </PageHeader>
 
-      <div className="relative z-10 flex items-end justify-between gap-4">
-        <div className="flex flex-col gap-[5px]">
-          <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-            Attendance
-          </h1>
-          <span className="font-sans text-[12.5px] text-body">
-            Who turned up, for the things worth counting.
-          </span>
-        </div>
-        <Sticker floatVariant="none" wrapperClassName="shrink-0">
-          <Seal label={term.key} size={40} color={term.color} />
-        </Sticker>
-      </div>
-
-      <div className="relative z-10 flex flex-col gap-[17px]">
+      <div className="relative z-10 flex flex-col gap-6">
         <AttendanceRecorder
           events={events ?? []}
           members={members ?? []}
@@ -119,8 +106,8 @@ export default async function AttendancePage() {
         />
 
         {sessions.length > 0 && (
-          <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
-            <div className="grid grid-cols-[1.6fr_1fr_auto] gap-3 border-b border-[rgba(0,0,0,0.08)] px-[15px] py-2.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+          <div className="overflow-hidden border border-line bg-background shadow-soft">
+            <div className="t-eyebrow grid grid-cols-[1.6fr_1fr_auto] gap-3 border-b border-line bg-muted/40 px-4 py-2.5 text-foreground/50">
               <span>what</span>
               <span>kind</span>
               <span>here</span>
@@ -128,15 +115,15 @@ export default async function AttendancePage() {
             {sessions.map((entry, index) => (
               <div
                 key={`${entry.name}-${entry.at}`}
-                className={`grid grid-cols-[1.6fr_1fr_auto] items-center gap-3 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                  index < sessions.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
+                className={`grid grid-cols-[1.6fr_1fr_auto] items-center gap-3 px-4 py-3 transition-colors duration-200 hover:bg-muted/40 ${
+                  index < sessions.length - 1 ? "border-b border-line" : ""
                 }`}
               >
-                <span className="truncate font-sans text-[12.5px] text-ink">{entry.name}</span>
-                <span className="truncate font-sans text-[12px] text-body">
+                <span className="truncate font-sans text-[12.5px] text-foreground">{entry.name}</span>
+                <span className="truncate font-sans text-[12px] text-subtle">
                   {EVENT_TYPE_LABELS[entry.type]}
                 </span>
-                <span className="justify-self-end font-mono text-[11px] text-strong">
+                <span className="justify-self-end font-display text-[12px] font-bold text-foreground">
                   {entry.count}
                 </span>
               </div>

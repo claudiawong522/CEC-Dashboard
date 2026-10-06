@@ -71,9 +71,9 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="font-sans text-[12px] font-normal text-body">{label}</Label>
+      <Label>{label}</Label>
       {children}
-      {hint && <span className="font-sans text-[11.5px] text-faint">{hint}</span>}
+      {hint && <span className="font-sans text-[11.5px] text-foreground/50">{hint}</span>}
     </div>
   );
 }
@@ -112,15 +112,15 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+        <span className="t-eyebrow text-foreground/50">
           about you
         </span>
         <SaveIndicator status={status} />
       </div>
 
-      <div className="grid gap-[15px] sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Name">
           <Input value={draft.full_name} onChange={(e) => set("full_name", e.target.value)} />
         </Field>
@@ -204,7 +204,7 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
         />
       </Field>
 
-      <div className="grid gap-[15px] sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label="LinkedIn">
           <Input
             value={draft.linkedin_url}

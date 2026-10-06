@@ -14,12 +14,12 @@ function StageTag({ stage }: { stage: StageValue }) {
   return (
     <span
       className={
-        "flex shrink-0 items-center gap-1.5 rounded-pill border px-[9px] py-1 font-mono text-[9.5px] tracking-[0.1em] uppercase " +
-        (isTerminal ? "border-transparent bg-cent-tint text-ink" : "border-line-input text-body") +
-        (stage === "declined" ? " border-destructive/25 bg-transparent text-destructive" : "")
+        "t-eyebrow flex shrink-0 items-center gap-1.5 border px-2 py-0.5 " +
+        (isTerminal ? "border-foreground bg-mint/20 text-foreground" : "border-line text-subtle") +
+        (stage === "declined" ? " border-red/40 bg-transparent text-red" : "")
       }
     >
-      <span className={"size-1.5 shrink-0 rounded-full " + dot.className} style={dot.style} />
+      <span className={"size-1.5 shrink-0 " + dot.className} style={dot.style} />
       {STAGE_LABELS[stage]}
     </span>
   );
@@ -42,12 +42,12 @@ export function ExternalList({
         <button
           onClick={() => setFilter("all")}
           className={
-            "flex items-center gap-1.5 rounded-pill border px-3 py-1.5 font-mono text-[9.5px] tracking-[0.08em] uppercase transition-colors duration-200 ease-brand " +
-            (filter === "all" ? "border-ink bg-ink text-page" : "border-line-input text-faint hover:border-[rgba(0,0,0,0.24)] hover:text-ink")
+            "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-colors duration-200 ease-fluid " +
+            (filter === "all" ? "border-foreground bg-foreground text-background" : "border-line text-foreground/50 hover:border-foreground hover:text-foreground")
           }
         >
           All
-          <span className={filter === "all" ? "text-page/65" : "text-faint"}>{ideas.length}</span>
+          <span className={filter === "all" ? "text-mint" : "text-foreground/40"}>{ideas.length}</span>
         </button>
         {STAGE_VALUES.map((stage) => {
           const count = ideas.filter((i) => i.stage === stage).length;
@@ -58,24 +58,24 @@ export function ExternalList({
               key={stage}
               onClick={() => setFilter(stage)}
               className={
-                "flex items-center gap-1.5 rounded-pill border px-3 py-1.5 font-mono text-[9.5px] tracking-[0.08em] uppercase transition-colors duration-200 ease-brand " +
-                (active ? "border-ink bg-ink text-page" : "border-line-input text-faint hover:border-[rgba(0,0,0,0.24)] hover:text-ink")
+                "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-colors duration-200 ease-fluid " +
+                (active ? "border-foreground bg-foreground text-background" : "border-line text-foreground/50 hover:border-foreground hover:text-foreground")
               }
             >
-              <span className={"size-1.5 shrink-0 rounded-full " + dot.className} style={dot.style} />
+              <span className={"size-1.5 shrink-0 " + dot.className} style={dot.style} />
               {STAGE_LABELS[stage]}
-              <span className={active ? "text-page/65" : "text-faint"}>{count}</span>
+              <span className={active ? "text-mint" : "text-foreground/40"}>{count}</span>
             </button>
           );
         })}
       </div>
 
       {visible.length === 0 ? (
-        <div className="rounded-card border border-dashed border-line-input px-4 py-3.5 font-sans text-[12.5px] text-faint">
-          {ideas.length ? "Nothing at this stage." : "No leads yet — add one above."}
+        <div className="border border-dashed border-line px-4 py-3.5 font-sans text-[13px] text-foreground/50">
+          {ideas.length ? "Nothing at this stage." : "No leads yet. Add one above."}
         </div>
       ) : (
-        <div className="flex flex-col overflow-hidden rounded-card border border-line bg-paper">
+        <div className="flex flex-col border border-line bg-background shadow-soft">
           {visible.map((idea, i) => {
             const owners = idea.external_idea_owners
               .map((o) => adminsById[o.profile_id])
@@ -88,8 +88,8 @@ export function ExternalList({
             return (
               <div key={idea.id} className="contents">
                 {startsClosedGroup && (
-                  <div className="flex items-center gap-2.5 border-b border-line bg-wash px-3 py-1.5">
-                    <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+                  <div className="flex items-center gap-2.5 border-b border-line bg-muted px-3 py-1.5">
+                    <span className="t-eyebrow text-foreground/50">
                       Closed
                     </span>
                     <span className="h-px flex-1 bg-line" />
@@ -97,7 +97,7 @@ export function ExternalList({
                 )}
                 <div
                   className={
-                    "group relative flex items-center gap-4 px-3 py-[19px] transition-colors duration-200 ease-brand hover:bg-wash " +
+                    "group relative flex items-center gap-4 px-3 py-[19px] transition-[background-color,box-shadow] duration-200 ease-fluid hover:bg-muted/40 hover:shadow-[inset_3px_0_0_0_var(--mint)] " +
                     (i < visible.length - 1 ? "border-b border-line" : "")
                   }
                 >
@@ -108,8 +108,8 @@ export function ExternalList({
                   />
                   <span
                     className={
-                      "pointer-events-none relative flex-1 truncate font-sans text-[15px] " +
-                      (closed ? "text-body" : "text-ink")
+                      "pointer-events-none relative flex-1 truncate font-sans text-[15px] font-medium " +
+                      (closed ? "text-subtle" : "text-foreground")
                     }
                   >
                     {idea.pitch || "(untitled)"}
@@ -119,17 +119,16 @@ export function ExternalList({
                   </span>
                   {/* The span itself stays click-through so an unowned lead
                       doesn't leave 72px of dead row, but each avatar takes
-                      its pointer events back — they carry a `title` with the
+                      its pointer events back: they carry a `title` with the
                       owner's name, and that never fires without hover. */}
                   <span className="pointer-events-none relative flex min-w-[72px] justify-end">
                     {owners.map((o, j) => (
                       <span
                         key={j}
                         title={o.full_name ?? o.email}
-                        style={{ marginLeft: j === 0 ? 0 : -7, boxShadow: "0 0 0 2px var(--page)" }}
-                        className="pointer-events-auto relative flex size-[26px] items-center justify-center rounded-full bg-wash font-mono text-[9.5px] text-strong"
+                        style={{ marginLeft: j === 0 ? 0 : -7, boxShadow: "0 0 0 2px var(--white)" }}
+                        className="pointer-events-auto relative flex size-[26px] items-center justify-center border-2 border-foreground bg-background font-display text-[9.5px] font-bold text-foreground"
                       >
-                        <span className="pointer-events-none absolute -inset-[1.5px] rounded-full bg-cent-pastel p-[1.5px] opacity-75 [mask-composite:exclude] [mask:linear-gradient(#000_0_0)_content-box,linear-gradient(#000_0_0)]" />
                         {initials(o.full_name ?? o.email)}
                       </span>
                     ))}
@@ -138,7 +137,7 @@ export function ExternalList({
                     ideaId={idea.id}
                     pitch={idea.pitch}
                     isConverted={idea.stage === "converted"}
-                    className="relative opacity-100 transition-opacity duration-200 ease-brand md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
+                    className="relative opacity-100 transition-opacity duration-200 ease-fluid md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
                   />
                 </div>
               </div>

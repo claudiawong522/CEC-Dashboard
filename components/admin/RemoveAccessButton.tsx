@@ -22,7 +22,7 @@ export function RemoveAccessButton({ userId, email }: { userId: string; email: s
   return (
     <ConfirmButton
       trigger={<UserMinus className="size-3.5" />}
-      triggerClassName="flex size-6 shrink-0 items-center justify-center rounded-btn text-faint transition-colors duration-200 hover:bg-coral/10 hover:text-destructive"
+      triggerClassName="flex size-6 shrink-0 items-center justify-center text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red"
       triggerTitle={`Remove ${email}'s access`}
       askLabel="Remove access?"
       yesLabel="Remove"

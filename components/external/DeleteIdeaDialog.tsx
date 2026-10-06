@@ -55,20 +55,20 @@ export function DeleteIdeaDialog({
         title="Delete lead"
         aria-label={`Delete ${pitch || "untitled lead"}`}
         className={cn(
-          "flex size-8 shrink-0 items-center justify-center rounded-btn text-faint transition-colors duration-200 ease-brand hover:bg-coral/10 hover:text-destructive",
+          "flex size-8 shrink-0 items-center justify-center text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red",
           className,
         )}
       >
         <Trash2 className="size-4" />
       </DialogTrigger>
-      <DialogContent className="rounded-card border border-line bg-paper p-4 ring-0 sm:max-w-[360px]">
+      <DialogContent className="p-5 sm:max-w-[360px]">
         <DialogHeader>
-          <DialogTitle className="font-sans text-[15px] font-medium text-ink">
+          <DialogTitle className="font-display text-[18px] font-bold text-foreground">
             Delete this lead?
           </DialogTitle>
         </DialogHeader>
-        <p className="font-sans text-[12px] leading-[1.5] text-faint">
-          {pitch ? <span className="text-body">“{pitch}”</span> : "This lead"} goes for good —
+        <p className="font-sans text-[13px] leading-[1.6] text-foreground/50">
+          {pitch ? <span className="text-subtle">“{pitch}”</span> : "This lead"} goes for good:
           contacts, owners and notes with it.
           {isConverted && " The event it became stays on the calendar."}
         </p>

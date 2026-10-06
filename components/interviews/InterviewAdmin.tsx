@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Trash2Icon, UndoIcon } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -44,29 +45,27 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
 
   if (!cycle) {
     return (
-      <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[15px]">
-        <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+      <div className="flex flex-col gap-4 border border-line bg-background p-4 shadow-soft">
+        <span className="t-eyebrow text-foreground/50">
           open a cycle
         </span>
         <div className="flex flex-col gap-1.5">
-          <Label className="font-sans text-[12px] font-normal text-body">Name</Label>
+          <Label>Name</Label>
           <Input
             value={name}
             placeholder="Fall 2026 recruitment"
             onChange={(event) => setName(event.target.value)}
-            className="bg-page"
           />
         </div>
         <div className="flex flex-col gap-1.5">
-          <Label className="font-sans text-[12px] font-normal text-body">Who got through</Label>
+          <Label>Who got through</Label>
           <Textarea
             value={netids}
             placeholder="Paste netids or Cornell emails straight from the spreadsheet — commas, spaces or newlines all work."
             onChange={(event) => setNetids(event.target.value)}
-            className="bg-page"
           />
         </div>
-        <button
+        <Button
           type="button"
           disabled={isPending}
           onClick={() =>
@@ -75,80 +74,75 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
               setNetids("");
             })
           }
-          className="w-fit rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
+          className="w-fit"
         >
           {isPending ? "Opening" : "Open cycle"}
-        </button>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-[17px]">
-      <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[15px]">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4 border border-line bg-background p-4 shadow-soft">
         <div className="flex items-center justify-between gap-3">
-          <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+          <span className="t-eyebrow text-foreground/50">
             {cycle.name} · {cycle.approved_netids.length} approved
           </span>
           <button
             type="button"
             disabled={isPending}
             onClick={() => run(() => closeCycle(cycle.id))}
-            className="font-sans text-[12px] text-faint transition-colors duration-200 hover:text-destructive disabled:pointer-events-none"
+            className="link-underline font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-red disabled:pointer-events-none"
           >
             Close cycle
           </button>
         </div>
 
-        <div className="grid gap-[15px] sm:grid-cols-5">
+        <div className="grid gap-4 sm:grid-cols-5">
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Date</Label>
+            <Label>Date</Label>
             <Input
               type="date"
               value={date}
               onChange={(event) => setDate(event.target.value)}
-              className="bg-page"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">First slot</Label>
+            <Label>First slot</Label>
             <Input
               type="time"
               value={startTime}
               onChange={(event) => setStartTime(event.target.value)}
-              className="bg-page"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Minutes</Label>
+            <Label>Minutes</Label>
             <Input
               value={duration}
               inputMode="numeric"
               onChange={(event) => setDuration(event.target.value)}
-              className="bg-page"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">How many</Label>
+            <Label>How many</Label>
             <Input
               value={count}
               inputMode="numeric"
               onChange={(event) => setCount(event.target.value)}
-              className="bg-page"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Where</Label>
+            <Label>Where</Label>
             <Input
               value={location}
               placeholder="Uris G01"
               onChange={(event) => setLocation(event.target.value)}
-              className="bg-page"
             />
           </div>
         </div>
 
-        <button
+        <Button
           type="button"
           disabled={isPending || !date || !startTime}
           onClick={() =>
@@ -164,19 +158,19 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
               }),
             )
           }
-          className="w-fit rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
+          className="w-fit"
         >
           {isPending ? "Adding" : "Add back-to-back slots"}
-        </button>
-        <span className="font-sans text-[11.5px] text-faint">
+        </Button>
+        <span className="font-sans text-[11.5px] text-foreground/50">
           Interviews run in blocks: one person sits down and takes several in a row. You&rsquo;re
           the interviewer unless someone else is assigned later.
         </span>
       </div>
 
       {slots.length > 0 && (
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
-          <div className="grid grid-cols-[1.6fr_1fr_1fr_auto] gap-3 border-b border-[rgba(0,0,0,0.08)] px-[15px] py-2.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+        <div className="overflow-hidden border border-line bg-background shadow-soft">
+          <div className="t-eyebrow grid grid-cols-[1.6fr_1fr_1fr_auto] gap-3 border-b border-line bg-muted/40 px-4 py-2.5 text-foreground/50">
             <span>when</span>
             <span>where</span>
             <span>who</span>
@@ -185,19 +179,19 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
           {slots.map((slot, index) => (
             <div
               key={slot.id}
-              className={`grid grid-cols-[1.6fr_1fr_1fr_auto] items-center gap-3 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                index < slots.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
+              className={`grid grid-cols-[1.6fr_1fr_1fr_auto] items-center gap-3 px-4 py-3 transition-colors duration-200 hover:bg-muted/40 ${
+                index < slots.length - 1 ? "border-b border-line" : ""
               }`}
             >
-              <span className="truncate font-sans text-[12.5px] text-ink">
+              <span className="truncate font-sans text-[12.5px] text-foreground">
                 {formatSlot(slot.start_time, slot.end_time)}
               </span>
-              <span className="truncate font-sans text-[12px] text-body">
+              <span className="truncate font-sans text-[12px] text-subtle">
                 {slot.location ?? "—"}
               </span>
-              <span className="truncate font-mono text-[11px] text-strong">
+              <span className="t-eyebrow truncate text-foreground">
                 {slot.applicant_netid ?? (
-                  <span className="font-sans text-[12px] text-faint">open</span>
+                  <span className="font-sans text-[12px] text-foreground/50">open</span>
                 )}
               </span>
               <span className="flex justify-end gap-1">
@@ -208,7 +202,7 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
                     aria-label="Release this slot"
                     title="Release this slot"
                     onClick={() => run(() => releaseSlot(slot.id))}
-                    className="rounded-chip p-1 text-faint transition-colors duration-200 hover:text-ink disabled:pointer-events-none"
+                    className="p-1 text-foreground/50 transition-colors duration-200 hover:text-foreground disabled:pointer-events-none"
                   >
                     <UndoIcon className="size-3.5" />
                   </button>
@@ -218,7 +212,7 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
                     disabled={isPending}
                     aria-label="Delete this slot"
                     onClick={() => run(() => deleteSlot(slot.id))}
-                    className="rounded-chip p-1 text-faint transition-colors duration-200 hover:text-destructive disabled:pointer-events-none"
+                    className="p-1 text-foreground/50 transition-colors duration-200 hover:text-red disabled:pointer-events-none"
                   >
                     <Trash2Icon className="size-3.5" />
                   </button>

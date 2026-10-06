@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -69,69 +70,63 @@ export function CaptureDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="flex shrink-0 items-center gap-1.5 rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975]">
+      <DialogTrigger className="brutalist-border flex h-9 shrink-0 items-center gap-1.5 bg-mint px-4 font-display text-[12px] font-bold tracking-wide uppercase transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint">
         <PlusIcon className="size-3.5" />
         Add
       </DialogTrigger>
-      <DialogContent className="rounded-card border-line bg-paper sm:max-w-[440px]">
+      <DialogContent className="sm:max-w-[440px]">
         <DialogHeader>
-          <DialogTitle className="font-sans text-[17px] font-medium tracking-[-0.014em] text-ink">
+          <DialogTitle className="font-display text-[18px] font-bold text-foreground">
             Write it down
           </DialogTitle>
-          <DialogDescription className="font-sans text-[12.5px] text-body">
+          <DialogDescription className="font-sans text-[13px] text-subtle">
             Paste something to capture it, or open the editor to write it up properly.
           </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-[15px]">
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Title</Label>
+            <Label className="t-eyebrow text-foreground/50">Title</Label>
             <Input
               value={title}
               placeholder="What is this about?"
               onChange={(event) => setTitle(event.target.value)}
-              className="bg-page"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">
-              Paste it (optional)
-            </Label>
+            <Label className="t-eyebrow text-foreground/50">Paste it (optional)</Label>
             <Textarea
               value={body}
               placeholder="What was said, what went wrong, what to do differently."
               onChange={(event) => setBody(event.target.value)}
-              className="bg-page"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Link (optional)</Label>
+            <Label className="t-eyebrow text-foreground/50">Link (optional)</Label>
             <Input
               value={sourceUrl}
               placeholder="https://…"
               onChange={(event) => setSourceUrl(event.target.value)}
-              className="bg-page"
             />
           </div>
         </div>
 
         <DialogFooter>
-          <button
+          <Button
             type="button"
+            variant="outline"
             disabled={isPending || !title.trim()}
             onClick={writeUp}
-            className="rounded-btn border border-[rgba(0,0,0,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.24)] hover:bg-wash hover:text-ink disabled:pointer-events-none disabled:opacity-50"
           >
             Open the editor
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
             disabled={isPending || !title.trim() || !body.trim()}
             onClick={capture}
-            className="rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
           >
             {isPending ? "Saving" : "Capture"}
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

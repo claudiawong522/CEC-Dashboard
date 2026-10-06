@@ -60,9 +60,9 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
       <div className="flex items-center justify-between">
-        <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+        <span className="t-eyebrow text-foreground/50">
           coffee chats
         </span>
         <SaveIndicator status={status} />
@@ -70,10 +70,10 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
 
       <label className="flex items-center justify-between gap-4">
         <span className="flex flex-col gap-0.5">
-          <span className="font-sans text-[13.5px] text-ink">
+          <span className="font-sans text-[13.5px] text-foreground">
             Open to chats with prospective members
           </span>
-          <span className="font-sans text-[11.5px] text-faint">
+          <span className="font-sans text-[11.5px] text-foreground/50">
             Students outside the club can see your blurb and ask for a chat.
           </span>
         </span>
@@ -87,12 +87,12 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
       <div
         className={
           openToChats
-            ? "flex flex-col gap-[15px]"
-            : "pointer-events-none flex flex-col gap-[15px] opacity-45"
+            ? "flex flex-col gap-4"
+            : "pointer-events-none flex flex-col gap-4 opacity-45"
         }
       >
         <div className="flex flex-col gap-1.5">
-          <Label className="font-sans text-[12px] font-normal text-body">
+          <Label>
             What you&rsquo;re happy to chat about
           </Label>
           <Textarea
@@ -101,15 +101,15 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
             placeholder="Happy to talk about breaking into hardware, Cornell CS, or why our build nights run late."
             onChange={(event) => setBlurb(event.target.value)}
           />
-          <span className="self-end font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+          <span className="t-eyebrow self-end text-foreground/50">
             {blurb.length} / 280
           </span>
         </div>
 
-        <div className="flex flex-col gap-[7px]">
-          <Label className="font-sans text-[12px] font-normal text-body">
+        <div className="flex flex-col gap-2">
+          <Label>
             Interests{" "}
-            <span className="text-faint">
+            <span className="text-foreground/50">
               ({known.length}/{MAX_INTERESTS})
             </span>
           </Label>
@@ -126,10 +126,10 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
                   type="button"
                   aria-pressed={on}
                   onClick={() => toggleInterest(tag)}
-                  className={`rounded-[20px] border px-[11px] py-[6px] font-sans text-[12px] transition-[background-color,border-color,color] duration-200 ease-brand ${
+                  className={`t-eyebrow border px-2 py-1 transition-[background-color,border-color,color] duration-200 ease-fluid ${
                     on
-                      ? "border-transparent bg-primary text-primary-foreground"
-                      : "border-line-input bg-page text-body hover:border-[rgba(0,0,0,0.24)] hover:text-ink"
+                      ? "border-foreground bg-mint text-foreground"
+                      : "border-line bg-background text-subtle hover:border-foreground hover:text-foreground"
                   }`}
                 >
                   {labelForTag(tag)}
@@ -140,7 +140,7 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
 
           {legacy.length > 0 && (
             <div className="flex flex-col gap-1.5 pt-1">
-              <span className="font-sans text-[11.5px] text-faint">
+              <span className="font-sans text-[11.5px] text-foreground/50">
                 These were typed before the list existed, so they don&rsquo;t count
                 towards matching:
               </span>
@@ -148,7 +148,7 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
                 {legacy.map((interest) => (
                   <span
                     key={interest}
-                    className="flex items-center gap-1.5 rounded-[20px] border border-[rgba(0,0,0,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-faint uppercase"
+                    className="t-eyebrow flex items-center gap-1.5 border border-line px-2 py-0.5 text-foreground/50"
                   >
                     {interest}
                     <button
@@ -157,7 +157,7 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
                       onClick={() =>
                         setInterests((current) => current.filter((value) => value !== interest))
                       }
-                      className="transition-colors duration-200 hover:text-destructive"
+                      className="transition-colors duration-200 hover:text-red"
                     >
                       <XIcon className="size-3" />
                     </button>

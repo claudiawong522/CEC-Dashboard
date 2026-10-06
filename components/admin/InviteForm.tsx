@@ -52,9 +52,9 @@ export function InviteForm() {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="flex flex-col gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[15px]"
+      className="flex flex-col gap-2.5 border border-line bg-background p-4 shadow-soft"
     >
-      <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+      <span className="t-eyebrow text-foreground/50">
         invite someone
       </span>
       <div className="flex flex-wrap items-center gap-2">
@@ -70,7 +70,7 @@ export function InviteForm() {
         <Select items={ROLE_LABELS} value={role} onValueChange={(v) => setRole(v as Role)}>
           <SelectTrigger
             disabled={isPending}
-            className="w-auto gap-1.5 rounded-[20px] border-line-input bg-page px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-body uppercase transition-colors duration-200 hover:border-[rgba(0,0,0,0.32)] hover:text-ink [&_svg]:text-faint"
+            className="t-eyebrow w-auto min-h-0 gap-1.5 border-line bg-background px-2 py-1 text-subtle hover:border-foreground hover:text-foreground data-[size=default]:min-h-0 [&_svg]:text-foreground/50"
           >
             <SelectValue />
           </SelectTrigger>
@@ -94,7 +94,7 @@ export function InviteForm() {
       {/* No email is sent. Access is granted the moment this succeeds, and the
           person picks it up by signing in, so the copy has to say that plainly
           or an admin sits waiting for a delivery that never happens. */}
-      <span className="font-sans text-[11.5px] text-faint">
+      <span className="font-sans text-[12px] text-foreground/50">
         No email goes out. Tell them to sign in with their Cornell Google account at this site,
         and the access you picked is already waiting.
       </span>

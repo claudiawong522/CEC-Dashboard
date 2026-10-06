@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -64,7 +65,7 @@ export function NewContactDialog() {
       setCompany("");
       setOpen(false);
       // Land on the new contact rather than staying on the list. A name alone
-      // is a stub, and the next thing anyone does is fill the rest in — the
+      // is a stub, and the next thing anyone does is fill the rest in, the
       // same reasoning External's quick-add already follows.
       if (result.contactId) router.push(`/crm/${result.contactId}`);
     });
@@ -72,45 +73,43 @@ export function NewContactDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="flex shrink-0 items-center gap-1.5 rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975]">
+      <DialogTrigger className="brutalist-border flex h-9 shrink-0 items-center gap-1.5 bg-mint px-4 font-display text-[12px] font-bold tracking-wide uppercase transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint">
         <PlusIcon className="size-3.5" />
         Add contact
       </DialogTrigger>
-      <DialogContent className="rounded-card border-line bg-paper sm:max-w-[420px]">
+      <DialogContent className="sm:max-w-[420px]">
         <DialogHeader>
-          <DialogTitle className="font-sans text-[17px] font-medium tracking-[-0.014em] text-ink">
+          <DialogTitle className="font-display text-[18px] font-bold text-foreground">
             New contact
           </DialogTitle>
-          <DialogDescription className="font-sans text-[12.5px] text-body">
+          <DialogDescription className="font-sans text-[13px] text-subtle">
             Enough to find them again. The rest goes on their page.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-[15px]">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Name</Label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} className="bg-page" />
+            <Label className="t-eyebrow text-foreground/50">Name</Label>
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Email</Label>
+            <Label className="t-eyebrow text-foreground/50">Email</Label>
             <Input
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Used to spot duplicates and match an organization"
-              className="bg-page"
             />
           </div>
-          <div className="grid gap-[15px] sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-body">Company</Label>
+              <Label className="t-eyebrow text-foreground/50">Company</Label>
               <Input
                 value={company}
                 onChange={(e) => setCompany(e.target.value)}
-                className="bg-page"
               />
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-body">Kind</Label>
+              <Label className="t-eyebrow text-foreground/50">Kind</Label>
               <Select
                 items={CONTACT_TYPE_ITEMS}
                 value={type}
@@ -136,21 +135,12 @@ export function NewContactDialog() {
         </div>
 
         <DialogFooter>
-          <button
-            type="button"
-            onClick={() => setOpen(false)}
-            className="rounded-btn border border-[rgba(0,0,0,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.24)] hover:bg-wash hover:text-ink"
-          >
+                    <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             Cancel
-          </button>
-          <button
-            type="button"
-            disabled={isPending || !name.trim()}
-            onClick={submit}
-            className="rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
-          >
+          </Button>
+          <Button type="button" disabled={isPending || !name.trim()} onClick={submit}>
             {isPending ? "Adding" : "Add"}
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

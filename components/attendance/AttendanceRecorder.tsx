@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { SearchIcon } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -92,14 +93,14 @@ export function AttendanceRecorder({
   };
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[15px]">
-      <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+    <div className="flex flex-col gap-4 border border-line bg-background p-4 shadow-soft">
+      <span className="t-eyebrow text-foreground/50">
         take attendance
       </span>
 
-      <div className="grid gap-[15px] sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-3">
         <div className="flex flex-col gap-1.5">
-          <Label className="font-sans text-[12px] font-normal text-body">Event</Label>
+          <Label>Event</Label>
           {/* `items` is what makes <SelectValue /> show the label rather than
               the raw value. Without it the trigger reads "__none__" and
               "startup_hours" at people. */}
@@ -130,18 +131,17 @@ export function AttendanceRecorder({
 
         {eventId === NO_EVENT && (
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">What was it?</Label>
+            <Label>What was it?</Label>
             <Input
               value={eventName}
               placeholder="Thursday work session"
               onChange={(event) => setEventName(event.target.value)}
-              className="bg-page"
             />
           </div>
         )}
 
         <div className="flex flex-col gap-1.5">
-          <Label className="font-sans text-[12px] font-normal text-body">Kind</Label>
+          <Label>Kind</Label>
           <Select
             items={EVENT_TYPE_LABELS}
             value={eventType}
@@ -166,13 +166,13 @@ export function AttendanceRecorder({
       </div>
 
       <div className="relative">
-        <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-faint" />
+        <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-foreground/50" />
         <input
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Find someone"
-          className="w-full rounded-input border border-line-input bg-page py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(0,0,0,0.05)]"
+          className="w-full border border-line bg-background py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-foreground placeholder:text-foreground/40 outline-none transition-[border-color] duration-200 ease-fluid hover:border-foreground/40 focus-visible:border-foreground"
         />
       </div>
 
@@ -187,12 +187,12 @@ export function AttendanceRecorder({
               disabled={already}
               onClick={() => toggle(member.id)}
               className={cn(
-                "rounded-[20px] border px-[11px] py-[6px] font-sans text-[12.5px] transition-[background-color,border-color,color] duration-200 ease-brand",
+                "t-eyebrow border px-2 py-1 transition-[background-color,border-color,color] duration-200 ease-fluid",
                 already
-                  ? "cursor-default border-transparent bg-cent-tint text-faint"
+                  ? "cursor-default border-line bg-mint/20 text-foreground/50"
                   : active
-                    ? "border-transparent bg-ink text-page"
-                    : "border-line-input bg-page text-body hover:border-[rgba(0,0,0,0.24)] hover:text-ink",
+                    ? "border-foreground bg-mint text-foreground"
+                    : "border-line bg-background text-subtle hover:border-foreground hover:text-foreground",
               )}
             >
               {member.full_name ?? member.email}
@@ -203,18 +203,17 @@ export function AttendanceRecorder({
       </div>
 
       <div className="flex items-center justify-between gap-4">
-        <span className="font-sans text-[11.5px] text-faint">
+        <span className="font-sans text-[11.5px] text-foreground/50">
           {selected.size} selected
           {recorded.size > 0 && ` · ${recorded.size} already recorded`}
         </span>
-        <button
+        <Button
           type="button"
           disabled={isPending || selected.size === 0 || !resolvedName}
           onClick={submit}
-          className="rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
         >
           {isPending ? "Recording" : "Record"}
-        </button>
+        </Button>
       </div>
     </div>
   );

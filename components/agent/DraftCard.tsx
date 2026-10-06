@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { CheckIcon, CopyIcon, InfoIcon } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -16,7 +17,7 @@ import { draftOutreachEmail } from "@/lib/actions/agent";
 import type { DraftedEmail } from "@/lib/agent/types";
 
 // Drafting is read-only: it produces text to copy, and never sends anything.
-// There is no confirm step because there is nothing to confirm — the human
+// There is no confirm step because there is nothing to confirm. The human
 // step is pasting it into their own mail client.
 export function DraftCard({ contacts }: { contacts: { id: string; name: string }[] }) {
   const [contactId, setContactId] = useState("");
@@ -44,20 +45,20 @@ export function DraftCard({ contacts }: { contacts: { id: string; name: string }
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
-      <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+    <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
+      <span className="t-eyebrow text-foreground/50">
         draft an email
       </span>
 
       {contacts.length === 0 ? (
-        <p className="font-sans text-[12.5px] text-faint">
+        <p className="font-sans text-[13px] text-foreground/50">
           Add a contact to the CRM first and this can draft to them.
         </p>
       ) : (
         <>
-          <div className="grid gap-[15px] sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="flex flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-body">To</Label>
+              <Label className="t-eyebrow text-foreground/50">To</Label>
               <Select
                 items={Object.fromEntries(contacts.map((c) => [c.id, c.name]))}
                 value={contactId}
@@ -79,52 +80,45 @@ export function DraftCard({ contacts }: { contacts: { id: string; name: string }
               </Select>
             </div>
             <div className="flex flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-body">
-                What does it need to do?
-              </Label>
+              <Label className="t-eyebrow text-foreground/50">What does it need to do?</Label>
               <Input
                 value={intent}
                 placeholder="Ask if they'd speak at Demo Day in April"
                 onChange={(event) => setIntent(event.target.value)}
-                className="bg-page"
               />
             </div>
           </div>
 
-          <button
+          <Button
             type="button"
+            className="w-fit"
             disabled={isPending || !contactId || !intent.trim()}
             onClick={run}
-            className="w-fit rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
           >
             {isPending ? "Drafting" : "Draft it"}
-          </button>
+          </Button>
         </>
       )}
 
       {draft && (
-        <div className="flex flex-col gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-page p-[15px]">
+        <div className="flex flex-col gap-2.5 border border-line bg-muted/40 p-4">
           {/* A draft written with no history behind it says so, rather than
               quietly implying a relationship that doesn't exist. */}
-          <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+          <span className="t-eyebrow flex items-center gap-1.5 text-foreground/50">
             <InfoIcon className="size-3" />
             {draft.groundedIn > 0
               ? `grounded in ${draft.groundedIn} timeline ${draft.groundedIn === 1 ? "entry" : "entries"}`
-              : "no prior contact — written as a first approach"}
+              : "no prior contact, written as a first approach"}
           </span>
-          <span className="font-sans text-[13.5px] font-medium text-ink">{draft.subject}</span>
-          <p className="font-sans text-[13px] leading-[1.75] whitespace-pre-wrap text-body">
+          <span className="font-display text-[15px] font-bold text-foreground">{draft.subject}</span>
+          <p className="font-sans text-[13px] leading-[1.75] whitespace-pre-wrap text-subtle">
             {draft.body}
           </p>
-          <button
-            type="button"
-            onClick={copy}
-            className="flex w-fit items-center gap-1.5 rounded-btn border border-[rgba(0,0,0,0.14)] px-[13px] py-[8px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.24)] hover:bg-wash hover:text-ink"
-          >
+          <Button type="button" variant="outline" size="sm" className="w-fit" onClick={copy}>
             {copied ? <CheckIcon className="size-3.5" /> : <CopyIcon className="size-3.5" />}
             {copied ? "Copied" : "Copy"}
-          </button>
-          <span className="font-sans text-[11.5px] text-faint">
+          </Button>
+          <span className="font-sans text-[12px] text-foreground/50">
             Nothing is sent. Read it, fix it, and send it yourself.
           </span>
         </div>

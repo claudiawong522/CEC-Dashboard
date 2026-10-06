@@ -75,7 +75,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
               <button
                 type="button"
                 onClick={() => setOpenIndex(i)}
-                className="group relative aspect-square w-full overflow-hidden rounded-[9px] border border-[rgba(0,0,0,0.07)]"
+                className="group relative aspect-square w-full overflow-hidden border border-line bg-background transition-[box-shadow,transform,border-color] duration-300 ease-fluid hover:-translate-y-1 hover:border-foreground hover:shadow-mint"
               >
                 {isImage ? (
                   <Image
@@ -83,7 +83,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                     alt={file.file_name ?? "media"}
                     fill
                     sizes="(min-width: 768px) 25vw, 50vw"
-                    className="object-cover transition-transform duration-[380ms] ease-brand group-hover:scale-[1.04]"
+                    className="object-cover transition-transform duration-[380ms] ease-fluid group-hover:scale-[1.04]"
                   />
                 ) : isVideo ? (
                   <video
@@ -91,17 +91,17 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                     muted
                     playsInline
                     preload="metadata"
-                    className="size-full object-cover transition-transform duration-[380ms] ease-brand group-hover:scale-[1.04]"
+                    className="size-full object-cover transition-transform duration-[380ms] ease-fluid group-hover:scale-[1.04]"
                   />
                 ) : (
-                  <div className="flex size-full items-center justify-center font-mono text-[9px] tracking-[0.1em] text-faint uppercase transition-transform duration-[380ms] ease-brand group-hover:scale-[1.04]">
+                  <div className="t-eyebrow flex size-full items-center justify-center text-foreground/50 transition-transform duration-[380ms] ease-fluid group-hover:scale-[1.04]">
                     {fileTypeLabel(file)}
                   </div>
                 )}
               </button>
               <Link
                 href={`/events/${file.event_id}`}
-                className="truncate font-sans text-[10px] text-faint transition-colors duration-150 hover:text-ink"
+                className="truncate font-sans text-[11px] text-foreground/50 transition-colors duration-150 ease-fluid hover:text-foreground"
               >
                 {file.events?.name ?? "Untitled event"}
               </Link>
@@ -124,7 +124,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                       type="button"
                       onClick={() => go(-1)}
                       aria-label="Previous photo"
-                      className="absolute top-1/2 left-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-ink/50 text-paper backdrop-blur-sm transition-colors duration-200 hover:bg-ink/70"
+                      className="absolute top-1/2 left-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center border-2 border-foreground bg-background text-foreground transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint"
                     >
                       <ChevronLeft className="size-5" />
                     </button>
@@ -132,14 +132,14 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                       type="button"
                       onClick={() => go(1)}
                       aria-label="Next photo"
-                      className="absolute top-1/2 right-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center rounded-full bg-ink/50 text-paper backdrop-blur-sm transition-colors duration-200 hover:bg-ink/70"
+                      className="absolute top-1/2 right-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center border-2 border-foreground bg-background text-foreground transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint"
                     >
                       <ChevronRight className="size-5" />
                     </button>
                   </>
                 )}
                 {openFile.mime_type?.startsWith("image/") ? (
-                  <div className="relative h-[78vh] w-full overflow-hidden rounded-[9px] bg-ink/5">
+                  <div className="relative h-[78vh] w-full overflow-hidden bg-foreground/5">
                     <Image
                       src={publicFileUrl(openFile.bucket, openFile.storage_path)}
                       alt={openFile.file_name ?? "media"}
@@ -153,23 +153,23 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                     src={publicFileUrl(openFile.bucket, openFile.storage_path)}
                     controls
                     autoPlay
-                    className="max-h-[78vh] w-full rounded-[9px] bg-ink/5"
+                    className="max-h-[78vh] w-full bg-foreground/5"
                   />
                 ) : (
-                  <div className="flex h-[40vh] items-center justify-center rounded-[9px] bg-ink/5 font-sans text-[13px] text-faint">
+                  <div className="flex h-[40vh] items-center justify-center bg-foreground/5 font-sans text-[13px] text-foreground/50">
                     Preview not available
                   </div>
                 )}
               </div>
               <div className="flex flex-wrap items-center gap-2.5">
                 {files.length > 1 && (
-                  <span className="self-start font-mono text-[10px] tracking-[0.1em] text-faint">
+                  <span className="t-eyebrow self-start text-foreground/50">
                     {(openIndex ?? 0) + 1} / {files.length}
                   </span>
                 )}
                 <Link
                   href={`/events/${openFile.event_id}`}
-                  className="self-start rounded-btn bg-paper px-2.5 py-1.5 font-sans text-[12px] text-faint transition-colors duration-150 hover:text-ink"
+                  className="self-start border border-line bg-background px-2.5 py-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-150 ease-fluid hover:border-foreground hover:text-foreground"
                 >
                   {openFile.events?.name ?? "Untitled event"}
                 </Link>
@@ -178,7 +178,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                   .map((member) => (
                     <span
                       key={member.id}
-                      className="flex items-center gap-1.5 rounded-[20px] bg-paper py-1 pr-2.5 pl-1"
+                      className="flex items-center gap-1.5 border border-line bg-background py-1 pr-2.5 pl-1"
                     >
                       <Avatar size="sm">
                         <AvatarImage src={member.avatar_url ?? undefined} alt="" />
@@ -186,7 +186,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                           {initials(member)}
                         </AvatarFallback>
                       </Avatar>
-                      <span className="font-sans text-[11.5px] text-faint">
+                      <span className="font-sans text-[11.5px] text-foreground/50">
                         {member.full_name ?? member.email}
                       </span>
                     </span>

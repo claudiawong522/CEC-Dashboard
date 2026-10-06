@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Sticker } from "@/components/stickers/Sticker";
-import { Confetti } from "@/components/stickers/shapes";
+import { Sticker } from "@/components/decor/Sticker";
+import { Confetti } from "@/components/decor/shapes";
 import { lookupGuest, submitSignIn } from "@/lib/actions/signin";
 import { milestoneFor, visitLine, type SignInQuestion } from "@/lib/utils/signin-milestones";
 import { thingsLeft } from "@/lib/utils/signin-copy";
@@ -42,13 +42,13 @@ function UpcomingEventsLink() {
       href={LUMA_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-[7px] rounded-[8px] border border-[rgba(0,0,0,0.14)] bg-page px-[15px] py-[9px] font-sans text-[13px] text-ink transition-colors duration-200 hover:bg-wash"
+      className="brutalist-border inline-flex items-center gap-2 bg-transparent px-4 py-2 font-display text-[12px] font-bold tracking-wide text-foreground uppercase transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-background"
     >
       See what&rsquo;s coming up
       <svg
         aria-hidden
         viewBox="0 0 24 24"
-        className="h-[13px] w-[13px] text-faint"
+        className="h-[13px] w-[13px]"
         fill="none"
         stroke="currentColor"
         strokeWidth={2}
@@ -272,36 +272,32 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
 
     if (milestone && !kiosk) {
       return (
-        <div className="relative flex flex-col items-center gap-[15px] overflow-hidden rounded-[14px] border border-[rgba(0,0,0,0.1)] bg-paper p-[27px] text-center">
-          {/* The one bright element on the page, per the kit: the CENT gradient,
-              here as the band that makes this feel like an occasion. */}
-          <span
-            aria-hidden
-            className="absolute inset-x-0 top-0 h-[3px]"
-            style={{ background: "var(--cent)" }}
-          />
+        <div className="relative flex flex-col items-center gap-4 overflow-hidden border-2 border-foreground bg-background p-7 text-center shadow-mint">
+          {/* The one bright element on the page: a mint band across the top,
+              which is what makes this feel like an occasion. */}
+          <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-mint" />
 
           <Sticker floatVariant="none" wrapperClassName="shrink-0">
             <Confetti />
           </Sticker>
 
-          <div className="flex flex-col gap-[7px]">
-            <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+          <div className="flex flex-col gap-2">
+            <span className="t-eyebrow text-foreground/50">
               {confirmation.alreadyToday ? "already signed in" : "signed in"}
             </span>
-            <p className="font-sans text-[31px] leading-[1.15] font-medium tracking-[-0.024em] text-ink">
+            <p className="t-display text-[32px] text-foreground">
               {milestone.headline}
             </p>
-            <p className="font-sans text-[15px] leading-[1.6] text-ink">
+            <p className="font-sans text-[15px] leading-[1.6] text-foreground">
               {confirmation.firstName}
             </p>
-            <p className="mx-auto max-w-[34ch] font-sans text-[13.5px] leading-[1.75] text-body">
+            <p className="mx-auto max-w-[34ch] font-sans text-[13.5px] leading-[1.75] text-subtle">
               {milestone.note}
             </p>
           </div>
 
           {confirmation.visitNumber > 1 && (
-            <p className="font-sans text-[12.5px] leading-[1.7] text-faint">
+            <p className="font-sans text-[12.5px] leading-[1.7] text-foreground/50">
               Every night you turn up counts toward the leaderboard.
             </p>
           )}
@@ -312,20 +308,20 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
     }
 
     return (
-      <div className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[19px]">
-        <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+      <div className="flex flex-col gap-2.5 border border-line bg-background p-5 shadow-soft">
+        <span className="t-eyebrow text-foreground/50">
           {confirmation.alreadyToday ? "already signed in" : "signed in"}
         </span>
-        <p className="font-sans text-[23px] leading-[1.3] font-medium tracking-[-0.02em] text-ink">
+        <p className="t-display text-[28px] text-foreground">
           {kiosk ? "You're in." : `You're in, ${confirmation.firstName}.`}
         </p>
-        <p className="font-sans text-[13.5px] leading-[1.75] text-body">
+        <p className="font-sans text-[13.5px] leading-[1.75] text-subtle">
           {confirmation.alreadyToday
             ? `Signed in already tonight. Visit number ${confirmation.visitNumber}.`
             : visitLine(confirmation.visitNumber)}
         </p>
         {!kiosk && (
-          <p className="font-sans text-[13px] leading-[1.7] text-faint">
+          <p className="font-sans text-[13px] leading-[1.7] text-foreground/50">
             Food&rsquo;s out for everyone, help yourself. Keep this page if you
             need to show you signed in.
           </p>
@@ -361,15 +357,15 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
     questions.length;
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[19px]">
-      <div className="flex flex-col gap-[5px]">
-        <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+    <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
+      <div className="flex flex-col gap-1.5">
+        <span className="t-eyebrow text-foreground/50">
           {event ? event.venue : "cornell entrepreneurship club"}
         </span>
-        <p className="font-sans text-[23px] leading-[1.3] font-medium tracking-[-0.02em] text-ink">
+        <p className="t-display text-[28px] text-foreground">
           {event ? event.name : "Startup Hours"}
         </p>
-        <p className="font-sans text-[13.5px] leading-[1.75] text-body">
+        <p className="font-sans text-[13.5px] leading-[1.75] text-subtle">
           {step === "email"
             ? "Sign in with your email. No account needed."
             : returning
@@ -380,7 +376,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
 
       {step === "email" && (
         <div className="flex flex-col gap-1.5">
-          <Label htmlFor="email" className="font-sans text-[12px] font-normal text-body">
+          <Label htmlFor="email">
             Email
           </Label>
           <Input
@@ -408,7 +404,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
               how a sign in starts feeling like paperwork. */}
           {showName && (
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="fullName" className="font-sans text-[12px] font-normal text-body">
+              <Label htmlFor="fullName">
                 Name
               </Label>
               <Input
@@ -429,7 +425,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
               once ever: fill it in and no later sign in mentions it again. */}
           {missing.linkedin && (
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="linkedinUrl" className="font-sans text-[12px] font-normal text-body">
+              <Label htmlFor="linkedinUrl">
                 LinkedIn
               </Label>
               <Input
@@ -445,7 +441,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
                 placeholder="linkedin.com/in/adalovelace"
                 className="py-3 text-[16px]"
               />
-              <span className="font-sans text-[11.5px] leading-[1.6] text-faint">
+              <span className="font-sans text-[11.5px] leading-[1.6] text-foreground/50">
                 Your profile link, or just your handle.
               </span>
             </div>
@@ -453,7 +449,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
 
           {missing.affiliation && (
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="affiliation" className="font-sans text-[12px] font-normal text-body">
+              <Label htmlFor="affiliation">
                 Year and major
               </Label>
               <Input
@@ -469,7 +465,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
 
           {missing.background && (
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="background" className="font-sans text-[12px] font-normal text-body">
+              <Label htmlFor="background">
                 What are you into?
               </Label>
               <Textarea
@@ -493,9 +489,9 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
             <div key={question.id} className="flex flex-col gap-1.5">
               <Label
                 htmlFor={`q-${question.id}`}
-                className="font-sans text-[12px] font-normal text-body"
+               
               >
-                {question.prompt} <span className="text-faint">(optional)</span>
+                {question.prompt} <span className="text-foreground/50">(optional)</span>
               </Label>
               <Textarea
                 id={`q-${question.id}`}
@@ -512,9 +508,9 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
         </>
       )}
 
-      {error && <p className="font-sans text-[12px] text-destructive">{error}</p>}
+      {error && <p className="font-sans text-[12px] text-red">{error}</p>}
 
-      <div className="flex items-center gap-[14px]">
+      <div className="flex items-center gap-4">
         <Button
           type="button"
           loading={isPending}
@@ -530,7 +526,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
               setStep("email");
               setError(null);
             }}
-            className="font-sans text-[12.5px] text-faint transition-colors duration-200 hover:text-ink"
+            className="link-underline font-sans text-[12.5px] text-foreground/50 transition-colors duration-200 hover:text-foreground"
           >
             Wrong email?
           </button>

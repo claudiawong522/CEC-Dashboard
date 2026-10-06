@@ -2,8 +2,8 @@ import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
 import { wallClockDate } from "@/lib/utils/signin-window";
-import { Sticker } from "@/components/stickers/Sticker";
-import { StarPolygon } from "@/components/stickers/shapes";
+import { TriangleScatter } from "@/components/decor/shapes";
+import { PageHeader } from "@/components/ui/page-header";
 import type { LeaderboardRow } from "@/lib/types/signin";
 
 // Counts change as people scan, and a stale leaderboard on a screen at the
@@ -82,26 +82,18 @@ export default async function LeaderboardPage() {
   }
 
   return (
-    <div className="flex flex-col gap-[23px]">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex flex-col gap-[7px]">
-          <h1 className="font-sans text-[27px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-            Leaderboard
-          </h1>
-          <p className="max-w-[62ch] font-sans text-[13.5px] leading-[1.75] text-body">
-            Startup Hours nights this semester, most first. One night counts
-            once however many times somebody scans. The gift card at the end of
-            the semester goes to the top of this list.
-          </p>
-        </div>
-        <Sticker floatVariant="none" wrapperClassName="hidden shrink-0 sm:block">
-          <StarPolygon />
-        </Sticker>
-      </div>
+    <div className="relative flex flex-col gap-6">
+      <TriangleScatter count={5} seed={71} opacity={0.2} />
 
-      <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
+      <PageHeader className="relative z-10" title="Leaderboard">
+        Startup Hours nights this semester, most first. One night counts
+        once however many times somebody scans. The gift card at the end of
+        the semester goes to the top of this list.
+      </PageHeader>
+
+      <div className="relative z-10 overflow-hidden border border-line bg-background shadow-soft">
         {ranked.length === 0 && (
-          <p className="px-[15px] py-4 font-sans text-[13px] text-faint">
+          <p className="px-4 py-4 font-sans text-[13px] text-foreground/50">
             Nobody has signed in yet this semester.
           </p>
         )}
@@ -109,31 +101,31 @@ export default async function LeaderboardPage() {
         {ranked.map((row, i) => (
           <div
             key={row.guestId}
-            className={`flex items-center justify-between gap-4 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-              i < ranked.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
+            className={`flex items-center justify-between gap-4 px-4 py-3 transition-colors duration-200 hover:bg-muted/40 ${
+              i < ranked.length - 1 ? "border-b border-line" : ""
             }`}
           >
-            <div className="flex min-w-0 items-baseline gap-[13px]">
-              <span className="w-[26px] shrink-0 font-mono text-[11px] tracking-[0.06em] text-faint">
+            <div className="flex min-w-0 items-baseline gap-3">
+              <span className="w-[26px] shrink-0 font-display text-[12px] font-bold text-foreground/50">
                 {row.place}
               </span>
               <div className="flex min-w-0 flex-col gap-[2px]">
-                <span className="flex items-center gap-2 font-sans text-[13.5px] text-ink">
+                <span className="flex items-center gap-2 font-sans text-[13.5px] text-foreground">
                   <span className="truncate">{row.fullName}</span>
                   {row.isMember && (
-                    <span className="shrink-0 font-mono text-[9px] tracking-[0.1em] text-faint uppercase">
+                    <span className="t-eyebrow shrink-0 border border-line px-2 py-0.5 text-foreground/50">
                       member
                     </span>
                   )}
                 </span>
-                <span className="font-mono text-[10px] tracking-[0.06em] text-faint">
+                <span className="t-eyebrow text-foreground/50">
                   last here {prettyDate(row.lastSeen)}
                 </span>
               </div>
             </div>
-            <span className="shrink-0 font-sans text-[15px] font-medium tracking-[-0.014em] text-ink">
+            <span className="shrink-0 font-display text-[16px] font-bold text-foreground">
               {row.visits}
-              <span className="font-sans text-[12px] font-normal text-faint">
+              <span className="font-sans text-[12px] font-normal text-foreground/50">
                 {" "}
                 night{row.visits === 1 ? "" : "s"}
               </span>

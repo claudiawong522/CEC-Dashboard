@@ -16,7 +16,7 @@ export function NotesField({ eventId, notes }: { eventId: string; notes: string 
     <SectionCard title="Notes" eventId={eventId} section="notes" done={false} hideDone>
       <div className="flex flex-col gap-1.5">
         <div className="flex items-center justify-between">
-          <Label className="font-sans text-[12px] font-normal text-body">Optional notes</Label>
+          <Label className="font-sans text-[12px] font-normal text-subtle">Optional notes</Label>
           <SaveIndicator status={status} />
         </div>
         <Textarea

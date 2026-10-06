@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -125,19 +126,19 @@ export function SubmitChatDialog({
         onOpenChange(next);
       }}
     >
-      <DialogContent className="rounded-card border-line bg-paper sm:max-w-[420px]">
+      <DialogContent className="sm:max-w-[420px]">
         <DialogHeader>
-          <DialogTitle className="font-sans text-[17px] font-medium tracking-[-0.014em] text-ink">
+          <DialogTitle>
             {categoryName}
           </DialogTitle>
-          <DialogDescription className="font-sans text-[12.5px] text-body">
+          <DialogDescription>
             Log the chat and an admin will approve it onto your board.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-[15px]">
+        <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">
+            <Label>
               Who did you chat with?
             </Label>
             {/* base-ui hands back null when a select is cleared; the empty
@@ -187,11 +188,11 @@ export function SubmitChatDialog({
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Selfie</Label>
+            <Label>Selfie</Label>
             <button
               type="button"
               onClick={() => fileInput.current?.click()}
-              className="flex min-h-[132px] flex-col items-center justify-center gap-2 overflow-hidden rounded-[10px] border border-dashed border-line-input bg-page transition-colors duration-200 hover:border-[rgba(0,0,0,0.28)] hover:bg-wash"
+              className="flex min-h-[132px] flex-col items-center justify-center gap-2 overflow-hidden border border-dashed border-line bg-muted/40 transition-colors duration-200 ease-fluid hover:border-foreground"
             >
               {preview ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -202,8 +203,8 @@ export function SubmitChatDialog({
                 />
               ) : (
                 <>
-                  <ImagePlusIcon className="size-5 text-faint" />
-                  <span className="font-sans text-[12.5px] text-faint">
+                  <ImagePlusIcon className="size-5 text-foreground/50" />
+                  <span className="font-sans text-[12.5px] text-foreground/50">
                     Tap to add a photo of the two of you
                   </span>
                 </>
@@ -220,21 +221,12 @@ export function SubmitChatDialog({
         </div>
 
         <DialogFooter>
-          <button
-            type="button"
-            onClick={() => onOpenChange(false)}
-            className="rounded-btn border border-[rgba(0,0,0,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.24)] hover:bg-wash hover:text-ink"
-          >
+          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
-          </button>
-          <button
-            type="button"
-            disabled={isPending}
-            onClick={handleSubmit}
-            className="rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
-          >
+          </Button>
+          <Button type="button" disabled={isPending} onClick={handleSubmit}>
             {isPending ? "Submitting" : "Submit"}
-          </button>
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

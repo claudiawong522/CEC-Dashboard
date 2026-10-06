@@ -32,7 +32,7 @@ export function ApplicantSlots({ slots, netid }: { slots: ApplicantSlot[]; netid
 
   if (slots.length === 0) {
     return (
-      <p className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+      <p className="border border-line bg-background px-4 shadow-soft py-8 text-center font-sans text-[13px] text-foreground/50">
         No interview times are open yet. You&rsquo;ll get an email when they are.
       </p>
     );
@@ -41,27 +41,21 @@ export function ApplicantSlots({ slots, netid }: { slots: ApplicantSlot[]; netid
   return (
     <div className="flex flex-col gap-2.5">
       {mine && (
-        <div
-          className="flex flex-col gap-1.5 rounded-card border border-transparent p-[15px]"
-          style={{
-            background:
-              "linear-gradient(95deg, rgba(217,80,112,.2), rgba(232,184,48,.2), rgba(42,157,143,.2), rgba(59,111,194,.2))",
-          }}
-        >
-          <span className="font-mono text-[9px] tracking-[0.13em] text-strong uppercase">
+        <div className="flex flex-col gap-1.5 border-2 border-foreground bg-mint p-4 shadow-mint">
+          <span className="t-eyebrow text-foreground">
             your interview
           </span>
-          <span className="font-sans text-[15px] font-medium text-ink">
+          <span className="font-display text-[18px] font-bold text-foreground">
             {formatSlot(mine.start_time, mine.end_time)}
           </span>
           {mine.location && (
-            <span className="font-sans text-[12.5px] text-body">{mine.location}</span>
+            <span className="font-sans text-[12.5px] text-subtle">{mine.location}</span>
           )}
           <button
             type="button"
             disabled={isPending}
             onClick={() => run(() => releaseOwnSlot(mine.id))}
-            className="mt-1 w-fit font-sans text-[12px] text-body underline-offset-2 transition-colors duration-200 hover:text-ink hover:underline disabled:pointer-events-none"
+            className="link-underline mt-1 w-fit font-sans text-[12px] text-subtle transition-colors duration-200 hover:text-foreground disabled:pointer-events-none"
           >
             Give it up and pick another
           </button>
@@ -79,22 +73,22 @@ export function ApplicantSlots({ slots, netid }: { slots: ApplicantSlot[]; netid
                 disabled={isPending}
                 onClick={() => run(() => claimSlot(slot.id))}
                 className={cn(
-                  "flex flex-col items-start gap-1 rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[15px] text-left transition-[background-color,border-color] duration-200 ease-brand",
-                  "hover:border-[rgba(0,0,0,0.14)] hover:bg-wash disabled:pointer-events-none disabled:opacity-50",
+                  "flex flex-col items-start gap-1 border border-line bg-background p-4 text-left shadow-soft transition-[box-shadow,transform,border-color] duration-300 ease-fluid",
+                  "hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm disabled:pointer-events-none disabled:opacity-50",
                 )}
               >
-                <span className="font-sans text-[13.5px] font-medium text-ink">
+                <span className="font-display text-[14px] font-bold text-foreground">
                   {formatSlot(slot.start_time, slot.end_time)}
                 </span>
                 {slot.location && (
-                  <span className="font-sans text-[12px] text-faint">{slot.location}</span>
+                  <span className="font-sans text-[12px] text-foreground/50">{slot.location}</span>
                 )}
               </button>
             ))}
         </div>
       )}
 
-      <span className="font-sans text-[11.5px] text-faint">
+      <span className="font-sans text-[11.5px] text-foreground/50">
         One slot each. Taking one releases nothing else, so pick the time you can actually make.
       </span>
     </div>

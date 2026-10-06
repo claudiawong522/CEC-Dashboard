@@ -4,8 +4,8 @@ import { useState } from "react";
 import { CheckIcon, ClockIcon, PlusIcon, RotateCcwIcon } from "lucide-react";
 import { partnerName } from "@/lib/types/coffee-chats";
 import { SubmitChatDialog } from "@/components/coffee-chats/SubmitChatDialog";
-import { Sticker } from "@/components/stickers/Sticker";
-import { Confetti } from "@/components/stickers/shapes";
+import { Sticker } from "@/components/decor/Sticker";
+import { Confetti } from "@/components/decor/shapes";
 import { approvedCount, type BoardSquare, type ChatPerson } from "@/lib/types/coffee-chats";
 import { cn } from "@/lib/utils";
 
@@ -29,25 +29,22 @@ export function BingoBoard({
 
   if (squares.length === 0) {
     return (
-      <p className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+      <p className="border border-line bg-background px-4 py-8 text-center font-sans text-[13px] text-foreground/50 shadow-soft">
         No board set up for this semester yet.
       </p>
     );
   }
 
   return (
-    <div className="flex flex-col gap-[15px]">
+    <div className="flex flex-col gap-4">
       <div className="flex items-center gap-2.5">
-        <div className="relative h-[6px] flex-1 overflow-hidden rounded-full bg-line-strong">
+        <div className="relative h-[6px] flex-1 overflow-hidden bg-muted">
           <div
-            className="h-full rounded-full transition-[width] duration-[360ms] ease-brand"
-            style={{
-              width: `${(done / squares.length) * 100}%`,
-              background: "var(--mint)",
-            }}
+            className="h-full bg-mint transition-[width] duration-[360ms] ease-fluid"
+            style={{ width: `${(done / squares.length) * 100}%` }}
           />
         </div>
-        <span className="relative font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+        <span className="t-eyebrow relative text-foreground/50">
           {done} of {squares.length} done
           {complete && (
             <Sticker
@@ -61,7 +58,8 @@ export function BingoBoard({
         </span>
       </div>
 
-      <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+      {/* The board itself: a 2px black frame around square tiles. */}
+      <div className="grid gap-2.5 border-2 border-foreground bg-background p-2.5 sm:grid-cols-2 lg:grid-cols-3">
         {squares.map(({ category, chat }) => {
           const status = chat?.status;
           const selfie = chat ? selfieUrls[chat.selfie_url] : undefined;
@@ -77,20 +75,12 @@ export function BingoBoard({
               disabled={!canSubmit}
               onClick={() => setOpenSquare({ category, chat })}
               className={cn(
-                "group relative flex min-h-[132px] flex-col justify-between overflow-hidden rounded-card border p-[15px] text-left transition-[background-color,border-color] duration-200 ease-brand",
+                "group relative flex min-h-[132px] flex-col justify-between overflow-hidden border p-4 text-left transition-[background-color,border-color,box-shadow] duration-200 ease-fluid",
                 status === "approved"
-                  ? "border-transparent"
-                  : "border-[rgba(0,0,0,0.07)] bg-paper",
-                canSubmit && "hover:border-[rgba(0,0,0,0.14)] hover:bg-wash",
+                  ? "border-foreground bg-mint"
+                  : "border-line bg-background",
+                canSubmit && "hover:border-foreground hover:shadow-mint-sm",
               )}
-              style={
-                status === "approved"
-                  ? {
-                      background:
-                        "linear-gradient(95deg, rgba(217,80,112,.2), rgba(232,184,48,.2), rgba(42,157,143,.2), rgba(59,111,194,.2))",
-                    }
-                  : undefined
-              }
             >
               {selfie && status === "approved" && (
                 // The selfie sits behind the label at low opacity rather than
@@ -106,11 +96,11 @@ export function BingoBoard({
               )}
 
               <div className="relative z-10 flex flex-col gap-1">
-                <span className="font-sans text-[13.5px] font-medium text-ink">
+                <span className="font-display text-[14px] font-bold text-foreground">
                   {category.name}
                 </span>
                 {category.description && (
-                  <span className="font-sans text-[11.5px] leading-[1.6] text-body">
+                  <span className="font-sans text-[11.5px] leading-[1.6] text-subtle">
                     {category.description}
                   </span>
                 )}
@@ -118,25 +108,25 @@ export function BingoBoard({
 
               <div className="relative z-10 flex items-center gap-1.5">
                 {status === "approved" && (
-                  <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.13em] text-strong uppercase">
+                  <span className="t-eyebrow flex items-center gap-1.5 text-foreground">
                     <CheckIcon className="size-3" />
                     {chat ? partnerName(chat) : "Done"}
                   </span>
                 )}
                 {status === "pending" && (
-                  <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+                  <span className="t-eyebrow flex items-center gap-1.5 text-foreground/50">
                     <ClockIcon className="size-3" />
                     Awaiting review
                   </span>
                 )}
                 {status === "rejected" && (
-                  <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.13em] text-destructive uppercase">
+                  <span className="t-eyebrow flex items-center gap-1.5 text-red">
                     <RotateCcwIcon className="size-3" />
                     Try again
                   </span>
                 )}
                 {!chat && (
-                  <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase transition-colors duration-200 group-hover:text-ink">
+                  <span className="t-eyebrow flex items-center gap-1.5 text-foreground/50 transition-colors duration-200 group-hover:text-foreground">
                     <PlusIcon className="size-3" />
                     Fill this in
                   </span>
@@ -161,7 +151,7 @@ export function BingoBoard({
       />
 
       {squares.some((square) => square.chat?.status === "rejected") && (
-        <span className="font-sans text-[11.5px] text-faint">
+        <span className="font-sans text-[11.5px] text-foreground/50">
           {squares.find((square) => square.chat?.status === "rejected")?.chat?.review_note ??
             "One of your submissions was sent back. Tap it to try again."}
         </span>

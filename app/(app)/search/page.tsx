@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { formatEventDate, formatEventTime } from "@/lib/utils/format-event-time";
-import { SearchDecor } from "@/components/search/SearchDecor";
+import { PageHeader } from "@/components/ui/page-header";
+import { TriangleScatter } from "@/components/decor/shapes";
 
 type SearchResult = {
   id: string;
@@ -37,13 +38,12 @@ export default async function SearchPage({
     : { data: [] as SearchResult[] };
 
   return (
-    <div className="relative flex flex-col gap-[17px]">
-      <SearchDecor />
-      <div className="relative z-10 flex flex-col gap-[5px]">
-        <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-          Search
-        </h1>
-        <p className="font-sans text-[12.5px] text-faint">
+    <div className="relative flex flex-col gap-6">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-3 z-0 h-40">
+        <TriangleScatter count={4} seed={37} opacity={0.2} />
+      </div>
+      <div className="relative z-10">
+        <PageHeader title="Search">
           {query ? (
             <>
               {results?.length ?? 0} result{results?.length === 1 ? "" : "s"} for &ldquo;{query}
@@ -52,11 +52,11 @@ export default async function SearchPage({
           ) : (
             "Search by event name or venue."
           )}
-        </p>
+        </PageHeader>
       </div>
 
       {query && (!results || results.length === 0) ? (
-        <p className="relative z-10 font-sans text-[14px] text-faint">
+        <p className="relative z-10 font-sans text-[14px] text-foreground/50">
           Nothing matches &ldquo;{query}&rdquo;.
         </p>
       ) : (
@@ -65,20 +65,20 @@ export default async function SearchPage({
             <Link
               key={event.id}
               href={`/events/${event.id}`}
-              className="flex items-center justify-between gap-3 rounded-[10px] border border-[rgba(0,0,0,0.09)] bg-paper px-4 py-3 transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5 hover:border-[rgba(0,0,0,0.2)]"
+              className="flex items-center justify-between gap-3 border border-line bg-background px-4 py-3 shadow-soft transition-[box-shadow,transform,border-color] duration-300 ease-fluid hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm"
             >
               <div className="flex min-w-0 flex-col gap-0.5">
-                <span className="truncate font-sans text-[13.5px] font-medium text-ink">
+                <span className="truncate font-sans text-[14px] font-medium text-foreground">
                   {event.name}
                 </span>
-                <span className="truncate font-sans text-[11.5px] text-faint">{event.venue}</span>
+                <span className="truncate font-sans text-[12px] text-foreground/50">{event.venue}</span>
               </div>
               <div className="flex shrink-0 items-center gap-2.5">
-                <span className="font-mono text-[10.5px] tracking-[0.08em] text-body uppercase">
+                <span className="t-eyebrow text-subtle">
                   {formatEventDate(event.event_date)} · {formatEventTime(event.event_time)}
                 </span>
                 {event.is_complete && (
-                  <span className="rounded-[20px] bg-teal/12 px-2 py-0.5 font-mono text-[9px] tracking-[0.1em] text-teal uppercase">
+                  <span className="t-eyebrow border border-teal/40 px-2 py-0.5 text-teal">
                     Done
                   </span>
                 )}

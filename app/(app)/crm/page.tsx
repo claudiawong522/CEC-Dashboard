@@ -4,8 +4,8 @@ import { createClient } from "@/lib/supabase/server";
 import { CONTACT_COLUMNS, type ContactWithOrg } from "@/lib/types/crm";
 import { ContactList } from "@/components/crm/ContactList";
 import { NewContactDialog } from "@/components/crm/NewContactDialog";
-import { Sticker } from "@/components/stickers/Sticker";
-import { Bow } from "@/components/stickers/shapes";
+import { PageHeader } from "@/components/ui/page-header";
+import { TriangleScatter } from "@/components/decor/shapes";
 
 export default async function CrmPage() {
   const session = await getSession();
@@ -23,31 +23,15 @@ export default async function CrmPage() {
     .returns<ContactWithOrg[]>();
 
   return (
-    <div className="relative flex flex-col gap-[17px]">
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-x-0 -top-3 z-0 h-28 overflow-hidden"
-      >
-        <Sticker
-          floatVariant="float2"
-          floatDuration="17s"
-          wrapperClassName="pointer-events-none absolute right-[10%] top-1"
-          className="pointer-events-auto opacity-[0.38]"
-        >
-          <Bow size={58} />
-        </Sticker>
+    <div className="relative flex flex-col gap-6">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-3 z-0 h-40">
+        <TriangleScatter count={4} seed={34} opacity={0.2} />
       </div>
 
-      <div className="relative z-10 flex items-end justify-between gap-4">
-        <div className="flex flex-col gap-[5px]">
-          <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-            CRM
-          </h1>
-          <span className="font-sans text-[12.5px] text-body">
-            Everyone we&rsquo;ve reached out to, and what we&rsquo;ve already said to them.
-          </span>
-        </div>
-        <NewContactDialog />
+      <div className="relative z-10">
+        <PageHeader title="CRM" actions={<NewContactDialog />}>
+          Everyone we&rsquo;ve reached out to, and what we&rsquo;ve already said to them.
+        </PageHeader>
       </div>
 
       <div className="relative z-10">

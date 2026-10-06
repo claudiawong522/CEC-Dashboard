@@ -4,8 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { pickTodaysEvent, wallClockDate } from "@/lib/utils/signin-window";
 import { formatEventDate, formatEventTime } from "@/lib/utils/format-event-time";
 import { AttachSignIns, SignInBoard, SignInToggle } from "@/components/signin/SignInBoard";
-import { Sticker } from "@/components/stickers/Sticker";
-import { BeadRow } from "@/components/stickers/shapes";
+import { Sticker } from "@/components/decor/Sticker";
+import { TriRow, TriangleScatter } from "@/components/decor/shapes";
+import { PageHeader } from "@/components/ui/page-header";
 import type { SignInBoardRow, SignInEventRow } from "@/lib/types/signin";
 
 // The other side of /checkin. Never cached: a host watching the door needs the
@@ -123,72 +124,76 @@ export default async function SignInsPage() {
   const upcoming = events.filter((event) => event.event_date >= today);
 
   return (
-    <div className="flex flex-col gap-[23px]">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex flex-col gap-[7px]">
-          <h1 className="font-sans text-[27px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-            Sign ins
-          </h1>
-          <p className="max-w-[62ch] font-sans text-[13.5px] leading-[1.75] text-body">
-            Who walked in today. Anyone can sign in from the QR code, member or
-            not, Cornell or not, and food is open to everyone regardless. Member
-            attendance still lives on Attendance.
-          </p>
-        </div>
-        <Sticker floatVariant="none" wrapperClassName="hidden shrink-0 sm:block">
-          <BeadRow />
-        </Sticker>
-      </div>
+    <div className="relative flex flex-col gap-6">
+      <TriangleScatter count={5} seed={61} opacity={0.2} />
 
-      <SignInBoard
-        event={tonight ? { name: tonight.name, venue: tonight.venue } : null}
-        roster={roster}
-      />
+      <PageHeader
+        className="relative z-10"
+        title="Sign ins"
+        actions={
+          <Sticker floatVariant="none" wrapperClassName="hidden shrink-0 sm:block">
+            <TriRow size={12} gap={6} />
+          </Sticker>
+        }
+      >
+        Who walked in today. Anyone can sign in from the QR code, member or
+        not, Cornell or not, and food is open to everyone regardless. Member
+        attendance still lives on Attendance.
+      </PageHeader>
 
-      {/* Somebody forgot to add the event, and people are already signing in.
-          The sign ins are safe; this is the one click that files them. */}
-      {unattached > 0 && (
-        <AttachSignIns
-          date={today}
-          count={unattached}
-          events={upcoming
-            .filter((event) => event.event_date === today)
-            .map((event) => ({ id: event.id, name: event.name }))}
+      <div className="relative z-10 flex flex-col gap-6">
+        <SignInBoard
+          event={tonight ? { name: tonight.name, venue: tonight.venue } : null}
+          roster={roster}
         />
-      )}
 
-      <div className="flex flex-col gap-[11px]">
-        <div className="flex flex-col gap-[3px]">
-          <p className="font-sans text-[14px] font-medium text-ink">Which events have a sign in</p>
-          <p className="font-sans text-[12.5px] text-faint">
-            The QR code is permanent and always works. Turning this on is what
-            files a day&rsquo;s sign ins under that event.
-          </p>
-        </div>
+        {/* Somebody forgot to add the event, and people are already signing in.
+            The sign ins are safe; this is the one click that files them. */}
+        {unattached > 0 && (
+          <AttachSignIns
+            date={today}
+            count={unattached}
+            events={upcoming
+              .filter((event) => event.event_date === today)
+              .map((event) => ({ id: event.id, name: event.name }))}
+          />
+        )}
 
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
-          {upcoming.length === 0 && (
-            <p className="px-[15px] py-4 font-sans text-[13px] text-faint">
-              Nothing on the calendar for the next fortnight.
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1">
+            <p className="font-display text-[18px] font-bold text-foreground">
+              Which events have a sign in
             </p>
-          )}
-          {upcoming.map((event, i) => (
-            <div
-              key={event.id}
-              className={`flex items-center justify-between gap-4 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                i < upcoming.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
-              }`}
-            >
-              <div className="flex min-w-0 flex-col gap-[2px]">
-                <span className="truncate font-sans text-[13.5px] text-ink">{event.name}</span>
-                <span className="font-mono text-[10px] tracking-[0.06em] text-faint">
-                  {formatEventDate(event.event_date)} · {formatEventTime(event.event_time)} ·{" "}
-                  {event.venue}
-                </span>
+            <p className="font-sans text-[12.5px] text-foreground/50">
+              The QR code is permanent and always works. Turning this on is what
+              files a day&rsquo;s sign ins under that event.
+            </p>
+          </div>
+
+          <div className="overflow-hidden border border-line bg-background shadow-soft">
+            {upcoming.length === 0 && (
+              <p className="px-4 py-4 font-sans text-[13px] text-foreground/50">
+                Nothing on the calendar for the next fortnight.
+              </p>
+            )}
+            {upcoming.map((event, i) => (
+              <div
+                key={event.id}
+                className={`flex items-center justify-between gap-4 px-4 py-3 transition-colors duration-200 hover:bg-muted/40 ${
+                  i < upcoming.length - 1 ? "border-b border-line" : ""
+                }`}
+              >
+                <div className="flex min-w-0 flex-col gap-[2px]">
+                  <span className="truncate font-sans text-[13.5px] text-foreground">{event.name}</span>
+                  <span className="t-eyebrow text-foreground/50">
+                    {formatEventDate(event.event_date)} · {formatEventTime(event.event_time)} ·{" "}
+                    {event.venue}
+                  </span>
+                </div>
+                <SignInToggle eventId={event.id} enabled={event.has_signin} />
               </div>
-              <SignInToggle eventId={event.id} enabled={event.has_signin} />
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>

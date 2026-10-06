@@ -52,12 +52,12 @@ export function ChatSignupForm() {
 
   if (done) {
     return (
-      <div className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[19px]">
-        <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">sent</span>
-        <p className="font-sans text-[23px] leading-[1.3] font-medium tracking-[-0.02em] text-ink">
+      <div className="flex flex-col gap-2.5 border border-line bg-background p-5 shadow-soft">
+        <span className="t-eyebrow text-foreground/50">sent</span>
+        <p className="t-display text-[28px] text-foreground">
           You&rsquo;re in the queue.
         </p>
-        <p className="font-sans text-[13.5px] leading-[1.75] text-body">
+        <p className="font-sans text-[13.5px] leading-[1.75] text-subtle">
           A member whose interests line up with yours will pick this up and email
           you at {netid.toLowerCase()}@cornell.edu. No need to do anything else.
         </p>
@@ -66,9 +66,9 @@ export function ChatSignupForm() {
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="netid" className="font-sans text-[12px] font-normal text-body">
+        <Label htmlFor="netid">
           Cornell netid
         </Label>
         {/* The suffix is fixed text rather than part of the field: the form only
@@ -85,12 +85,12 @@ export function ChatSignupForm() {
             placeholder="abc123"
             className="max-w-[160px] py-3 text-[16px]"
           />
-          <span className="font-mono text-[13px] text-faint">@cornell.edu</span>
+          <span className="font-sans text-[14px] text-foreground/50">@cornell.edu</span>
         </div>
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="fullName" className="font-sans text-[12px] font-normal text-body">
+        <Label htmlFor="fullName">
           Name
         </Label>
         <Input
@@ -103,10 +103,10 @@ export function ChatSignupForm() {
         />
       </div>
 
-      <div className="flex gap-[11px]">
+      <div className="flex gap-3">
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="major" className="font-sans text-[12px] font-normal text-body">
-            Major <span className="text-faint">(optional)</span>
+          <Label htmlFor="major">
+            Major <span className="text-foreground/50">(optional)</span>
           </Label>
           <Input
             id="major"
@@ -117,8 +117,8 @@ export function ChatSignupForm() {
           />
         </div>
         <div className="flex w-[130px] flex-col gap-1.5">
-          <Label htmlFor="gradYear" className="font-sans text-[12px] font-normal text-body">
-            Grad year <span className="text-faint">(optional)</span>
+          <Label htmlFor="gradYear">
+            Grad year <span className="text-foreground/50">(optional)</span>
           </Label>
           <Input
             id="gradYear"
@@ -131,10 +131,10 @@ export function ChatSignupForm() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-[7px]">
-        <Label className="font-sans text-[12px] font-normal text-body">
+      <div className="flex flex-col gap-2">
+        <Label>
           What are you interested in?{" "}
-          <span className="text-faint">
+          <span className="text-foreground/50">
             ({interests.length}/{MAX_INTERESTS})
           </span>
         </Label>
@@ -150,10 +150,10 @@ export function ChatSignupForm() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => toggle(tag)}
-                className={`rounded-[20px] border px-[11px] py-[6px] font-sans text-[12px] transition-[background-color,border-color,color] duration-200 ease-brand ${
+                className={`t-eyebrow border px-2 py-1 transition-[background-color,border-color,color] duration-200 ease-fluid ${
                   on
-                    ? "border-transparent bg-primary text-primary-foreground"
-                    : "border-line-input bg-page text-body hover:border-[rgba(0,0,0,0.24)] hover:text-ink"
+                    ? "border-foreground bg-mint text-foreground"
+                    : "border-line bg-background text-subtle hover:border-foreground hover:text-foreground"
                 }`}
               >
                 {labelForTag(tag)}
@@ -164,7 +164,7 @@ export function ChatSignupForm() {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="prompt" className="font-sans text-[12px] font-normal text-body">
+        <Label htmlFor="prompt">
           What would you like to talk about?
         </Label>
         <Textarea
@@ -177,7 +177,7 @@ export function ChatSignupForm() {
         />
       </div>
 
-      {error && <p className="font-sans text-[12px] text-destructive">{error}</p>}
+      {error && <p className="font-sans text-[12px] text-red">{error}</p>}
 
       <div>
         <Button type="button" loading={isPending} onClick={submit} className="px-5 py-3 text-[14px]">

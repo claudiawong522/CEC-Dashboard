@@ -94,27 +94,19 @@ export function EvidenceUploader({
 
   return (
     <div className="flex flex-col gap-2.5">
-      <span className="font-mono text-[10px] tracking-[0.13em] text-faint uppercase">
+      <span className="t-eyebrow text-foreground/50">
         {dropLabel}
       </span>
 
       <div
         {...getRootProps()}
         className={cn(
-          "group relative cursor-pointer overflow-hidden rounded-[10px] border border-dashed border-[rgba(0,0,0,0.16)] px-6 py-6 text-center transition-colors duration-[260ms]",
-          isDragActive && "border-coral/50",
+          "group relative cursor-pointer overflow-hidden border-2 border-dashed border-line px-6 py-6 text-center transition-colors duration-200 ease-fluid hover:border-foreground hover:bg-mint/10",
+          isDragActive && "border-foreground bg-mint/10",
         )}
       >
         <input {...getInputProps()} />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute top-[120%] left-1/2 h-[150px] w-[260px] -translate-x-1/2 rounded-full opacity-0 blur-[30px] transition-[opacity,transform] duration-500 ease-brand group-hover:-translate-y-[56%] group-hover:opacity-30"
-          style={{
-            background:
-              "radial-gradient(circle, var(--coral), rgba(232,184,48,.7) 40%, rgba(42,157,143,.4) 70%, transparent 80%)",
-          }}
-        />
-        <span className="relative font-sans text-[12px] text-faint">
+        <span className="relative font-sans text-[12px] text-foreground/50 transition-colors duration-200 ease-fluid group-hover:text-foreground">
           {uploading ? "Uploading..." : label}
         </span>
       </div>
@@ -124,7 +116,7 @@ export function EvidenceUploader({
           {files.map((file) => (
             <div
               key={file.id}
-              className="group/thumb relative flex size-[58px] items-center justify-center overflow-hidden rounded-input border border-[rgba(0,0,0,0.07)] transition-transform duration-[220ms] hover:-translate-y-0.5"
+              className="group/thumb relative flex size-[58px] items-center justify-center overflow-hidden border border-line bg-background transition-[transform,border-color,box-shadow] duration-200 ease-fluid hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm"
             >
               {file.mime_type?.startsWith("image/") ? (
                 <Image
@@ -135,12 +127,12 @@ export function EvidenceUploader({
                   className="object-cover"
                 />
               ) : (
-                <FileIcon className="size-4 text-faint" />
+                <FileIcon className="size-4 text-foreground/50" />
               )}
               <button
                 type="button"
                 onClick={() => handleDelete(file.id)}
-                className="absolute top-0.5 right-0.5 rounded-full bg-paper/90 p-0.5 opacity-0 shadow-sm transition-opacity group-hover/thumb:opacity-100"
+                className="absolute top-0.5 right-0.5 border border-foreground bg-background p-0.5 opacity-0 transition-opacity group-hover/thumb:opacity-100"
               >
                 <X className="size-3" />
               </button>

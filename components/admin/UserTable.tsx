@@ -19,8 +19,8 @@ export function UserTable({
   currentUserId: string;
 }) {
   return (
-    <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
-      <div className="grid grid-cols-[1.3fr_1.6fr_0.9fr_24px] gap-3 border-b border-[rgba(0,0,0,0.08)] px-[15px] py-2.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+    <div className="border border-line bg-background">
+      <div className="t-eyebrow grid grid-cols-[1.3fr_1.6fr_0.9fr_24px] gap-3 border-b border-foreground bg-muted px-4 py-2.5 text-foreground">
         <span>name</span>
         <span>email</span>
         <span>access</span>
@@ -32,39 +32,33 @@ export function UserTable({
         return (
           <div
             key={user.id}
-            className={`grid grid-cols-[1.3fr_1.6fr_0.9fr_24px] items-center gap-3 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-              i < users.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
+            className={`grid grid-cols-[1.3fr_1.6fr_0.9fr_24px] items-center gap-3 px-4 py-3 transition-colors duration-200 ease-fluid hover:bg-muted/40 ${
+              i < users.length - 1 ? "border-b border-line" : ""
             }`}
           >
             <span
-              className={`truncate font-sans text-[12.5px] ${
-                isPending ? "text-faint italic" : "text-ink"
+              className={`truncate font-sans text-[13px] ${
+                isPending ? "text-foreground/50" : "text-foreground"
               } ${isSelf ? "font-medium" : "font-normal"}`}
             >
               {isPending ? "Invite pending" : (user.full_name ?? "—")}
             </span>
-            <span className="truncate font-sans text-[12px] text-body">{user.email}</span>
+            <span className="truncate font-sans text-[12.5px] text-subtle">{user.email}</span>
             {isPending ? (
               <span
-                className="justify-self-start rounded-[20px] border border-[rgba(232,184,48,0.4)] bg-amber/10 px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-strong uppercase"
+                className="t-eyebrow justify-self-start border border-amber bg-amber/10 px-2 py-0.5 text-foreground"
                 title={`Will become ${user.role} on accept`}
               >
                 pending · {user.role}
               </span>
             ) : isSelf ? (
-              <span
-                className="justify-self-start rounded-[20px] px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"
-                style={{
-                  background:
-                    "linear-gradient(95deg, rgba(217,80,112,.2), rgba(232,184,48,.2), rgba(42,157,143,.2), rgba(59,111,194,.2))",
-                }}
-              >
+              <span className="t-eyebrow justify-self-start border border-foreground bg-mint px-2 py-0.5 text-foreground">
                 {user.role}
               </span>
             ) : canManageRoles ? (
               <RoleSelect userId={user.id} role={user.role} />
             ) : (
-              <span className="justify-self-start rounded-[20px] border border-line-input bg-page px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-body uppercase">
+              <span className="t-eyebrow justify-self-start border border-line px-2 py-0.5 text-subtle">
                 {user.role}
               </span>
             )}

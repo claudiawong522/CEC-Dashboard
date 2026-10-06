@@ -86,23 +86,20 @@ export function NoteEditorPanel({
   const initialContent = Array.isArray(note.content) ? (note.content as PartialBlock[]) : [];
 
   return (
-    <div className="flex flex-col gap-[17px]">
+    <div className="flex flex-col gap-5">
       <Link
         href="/brain"
-        className="flex w-fit items-center gap-1.5 font-sans text-[12px] text-faint transition-colors duration-200 hover:text-ink"
+        className="link-underline flex w-fit items-center gap-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-foreground"
       >
         <ArrowLeftIcon className="size-3.5" />
         Brain
       </Link>
 
-      <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
+      <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
         <div className="flex items-center justify-between gap-3">
           <span className="flex min-w-0 items-center gap-2">
-            <span
-              className="size-[7px] shrink-0 rounded-full"
-              style={{ background: BRAIN_KIND_COLORS[draft.kind] }}
-            />
-            <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+            <span className="size-2 shrink-0" style={{ background: BRAIN_KIND_COLORS[draft.kind] }} />
+            <span className="t-eyebrow text-foreground/50">
               {BRAIN_KIND_LABELS[draft.kind]}
             </span>
           </span>
@@ -114,7 +111,7 @@ export function NoteEditorPanel({
                 disabled={isDeleting}
                 aria-label="Delete this note"
                 onClick={remove}
-                className="rounded-chip p-1.5 text-faint transition-colors duration-200 hover:bg-coral/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
+                className="p-1.5 text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red disabled:pointer-events-none disabled:opacity-50"
               >
                 <Trash2Icon className="size-3.5" />
               </button>
@@ -126,10 +123,10 @@ export function NoteEditorPanel({
           value={draft.title}
           disabled={!editable}
           onChange={(event) => set("title", event.target.value)}
-          className="border-transparent bg-transparent px-0 font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink focus-visible:border-transparent focus-visible:ring-0"
+          className="t-display border-transparent bg-transparent px-0 py-1 text-[28px] text-foreground hover:border-transparent focus-visible:border-transparent"
         />
 
-        <div className="grid gap-[15px] sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Kind">
             <Picker
               value={draft.kind}
@@ -188,7 +185,7 @@ export function NoteEditorPanel({
       </div>
 
       <div className="relative">
-        <span className="absolute top-0.5 bottom-0.5 -left-4 w-[2.5px] rounded-full bg-amber/50" />
+        <span className="absolute top-0.5 bottom-0.5 -left-4 w-[3px] bg-mint" />
         {/* The editor writes `content`; a database trigger keeps `body` in
             sync from it, so what gets typed here is searchable without the
             page having to flatten anything itself. */}
@@ -199,7 +196,7 @@ export function NoteEditorPanel({
         />
       </div>
 
-      <span className="font-sans text-[11.5px] text-faint">
+      <span className="font-sans text-[12px] text-foreground/50">
         Autosaves. Everything written here is searchable and answerable from the ask bar.
       </span>
     </div>
@@ -209,7 +206,7 @@ export function NoteEditorPanel({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="font-sans text-[12px] font-normal text-body">{label}</Label>
+      <Label className="t-eyebrow text-foreground/50">{label}</Label>
       {children}
     </div>
   );

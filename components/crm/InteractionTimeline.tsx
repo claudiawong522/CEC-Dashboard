@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -71,21 +72,21 @@ export function InteractionTimeline({
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
-      <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+    <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
+      <span className="t-eyebrow text-foreground/50">
         what we&rsquo;ve said
       </span>
 
-      <div className="flex flex-col gap-[15px]">
-        <div className="grid gap-[15px] sm:grid-cols-[auto_auto_1fr]">
+      <div className="flex flex-col gap-4">
+        <div className="grid gap-4 sm:grid-cols-[auto_auto_1fr]">
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Kind</Label>
+            <Label className="t-eyebrow text-foreground/50">Kind</Label>
             <Select
               items={INTERACTION_KIND_LABELS}
               value={kind}
               onValueChange={(value) => setKind((value ?? "note") as InteractionKind)}
             >
-              <SelectTrigger className="w-full rounded-input border-line-input bg-page px-3 py-2.5 font-sans text-[13.5px] text-ink sm:w-[132px]">
+              <SelectTrigger className="w-full sm:w-[132px]">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -102,21 +103,20 @@ export function InteractionTimeline({
             </Select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">When</Label>
+            <Label className="t-eyebrow text-foreground/50">When</Label>
             <Input
               type="date"
               value={occurredAt}
               onChange={(event) => setOccurredAt(event.target.value)}
-              className="bg-page sm:w-[168px]"
+              className="sm:w-[168px]"
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">What happened</Label>
+            <Label className="t-eyebrow text-foreground/50">What happened</Label>
             <Input
               value={summary}
               placeholder="Asked if they'd speak at Demo Day"
               onChange={(event) => setSummary(event.target.value)}
-              className="bg-page"
             />
           </div>
         </div>
@@ -125,21 +125,20 @@ export function InteractionTimeline({
           value={body}
           placeholder="Anything worth remembering in full (optional)"
           onChange={(event) => setBody(event.target.value)}
-          className="bg-page"
         />
 
-        <button
+        <Button
           type="button"
+          className="w-fit"
           disabled={isPending || !summary.trim()}
           onClick={log}
-          className="w-fit rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
         >
           {isPending ? "Logging" : "Log it"}
-        </button>
+        </Button>
       </div>
 
       {interactions.length === 0 ? (
-        <p className="font-sans text-[12.5px] text-faint">
+        <p className="font-sans text-[13px] text-foreground/50">
           Nothing logged yet. This is what the follow-up suggestions read.
         </p>
       ) : (
@@ -148,21 +147,21 @@ export function InteractionTimeline({
             <div
               key={interaction.id}
               className={`group flex gap-3 py-3 ${
-                index < interactions.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
+                index < interactions.length - 1 ? "border-b border-line" : ""
               }`}
             >
               <span
-                className="mt-1.5 size-[7px] shrink-0 rounded-full"
+                className="mt-1.5 size-2 shrink-0"
                 style={{ background: KIND_COLORS[interaction.kind] }}
               />
               <div className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="font-sans text-[13px] text-ink">{interaction.summary}</span>
+                <span className="font-sans text-[13px] font-medium text-foreground">{interaction.summary}</span>
                 {interaction.body && (
-                  <p className="font-sans text-[12.5px] leading-[1.7] text-body">
+                  <p className="font-sans text-[13px] leading-[1.7] text-subtle">
                     {interaction.body}
                   </p>
                 )}
-                <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+                <span className="t-eyebrow text-foreground/50">
                   {INTERACTION_KIND_LABELS[interaction.kind]} ·{" "}
                   {new Date(interaction.occurred_at).toLocaleDateString(undefined, {
                     month: "short",
@@ -180,7 +179,7 @@ export function InteractionTimeline({
                 disabled={isPending}
                 aria-label="Remove this entry"
                 onClick={() => remove(interaction.id)}
-                className="h-fit shrink-0 rounded-chip p-1 text-faint opacity-0 transition-[opacity,color] duration-200 group-hover:opacity-100 focus-visible:opacity-100 hover:text-destructive"
+                className="h-fit shrink-0 p-1 text-foreground/50 opacity-0 transition-[opacity,color] duration-200 ease-fluid group-hover:opacity-100 focus-visible:opacity-100 hover:text-red"
               >
                 <Trash2Icon className="size-3.5" />
               </button>

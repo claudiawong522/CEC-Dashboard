@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { getStudent } from "@/lib/auth/getStudent";
 import { createClient } from "@/lib/supabase/server";
 import { ApplicantSlots, type ApplicantSlot } from "@/components/interviews/ApplicantSlots";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default async function ApplyPage() {
   const student = await getStudent();
@@ -27,15 +28,10 @@ export default async function ApplyPage() {
   }));
 
   return (
-    <div className="flex flex-col gap-[19px]">
-      <div className="flex flex-col gap-[7px]">
-        <h1 className="font-sans text-[27px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-          Book your interview
-        </h1>
-        <p className="max-w-[62ch] font-sans text-[13.5px] leading-[1.75] text-body">
-          Pick a time that works. You&rsquo;re signed in as {student.email}.
-        </p>
-      </div>
+    <div className="flex flex-col gap-6">
+      <PageHeader title="Book your interview">
+        Pick a time that works. You&rsquo;re signed in as {student.email}.
+      </PageHeader>
 
       <ApplicantSlots slots={visible} netid={netid} />
     </div>

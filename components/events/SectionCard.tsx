@@ -29,21 +29,23 @@ export function SectionCard({
 }) {
   const tint = SECTION_TINTS[section];
 
+  // The section colour shows as a flat 3px top bar and a small swatch by the
+  // title, not a wash over the card.
   return (
     <div
-      className="min-h-[352px] rounded-card border border-[rgba(0,0,0,0.1)] px-[22px] py-5"
-      style={
-        {
-          "--input-ground": "var(--page)",
-          background: tint
-            ? `radial-gradient(ellipse 900px 520px at 100% -12%, color-mix(in srgb, ${tint} 7%, transparent), transparent 60%), var(--paper)`
-            : "var(--paper)",
-        } as React.CSSProperties
-      }
+      className="min-h-[352px] border border-line border-t-[3px] bg-background px-[22px] py-5 shadow-soft"
+      style={{ borderTopColor: tint ?? "var(--black)" }}
     >
       <div className="flex animate-fadeUp flex-col gap-4">
         <div className="flex items-center justify-between">
-          <span className="font-sans text-[19px] leading-[1.25] tracking-[-0.014em] text-ink">
+          <span className="flex items-center gap-2.5 font-display text-[18px] font-bold text-foreground">
+            {tint && (
+              <span
+                aria-hidden="true"
+                className="size-3 shrink-0 border-2 border-foreground"
+                style={{ background: tint }}
+              />
+            )}
             {title}
           </span>
           {!hideDone && (
