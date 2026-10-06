@@ -152,7 +152,7 @@ export function Marquee({
     <div
       aria-hidden="true"
       className={cn(
-        "marquee-mask w-full overflow-hidden font-display text-[12px] font-medium tracking-[0.2em] uppercase whitespace-nowrap text-mint-dark/35 motion-reduce:[&>div]:animate-none",
+        "marquee-mask w-full overflow-hidden font-display text-[14px] font-bold tracking-[0.2em] uppercase whitespace-nowrap text-mint-dark/70 md:text-[16px] motion-reduce:[&>div]:animate-none",
         className,
       )}
     >
@@ -160,7 +160,7 @@ export function Marquee({
         {row.map((word, i) => (
           <span key={i} className="mx-3">
             {word}
-            <span className="ml-6 text-mint-dark/50">&#9670;</span>
+            <span className="ml-6 text-mint-dark">&#9670;</span>
           </span>
         ))}
       </div>
