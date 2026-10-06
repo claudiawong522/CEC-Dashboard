@@ -154,7 +154,7 @@ export default function LoginPage() {
           <p className="max-w-[48ch] font-sans text-[17px] leading-[1.55] text-subtle sm:text-[20px]">
             {cameFromInvite
               ? "You're invited. Sign in with Google to finish setting up your account."
-              : "The members' dashboard, for current CEC members and alumni only. Sign in with the Google account an admin invited; there is no sign-up."}
+              : "Dashboard for CEC Members and Alumni"}
           </p>
 
           <div className="flex flex-wrap items-center gap-4">
