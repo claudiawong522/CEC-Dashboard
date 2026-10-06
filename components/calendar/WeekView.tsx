@@ -45,7 +45,7 @@ export function WeekView({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-[8px] bg-[rgba(35,32,28,0.07)]">
+    <div className="relative overflow-hidden rounded-[8px] bg-[rgba(0,0,0,0.07)]">
       <Sticker
         floatVariant="float3"
         floatDuration="16s"
@@ -84,7 +84,7 @@ export function WeekView({
                   key={day.toISOString()}
                   className={cn(
                     "relative h-[52px] overflow-hidden",
-                    today ? "bg-[rgba(255,253,249,0.55)]" : "bg-[rgba(255,253,249,0.8)]",
+                    today ? "bg-[rgba(255,255,255,0.55)]" : "bg-[rgba(255,255,255,0.8)]",
                     dayEvents.length > 0 && "p-1",
                   )}
                 >
@@ -94,7 +94,7 @@ export function WeekView({
                       className="pointer-events-none absolute -left-[30%] -top-[30px] h-20 w-[160%] opacity-50 blur-[15px]"
                       style={{
                         background:
-                          "radial-gradient(50px 32px at 45% 75%, rgba(232,88,61,.7), transparent 72%), radial-gradient(50px 32px at 72% 85%, rgba(224,185,74,.6), transparent 72%)",
+                          "radial-gradient(50px 32px at 45% 75%, rgba(217,80,112,.7), transparent 72%), radial-gradient(50px 32px at 72% 85%, rgba(232,184,48,.6), transparent 72%)",
                       }}
                     />
                   )}

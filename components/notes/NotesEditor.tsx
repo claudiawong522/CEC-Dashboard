@@ -18,10 +18,10 @@ const brandTheme = {
     hovered: { text: "var(--ink)", background: "var(--hover)" },
     selected: { text: "var(--ink)", background: "var(--hover)" },
     disabled: { text: "var(--faint)", background: "var(--paper)" },
-    shadow: "rgba(35,32,28,.5)",
-    border: "rgba(35,32,28,.1)",
+    shadow: "rgba(0,0,0,.5)",
+    border: "rgba(0,0,0,.1)",
     highlights: {
-      orange: { text: "var(--ink)", background: "rgba(232,88,61,.26)" },
+      orange: { text: "var(--ink)", background: "rgba(217,80,112,.26)" },
     },
   },
   borderRadius: 10,

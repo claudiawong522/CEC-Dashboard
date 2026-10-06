@@ -76,7 +76,7 @@ export function RequestPool({
       </div>
 
       {!tuned && (
-        <p className="rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper px-[15px] py-3 font-sans text-[12.5px] leading-[1.7] text-body">
+        <p className="rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper px-[15px] py-3 font-sans text-[12.5px] leading-[1.7] text-body">
           You haven&rsquo;t picked any interests on your profile yet, so this list
           isn&rsquo;t sorted for you. Add a few and the ones you&rsquo;d enjoy
           most rise to the top.
@@ -89,7 +89,7 @@ export function RequestPool({
         </span>
 
         {ranked.length === 0 ? (
-          <p className="rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper px-[15px] py-4 font-sans text-[13px] text-faint">
+          <p className="rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper px-[15px] py-4 font-sans text-[13px] text-faint">
             Nobody waiting right now.
           </p>
         ) : (
@@ -99,7 +99,7 @@ export function RequestPool({
               return (
                 <div
                   key={request.id}
-                  className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[15px]"
+                  className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[15px]"
                 >
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <div className="flex items-baseline gap-2">
@@ -163,12 +163,12 @@ export function RequestPool({
           <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
             taken · {claimed.length}
           </span>
-          <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+          <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
             {claimed.map((request, i) => (
               <div
                 key={request.id}
                 className={`flex flex-wrap items-center justify-between gap-3 px-[15px] py-3 ${
-                  i < claimed.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                  i < claimed.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
                 }`}
               >
                 <div className="flex min-w-0 flex-col gap-[2px]">

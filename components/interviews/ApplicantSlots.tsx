@@ -32,7 +32,7 @@ export function ApplicantSlots({ slots, netid }: { slots: ApplicantSlot[]; netid
 
   if (slots.length === 0) {
     return (
-      <p className="rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+      <p className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
         No interview times are open yet. You&rsquo;ll get an email when they are.
       </p>
     );
@@ -45,7 +45,7 @@ export function ApplicantSlots({ slots, netid }: { slots: ApplicantSlot[]; netid
           className="flex flex-col gap-1.5 rounded-card border border-transparent p-[15px]"
           style={{
             background:
-              "linear-gradient(95deg, rgba(232,88,61,.2), rgba(224,185,74,.2), rgba(63,167,137,.2), rgba(59,111,194,.2))",
+              "linear-gradient(95deg, rgba(217,80,112,.2), rgba(232,184,48,.2), rgba(42,157,143,.2), rgba(59,111,194,.2))",
           }}
         >
           <span className="font-mono text-[9px] tracking-[0.13em] text-strong uppercase">
@@ -79,8 +79,8 @@ export function ApplicantSlots({ slots, netid }: { slots: ApplicantSlot[]; netid
                 disabled={isPending}
                 onClick={() => run(() => claimSlot(slot.id))}
                 className={cn(
-                  "flex flex-col items-start gap-1 rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[15px] text-left transition-[background-color,border-color] duration-200 ease-brand",
-                  "hover:border-[rgba(35,32,28,0.14)] hover:bg-wash disabled:pointer-events-none disabled:opacity-50",
+                  "flex flex-col items-start gap-1 rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[15px] text-left transition-[background-color,border-color] duration-200 ease-brand",
+                  "hover:border-[rgba(0,0,0,0.14)] hover:bg-wash disabled:pointer-events-none disabled:opacity-50",
                 )}
               >
                 <span className="font-sans text-[13.5px] font-medium text-ink">

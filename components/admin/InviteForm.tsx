@@ -52,7 +52,7 @@ export function InviteForm() {
     <form
       ref={formRef}
       onSubmit={handleSubmit}
-      className="flex flex-col gap-2.5 rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[15px]"
+      className="flex flex-col gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[15px]"
     >
       <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
         invite someone
@@ -70,7 +70,7 @@ export function InviteForm() {
         <Select items={ROLE_LABELS} value={role} onValueChange={(v) => setRole(v as Role)}>
           <SelectTrigger
             disabled={isPending}
-            className="w-auto gap-1.5 rounded-[20px] border-line-input bg-page px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-body uppercase transition-colors duration-200 hover:border-[rgba(35,32,28,0.32)] hover:text-ink [&_svg]:text-faint"
+            className="w-auto gap-1.5 rounded-[20px] border-line-input bg-page px-[9px] py-[5px] font-mono text-[9.5px] tracking-[0.1em] text-body uppercase transition-colors duration-200 hover:border-[rgba(0,0,0,0.32)] hover:text-ink [&_svg]:text-faint"
           >
             <SelectValue />
           </SelectTrigger>

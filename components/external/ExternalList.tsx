@@ -43,7 +43,7 @@ export function ExternalList({
           onClick={() => setFilter("all")}
           className={
             "flex items-center gap-1.5 rounded-pill border px-3 py-1.5 font-mono text-[9.5px] tracking-[0.08em] uppercase transition-colors duration-200 ease-brand " +
-            (filter === "all" ? "border-ink bg-ink text-page" : "border-line-input text-faint hover:border-[rgba(35,32,28,0.24)] hover:text-ink")
+            (filter === "all" ? "border-ink bg-ink text-page" : "border-line-input text-faint hover:border-[rgba(0,0,0,0.24)] hover:text-ink")
           }
         >
           All
@@ -59,7 +59,7 @@ export function ExternalList({
               onClick={() => setFilter(stage)}
               className={
                 "flex items-center gap-1.5 rounded-pill border px-3 py-1.5 font-mono text-[9.5px] tracking-[0.08em] uppercase transition-colors duration-200 ease-brand " +
-                (active ? "border-ink bg-ink text-page" : "border-line-input text-faint hover:border-[rgba(35,32,28,0.24)] hover:text-ink")
+                (active ? "border-ink bg-ink text-page" : "border-line-input text-faint hover:border-[rgba(0,0,0,0.24)] hover:text-ink")
               }
             >
               <span className={"size-1.5 shrink-0 rounded-full " + dot.className} style={dot.style} />

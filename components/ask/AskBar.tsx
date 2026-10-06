@@ -78,7 +78,7 @@ export function AskBar() {
           disabled={isPending}
           onChange={(event) => setQuestion(event.target.value)}
           placeholder="Ask anything about the club"
-          className="w-full rounded-input border border-line-input bg-paper py-3.5 pr-[92px] pl-11 font-sans text-[14.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)] disabled:opacity-60"
+          className="w-full rounded-input border border-line-input bg-paper py-3.5 pr-[92px] pl-11 font-sans text-[14.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(0,0,0,0.05)] disabled:opacity-60"
         />
         <button
           type="submit"
@@ -90,7 +90,7 @@ export function AskBar() {
       </form>
 
       {error && (
-        <p className="rounded-card border border-[rgba(180,71,47,0.28)] bg-coral/10 px-[15px] py-3 font-sans text-[12.5px] text-destructive">
+        <p className="rounded-card border border-[rgba(255,0,0,0.28)] bg-coral/10 px-[15px] py-3 font-sans text-[12.5px] text-destructive">
           {error}
         </p>
       )}
@@ -105,7 +105,7 @@ export function AskBar() {
                 setQuestion(suggestion);
                 submit(suggestion);
               }}
-              className="rounded-[20px] border border-line-input bg-paper px-[11px] py-[6px] font-sans text-[12px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(35,32,28,0.24)] hover:bg-wash hover:text-ink"
+              className="rounded-[20px] border border-line-input bg-paper px-[11px] py-[6px] font-sans text-[12px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.24)] hover:bg-wash hover:text-ink"
             >
               {suggestion}
             </button>
@@ -118,7 +118,7 @@ export function AskBar() {
           <div
             key={`${entry.question}-${index}`}
             className={cn(
-              "flex flex-col gap-2.5 rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]",
+              "flex flex-col gap-2.5 rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]",
               index > 0 && "opacity-70",
             )}
           >
@@ -133,7 +133,7 @@ export function AskBar() {
                 {entry.citations.map((citation) => {
                   const href = CITATION_HREF[citation.kind](citation.id);
                   const label = (
-                    <span className="rounded-[20px] border border-[rgba(35,32,28,0.12)] px-[10px] py-[5px] font-sans text-[11.5px] text-body">
+                    <span className="rounded-[20px] border border-[rgba(0,0,0,0.12)] px-[10px] py-[5px] font-sans text-[11.5px] text-body">
                       {citation.label}
                     </span>
                   );

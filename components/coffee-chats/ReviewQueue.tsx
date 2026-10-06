@@ -29,7 +29,7 @@ export function ReviewQueue({
 
   if (chats.length === 0) {
     return (
-      <p className="rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-6 text-center font-sans text-[13px] text-faint">
+      <p className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper px-[15px] py-6 text-center font-sans text-[13px] text-faint">
         Nothing waiting to be reviewed.
       </p>
     );
@@ -42,7 +42,7 @@ export function ReviewQueue({
         return (
           <div
             key={chat.id}
-            className="flex flex-col gap-2.5 rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[15px] sm:flex-row sm:items-center"
+            className="flex flex-col gap-2.5 rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[15px] sm:flex-row sm:items-center"
           >
             {selfie ? (
               // eslint-disable-next-line @next/next/no-img-element

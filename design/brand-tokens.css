@@ -1,53 +1,73 @@
-/* CEC Dashboard brand tokens — import once from your global stylesheet */
+/* CEC Dashboard brand tokens v2: the cornellec.com system.
+   Measured from the live site's compiled stylesheet on 2026-10-06. */
 :root{
-  /* neutrals (warm) */
-  --paper:#FFFDF9;
-  --page:#FDFAF4;
-  --hover:#F5F0E5;
-  --canvas:#EFEBE2; /* app-frame backdrop outside the capped-width shell — from CEC Pages.dc.html's own <body> */
-  --line-strong:#E2DACB;
-  --faint:#B0A899;
-  --body:#6E675C;
-  --strong:#4A443C;
-  --ink:#23201C;
-  --faded:#C9C4B6; /* adjacent-month days, disabled-looking dots/placeholders */
-  --hairline:rgba(35,32,28,.09);
-  --hairline-soft:rgba(35,32,28,.07);
-  --hairline-input:rgba(35,32,28,.14);
+  /* site-native names */
+  --white:#FFFFFF;
+  --black:#000000;
+  --mint:#3DFFA2;        /* the one accent: primary button, active underline, hard shadows */
+  --mint-dark:#00CC6A;   /* mint as text on white (mint itself fails contrast) */
+  --mint-soft:#A8FFD4;   /* ::selection, pastel tints */
+  --subtle:#4A4A4A;      /* body copy */
+  --muted:#E5E5E5;       /* grey bands, table header wash */
+  --line:rgba(0,0,0,.12);/* every hairline */
+  --red:#FF0000;         /* destructive */
 
-  /* accents */
-  --coral:#E8583D;
-  --amber:#E0B94A;
-  --teal:#3FA789;
+  /* v1 names kept as a compatibility layer so existing classes keep working.
+     Both grounds are white now: card edges come from border + shadow. */
+  --paper:#FFFFFF;
+  --page:#FFFFFF;
+  --hover:#F2F2F2;
+  --canvas:#FFFFFF;
+  --line-strong:#CCCCCC;
+  --faint:#808080;       /* foreground at 50% */
+  --body:#4A4A4A;
+  --strong:#1A1A1A;
+  --ink:#000000;
+  --faded:#BFBFBF;
+  --hairline:rgba(0,0,0,.12);
+  --hairline-soft:rgba(0,0,0,.08);
+  --hairline-input:rgba(0,0,0,.12);
+
+  /* section colours, pulled from the logo's own tiles (BrandMark.tsx) */
+  --coral:#D95070;
+  --amber:#E8B830;
+  --teal:#2A9D8F;
   --blue:#3B6FC2;
-  --destructive:#B4472F;
-  --coral-bloom:#F0836B; /* login sticker S4's inner highlight — lighter/warmer than --coral */
-  --portrait-placeholder:#F0EDE4; /* Past Events: circular avatar when there's no speaker */
+  --destructive:#FF0000;
+  --coral-bloom:#E06070;
+  --portrait-placeholder:#E5E5E5;
 
-  /* gradient */
-  --cent:linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2);
-  --cent-tint:linear-gradient(95deg,rgba(232,88,61,.15),rgba(224,185,74,.15),rgba(63,167,137,.15),rgba(59,111,194,.15));
-  --cent-pastel:linear-gradient(95deg,#F3B5A6,#EFDCA8,#AEDACA,#B7CBEB);
-  --switch-off:#EAE4D7;
+  /* the gradient is gone; these stay as background-image values so `bg-cent`
+     and friends still compile, but they are flat mint now */
+  --cent:linear-gradient(#3DFFA2,#3DFFA2);
+  --cent-tint:linear-gradient(rgba(61,255,162,.18),rgba(61,255,162,.18));
+  --cent-pastel:linear-gradient(#A8FFD4,#A8FFD4);
+  --switch-off:#E5E5E5;
 
-  /* radii */
-  --r-chip:6px; --r-input:8px; --r-btn:9px; --r-card:11px; --r-pill:20px; --r-login:24px;
+  /* radii: none. The site is square. */
+  --r-chip:0; --r-input:0; --r-btn:0; --r-card:0; --r-pill:0; --r-login:0;
 
   /* elevation */
-  --glow-primary:0 9px 20px -10px rgba(232,88,61,.9);
-  --shadow-menu:0 12px 28px -16px rgba(35,32,28,.5);
+  --shadow-soft:0 1px 2px rgba(0,0,0,.05),0 10px 28px -14px rgba(0,0,0,.14);
+  --shadow-mint:4px 4px 0 0 #3DFFA2;
+  --shadow-mint-sm:2px 2px 0 0 #3DFFA2;
+  --shadow-mint-lg:8px 8px 0 0 #3DFFA2;
+  --glow-primary:var(--shadow-mint);
+  --shadow-menu:var(--shadow-soft);
 
   /* type */
-  --font-sans:"Hanken Grotesk",system-ui,sans-serif;
-  --font-mono:"Geist Mono",ui-monospace,monospace;
+  --font-sans:"DM Sans",system-ui,sans-serif;
+  --font-display:"Space Grotesk",system-ui,sans-serif;
+  --font-mono:"Space Grotesk",system-ui,sans-serif; /* labels, dates, ids: uppercase display, not a monospace */
 
   /* motion */
-  --t-hover:180ms; --t-state:240ms; --t-move:340ms; --t-bloom:460ms; --t-pop:620ms;
-  --e-default:cubic-bezier(.2,.8,.2,1);
-  --e-indicator:cubic-bezier(.2,.9,.2,1);
-  --e-spring:cubic-bezier(.34,1.6,.4,1);
+  --t-hover:150ms; --t-state:200ms; --t-move:300ms; --t-bloom:340ms; --t-pop:620ms; --t-intro:500ms;
+  --e-default:cubic-bezier(.22,1,.36,1);   /* the site's ease-fluid */
+  --e-indicator:cubic-bezier(.22,1,.36,1);
+  --e-spring:cubic-bezier(.22,1,.36,1);
   --e-draw:cubic-bezier(.4,0,.2,1);
   --e-pop:cubic-bezier(.34,1.5,.4,1);
+  --e-intro:cubic-bezier(.76,0,.24,1);
 }
 
 @media (prefers-reduced-motion:reduce){

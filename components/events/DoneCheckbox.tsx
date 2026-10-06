@@ -40,7 +40,7 @@ export function DoneCheckbox({
         className="flex size-[19px] items-center justify-center rounded-full border transition-[background,border-color] duration-[260ms] ease-brand"
         style={{
           background: done ? "var(--cent)" : "transparent",
-          borderColor: done ? "transparent" : "rgba(35,32,28,.2)",
+          borderColor: done ? "transparent" : "rgba(0,0,0,.2)",
         }}
       >
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none">

@@ -31,7 +31,7 @@ export function SectionCard({
 
   return (
     <div
-      className="min-h-[352px] rounded-card border border-[rgba(35,32,28,0.1)] px-[22px] py-5"
+      className="min-h-[352px] rounded-card border border-[rgba(0,0,0,0.1)] px-[22px] py-5"
       style={
         {
           "--input-ground": "var(--page)",

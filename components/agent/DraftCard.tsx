@@ -44,7 +44,7 @@ export function DraftCard({ contacts }: { contacts: { id: string; name: string }
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
       <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
         draft an email
       </span>
@@ -103,7 +103,7 @@ export function DraftCard({ contacts }: { contacts: { id: string; name: string }
       )}
 
       {draft && (
-        <div className="flex flex-col gap-2.5 rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-page p-[15px]">
+        <div className="flex flex-col gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-page p-[15px]">
           {/* A draft written with no history behind it says so, rather than
               quietly implying a relationship that doesn't exist. */}
           <span className="flex items-center gap-1.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
@@ -119,7 +119,7 @@ export function DraftCard({ contacts }: { contacts: { id: string; name: string }
           <button
             type="button"
             onClick={copy}
-            className="flex w-fit items-center gap-1.5 rounded-btn border border-[rgba(35,32,28,0.14)] px-[13px] py-[8px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(35,32,28,0.24)] hover:bg-wash hover:text-ink"
+            className="flex w-fit items-center gap-1.5 rounded-btn border border-[rgba(0,0,0,0.14)] px-[13px] py-[8px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.24)] hover:bg-wash hover:text-ink"
           >
             {copied ? <CheckIcon className="size-3.5" /> : <CopyIcon className="size-3.5" />}
             {copied ? "Copied" : "Copy"}

@@ -99,7 +99,7 @@ export default async function LeaderboardPage() {
         </Sticker>
       </div>
 
-      <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+      <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
         {ranked.length === 0 && (
           <p className="px-[15px] py-4 font-sans text-[13px] text-faint">
             Nobody has signed in yet this semester.
@@ -110,7 +110,7 @@ export default async function LeaderboardPage() {
           <div
             key={row.guestId}
             className={`flex items-center justify-between gap-4 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-              i < ranked.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+              i < ranked.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
             }`}
           >
             <div className="flex min-w-0 items-baseline gap-[13px]">

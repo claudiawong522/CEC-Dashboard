@@ -58,8 +58,8 @@ export function YearView({
             className={cn(
               "relative overflow-hidden rounded-[10px] border bg-paper p-5 text-left transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5",
               isCurrentMonth
-                ? "border-[rgba(35,32,28,0.18)]"
-                : "border-[rgba(35,32,28,0.07)] hover:border-[rgba(35,32,28,0.18)]",
+                ? "border-[rgba(0,0,0,0.18)]"
+                : "border-[rgba(0,0,0,0.07)] hover:border-[rgba(0,0,0,0.18)]",
             )}
           >
             {isCurrentMonth && (
@@ -72,7 +72,7 @@ export function YearView({
                   aria-hidden="true"
                   className="size-full rounded-full"
                   style={{
-                    background: "radial-gradient(circle, rgba(224,185,74,.8), transparent 72%)",
+                    background: "radial-gradient(circle, rgba(232,184,48,.8), transparent 72%)",
                   }}
                 />
               </Sticker>

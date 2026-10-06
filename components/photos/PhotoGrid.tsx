@@ -75,7 +75,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
               <button
                 type="button"
                 onClick={() => setOpenIndex(i)}
-                className="group relative aspect-square w-full overflow-hidden rounded-[9px] border border-[rgba(35,32,28,0.07)]"
+                className="group relative aspect-square w-full overflow-hidden rounded-[9px] border border-[rgba(0,0,0,0.07)]"
               >
                 {isImage ? (
                   <Image

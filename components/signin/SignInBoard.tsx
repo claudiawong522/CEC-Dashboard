@@ -91,7 +91,7 @@ export function AttachSignIns({
           <select
             value={chosen}
             onChange={(e) => setChosen(e.target.value)}
-            className="rounded-[7px] border border-[rgba(35,32,28,0.14)] bg-paper px-3 py-2 font-sans text-[13px] text-ink"
+            className="rounded-[7px] border border-[rgba(0,0,0,0.14)] bg-paper px-3 py-2 font-sans text-[13px] text-ink"
           >
             {events.map((event) => (
               <option key={event.id} value={event.id}>
@@ -143,7 +143,7 @@ export function SignInBoard({
   const milestones = roster.filter((row) => [3, 5, 10, 15, 20, 25, 30].includes(row.visitNumber));
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[19px]">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
         <div className="flex flex-col gap-[3px]">
           <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
@@ -182,7 +182,7 @@ export function SignInBoard({
             <div
               key={row.signinId}
               className={`flex items-start justify-between gap-4 py-2.5 ${
-                i < roster.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                i < roster.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
               }`}
             >
               <div className="flex min-w-0 flex-col gap-[2px]">
@@ -208,7 +208,7 @@ export function SignInBoard({
                         href={row.linkedinUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-mono text-[10px] tracking-[0.06em] text-faint uppercase underline decoration-[rgba(35,32,28,0.25)] underline-offset-[3px] transition-colors duration-200 hover:text-ink"
+                        className="font-mono text-[10px] tracking-[0.06em] text-faint uppercase underline decoration-[rgba(0,0,0,0.25)] underline-offset-[3px] transition-colors duration-200 hover:text-ink"
                       >
                         linkedin
                       </a>

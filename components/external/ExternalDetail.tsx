@@ -101,9 +101,9 @@ function StageStepper({ idea, onStageChange }: { idea: IdeaRow; onStageChange: (
               className={
                 "z-10 box-border size-[17px] rounded-full border-2 " +
                 (i === curIdx
-                  ? "border-ink bg-ink shadow-[0_0_0_4px_rgba(35,32,28,0.09)]"
+                  ? "border-ink bg-ink shadow-[0_0_0_4px_rgba(0,0,0,0.09)]"
                   : i < curIdx
-                    ? "border-[#F3B5A6] bg-[#F3B5A6]"
+                    ? "border-mint bg-mint"
                     : "border-line-input bg-paper")
               }
             />
@@ -270,7 +270,7 @@ export function ExternalDetail({
                 onClick={() => toggleOwnerLocal(a.id)}
                 className={
                   "flex items-center gap-1.5 rounded-pill border px-[11px] py-1.5 font-mono text-[9.5px] tracking-[0.08em] uppercase transition-colors duration-200 ease-brand " +
-                  (on ? "border-[rgba(35,32,28,0.24)] bg-wash text-ink" : "border-line-input text-faint hover:bg-wash hover:text-ink")
+                  (on ? "border-[rgba(0,0,0,0.24)] bg-wash text-ink" : "border-line-input text-faint hover:bg-wash hover:text-ink")
                 }
               >
                 <span className={"size-1.5 rounded-full " + (on ? "bg-coral" : "bg-faint")} />

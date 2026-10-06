@@ -131,12 +131,12 @@ export default async function CoffeeChatsPage() {
             <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
               your submissions
             </span>
-            <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+            <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
               {mine.map((chat, index) => (
                 <div
                   key={chat.id}
                   className={`grid grid-cols-[1.4fr_1fr_auto] items-center gap-3 px-[15px] py-3 ${
-                    index < mine.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                    index < mine.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
                   }`}
                 >
                   <span className="truncate font-sans text-[12.5px] text-ink">

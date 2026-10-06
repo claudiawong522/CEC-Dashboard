@@ -42,7 +42,7 @@ function UpcomingEventsLink() {
       href={LUMA_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center gap-[7px] rounded-[8px] border border-[rgba(35,32,28,0.14)] bg-page px-[15px] py-[9px] font-sans text-[13px] text-ink transition-colors duration-200 hover:bg-wash"
+      className="inline-flex items-center gap-[7px] rounded-[8px] border border-[rgba(0,0,0,0.14)] bg-page px-[15px] py-[9px] font-sans text-[13px] text-ink transition-colors duration-200 hover:bg-wash"
     >
       See what&rsquo;s coming up
       <svg
@@ -272,7 +272,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
 
     if (milestone && !kiosk) {
       return (
-        <div className="relative flex flex-col items-center gap-[15px] overflow-hidden rounded-[14px] border border-[rgba(35,32,28,0.1)] bg-paper p-[27px] text-center">
+        <div className="relative flex flex-col items-center gap-[15px] overflow-hidden rounded-[14px] border border-[rgba(0,0,0,0.1)] bg-paper p-[27px] text-center">
           {/* The one bright element on the page, per the kit: the CENT gradient,
               here as the band that makes this feel like an occasion. */}
           <span
@@ -312,7 +312,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
     }
 
     return (
-      <div className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
+      <div className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[19px]">
         <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
           {confirmation.alreadyToday ? "already signed in" : "signed in"}
         </span>
@@ -361,7 +361,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
     questions.length;
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[19px]">
       <div className="flex flex-col gap-[5px]">
         <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
           {event ? event.venue : "cornell entrepreneurship club"}

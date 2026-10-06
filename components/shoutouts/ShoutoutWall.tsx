@@ -39,7 +39,7 @@ export function ShoutoutWall({
 
   if (shoutouts.length === 0) {
     return (
-      <p className="rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+      <p className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
         Nothing yet this semester. Be the first.
       </p>
     );
@@ -51,7 +51,7 @@ export function ShoutoutWall({
         <div
           key={shoutout.id}
           className={cn(
-            "group flex flex-col gap-2.5 rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[15px]",
+            "group flex flex-col gap-2.5 rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[15px]",
             shoutout.hidden && "opacity-50",
           )}
         >

@@ -70,7 +70,7 @@ export function CaptureCard() {
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
       <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
         capture a conversation
       </span>
@@ -92,13 +92,13 @@ export function CaptureCard() {
       </button>
 
       {proposal && (
-        <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-page p-[15px]">
+        <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-page p-[15px]">
           <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
             proposed · nothing is saved yet
           </span>
 
           {proposal.duplicates.length > 0 && (
-            <div className="flex flex-col gap-2 rounded-[8px] border border-[rgba(224,185,74,0.4)] bg-amber/10 p-[11px]">
+            <div className="flex flex-col gap-2 rounded-[8px] border border-[rgba(232,184,48,0.4)] bg-amber/10 p-[11px]">
               <span className="flex items-center gap-1.5 font-sans text-[12.5px] text-strong">
                 <AlertTriangleIcon className="size-3.5" />
                 Might already be in the CRM
@@ -197,7 +197,7 @@ export function CaptureCard() {
             <button
               type="button"
               onClick={() => setProposal(null)}
-              className="rounded-btn border border-[rgba(35,32,28,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(35,32,28,0.24)] hover:bg-wash hover:text-ink"
+              className="rounded-btn border border-[rgba(0,0,0,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.24)] hover:bg-wash hover:text-ink"
             >
               Discard
             </button>

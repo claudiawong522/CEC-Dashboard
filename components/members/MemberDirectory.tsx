@@ -71,7 +71,7 @@ export function MemberDirectory({ members }: { members: MemberProfile[] }) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search by name, major, netid or interest"
-            className="w-full rounded-input border border-line-input bg-paper py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)]"
+            className="w-full rounded-input border border-line-input bg-paper py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(0,0,0,0.05)]"
           />
         </div>
 
@@ -88,7 +88,7 @@ export function MemberDirectory({ members }: { members: MemberProfile[] }) {
                   "flex items-center gap-1.5 rounded-[20px] border px-[11px] py-[6px] font-mono text-[9.5px] tracking-[0.1em] uppercase transition-[background-color,border-color,color] duration-200 ease-brand",
                   active
                     ? "border-transparent bg-cent-tint text-ink"
-                    : "border-line-input bg-paper text-body hover:border-[rgba(35,32,28,0.24)] hover:text-ink",
+                    : "border-line-input bg-paper text-body hover:border-[rgba(0,0,0,0.24)] hover:text-ink",
                 )}
               >
                 <span
@@ -104,7 +104,7 @@ export function MemberDirectory({ members }: { members: MemberProfile[] }) {
       </div>
 
       {visible.length === 0 ? (
-        <p className="rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+        <p className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
           Nobody matches that yet.
         </p>
       ) : (
@@ -114,7 +114,7 @@ export function MemberDirectory({ members }: { members: MemberProfile[] }) {
               key={member.id}
               href={`/members/${member.id}`}
               className={cn(
-                "group flex flex-col gap-2.5 rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[15px] transition-[background-color,border-color] duration-200 ease-brand hover:border-[rgba(35,32,28,0.14)] hover:bg-wash",
+                "group flex flex-col gap-2.5 rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[15px] transition-[background-color,border-color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.14)] hover:bg-wash",
                 !member.active && "opacity-60",
               )}
             >
@@ -153,7 +153,7 @@ export function MemberDirectory({ members }: { members: MemberProfile[] }) {
 
               <div className="flex flex-wrap items-center gap-1.5">
                 {member.team && (
-                  <span className="flex items-center gap-1.5 rounded-[20px] border border-[rgba(35,32,28,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-body uppercase">
+                  <span className="flex items-center gap-1.5 rounded-[20px] border border-[rgba(0,0,0,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-body uppercase">
                     <span
                       className="size-[7px] rounded-full"
                       style={{ background: TEAM_COLORS[member.team] }}

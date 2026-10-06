@@ -208,7 +208,7 @@ export function DetailsForm({
             className="relative overflow-hidden rounded-[20px] px-2.5 py-1 font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"
             style={{
               background:
-                "linear-gradient(95deg, rgba(232,88,61,.2), rgba(224,185,74,.2), rgba(63,167,137,.2), rgba(59,111,194,.2))",
+                "linear-gradient(95deg, rgba(217,80,112,.2), rgba(232,184,48,.2), rgba(42,157,143,.2), rgba(59,111,194,.2))",
             }}
           >
             {doneCount} of {doneable.length} done
@@ -227,7 +227,7 @@ export function DetailsForm({
       </div>
 
       <div
-        className="relative flex flex-col gap-4 overflow-hidden rounded-card border border-[rgba(35,32,28,0.1)] bg-paper px-5 py-[19px]"
+        className="relative flex flex-col gap-4 overflow-hidden rounded-card border border-[rgba(0,0,0,0.1)] bg-paper px-5 py-[19px]"
         style={{ "--input-ground": "var(--page)" } as React.CSSProperties}
       >
         <Sticker
@@ -290,7 +290,7 @@ export function DetailsForm({
         <TaggedMembersSection eventId={event.id} taggedMembers={taggedMembers} allMembers={allMembers} />
 
         {recurringSeries && (
-          <div className="flex items-end gap-3 border-t border-[rgba(35,32,28,0.07)] pt-4">
+          <div className="flex items-end gap-3 border-t border-[rgba(0,0,0,0.07)] pt-4">
             <div className="flex flex-1 flex-col gap-1.5">
               <Label className="font-sans text-[12px] font-normal text-body">Repeats</Label>
               <Select
@@ -356,7 +356,7 @@ export function DetailsForm({
             style={{
               top: activeIndex * 36,
               background:
-                "linear-gradient(95deg, rgba(232,88,61,.15), rgba(224,185,74,.15), rgba(63,167,137,.15), rgba(59,111,194,.15))",
+                "linear-gradient(95deg, rgba(217,80,112,.15), rgba(232,184,48,.15), rgba(42,157,143,.15), rgba(59,111,194,.15))",
             }}
           />
           {tabs.map((tab) => (

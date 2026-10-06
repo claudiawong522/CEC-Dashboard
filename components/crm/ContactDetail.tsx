@@ -101,7 +101,7 @@ export function ContactDetail({
         CRM
       </Link>
 
-      <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]">
+      <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
         <div className="flex items-center justify-between gap-3">
           <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
             {draft.name || "Unnamed contact"}

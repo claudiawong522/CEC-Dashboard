@@ -54,7 +54,7 @@ export function BrainList({ notes }: { notes: BrainNote[] }) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search everything written down"
-            className="w-full rounded-input border border-line-input bg-paper py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)]"
+            className="w-full rounded-input border border-line-input bg-paper py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(0,0,0,0.05)]"
           />
         </div>
 
@@ -70,7 +70,7 @@ export function BrainList({ notes }: { notes: BrainNote[] }) {
                   "flex items-center gap-1.5 rounded-[20px] border px-[11px] py-[6px] font-mono text-[9.5px] tracking-[0.1em] uppercase transition-[background-color,border-color,color] duration-200 ease-brand",
                   active
                     ? "border-transparent bg-cent-tint text-ink"
-                    : "border-line-input bg-paper text-body hover:border-[rgba(35,32,28,0.24)] hover:text-ink",
+                    : "border-line-input bg-paper text-body hover:border-[rgba(0,0,0,0.24)] hover:text-ink",
                 )}
               >
                 <span
@@ -91,7 +91,7 @@ export function BrainList({ notes }: { notes: BrainNote[] }) {
                 "rounded-[20px] border px-[11px] py-[6px] font-mono text-[9.5px] tracking-[0.1em] uppercase transition-[background-color,border-color,color] duration-200 ease-brand",
                 semester === value
                   ? "border-transparent bg-cent-tint text-ink"
-                  : "border-line-input bg-paper text-body hover:border-[rgba(35,32,28,0.24)] hover:text-ink",
+                  : "border-line-input bg-paper text-body hover:border-[rgba(0,0,0,0.24)] hover:text-ink",
               )}
             >
               {value}
@@ -101,7 +101,7 @@ export function BrainList({ notes }: { notes: BrainNote[] }) {
       </div>
 
       {visible.length === 0 ? (
-        <p className="rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+        <p className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
           Nothing written down that matches.
         </p>
       ) : (
@@ -110,7 +110,7 @@ export function BrainList({ notes }: { notes: BrainNote[] }) {
             <Link
               key={note.id}
               href={`/brain/${note.id}`}
-              className="flex flex-col gap-1.5 rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[15px] transition-[background-color,border-color] duration-200 ease-brand hover:border-[rgba(35,32,28,0.14)] hover:bg-wash"
+              className="flex flex-col gap-1.5 rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[15px] transition-[background-color,border-color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.14)] hover:bg-wash"
             >
               <div className="flex items-center gap-2">
                 <span

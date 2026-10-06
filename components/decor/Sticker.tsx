@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 type FloatVariant = "float1" | "float2" | "float3" | "none";
 
 /**
- * Wraps a sticker shape with the kit's two motions: ambient drift (outer,
- * continuous) and a one-shot 620ms pop on click (inner, via key remount so
- * the animation replays every click). Each instance owns both — clicking one
- * sticker never triggers another. See design/BRAND_KIT.md § Sticker rules.
+ * Wraps a decor shape with slow ambient drift (outer, continuous) and a
+ * one-shot 620ms pop on click (inner, replayed via key remount). Each
+ * instance owns both: clicking one never triggers another. Drift is dropped
+ * under prefers-reduced-motion by the global rule in brand-tokens.css.
  */
 export function Sticker({
   children,

@@ -47,7 +47,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
         Members
       </Link>
 
-      <div className="relative overflow-hidden rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]">
+      <div className="relative overflow-hidden rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
         <Sticker
           floatVariant="float1"
           floatDuration="15s"
@@ -93,7 +93,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
             {isSelf && (
               <Link
                 href="/profile"
-                className="ml-auto shrink-0 rounded-btn border border-[rgba(35,32,28,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(35,32,28,0.24)] hover:bg-wash hover:text-ink"
+                className="ml-auto shrink-0 rounded-btn border border-[rgba(0,0,0,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.24)] hover:bg-wash hover:text-ink"
               >
                 Edit
               </Link>
@@ -101,7 +101,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
           </div>
 
           {member.team && (
-            <span className="flex w-fit items-center gap-1.5 rounded-[20px] border border-[rgba(35,32,28,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-body uppercase">
+            <span className="flex w-fit items-center gap-1.5 rounded-[20px] border border-[rgba(0,0,0,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-body uppercase">
               <span
                 className="size-[7px] rounded-full"
                 style={{ background: TEAM_COLORS[member.team] }}
@@ -159,7 +159,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
       </div>
 
       {member.open_to_chats && member.chat_blurb && (
-        <div className="rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]">
+        <div className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
           <div className="flex flex-col gap-2">
             <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
               open to coffee chats
@@ -172,7 +172,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                 {member.interests.map((interest) => (
                   <span
                     key={interest}
-                    className="rounded-[20px] border border-[rgba(35,32,28,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-body uppercase"
+                    className="rounded-[20px] border border-[rgba(0,0,0,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-body uppercase"
                   >
                     {interest}
                   </span>

@@ -92,7 +92,7 @@ export function AttendanceRecorder({
   };
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[15px]">
+    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[15px]">
       <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
         take attendance
       </span>
@@ -172,7 +172,7 @@ export function AttendanceRecorder({
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Find someone"
-          className="w-full rounded-input border border-line-input bg-page py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)]"
+          className="w-full rounded-input border border-line-input bg-page py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(0,0,0,0.05)]"
         />
       </div>
 
@@ -192,7 +192,7 @@ export function AttendanceRecorder({
                   ? "cursor-default border-transparent bg-cent-tint text-faint"
                   : active
                     ? "border-transparent bg-ink text-page"
-                    : "border-line-input bg-page text-body hover:border-[rgba(35,32,28,0.24)] hover:text-ink",
+                    : "border-line-input bg-page text-body hover:border-[rgba(0,0,0,0.24)] hover:text-ink",
               )}
             >
               {member.full_name ?? member.email}

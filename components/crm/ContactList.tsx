@@ -48,7 +48,7 @@ export function ContactList({ contacts }: { contacts: ContactWithOrg[] }) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search by name, company or email"
-            className="w-full rounded-input border border-line-input bg-paper py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)]"
+            className="w-full rounded-input border border-line-input bg-paper py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(0,0,0,0.05)]"
           />
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
@@ -63,7 +63,7 @@ export function ContactList({ contacts }: { contacts: ContactWithOrg[] }) {
                   "flex items-center gap-1.5 rounded-[20px] border px-[11px] py-[6px] font-mono text-[9.5px] tracking-[0.1em] uppercase transition-[background-color,border-color,color] duration-200 ease-brand",
                   active
                     ? "border-transparent bg-cent-tint text-ink"
-                    : "border-line-input bg-paper text-body hover:border-[rgba(35,32,28,0.24)] hover:text-ink",
+                    : "border-line-input bg-paper text-body hover:border-[rgba(0,0,0,0.24)] hover:text-ink",
                 )}
               >
                 {CONTACT_STATUS_LABELS[value]}
@@ -75,12 +75,12 @@ export function ContactList({ contacts }: { contacts: ContactWithOrg[] }) {
       </div>
 
       {visible.length === 0 ? (
-        <p className="rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+        <p className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
           Nobody matches that.
         </p>
       ) : (
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
-          <div className="grid grid-cols-[1.4fr_1.4fr_1fr_auto] gap-3 border-b border-[rgba(35,32,28,0.08)] px-[15px] py-2.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+        <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
+          <div className="grid grid-cols-[1.4fr_1.4fr_1fr_auto] gap-3 border-b border-[rgba(0,0,0,0.08)] px-[15px] py-2.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
             <span>name</span>
             <span>where</span>
             <span>status</span>
@@ -94,7 +94,7 @@ export function ContactList({ contacts }: { contacts: ContactWithOrg[] }) {
                 key={contact.id}
                 href={`/crm/${contact.id}`}
                 className={`grid grid-cols-[1.4fr_1.4fr_1fr_auto] items-center gap-3 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                  index < visible.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                  index < visible.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
                 }`}
               >
                 <span className="flex min-w-0 items-center gap-1.5">

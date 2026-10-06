@@ -29,7 +29,7 @@ export function BingoBoard({
 
   if (squares.length === 0) {
     return (
-      <p className="rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+      <p className="rounded-card border border-[rgba(0,0,0,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
         No board set up for this semester yet.
       </p>
     );
@@ -43,7 +43,7 @@ export function BingoBoard({
             className="h-full rounded-full transition-[width] duration-[360ms] ease-brand"
             style={{
               width: `${(done / squares.length) * 100}%`,
-              background: "linear-gradient(95deg,#E8583D,#E0B94A,#3FA789,#3B6FC2)",
+              background: "var(--mint)",
             }}
           />
         </div>
@@ -80,14 +80,14 @@ export function BingoBoard({
                 "group relative flex min-h-[132px] flex-col justify-between overflow-hidden rounded-card border p-[15px] text-left transition-[background-color,border-color] duration-200 ease-brand",
                 status === "approved"
                   ? "border-transparent"
-                  : "border-[rgba(35,32,28,0.07)] bg-paper",
-                canSubmit && "hover:border-[rgba(35,32,28,0.14)] hover:bg-wash",
+                  : "border-[rgba(0,0,0,0.07)] bg-paper",
+                canSubmit && "hover:border-[rgba(0,0,0,0.14)] hover:bg-wash",
               )}
               style={
                 status === "approved"
                   ? {
                       background:
-                        "linear-gradient(95deg, rgba(232,88,61,.2), rgba(224,185,74,.2), rgba(63,167,137,.2), rgba(59,111,194,.2))",
+                        "linear-gradient(95deg, rgba(217,80,112,.2), rgba(232,184,48,.2), rgba(42,157,143,.2), rgba(59,111,194,.2))",
                     }
                   : undefined
               }

@@ -101,7 +101,7 @@ export function EvidenceUploader({
       <div
         {...getRootProps()}
         className={cn(
-          "group relative cursor-pointer overflow-hidden rounded-[10px] border border-dashed border-[rgba(35,32,28,0.16)] px-6 py-6 text-center transition-colors duration-[260ms]",
+          "group relative cursor-pointer overflow-hidden rounded-[10px] border border-dashed border-[rgba(0,0,0,0.16)] px-6 py-6 text-center transition-colors duration-[260ms]",
           isDragActive && "border-coral/50",
         )}
       >
@@ -111,7 +111,7 @@ export function EvidenceUploader({
           className="pointer-events-none absolute top-[120%] left-1/2 h-[150px] w-[260px] -translate-x-1/2 rounded-full opacity-0 blur-[30px] transition-[opacity,transform] duration-500 ease-brand group-hover:-translate-y-[56%] group-hover:opacity-30"
           style={{
             background:
-              "radial-gradient(circle, var(--coral), rgba(224,185,74,.7) 40%, rgba(63,167,137,.4) 70%, transparent 80%)",
+              "radial-gradient(circle, var(--coral), rgba(232,184,48,.7) 40%, rgba(42,157,143,.4) 70%, transparent 80%)",
           }}
         />
         <span className="relative font-sans text-[12px] text-faint">
@@ -124,7 +124,7 @@ export function EvidenceUploader({
           {files.map((file) => (
             <div
               key={file.id}
-              className="group/thumb relative flex size-[58px] items-center justify-center overflow-hidden rounded-input border border-[rgba(35,32,28,0.07)] transition-transform duration-[220ms] hover:-translate-y-0.5"
+              className="group/thumb relative flex size-[58px] items-center justify-center overflow-hidden rounded-input border border-[rgba(0,0,0,0.07)] transition-transform duration-[220ms] hover:-translate-y-0.5"
             >
               {file.mime_type?.startsWith("image/") ? (
                 <Image

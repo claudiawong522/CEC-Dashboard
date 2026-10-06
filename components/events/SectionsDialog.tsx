@@ -50,12 +50,12 @@ export function SectionsDialog({
         <p className="font-sans text-[12px] leading-[1.5] text-faint">
           Turn sections on or off. Anything already filled in stays put if you turn one back on.
         </p>
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+        <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
           {SECTION_ITEMS.map((item, i) => (
             <div
               key={item.key}
               className={`flex items-center justify-between px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                i < SECTION_ITEMS.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                i < SECTION_ITEMS.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
               }`}
             >
               <Label

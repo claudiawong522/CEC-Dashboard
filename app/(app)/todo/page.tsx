@@ -78,7 +78,7 @@ export default async function TodoPage() {
       </h1>
 
       {rows.length === 0 ? (
-        <div className="relative z-10 flex items-center gap-[14px] rounded-[10px] border border-dashed border-[rgba(35,32,28,0.14)] px-4 py-3.5">
+        <div className="relative z-10 flex items-center gap-[14px] rounded-[10px] border border-dashed border-[rgba(0,0,0,0.14)] px-4 py-3.5">
           <Sticker floatVariant="none" wrapperClassName="shrink-0">
             <Sprig size={46} />
           </Sticker>
@@ -87,7 +87,7 @@ export default async function TodoPage() {
           </span>
         </div>
       ) : (
-        <div className="relative z-10 overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+        <div className="relative z-10 overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
           {rows.map(({ event, missing }, i) => (
             <Link
               key={event.id}
@@ -95,7 +95,7 @@ export default async function TodoPage() {
               style={i < STAGGER_CAP ? { animationDelay: `${0.05 + i * 0.07}s` } : undefined}
               className={`flex flex-col gap-[9px] px-4 py-3.5 transition-colors duration-200 hover:bg-wash ${
                 i < STAGGER_CAP ? "animate-riseIn" : ""
-              } ${i < rows.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""}`}
+              } ${i < rows.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""}`}
             >
               <div className="flex items-baseline justify-between">
                 <span className="font-sans text-[14px] font-medium text-ink">{event.name}</span>
@@ -108,7 +108,7 @@ export default async function TodoPage() {
                 {missing.map((label) => (
                   <span
                     key={label}
-                    className="flex items-center gap-1.5 rounded-[20px] border border-[rgba(35,32,28,0.12)] px-[9px] py-1 font-mono text-[9.5px] tracking-[0.1em] text-body uppercase"
+                    className="flex items-center gap-1.5 rounded-[20px] border border-[rgba(0,0,0,0.12)] px-[9px] py-1 font-mono text-[9.5px] tracking-[0.1em] text-body uppercase"
                   >
                     <span
                       className="size-1.5 rounded-full"

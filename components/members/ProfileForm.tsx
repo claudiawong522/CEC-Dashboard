@@ -112,7 +112,7 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
       <div className="flex items-center justify-between">
         <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
           about you

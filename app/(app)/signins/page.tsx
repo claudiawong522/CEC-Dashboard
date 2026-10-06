@@ -166,7 +166,7 @@ export default async function SignInsPage() {
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+        <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
           {upcoming.length === 0 && (
             <p className="px-[15px] py-4 font-sans text-[13px] text-faint">
               Nothing on the calendar for the next fortnight.
@@ -176,7 +176,7 @@ export default async function SignInsPage() {
             <div
               key={event.id}
               className={`flex items-center justify-between gap-4 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                i < upcoming.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                i < upcoming.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
               }`}
             >
               <div className="flex min-w-0 flex-col gap-[2px]">

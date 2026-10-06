@@ -71,7 +71,7 @@ export function TaggedMembersSection({
   }
 
   return (
-    <div className="flex flex-col gap-1.5 border-t border-[rgba(35,32,28,0.07)] pt-4">
+    <div className="flex flex-col gap-1.5 border-t border-[rgba(0,0,0,0.07)] pt-4">
       <Label className="font-sans text-[12px] font-normal text-body">Members</Label>
       <div className="flex flex-wrap items-center gap-2">
         {tagged.map((member) => (

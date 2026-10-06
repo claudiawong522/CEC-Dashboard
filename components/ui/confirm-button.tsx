@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import { cn } from "@/lib/utils";
 
-// Inline destructive-confirm: no modal, no navigation away. A floating pill
+// Inline destructive-confirm: no modal, no navigation away. A floating tag
 // anchored to the trigger (not an inline swap) so it works inside tight
 // containers like a table's last column — see design/BRAND_KIT.md's unified
 // confirm pattern (replaces one-off Dialog-based confirms for lightweight
@@ -55,7 +55,7 @@ export function ConfirmButton({
       {asking && (
         <span
           className={cn(
-            "absolute top-1/2 z-20 flex -translate-y-1/2 items-center gap-1.5 rounded-pill border border-line bg-paper px-2.5 py-1.5 font-sans text-[11.5px] whitespace-nowrap text-faint shadow-menu",
+            "absolute top-1/2 z-20 flex -translate-y-1/2 items-center gap-2 border border-foreground bg-background px-2.5 py-1.5 font-display text-[10px] font-medium tracking-[0.12em] whitespace-nowrap text-foreground/60 uppercase shadow-soft",
             align === "right" ? "right-0" : "left-0",
           )}
         >
@@ -69,7 +69,7 @@ export function ConfirmButton({
                 setAsking(false);
               })
             }
-            className="font-medium text-destructive transition-colors duration-150 hover:text-ink disabled:opacity-50"
+            className="font-bold text-red transition-colors duration-150 hover:text-foreground disabled:opacity-50"
           >
             {isPending ? "…" : yesLabel}
           </button>
@@ -77,7 +77,7 @@ export function ConfirmButton({
             type="button"
             onClick={() => setAsking(false)}
             disabled={isPending}
-            className="text-faint transition-colors duration-150 hover:text-ink disabled:opacity-50"
+            className="text-foreground/60 transition-colors duration-150 hover:text-foreground disabled:opacity-50"
           >
             {cancelLabel}
           </button>

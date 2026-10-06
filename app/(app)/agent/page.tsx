@@ -66,7 +66,7 @@ export default async function AgentPage() {
 
       <div className="relative z-10 flex flex-col gap-[15px]">
         {followUps.length > 0 && (
-          <div className="flex flex-col gap-2.5 rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]">
+          <div className="flex flex-col gap-2.5 rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
             <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
               gone quiet · {followUps.length}
             </span>

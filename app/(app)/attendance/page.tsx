@@ -119,8 +119,8 @@ export default async function AttendancePage() {
         />
 
         {sessions.length > 0 && (
-          <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
-            <div className="grid grid-cols-[1.6fr_1fr_auto] gap-3 border-b border-[rgba(35,32,28,0.08)] px-[15px] py-2.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+          <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
+            <div className="grid grid-cols-[1.6fr_1fr_auto] gap-3 border-b border-[rgba(0,0,0,0.08)] px-[15px] py-2.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
               <span>what</span>
               <span>kind</span>
               <span>here</span>
@@ -129,7 +129,7 @@ export default async function AttendancePage() {
               <div
                 key={`${entry.name}-${entry.at}`}
                 className={`grid grid-cols-[1.6fr_1fr_auto] items-center gap-3 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                  index < sessions.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                  index < sessions.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
                 }`}
               >
                 <span className="truncate font-sans text-[12.5px] text-ink">{entry.name}</span>

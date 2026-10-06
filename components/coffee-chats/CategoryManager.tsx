@@ -45,7 +45,7 @@ export function CategoryManager({ categories }: { categories: ChatCategory[] }) 
   }
 
   return (
-    <div className="flex flex-col gap-2.5 rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[15px]">
+    <div className="flex flex-col gap-2.5 rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[15px]">
       <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
         board squares
       </span>
@@ -79,7 +79,7 @@ export function CategoryManager({ categories }: { categories: ChatCategory[] }) 
           {categories.map((category) => (
             <span
               key={category.id}
-              className="flex items-center gap-1.5 rounded-[20px] border border-[rgba(35,32,28,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-body uppercase"
+              className="flex items-center gap-1.5 rounded-[20px] border border-[rgba(0,0,0,0.12)] px-[10px] py-[5px] font-mono text-[9px] tracking-[0.13em] text-body uppercase"
             >
               {category.name}
               <button

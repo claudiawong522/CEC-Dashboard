@@ -69,13 +69,13 @@ export function DeleteEventDialog({
                   "flex items-center gap-2.5 rounded-btn border px-2.5 py-2 text-left font-sans text-[13px] transition-colors duration-150",
                   scope === option.value
                     ? "border-coral/40 bg-coral/10 text-ink"
-                    : "border-[rgba(35,32,28,0.1)] text-body hover:bg-wash",
+                    : "border-[rgba(0,0,0,0.1)] text-body hover:bg-wash",
                 )}
               >
                 <span
                   className={cn(
                     "size-3 shrink-0 rounded-full border-2",
-                    scope === option.value ? "border-coral bg-coral" : "border-[rgba(35,32,28,0.24)]",
+                    scope === option.value ? "border-coral bg-coral" : "border-[rgba(0,0,0,0.24)]",
                   )}
                 />
                 {option.label}

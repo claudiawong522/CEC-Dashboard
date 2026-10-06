@@ -191,7 +191,7 @@ export function SubmitChatDialog({
             <button
               type="button"
               onClick={() => fileInput.current?.click()}
-              className="flex min-h-[132px] flex-col items-center justify-center gap-2 overflow-hidden rounded-[10px] border border-dashed border-line-input bg-page transition-colors duration-200 hover:border-[rgba(35,32,28,0.28)] hover:bg-wash"
+              className="flex min-h-[132px] flex-col items-center justify-center gap-2 overflow-hidden rounded-[10px] border border-dashed border-line-input bg-page transition-colors duration-200 hover:border-[rgba(0,0,0,0.28)] hover:bg-wash"
             >
               {preview ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -223,7 +223,7 @@ export function SubmitChatDialog({
           <button
             type="button"
             onClick={() => onOpenChange(false)}
-            className="rounded-btn border border-[rgba(35,32,28,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(35,32,28,0.24)] hover:bg-wash hover:text-ink"
+            className="rounded-btn border border-[rgba(0,0,0,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(0,0,0,0.24)] hover:bg-wash hover:text-ink"
           >
             Cancel
           </button>

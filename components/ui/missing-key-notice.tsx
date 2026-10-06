@@ -18,20 +18,20 @@ export function MissingKeyNotice({
   return (
     <div
       role="status"
-      className="flex flex-col gap-[5px] rounded-[10px] border border-[rgba(224,185,74,0.45)] bg-amber/[0.09] px-[15px] py-3"
+      className="flex flex-col gap-[5px] rounded-[10px] border border-[rgba(232,184,48,0.45)] bg-amber/[0.09] px-[15px] py-3"
     >
-      <span className="font-mono text-[9px] tracking-[0.13em] text-ink uppercase">
+      <span className="t-eyebrow text-foreground">
         missing api key
       </span>
-      <p className="max-w-[70ch] font-sans text-[13px] leading-[1.7] text-body">
+      <p className="max-w-[70ch] font-sans text-[13px] leading-[1.7] text-subtle">
         {/* Explicit space: JSX drops the one that would otherwise sit between
             the expression and the text that follows it on the next line. */}
         {feature}
         {" needs an Anthropic API key and this environment doesn\u2019t have one, so it can\u2019t answer. "}
         {isAdmin ? (
           <>
-            Set <code className="font-mono text-[12px] text-ink">ANTHROPIC_API_KEY</code> in{" "}
-            <code className="font-mono text-[12px] text-ink">.env.local</code> and restart the
+            Set <code className="font-mono text-[12px] text-foreground">ANTHROPIC_API_KEY</code> in{" "}
+            <code className="font-mono text-[12px] text-foreground">.env.local</code> and restart the
             server.
           </>
         ) : (

@@ -73,7 +73,7 @@ export function PastEventsGrid({ events }: { events: PastEvent[] }) {
               key={event.id}
               href={`/events/${event.id}`}
               style={{ animationDelay: `${0.05 + i * 0.07}s` }}
-              className="group flex flex-col overflow-hidden rounded-card border border-[rgba(35,32,28,0.1)] bg-paper transition-[transform,border-color] duration-200 ease-brand animate-riseIn hover:-translate-y-0.5 hover:border-[rgba(35,32,28,0.2)]"
+              className="group flex flex-col overflow-hidden rounded-card border border-[rgba(0,0,0,0.1)] bg-paper transition-[transform,border-color] duration-200 ease-brand animate-riseIn hover:-translate-y-0.5 hover:border-[rgba(0,0,0,0.2)]"
             >
               <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-portrait-placeholder">
                 {event.iconUrl && (

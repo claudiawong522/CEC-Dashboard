@@ -61,12 +61,12 @@ export default async function InterviewsPage() {
           <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
             your interviews
           </span>
-          <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+          <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
             {mine.map((slot, index) => (
               <div
                 key={slot.id}
                 className={`grid grid-cols-[1.6fr_1fr_auto] items-center gap-3 px-[15px] py-3 ${
-                  index < mine.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                  index < mine.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
                 }`}
               >
                 <span className="truncate font-sans text-[12.5px] text-ink">
@@ -90,7 +90,7 @@ export default async function InterviewsPage() {
         </div>
       ) : (
         mine.length === 0 && (
-          <p className="relative z-10 rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+          <p className="relative z-10 rounded-card border border-[rgba(0,0,0,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
             Nothing booked with you yet.
           </p>
         )

@@ -266,13 +266,13 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
             <div
               className="absolute top-[22%] left-[5%] size-[150px] rounded-full blur-[32px]"
               style={{
-                background: "radial-gradient(circle, rgba(232,88,61,.5), transparent 72%)",
+                background: "radial-gradient(circle, rgba(217,80,112,.5), transparent 72%)",
               }}
             />
             <div
               className="absolute top-[56%] left-[46%] size-[190px] rounded-full blur-[38px]"
               style={{
-                background: "radial-gradient(circle, rgba(63,167,137,.45), transparent 72%)",
+                background: "radial-gradient(circle, rgba(42,157,143,.45), transparent 72%)",
               }}
             />
             <div
@@ -284,7 +284,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
             <div
               className="absolute right-[28%] bottom-[-8%] size-[160px] rounded-full blur-[32px]"
               style={{
-                background: "radial-gradient(circle, rgba(224,185,74,.5), transparent 72%)",
+                background: "radial-gradient(circle, rgba(232,184,48,.5), transparent 72%)",
               }}
             />
           </div>

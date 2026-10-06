@@ -334,12 +334,12 @@ export function ToggleForm({
             Each one you turn on becomes a section to prep in step 2.
           </p>
         </div>
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+        <div className="overflow-hidden rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper">
           {TOGGLE_ITEMS.map((item, i) => (
             <div
               key={item.key}
               className={`flex items-center justify-between px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                i < TOGGLE_ITEMS.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                i < TOGGLE_ITEMS.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
               }`}
             >
               <Label

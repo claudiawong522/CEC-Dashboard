@@ -65,7 +65,7 @@ export default async function SearchPage({
             <Link
               key={event.id}
               href={`/events/${event.id}`}
-              className="flex items-center justify-between gap-3 rounded-[10px] border border-[rgba(35,32,28,0.09)] bg-paper px-4 py-3 transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5 hover:border-[rgba(35,32,28,0.2)]"
+              className="flex items-center justify-between gap-3 rounded-[10px] border border-[rgba(0,0,0,0.09)] bg-paper px-4 py-3 transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5 hover:border-[rgba(0,0,0,0.2)]"
             >
               <div className="flex min-w-0 flex-col gap-0.5">
                 <span className="truncate font-sans text-[13.5px] font-medium text-ink">

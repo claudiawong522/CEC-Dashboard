@@ -50,7 +50,7 @@ export function ShoutoutForm({ members }: { members: ChatPerson[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[15px]">
+    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[15px]">
       <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
         give a shoutout
       </span>

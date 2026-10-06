@@ -71,7 +71,7 @@ export function InteractionTimeline({
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(0,0,0,0.07)] bg-paper p-[19px]">
       <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
         what we&rsquo;ve said
       </span>
@@ -148,7 +148,7 @@ export function InteractionTimeline({
             <div
               key={interaction.id}
               className={`group flex gap-3 py-3 ${
-                index < interactions.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                index < interactions.length - 1 ? "border-b border-[rgba(0,0,0,0.07)]" : ""
               }`}
             >
               <span

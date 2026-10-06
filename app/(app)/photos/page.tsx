@@ -48,20 +48,20 @@ export default async function PhotosPage() {
       {!files || files.length === 0 ? (
         <AddPhotoDialog
           events={events}
-          className="group relative flex aspect-square max-w-[220px] flex-col items-center justify-center gap-[7px] overflow-hidden rounded-[9px] border border-dashed border-[rgba(35,32,28,0.14)] text-center transition-colors duration-200 hover:border-[rgba(35,32,28,0.28)] hover:bg-wash"
+          className="group relative flex aspect-square max-w-[220px] flex-col items-center justify-center gap-[7px] overflow-hidden rounded-[9px] border border-dashed border-[rgba(0,0,0,0.14)] text-center transition-colors duration-200 hover:border-[rgba(0,0,0,0.28)] hover:bg-wash"
         >
           <Sticker floatVariant="none" className="relative block h-[34px] w-11">
             <div
               className="absolute top-[5px] left-0 size-[22px] rounded-full blur-[6px]"
-              style={{ background: "radial-gradient(circle, rgba(232,88,61,.8), transparent 72%)" }}
+              style={{ background: "radial-gradient(circle, rgba(217,80,112,.8), transparent 72%)" }}
             />
             <div
               className="absolute top-0 left-[13px] size-5 rounded-full blur-[6px]"
-              style={{ background: "radial-gradient(circle, rgba(224,185,74,.8), transparent 72%)" }}
+              style={{ background: "radial-gradient(circle, rgba(232,184,48,.8), transparent 72%)" }}
             />
             <div
               className="absolute top-[11px] left-6 size-5 rounded-full blur-[6px]"
-              style={{ background: "radial-gradient(circle, rgba(63,167,137,.7), transparent 72%)" }}
+              style={{ background: "radial-gradient(circle, rgba(42,157,143,.7), transparent 72%)" }}
             />
           </Sticker>
           <span className="px-4 font-sans text-[10px] text-faint">

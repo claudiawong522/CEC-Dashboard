@@ -15,26 +15,23 @@ function TabsList({ className, ...props }: TabsPrimitive.List.Props) {
   return (
     <TabsPrimitive.List
       data-slot="tabs-list"
-      className={cn("relative flex flex-col", className)}
+      className={cn("relative flex flex-col border-l border-line", className)}
       {...props}
     />
   )
 }
 
-// Vertical tabs spec: absolute 15%-tint pill, animated via `top` (not `transform`) — see
-// BRAND_KIT.md "Implementation gotchas" and the Controls table's "Vertical tabs" row.
+// The site marks the active nav link with a mint underline. In a vertical
+// list that becomes a 3px mint bar on the left edge, slid between rows by
+// animating `top` (not `transform`, see BRAND_KIT.md § Gotchas).
 function TabsIndicator({ className, ...props }: TabsPrimitive.Indicator.Props) {
   return (
     <TabsPrimitive.Indicator
       data-slot="tabs-indicator"
       className={cn(
-        "absolute inset-x-0 top-(--active-tab-top) h-9 rounded-btn transition-[top] duration-[340ms] ease-indicator",
+        "absolute -left-px top-(--active-tab-top) h-9 w-[3px] bg-mint transition-[top] duration-[340ms] ease-fluid",
         className
       )}
-      style={{
-        background:
-          "linear-gradient(95deg, rgba(232,88,61,.15), rgba(224,185,74,.15), rgba(63,167,137,.15), rgba(59,111,194,.15))",
-      }}
       {...props}
     />
   )
@@ -50,7 +47,7 @@ function TabsTab({
     <TabsPrimitive.Tab
       data-slot="tabs-tab"
       className={cn(
-        "relative flex h-9 items-center gap-[9px] px-[13px] font-sans text-[13px] text-body outline-none transition-colors duration-200 hover:text-ink data-active:text-ink",
+        "relative flex h-9 items-center gap-[9px] pr-3 pl-4 font-sans text-[13px] text-foreground/55 outline-none transition-colors duration-200 ease-fluid hover:text-foreground data-active:font-medium data-active:text-foreground",
         className
       )}
       {...props}
@@ -59,7 +56,7 @@ function TabsTab({
       {done !== undefined && (
         <span
           aria-hidden="true"
-          className="ml-auto size-1.5 rounded-full bg-teal transition-opacity duration-300"
+          className="ml-auto size-1.5 bg-mint-dark transition-opacity duration-300"
           style={{ opacity: done ? 1 : 0 }}
         />
       )}

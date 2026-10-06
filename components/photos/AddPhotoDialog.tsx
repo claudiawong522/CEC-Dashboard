@@ -94,7 +94,7 @@ export function AddPhotoDialog({
           type="button"
           onClick={goToNewEvent}
           className={cn(
-            "flex items-center justify-center gap-1.5 rounded-btn border border-dashed border-[rgba(35,32,28,0.16)] px-2.5 py-2.5 font-sans text-[13px] text-body transition-colors duration-150",
+            "flex items-center justify-center gap-1.5 rounded-btn border border-dashed border-[rgba(0,0,0,0.16)] px-2.5 py-2.5 font-sans text-[13px] text-body transition-colors duration-150",
             "hover:bg-wash hover:text-ink",
           )}
         >

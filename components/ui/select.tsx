@@ -44,7 +44,7 @@ function SelectTrigger({
         "group/select-trigger",
         // Brand surface and radius by default. Every call site used to repeat
         // `rounded-input border-line-input bg-page` to get here.
-        "flex w-fit items-center justify-between gap-2 rounded-input border border-line-input bg-page py-2.5 pr-2.5 pl-3 font-sans text-[13.5px] text-ink whitespace-nowrap transition-[background-color,border-color] duration-200 ease-brand outline-none select-none hover:border-[rgba(35,32,28,0.24)] focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-placeholder:text-faint data-[size=default]:min-h-9 data-[size=sm]:min-h-8 data-[size=sm]:py-2 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "flex w-fit items-center justify-between gap-2 border border-line bg-background py-2.5 pr-2.5 pl-3 font-sans text-[14px] text-foreground whitespace-nowrap transition-[background-color,border-color] duration-200 ease-fluid outline-none select-none hover:border-foreground/40 focus-visible:border-foreground data-[popup-open]:border-foreground disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-red data-placeholder:text-foreground/40 data-[size=default]:min-h-9 data-[size=sm]:min-h-8 data-[size=sm]:py-2 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -52,7 +52,7 @@ function SelectTrigger({
       {children}
       <SelectPrimitive.Icon
         render={
-          <ChevronDownIcon className="pointer-events-none size-4 text-faint transition-transform duration-200 ease-brand group-data-[popup-open]/select-trigger:rotate-180" />
+          <ChevronDownIcon className="pointer-events-none size-4 text-foreground/50 transition-transform duration-200 ease-fluid group-data-[popup-open]/select-trigger:rotate-180" />
         }
       />
     </SelectPrimitive.Trigger>
@@ -96,7 +96,7 @@ function SelectContent({
             // `ring-1 ring-foreground/10` and `shadow-md` all but vanished on
             // this app's paper background, which is why 18 call sites were
             // passing `border-line bg-paper shadow-menu ring-0` by hand.
-            "relative isolate z-50 max-h-(--available-height) w-(--anchor-width) min-w-40 origin-(--transform-origin) overflow-x-hidden overflow-y-auto rounded-card border border-line bg-paper p-1 text-ink shadow-menu ring-0 duration-150 data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-[0.98] data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-[0.98]",
+            "relative isolate z-50 max-h-(--available-height) w-(--anchor-width) min-w-40 origin-(--transform-origin) overflow-x-hidden overflow-y-auto border border-foreground bg-background p-1 text-foreground shadow-soft duration-150 data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0",
             className,
           )}
           {...props}
@@ -117,7 +117,7 @@ function SelectLabel({
   return (
     <SelectPrimitive.GroupLabel
       data-slot="select-label"
-      className={cn("px-1.5 py-1 text-xs text-muted-foreground", className)}
+      className={cn("px-2 py-1.5 font-display text-[10px] font-medium tracking-[0.18em] text-foreground/50 uppercase", className)}
       {...props}
     />
   )
@@ -132,7 +132,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 rounded-[8px] py-2 pr-8 pl-2.5 font-sans text-[13px] text-body outline-hidden transition-colors duration-150 select-none focus:bg-wash focus:text-ink data-selected:text-ink data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex w-full cursor-default items-center gap-2 py-2 pr-8 pl-2.5 font-sans text-[13px] text-subtle outline-hidden transition-colors duration-150 select-none focus:bg-muted/60 focus:text-foreground data-selected:font-medium data-selected:text-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -142,7 +142,7 @@ function SelectItem({
       </SelectPrimitive.ItemText>
       <SelectPrimitive.ItemIndicator
         render={
-          <span className="pointer-events-none absolute right-2.5 flex size-3.5 items-center justify-center text-ink" />
+          <span className="pointer-events-none absolute right-2.5 flex size-3.5 items-center justify-center text-mint-dark" />
         }
       >
         <CheckIcon className="pointer-events-none size-3.5" />
@@ -158,7 +158,7 @@ function SelectSeparator({
   return (
     <SelectPrimitive.Separator
       data-slot="select-separator"
-      className={cn("pointer-events-none -mx-1 my-1 h-px bg-border", className)}
+      className={cn("pointer-events-none -mx-1 my-1 h-px bg-line", className)}
       {...props}
     />
   )
@@ -175,7 +175,7 @@ function SelectScrollUpButton({
         // Rendered even with four items, which left a stray chevron under the
         // list. Base UI marks the arrow visible only when there is somewhere to
         // scroll, so key the display off that.
-        "top-0 z-10 hidden w-full cursor-default items-center justify-center rounded-[8px] bg-paper py-1 text-faint data-[visible]:flex [&_svg:not([class*='size-'])]:size-4",
+        "top-0 z-10 hidden w-full cursor-default items-center justify-center bg-background py-1 text-foreground/50 data-[visible]:flex [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -197,7 +197,7 @@ function SelectScrollDownButton({
         // Rendered even with four items, which left a stray chevron under the
         // list. Base UI marks the arrow visible only when there is somewhere to
         // scroll, so key the display off that.
-        "bottom-0 z-10 hidden w-full cursor-default items-center justify-center rounded-[8px] bg-paper py-1 text-faint data-[visible]:flex [&_svg:not([class*='size-'])]:size-4",
+        "bottom-0 z-10 hidden w-full cursor-default items-center justify-center bg-background py-1 text-foreground/50 data-[visible]:flex [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}

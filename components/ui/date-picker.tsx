@@ -40,12 +40,12 @@ function DatePicker({
       <PopoverTrigger
         id={id}
         className={cn(
-          "flex h-auto w-full min-w-0 items-center gap-2 rounded-input border border-line-input bg-[var(--input-ground,var(--paper))] px-3 py-2.5 font-sans text-[13.5px] text-ink transition-[border-color,box-shadow] duration-[220ms] outline-none focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)]",
-          !selected && "text-faint",
+          "flex h-auto w-full min-w-0 items-center gap-2 border border-line bg-background px-3 py-2.5 font-sans text-[14px] text-foreground transition-[border-color] duration-200 ease-fluid outline-none hover:border-foreground/40 focus-visible:border-foreground data-[popup-open]:border-foreground",
+          !selected && "text-foreground/40",
           className,
         )}
       >
-        <CalendarIcon className="size-3.5 shrink-0 text-faint" />
+        <CalendarIcon className="size-3.5 shrink-0 text-foreground/50" />
         <span className="truncate">{selected ? format(selected, "MMM d, yyyy") : placeholder}</span>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-auto p-2">

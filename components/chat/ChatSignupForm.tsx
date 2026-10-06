@@ -52,7 +52,7 @@ export function ChatSignupForm() {
 
   if (done) {
     return (
-      <div className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
+      <div className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[19px]">
         <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">sent</span>
         <p className="font-sans text-[23px] leading-[1.3] font-medium tracking-[-0.02em] text-ink">
           You&rsquo;re in the queue.
@@ -66,7 +66,7 @@ export function ChatSignupForm() {
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(0,0,0,0.1)] bg-paper p-[19px]">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="netid" className="font-sans text-[12px] font-normal text-body">
           Cornell netid
@@ -153,7 +153,7 @@ export function ChatSignupForm() {
                 className={`rounded-[20px] border px-[11px] py-[6px] font-sans text-[12px] transition-[background-color,border-color,color] duration-200 ease-brand ${
                   on
                     ? "border-transparent bg-primary text-primary-foreground"
-                    : "border-line-input bg-page text-body hover:border-[rgba(35,32,28,0.24)] hover:text-ink"
+                    : "border-line-input bg-page text-body hover:border-[rgba(0,0,0,0.24)] hover:text-ink"
                 }`}
               >
                 {labelForTag(tag)}
