@@ -92,18 +92,18 @@ export function ContactDetail({
   }
 
   return (
-    <div className="flex flex-col gap-[17px]">
+    <div className="flex flex-col gap-5">
       <Link
         href="/crm"
-        className="flex w-fit items-center gap-1.5 font-sans text-[12px] text-faint transition-colors duration-200 hover:text-ink"
+        className="link-underline flex w-fit items-center gap-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-foreground"
       >
         <ArrowLeftIcon className="size-3.5" />
         CRM
       </Link>
 
-      <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]">
+      <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
         <div className="flex items-center justify-between gap-3">
-          <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
+          <h1 className="t-display text-[28px] text-foreground">
             {draft.name || "Unnamed contact"}
           </h1>
           <div className="flex items-center gap-2.5">
@@ -113,14 +113,14 @@ export function ContactDetail({
               disabled={isDeleting}
               aria-label="Delete this contact"
               onClick={remove}
-              className="rounded-chip p-1.5 text-faint transition-colors duration-200 hover:bg-coral/10 hover:text-destructive disabled:pointer-events-none disabled:opacity-50"
+              className="p-1.5 text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red disabled:pointer-events-none disabled:opacity-50"
             >
               <Trash2Icon className="size-3.5" />
             </button>
           </div>
         </div>
 
-        <div className="grid gap-[15px] sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Name">
             <Input value={draft.name} onChange={(e) => set("name", e.target.value)} />
           </Field>
@@ -212,7 +212,7 @@ export function ContactDetail({
         </Field>
 
         {contact.last_touched_at && (
-          <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+          <span className="t-eyebrow text-foreground/50">
             last touched{" "}
             {new Date(contact.last_touched_at).toLocaleDateString(undefined, {
               month: "short",
@@ -239,9 +239,9 @@ function Field({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="font-sans text-[12px] font-normal text-body">{label}</Label>
+      <Label className="t-eyebrow text-foreground/50">{label}</Label>
       {children}
-      {hint && <span className="font-sans text-[11.5px] text-faint">{hint}</span>}
+      {hint && <span className="font-sans text-[12px] text-foreground/50">{hint}</span>}
     </div>
   );
 }

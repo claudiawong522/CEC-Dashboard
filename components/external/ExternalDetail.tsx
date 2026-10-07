@@ -28,7 +28,7 @@ import type { IdeaRow, IdeaPersonRow, AdminInfo } from "@/lib/types/external";
 function FieldLabel({ children, indicator }: { children: React.ReactNode; indicator?: React.ReactNode }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="font-mono text-[9.5px] tracking-[0.13em] text-faint uppercase">{children}</span>
+      <span className="t-eyebrow text-foreground/50">{children}</span>
       {indicator}
     </div>
   );
@@ -51,7 +51,7 @@ function PersonRow({
     <div className="flex items-center gap-2">
       <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="flex-[1.1]" />
       <div className="relative flex flex-[1.4] items-center">
-        <Mail className="pointer-events-none absolute left-3 size-3.5 text-faint" />
+        <Mail className="pointer-events-none absolute left-3 size-3.5 text-foreground/40" />
         <Input
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -65,7 +65,7 @@ function PersonRow({
         type="button"
         onClick={onRemove}
         title="Remove"
-        className="shrink-0 text-faint transition-colors duration-200 ease-brand hover:text-destructive"
+        className="shrink-0 text-foreground/50 transition-colors duration-200 ease-fluid hover:text-red"
       >
         <X className="size-4" />
       </button>
@@ -82,7 +82,7 @@ function StageStepper({ idea, onStageChange }: { idea: IdeaRow; onStageChange: (
 
   return (
     <div className="flex flex-col gap-2">
-      <div className={"flex pt-1 transition-opacity duration-200 ease-brand" + (isDeclined ? " pointer-events-none opacity-40" : "")}>
+      <div className={"flex pt-1 transition-opacity duration-200 ease-fluid" + (isDeclined ? " pointer-events-none opacity-40" : "")}>
         {STAGES.map((s, i) => (
           <button
             key={s}
@@ -93,24 +93,24 @@ function StageStepper({ idea, onStageChange }: { idea: IdeaRow; onStageChange: (
               (i === 0
                 ? "before:content-none"
                 : i <= curIdx
-                  ? "before:bg-cent-pastel"
-                  : "before:bg-line-input")
+                  ? "before:bg-mint"
+                  : "before:bg-line")
             }
           >
             <span
               className={
-                "z-10 box-border size-[17px] rounded-full border-2 " +
+                "z-10 box-border size-[17px] border-2 transition-[background-color,border-color] duration-200 ease-fluid " +
                 (i === curIdx
-                  ? "border-ink bg-ink shadow-[0_0_0_4px_rgba(35,32,28,0.09)]"
+                  ? "border-foreground bg-foreground shadow-mint-sm"
                   : i < curIdx
-                    ? "border-[#F3B5A6] bg-[#F3B5A6]"
-                    : "border-line-input bg-paper")
+                    ? "border-foreground bg-mint"
+                    : "border-line bg-background")
               }
             />
             <span
               className={
-                "text-center font-mono text-[9px] tracking-[0.06em] uppercase " +
-                (i === curIdx ? "font-medium text-ink" : i < curIdx ? "text-body" : "text-faint")
+                "text-center font-display text-[9px] font-medium tracking-[0.08em] uppercase " +
+                (i === curIdx ? "text-foreground" : i < curIdx ? "text-subtle" : "text-foreground/50")
               }
             >
               {STAGE_LABELS[s]}
@@ -119,8 +119,8 @@ function StageStepper({ idea, onStageChange }: { idea: IdeaRow; onStageChange: (
         ))}
       </div>
       {isDeclined && (
-        <p className="font-mono text-[9.5px] text-destructive">
-          Declined — pipeline paused here. Reactivate below to pick it back up.
+        <p className="t-eyebrow text-red">
+          Declined: pipeline paused here. Reactivate below to pick it back up.
         </p>
       )}
     </div>
@@ -226,7 +226,7 @@ export function ExternalDetail({
   return (
     <div className="relative z-10 flex flex-col gap-5">
       <div className="flex items-center justify-between gap-3">
-        <Link href="/external" className="w-fit font-mono text-[10.5px] tracking-[0.08em] text-faint uppercase transition-colors duration-200 ease-brand hover:text-ink">
+        <Link href="/external" className="t-eyebrow link-underline w-fit text-foreground/50 transition-colors duration-200 ease-fluid hover:text-foreground">
           ← All leads
         </Link>
         <DeleteIdeaDialog ideaId={idea.id} pitch={pitch} isConverted={isConverted} returnToList />
@@ -238,28 +238,28 @@ export function ExternalDetail({
           value={pitch}
           onChange={(e) => setPitch(e.target.value)}
           placeholder="What's the idea?"
-          className="text-[15px] font-medium text-ink"
+          className="font-display text-[18px] font-bold text-foreground"
         />
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[9.5px] tracking-[0.13em] text-faint uppercase">People</span>
+        <span className="t-eyebrow text-foreground/50">People</span>
         <div className="flex gap-2 px-0.5">
-          <span className="flex-[1.1] font-mono text-[9px] tracking-[0.1em] text-faint uppercase">Name</span>
-          <span className="flex-[1.4] font-mono text-[9px] tracking-[0.1em] text-faint uppercase">Email</span>
+          <span className="t-eyebrow flex-[1.1] text-foreground/50">Name</span>
+          <span className="t-eyebrow flex-[1.4] text-foreground/50">Email</span>
         </div>
         <div className="flex flex-col gap-1.5">
           {localPeople.map((p) => (
             <PersonRow key={p.id} ideaId={idea.id} person={p} onRemove={() => handleRemovePerson(p.id)} />
           ))}
         </div>
-        <Button type="button" variant="outline" size="sm" className="w-fit bg-paper" onClick={handleAddPerson}>
+        <Button type="button" variant="outline" size="sm" className="w-fit" onClick={handleAddPerson}>
           + Add person
         </Button>
       </div>
 
       <div className="flex flex-col gap-2">
-        <span className="font-mono text-[9.5px] tracking-[0.13em] text-faint uppercase">Follow-up owners</span>
+        <span className="t-eyebrow text-foreground/50">Follow-up owners</span>
         <div className="flex flex-wrap gap-1.5">
           {admins.map((a) => {
             const on = owners.includes(a.id);
@@ -269,11 +269,11 @@ export function ExternalDetail({
                 type="button"
                 onClick={() => toggleOwnerLocal(a.id)}
                 className={
-                  "flex items-center gap-1.5 rounded-pill border px-[11px] py-1.5 font-mono text-[9.5px] tracking-[0.08em] uppercase transition-colors duration-200 ease-brand " +
-                  (on ? "border-[rgba(35,32,28,0.24)] bg-wash text-ink" : "border-line-input text-faint hover:bg-wash hover:text-ink")
+                  "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-colors duration-200 ease-fluid " +
+                  (on ? "border-foreground bg-mint text-foreground" : "border-line text-foreground/50 hover:border-foreground hover:text-foreground")
                 }
               >
-                <span className={"size-1.5 rounded-full " + (on ? "bg-coral" : "bg-faint")} />
+                <span className={"size-1.5 " + (on ? "bg-foreground" : "bg-faint")} />
                 {a.full_name ?? a.email}
               </button>
             );
@@ -283,17 +283,17 @@ export function ExternalDetail({
 
       {!isConverted && (
         <div className="flex flex-col gap-2">
-          <span className="font-mono text-[9.5px] tracking-[0.13em] text-faint uppercase">Stage</span>
+          <span className="t-eyebrow text-foreground/50">Stage</span>
           <StageStepper idea={{ ...idea, stage, prev_stage: prevStage }} onStageChange={changeStage} />
         </div>
       )}
 
       {isConverted && idea.converted_event_id && (
-        <div className="flex items-center gap-2 rounded-card bg-cent-tint px-4 py-3">
-          <span className="font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase">Converted</span>
+        <div className="flex items-center gap-3 border border-foreground bg-mint/20 px-4 py-3">
+          <span className="t-eyebrow text-foreground">Converted</span>
           <Link
             href={`/events/${idea.converted_event_id}`}
-            className="font-sans text-[12.5px] text-ink underline decoration-1 underline-offset-2 transition-opacity duration-200 hover:opacity-70"
+            className="link-underline font-sans text-[13px] font-medium text-foreground"
           >
             View event →
           </Link>

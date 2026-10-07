@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -36,8 +37,7 @@ import { FoodSection } from "@/components/events/sections/FoodSection";
 import { MarketingSection } from "@/components/events/sections/MarketingSection";
 import { MediaSection } from "@/components/events/sections/MediaSection";
 import { SECTION_COLORS, type SectionLabel } from "@/lib/utils/section-colors";
-import { Sticker } from "@/components/stickers/Sticker";
-import { Sprig, Confetti } from "@/components/stickers/shapes";
+import { Confetti, TriangleScatter } from "@/components/decor/shapes";
 import type {
   EventRow,
   SpeakerRow,
@@ -192,24 +192,24 @@ export function DetailsForm({
   const activeIndex = tabs.findIndex((t) => t.key === activeTab);
 
   return (
-    <div className="flex max-w-[1180px] flex-col gap-[19px]">
+    <div className="relative flex max-w-[1180px] flex-col gap-5">
+      <TriangleScatter count={4} seed={61} opacity={0.18} className="z-0 h-40" />
       <Link
         href="/calendar"
-        className="w-fit font-mono text-[10.5px] tracking-[0.08em] text-faint uppercase transition-colors duration-200 ease-brand hover:text-ink"
+        className="t-eyebrow relative z-10 w-fit text-foreground/50 transition-colors duration-200 ease-fluid hover:text-foreground"
       >
         ← Calendar
       </Link>
-      <div className="flex items-center justify-between gap-3">
+      <div className="relative z-10 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-[10px] tracking-[0.14em] text-faint uppercase">
+          <span className="t-eyebrow text-foreground/50">
             Step 2 of 2
           </span>
           <span
-            className="relative overflow-hidden rounded-[20px] px-2.5 py-1 font-mono text-[9.5px] tracking-[0.1em] text-ink uppercase"
-            style={{
-              background:
-                "linear-gradient(95deg, rgba(232,88,61,.2), rgba(224,185,74,.2), rgba(63,167,137,.2), rgba(59,111,194,.2))",
-            }}
+            className={cn(
+              "t-eyebrow relative overflow-visible border px-2 py-0.5 text-foreground",
+              doneCount === doneable.length ? "border-foreground bg-mint" : "border-line bg-mint/20",
+            )}
           >
             {doneCount} of {doneable.length} done
             {doneCount === doneable.length && (
@@ -226,26 +226,14 @@ export function DetailsForm({
         </div>
       </div>
 
-      <div
-        className="relative flex flex-col gap-4 overflow-hidden rounded-card border border-[rgba(35,32,28,0.1)] bg-paper px-5 py-[19px]"
-        style={{ "--input-ground": "var(--page)" } as React.CSSProperties}
-      >
-        <Sticker
-          floatVariant="float3"
-          floatDuration="14s"
-          wrapperClassName="pointer-events-none absolute top-1 right-[110px] z-0"
-          className="pointer-events-none opacity-[0.85]"
-        >
-          <Sprig size={62} />
-        </Sticker>
-
+      <div className="relative z-10 flex flex-col gap-4 border border-line bg-background px-5 py-5 shadow-soft">
         <div className="flex items-end gap-3">
           <div className="flex flex-[2] flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Event name</Label>
+            <Label className="font-sans text-[12px] font-normal text-subtle">Event name</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </div>
           <div className="flex flex-1 flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Start date</Label>
+            <Label className="font-sans text-[12px] font-normal text-subtle">Start date</Label>
             <DatePicker
               value={date}
               onChange={(v) => {
@@ -255,11 +243,11 @@ export function DetailsForm({
             />
           </div>
           <div className="flex flex-1 flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">End date</Label>
+            <Label className="font-sans text-[12px] font-normal text-subtle">End date</Label>
             <DatePicker value={endDate} onChange={setEndDate} />
           </div>
           <label className="flex items-center gap-2 pb-2.5">
-            <span className="font-sans text-[12px] text-body">All day</span>
+            <span className="font-sans text-[12px] text-subtle">All day</span>
             <Switch
               checked={allDay}
               onCheckedChange={(checked) => {
@@ -276,11 +264,11 @@ export function DetailsForm({
         {!allDay && (
           <div className="flex items-end gap-3">
             <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-body">Start time</Label>
+              <Label className="font-sans text-[12px] font-normal text-subtle">Start time</Label>
               <TimePicker value={startTime} onChange={setStartTime} />
             </div>
             <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-body">End time</Label>
+              <Label className="font-sans text-[12px] font-normal text-subtle">End time</Label>
               <TimePicker value={endTime} onChange={setEndTime} />
             </div>
             <div className="flex-[2]" />
@@ -290,9 +278,9 @@ export function DetailsForm({
         <TaggedMembersSection eventId={event.id} taggedMembers={taggedMembers} allMembers={allMembers} />
 
         {recurringSeries && (
-          <div className="flex items-end gap-3 border-t border-[rgba(35,32,28,0.07)] pt-4">
+          <div className="flex items-end gap-3 border-t border-line pt-4">
             <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-body">Repeats</Label>
+              <Label className="font-sans text-[12px] font-normal text-subtle">Repeats</Label>
               <Select
                 items={REPEAT_LABELS}
                 value={repeatsFrequency}
@@ -309,7 +297,7 @@ export function DetailsForm({
               </Select>
             </div>
             <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-body">Ends</Label>
+              <Label className="font-sans text-[12px] font-normal text-subtle">Ends</Label>
               <Select
                 items={ENDS_MODE_LABELS}
                 value={repeatsEndsMode}
@@ -325,7 +313,7 @@ export function DetailsForm({
               </Select>
             </div>
             <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-body">
+              <Label className="font-sans text-[12px] font-normal text-subtle">
                 {repeatsEndsMode === "date" ? "End date" : "Occurrences"}
               </Label>
               {repeatsEndsMode === "date" ? (
@@ -340,8 +328,8 @@ export function DetailsForm({
                 />
               )}
             </div>
-            <div className="flex-[2] font-sans text-[11.5px] text-faint">
-              Changing this only affects occurrences that haven&apos;t happened yet — past ones are
+            <div className="flex-[2] font-sans text-[11.5px] text-foreground/50">
+              Changing this only affects occurrences that haven&apos;t happened yet. Past ones are
               left as-is.
             </div>
             <SaveIndicator status={repeatsStatus} className="pb-2.5" />
@@ -349,22 +337,22 @@ export function DetailsForm({
         )}
       </div>
 
-      <div className="flex gap-6">
+      <div className="relative z-10 flex gap-6">
         <nav className="relative flex w-[184px] shrink-0 flex-col">
+          {/* The active-tab indicator: a flat mint tint sliding behind the row. */}
           <div
-            className="absolute inset-x-0 h-9 rounded-btn transition-[top] duration-[340ms] ease-indicator"
-            style={{
-              top: activeIndex * 36,
-              background:
-                "linear-gradient(95deg, rgba(232,88,61,.15), rgba(224,185,74,.15), rgba(63,167,137,.15), rgba(59,111,194,.15))",
-            }}
+            className="absolute inset-x-0 h-9 bg-mint/20 transition-[top] duration-[340ms] ease-indicator"
+            style={{ top: activeIndex * 36 }}
           />
           {tabs.map((tab) => (
             <button
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key)}
-              className="relative flex h-9 items-center gap-[9px] px-[13px] font-sans text-[13px] text-body transition-colors duration-200 hover:text-ink"
+              className={cn(
+                "relative flex h-9 items-center gap-[9px] px-[13px] font-sans text-[13px] transition-colors duration-200 ease-fluid hover:text-foreground",
+                activeTab === tab.key ? "font-medium text-foreground" : "text-subtle",
+              )}
             >
               <span
                 className="inline-block h-2 w-[9px] shrink-0"
@@ -376,7 +364,7 @@ export function DetailsForm({
               {tab.label}
               {tab.key !== "notes" && (
                 <span
-                  className="ml-auto size-1.5 rounded-full bg-teal transition-opacity duration-300"
+                  className="ml-auto size-2 bg-mint transition-opacity duration-300"
                   style={{ opacity: tab.done ? 1 : 0 }}
                 />
               )}

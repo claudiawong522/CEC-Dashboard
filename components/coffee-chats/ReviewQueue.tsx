@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { reviewChat } from "@/lib/actions/coffeeChats";
 import { partnerName, type CoffeeChat } from "@/lib/types/coffee-chats";
@@ -29,7 +30,7 @@ export function ReviewQueue({
 
   if (chats.length === 0) {
     return (
-      <p className="rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-6 text-center font-sans text-[13px] text-faint">
+      <p className="border border-line bg-background px-4 py-6 text-center font-sans text-[13px] text-foreground/50 shadow-soft">
         Nothing waiting to be reviewed.
       </p>
     );
@@ -42,29 +43,29 @@ export function ReviewQueue({
         return (
           <div
             key={chat.id}
-            className="flex flex-col gap-2.5 rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[15px] sm:flex-row sm:items-center"
+            className="flex flex-col gap-2.5 border border-line bg-background p-4 shadow-soft sm:flex-row sm:items-center"
           >
             {selfie ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={selfie}
                 alt={`${chat.submitter?.full_name ?? "Member"} and ${partnerName(chat)}`}
-                className="h-[76px] w-[104px] shrink-0 rounded-[8px] object-cover"
+                className="h-[76px] w-[104px] shrink-0 border border-line object-cover"
               />
             ) : (
-              <div className="flex h-[76px] w-[104px] shrink-0 items-center justify-center rounded-[8px] bg-portrait-placeholder font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+              <div className="t-eyebrow flex h-[76px] w-[104px] shrink-0 items-center justify-center border border-line bg-muted/40 text-foreground/50">
                 no photo
               </div>
             )}
 
             <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="font-sans text-[13.5px] text-ink">
+              <span className="font-sans text-[13.5px] text-foreground">
                 {chat.submitter?.full_name ?? chat.submitter?.email} chatted with{" "}
                 <span className="font-medium">
                   {partnerName(chat)}
                 </span>
               </span>
-              <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+              <span className="t-eyebrow text-foreground/50">
                 {new Date(chat.submitted_at).toLocaleDateString(undefined, {
                   month: "short",
                   day: "numeric",
@@ -81,22 +82,17 @@ export function ReviewQueue({
             </div>
 
             <div className="flex shrink-0 items-center gap-2">
-              <button
+              <Button
                 type="button"
+                variant="destructive"
                 disabled={isPending}
                 onClick={() => decide(chat.id, false)}
-                className="rounded-btn px-[13px] py-[8px] font-sans text-[12.5px] text-destructive transition-colors duration-200 ease-brand hover:bg-coral/10 disabled:pointer-events-none disabled:opacity-50"
               >
                 Send back
-              </button>
-              <button
-                type="button"
-                disabled={isPending}
-                onClick={() => decide(chat.id, true)}
-                className="rounded-btn bg-ink px-[15px] py-[9px] font-sans text-[12.5px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
-              >
+              </Button>
+              <Button type="button" disabled={isPending} onClick={() => decide(chat.id, true)}>
                 Approve
-              </button>
+              </Button>
             </div>
           </div>
         );

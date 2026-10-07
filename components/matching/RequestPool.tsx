@@ -4,6 +4,8 @@ import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { PageHeader } from "@/components/ui/page-header";
+import { TriangleScatter } from "@/components/decor/shapes";
 import { claimChatRequest, declineChatRequest, releaseChatRequest } from "@/lib/actions/chatRequests";
 import { labelForTag, onlyKnownTags } from "@/lib/utils/interests";
 import type { RankedRequest } from "@/lib/utils/chat-matching";
@@ -19,10 +21,10 @@ function waitedFor(iso: string) {
 function Tag({ tag, matched }: { tag: string; matched: boolean }) {
   return (
     <span
-      className={`rounded-[20px] border px-[9px] py-[3px] font-sans text-[11px] ${
+      className={`t-eyebrow border px-2 py-0.5 ${
         matched
-          ? "border-transparent bg-teal/[0.14] text-ink"
-          : "border-line-input bg-page text-faint"
+          ? "border-foreground bg-mint text-foreground"
+          : "border-line bg-background text-foreground/50"
       }`}
     >
       {labelForTag(tag)}
@@ -64,53 +66,52 @@ export function RequestPool({
   const tuned = onlyKnownTags(myInterests).length > 0;
 
   return (
-    <div className="flex flex-col gap-[23px]">
-      <div className="flex flex-col gap-[7px]">
-        <h1 className="font-sans text-[27px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-          Chat requests
-        </h1>
-        <p className="max-w-[62ch] font-sans text-[13.5px] leading-[1.75] text-body">
-          Prospective members who asked to talk, closest to your own interests
-          first. Take whichever you like the look of and email them.
-        </p>
-      </div>
+    <div className="relative flex flex-col gap-6">
+      <TriangleScatter count={5} seed={131} opacity={0.2} />
+
+      <PageHeader className="relative z-10" title="Chat requests">
+        Prospective members who asked to talk, closest to your own interests
+        first. Take whichever you like the look of and email them.
+      </PageHeader>
+
+      <div className="relative z-10 flex flex-col gap-6">
 
       {!tuned && (
-        <p className="rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper px-[15px] py-3 font-sans text-[12.5px] leading-[1.7] text-body">
+        <p className="border border-line bg-muted/40 px-4 py-3 font-sans text-[12.5px] leading-[1.7] text-subtle">
           You haven&rsquo;t picked any interests on your profile yet, so this list
           isn&rsquo;t sorted for you. Add a few and the ones you&rsquo;d enjoy
           most rise to the top.
         </p>
       )}
 
-      <div className="flex flex-col gap-[11px]">
-        <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+      <div className="flex flex-col gap-3">
+        <span className="t-eyebrow text-foreground/50">
           waiting · {ranked.length}
         </span>
 
         {ranked.length === 0 ? (
-          <p className="rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper px-[15px] py-4 font-sans text-[13px] text-faint">
+          <p className="border border-line bg-background px-4 shadow-soft py-4 font-sans text-[13px] text-foreground/50">
             Nobody waiting right now.
           </p>
         ) : (
-          <div className="flex flex-col gap-[9px]">
+          <div className="flex flex-col gap-2.5">
             {ranked.map(({ request, score, shared }) => {
               const matched = new Set<string>(shared);
               return (
                 <div
                   key={request.id}
-                  className="flex flex-col gap-[9px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[15px]"
+                  className="flex flex-col gap-2.5 border border-line bg-background p-4 shadow-soft transition-[border-color] duration-200 ease-fluid hover:border-foreground"
                 >
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
                     <div className="flex items-baseline gap-2">
-                      <span className="font-sans text-[15px] font-medium text-ink">
+                      <span className="font-display text-[15px] font-bold text-foreground">
                         {request.full_name}
                       </span>
-                      <span className="font-mono text-[10px] tracking-[0.06em] text-faint">
+                      <span className="font-sans text-[12px] text-foreground/50">
                         {request.netid}@cornell.edu
                       </span>
                     </div>
-                    <span className="font-sans text-[12px] text-faint">
+                    <span className="font-sans text-[12px] text-foreground/50">
                       {score > 0
                         ? `${score} shared interest${score === 1 ? "" : "s"}`
                         : "no shared interests"}
@@ -121,7 +122,7 @@ export function RequestPool({
                     </span>
                   </div>
 
-                  <p className="max-w-[70ch] font-sans text-[13.5px] leading-[1.7] text-body">
+                  <p className="max-w-[70ch] font-sans text-[13.5px] leading-[1.7] text-subtle">
                     {request.prompt}
                   </p>
 
@@ -131,12 +132,11 @@ export function RequestPool({
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-[11px]">
+                  <div className="flex items-center gap-3">
                     <Button
                       type="button"
                       disabled={isPending || !canClaim}
                       onClick={() => run(() => claimChatRequest(request.id))}
-                      className="px-[18px] py-2 text-[13px]"
                     >
                       Claim
                     </Button>
@@ -145,7 +145,7 @@ export function RequestPool({
                         type="button"
                         disabled={isPending}
                         onClick={() => run(() => declineChatRequest(request.id))}
-                        className="font-sans text-[12.5px] text-faint transition-colors duration-200 hover:text-destructive"
+                        className="link-underline font-sans text-[12.5px] text-foreground/50 transition-colors duration-200 hover:text-red"
                       >
                         Decline
                       </button>
@@ -159,21 +159,21 @@ export function RequestPool({
       </div>
 
       {claimed.length > 0 && (
-        <div className="flex flex-col gap-[11px]">
-          <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+        <div className="flex flex-col gap-3">
+          <span className="t-eyebrow text-foreground/50">
             taken · {claimed.length}
           </span>
-          <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+          <div className="overflow-hidden border border-line bg-background shadow-soft">
             {claimed.map((request, i) => (
               <div
                 key={request.id}
-                className={`flex flex-wrap items-center justify-between gap-3 px-[15px] py-3 ${
-                  i < claimed.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                className={`flex flex-wrap items-center justify-between gap-3 px-4 py-3 ${
+                  i < claimed.length - 1 ? "border-b border-line" : ""
                 }`}
               >
                 <div className="flex min-w-0 flex-col gap-[2px]">
-                  <span className="font-sans text-[13.5px] text-ink">{request.full_name}</span>
-                  <span className="font-mono text-[10px] tracking-[0.06em] text-faint">
+                  <span className="font-sans text-[13.5px] text-foreground">{request.full_name}</span>
+                  <span className="font-sans text-[12px] text-foreground/50">
                     {request.netid}@cornell.edu · with{" "}
                     {request.is_mine ? "you" : (request.claimed_by_name ?? "a member")}
                   </span>
@@ -183,7 +183,7 @@ export function RequestPool({
                     type="button"
                     disabled={isPending}
                     onClick={() => run(() => releaseChatRequest(request.id))}
-                    className="font-sans text-[12px] text-faint transition-colors duration-200 hover:text-ink"
+                    className="link-underline font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-foreground"
                   >
                     Put back
                   </button>
@@ -193,6 +193,7 @@ export function RequestPool({
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

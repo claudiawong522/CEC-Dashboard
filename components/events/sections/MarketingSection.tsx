@@ -104,7 +104,7 @@ export function MarketingSection({
             key={item.key}
             className={cn(
               "flex items-center gap-[9px] font-sans text-[13px]",
-              state[item.key] ? "text-ink" : "text-body",
+              state[item.key] ? "text-foreground" : "text-subtle",
             )}
           >
             <Checkbox
@@ -119,7 +119,7 @@ export function MarketingSection({
             key={item.id}
             className={cn(
               "group flex items-center gap-[9px] font-sans text-[13px]",
-              item.done ? "text-ink" : "text-body",
+              item.done ? "text-foreground" : "text-subtle",
             )}
           >
             <Checkbox
@@ -130,7 +130,7 @@ export function MarketingSection({
             <button
               type="button"
               onClick={() => handleDeleteCustom(item.id)}
-              className="font-sans text-[12px] text-faded opacity-0 transition-opacity group-hover:opacity-100 hover:text-destructive"
+              className="font-sans text-[12px] text-foreground/40 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red"
             >
               <X className="size-3.5" />
             </button>

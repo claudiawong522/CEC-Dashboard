@@ -1,7 +1,8 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
-import { ExternalDecor } from "@/components/external/ExternalDecor";
+import { PageHeader } from "@/components/ui/page-header";
+import { TriangleScatter } from "@/components/decor/shapes";
 import { QuickAdd } from "@/components/external/QuickAdd";
 import { ExternalList } from "@/components/external/ExternalList";
 import { sortIdeas } from "@/lib/utils/external-stage";
@@ -33,17 +34,18 @@ export default async function ExternalPage() {
   );
 
   return (
-    <div className="relative flex flex-col gap-[17px]">
-      <ExternalDecor />
-      <div className="relative z-10 flex flex-col gap-[5px]">
-        <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-          External
-        </h1>
-        <p className="font-sans text-[12.5px] text-body">
-          Speaker outreach — every lead, no matter the stage. Admin only.
-        </p>
+    <div className="relative flex flex-col gap-6">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-3 z-0 h-40">
+        <TriangleScatter count={5} seed={35} opacity={0.2} />
       </div>
-      <QuickAdd />
+      <div className="relative z-10">
+        <PageHeader title="External">
+          Speaker outreach: every lead, no matter the stage. Admin only.
+        </PageHeader>
+      </div>
+      <div className="relative z-10">
+        <QuickAdd />
+      </div>
       <ExternalList ideas={sortIdeas(ideas ?? [])} adminsById={adminsById} />
     </div>
   );

@@ -39,16 +39,16 @@ export function ContactList({ contacts }: { contacts: ContactWithOrg[] }) {
   }, [contacts]);
 
   return (
-    <div className="flex flex-col gap-[15px]">
+    <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center gap-2.5">
         <div className="relative min-w-[220px] flex-1">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-faint" />
+          <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-foreground/40" />
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search by name, company or email"
-            className="w-full rounded-input border border-line-input bg-paper py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)]"
+            className="w-full border border-line bg-background py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-foreground placeholder:text-foreground/40 outline-none transition-[border-color] duration-200 ease-fluid hover:border-foreground/40 focus-visible:border-foreground"
           />
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
@@ -60,14 +60,14 @@ export function ContactList({ contacts }: { contacts: ContactWithOrg[] }) {
                 type="button"
                 onClick={() => setStatus(active ? null : value)}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-[20px] border px-[11px] py-[6px] font-mono text-[9.5px] tracking-[0.1em] uppercase transition-[background-color,border-color,color] duration-200 ease-brand",
+                  "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-[background-color,border-color,color] duration-200 ease-fluid",
                   active
-                    ? "border-transparent bg-cent-tint text-ink"
-                    : "border-line-input bg-paper text-body hover:border-[rgba(35,32,28,0.24)] hover:text-ink",
+                    ? "border-foreground bg-mint text-foreground"
+                    : "border-line bg-background text-subtle hover:border-foreground hover:text-foreground",
                 )}
               >
                 {CONTACT_STATUS_LABELS[value]}
-                <span className="text-faint">{counts.get(value) ?? 0}</span>
+                <span className="text-foreground/50">{counts.get(value) ?? 0}</span>
               </button>
             );
           })}
@@ -75,12 +75,12 @@ export function ContactList({ contacts }: { contacts: ContactWithOrg[] }) {
       </div>
 
       {visible.length === 0 ? (
-        <p className="rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+        <p className="border border-line bg-background px-4 py-8 text-center font-sans text-[13px] text-foreground/50 shadow-soft">
           Nobody matches that.
         </p>
       ) : (
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
-          <div className="grid grid-cols-[1.4fr_1.4fr_1fr_auto] gap-3 border-b border-[rgba(35,32,28,0.08)] px-[15px] py-2.5 font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+        <div className="border border-line bg-background">
+          <div className="t-eyebrow grid grid-cols-[1.4fr_1.4fr_1fr_auto] gap-3 border-b border-foreground bg-muted px-4 py-2.5 text-foreground">
             <span>name</span>
             <span>where</span>
             <span>status</span>
@@ -93,35 +93,35 @@ export function ContactList({ contacts }: { contacts: ContactWithOrg[] }) {
               <Link
                 key={contact.id}
                 href={`/crm/${contact.id}`}
-                className={`grid grid-cols-[1.4fr_1.4fr_1fr_auto] items-center gap-3 px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                  index < visible.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                className={`grid grid-cols-[1.4fr_1.4fr_1fr_auto] items-center gap-3 px-4 py-3 transition-[background-color,box-shadow] duration-200 ease-fluid hover:bg-muted/40 hover:shadow-[inset_3px_0_0_0_var(--mint)] ${
+                  index < visible.length - 1 ? "border-b border-line" : ""
                 }`}
               >
                 <span className="flex min-w-0 items-center gap-1.5">
-                  <span className="truncate font-sans text-[12.5px] text-ink">{contact.name}</span>
+                  <span className="truncate font-sans text-[13px] font-medium text-foreground">{contact.name}</span>
                   {/* Two different kinds of late: a follow-up date that has
                       passed, and a live contact nobody has touched in a
                       fortnight. Both matter, and they're not the same thing. */}
                   {due && (
                     <AlarmClockIcon
-                      className="size-3 shrink-0 text-destructive"
+                      className="size-3 shrink-0 text-red"
                       aria-label="Follow-up due"
                     />
                   )}
                   {!due && stale && (
                     <HourglassIcon
-                      className="size-3 shrink-0 text-faint"
+                      className="size-3 shrink-0 text-foreground/50"
                       aria-label="Gone quiet"
                     />
                   )}
                 </span>
-                <span className="truncate font-sans text-[12px] text-body">
+                <span className="truncate font-sans text-[12.5px] text-subtle">
                   {contact.organization?.name ?? contact.company ?? contact.email ?? "—"}
                 </span>
-                <span className="truncate font-mono text-[9.5px] tracking-[0.1em] text-body uppercase">
+                <span className="t-eyebrow truncate text-subtle">
                   {CONTACT_STATUS_LABELS[contact.status]}
                 </span>
-                <span className="justify-self-end truncate font-sans text-[11.5px] text-faint">
+                <span className="justify-self-end truncate font-sans text-[12px] text-foreground/50">
                   {contact.assignee?.full_name ?? "unassigned"}
                 </span>
               </Link>
@@ -130,7 +130,7 @@ export function ContactList({ contacts }: { contacts: ContactWithOrg[] }) {
         </div>
       )}
 
-      <span className="font-sans text-[11.5px] text-faint">
+      <span className="font-sans text-[12px] text-foreground/50">
         Sorted by what needs chasing: follow-ups due, then anyone live who has gone quiet for a
         fortnight, then the rest.
       </span>

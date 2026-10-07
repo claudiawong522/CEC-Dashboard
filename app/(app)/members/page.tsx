@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { MEMBER_COLUMNS, type MemberProfile } from "@/lib/types/members";
 import { MemberDirectory } from "@/components/members/MemberDirectory";
 import { MembersDecor } from "@/components/members/MembersDecor";
+import { PageHeader } from "@/components/ui/page-header";
+import { buttonVariants } from "@/components/ui/button";
 
 export default async function MembersPage() {
   const session = await getSession();
@@ -22,27 +24,23 @@ export default async function MembersPage() {
     .returns<MemberProfile[]>();
 
   return (
-    <div className="relative flex flex-col gap-[17px]">
+    <div className="relative flex flex-col gap-6">
       <MembersDecor />
-      <div className="relative z-10 flex items-end justify-between gap-4">
-        <div className="flex flex-col gap-[5px]">
-          <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-            Members
-          </h1>
-          <span className="font-sans text-[12.5px] text-body">
-            Everyone in the club, what they work on, and who&rsquo;s up for a coffee chat.
-          </span>
-        </div>
-        <Link
-          href="/profile"
-          className="shrink-0 rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975]"
-          style={{ boxShadow: "none" }}
-        >
-          Edit your profile
-        </Link>
-      </div>
+      <PageHeader
+        className="relative z-10"
+        title="Members"
+        actions={
+          <Link href="/profile" className={buttonVariants({ variant: "outline" })}>
+            Edit your profile
+          </Link>
+        }
+      >
+        Everyone in the club, what they work on, and who&rsquo;s up for a coffee chat.
+      </PageHeader>
 
-      <MemberDirectory members={members ?? []} />
+      <div className="relative z-10">
+        <MemberDirectory members={members ?? []} />
+      </div>
     </div>
   );
 }

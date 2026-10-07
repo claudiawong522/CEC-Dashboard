@@ -5,13 +5,10 @@ import { addDays, format, isSameDay, startOfWeek } from "date-fns";
 import { cn } from "@/lib/utils";
 import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
 import { formatEventTime } from "@/lib/utils/format-event-time";
-import { Sticker } from "@/components/stickers/Sticker";
-import { Bow } from "@/components/stickers/shapes";
 import type { CalendarEvent } from "./CalendarView";
 
-// design/CEC Pages.dc.html "02b · week view" — recreated directly (not via
-// FullCalendar's timeGrid, whose default proportions don't match the kit's
-// compact 44px gutter / 52px row grid).
+// Week view, recreated directly (not via FullCalendar's timeGrid, whose
+// default proportions don't match the compact 44px gutter / 52px row grid).
 const START_HOUR = 8;
 const END_HOUR = 21; // exclusive of the trailing label row
 
@@ -45,35 +42,27 @@ export function WeekView({
   }
 
   return (
-    <div className="relative overflow-hidden rounded-[8px] bg-[rgba(35,32,28,0.07)]">
-      <Sticker
-        floatVariant="float3"
-        floatDuration="16s"
-        wrapperClassName="pointer-events-none absolute top-1 right-3 z-20"
-        className="pointer-events-auto opacity-[0.6]"
-      >
-        <Bow size={40} />
-      </Sticker>
+    <div className="relative overflow-hidden border border-foreground bg-line">
       <div className="grid grid-cols-[44px_repeat(7,1fr)] gap-px">
-        <div className="h-[26px] bg-page" />
+        <div className="h-[26px] bg-muted" />
         {days.map((day) => {
           const today = isSameDay(day, new Date());
           return (
             <div
               key={day.toISOString()}
               className={cn(
-                "h-[26px] bg-page px-1.5 py-1.5 font-mono text-[9px]",
-                today ? "font-medium text-ink" : "font-normal text-body",
+                "t-eyebrow h-[26px] bg-muted px-1.5 py-1.5 text-[9px]",
+                today ? "text-foreground" : "text-foreground/50",
               )}
             >
-              {format(day, "EEE d").toLowerCase()}
+              {format(day, "EEE d")}
             </div>
           );
         })}
 
-        {hours.map((hour, rowIndex) => (
+        {hours.map((hour) => (
           <div key={hour} className="contents">
-            <div className="flex items-start bg-page px-1.5 py-1.5 font-mono text-[9px] text-body">
+            <div className="t-eyebrow flex items-start bg-background px-1.5 py-1.5 text-[9px] text-foreground/40">
               {hourLabel(hour)}
             </div>
             {days.map((day) => {
@@ -84,20 +73,10 @@ export function WeekView({
                   key={day.toISOString()}
                   className={cn(
                     "relative h-[52px] overflow-hidden",
-                    today ? "bg-[rgba(255,253,249,0.55)]" : "bg-[rgba(255,253,249,0.8)]",
+                    today ? "bg-muted/30" : "bg-background",
                     dayEvents.length > 0 && "p-1",
                   )}
                 >
-                  {today && rowIndex === 0 && (
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute -left-[30%] -top-[30px] h-20 w-[160%] opacity-50 blur-[15px]"
-                      style={{
-                        background:
-                          "radial-gradient(50px 32px at 45% 75%, rgba(232,88,61,.7), transparent 72%), radial-gradient(50px 32px at 72% 85%, rgba(224,185,74,.6), transparent 72%)",
-                      }}
-                    />
-                  )}
                   {dayEvents.length > 0 && (
                     <div className="relative flex h-full gap-0.5">
                       {dayEvents.map((event) => {
@@ -108,13 +87,10 @@ export function WeekView({
                             type="button"
                             title={event.name}
                             onClick={() => router.push(`/events/${event.id}`)}
-                            className="relative flex h-full min-w-0 flex-1 items-baseline gap-1 overflow-hidden rounded-[5px] border-l-2 px-1.5 py-1 text-left font-sans text-[9.5px] text-ink"
-                            style={{
-                              borderLeftColor: sectionColor,
-                              background: `linear-gradient(160deg, color-mix(in srgb, ${sectionColor} 14%, transparent), color-mix(in srgb, ${sectionColor} 8%, transparent))`,
-                            }}
+                            className="relative flex h-full min-w-0 flex-1 items-baseline gap-1 overflow-hidden border border-line border-l-[3px] bg-background px-1.5 py-1 text-left font-sans text-[9.5px] text-foreground transition-[border-color,box-shadow,transform] duration-200 ease-fluid hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm"
+                            style={{ borderLeftColor: sectionColor }}
                           >
-                            <span className="shrink-0 font-mono text-[9px] text-body">
+                            <span className="t-eyebrow shrink-0 text-[9px] tracking-[0.06em] text-subtle">
                               {formatEventTime(event.event_time)}
                             </span>
                             <span className="min-w-0 truncate">{event.name}</span>

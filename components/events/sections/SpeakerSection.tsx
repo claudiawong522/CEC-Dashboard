@@ -49,7 +49,7 @@ export function SpeakerSection({
           multiple={false}
           accept={{ "image/*": [] }}
         />
-        <span className="font-sans text-[11.5px] text-faint">For future use.</span>
+        <span className="font-sans text-[11.5px] text-foreground/50">For future use.</span>
       </div>
     </SectionCard>
   );

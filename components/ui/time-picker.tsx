@@ -155,12 +155,12 @@ function TimePicker({
         id={id}
         onKeyDown={handleKeyDown}
         className={cn(
-          "flex h-auto w-full min-w-0 items-center gap-2 rounded-input border border-line-input bg-[var(--input-ground,var(--paper))] px-3 py-2.5 font-sans text-[13.5px] text-ink transition-[border-color,box-shadow] duration-[220ms] outline-none focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)]",
-          !value && "text-faint",
+          "flex h-auto w-full min-w-0 items-center gap-2 border border-line bg-background px-3 py-2.5 font-sans text-[14px] text-foreground transition-[border-color] duration-200 ease-fluid outline-none hover:border-foreground/40 focus-visible:border-foreground data-[popup-open]:border-foreground",
+          !value && "text-foreground/40",
           className,
         )}
       >
-        <ClockIcon className="size-3.5 shrink-0 text-faint" />
+        <ClockIcon className="size-3.5 shrink-0 text-foreground/50" />
         <span className="truncate">{value ? formatTimeLabel(value) : placeholder}</span>
       </PopoverTrigger>
       <PopoverContent align="start" className="w-[132px] p-1.5">
@@ -175,8 +175,8 @@ function TimePicker({
                 setOpen(false)
               }}
               className={cn(
-                "shrink-0 rounded-input px-2.5 py-1.5 text-left font-sans text-[13px] text-ink transition-colors duration-150 hover:bg-hover",
-                option === value && "bg-[var(--cent)] text-paper hover:bg-[var(--cent)]",
+                "shrink-0 px-2.5 py-1.5 text-left font-sans text-[13px] text-foreground transition-colors duration-150 hover:bg-muted/60",
+                option === value && "bg-mint font-medium text-foreground hover:bg-mint",
               )}
             >
               {formatTimeLabel(option)}

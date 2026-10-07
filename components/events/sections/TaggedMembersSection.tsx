@@ -3,6 +3,7 @@
 import { useMemo, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -71,24 +72,24 @@ export function TaggedMembersSection({
   }
 
   return (
-    <div className="flex flex-col gap-1.5 border-t border-[rgba(35,32,28,0.07)] pt-4">
-      <Label className="font-sans text-[12px] font-normal text-body">Members</Label>
+    <div className="flex flex-col gap-1.5 border-t border-line pt-4">
+      <Label className="font-sans text-[12px] font-normal text-subtle">Members</Label>
       <div className="flex flex-wrap items-center gap-2">
         {tagged.map((member) => (
           <span
             key={member.id}
-            className="flex items-center gap-1.5 rounded-[20px] border border-line-input bg-page py-1 pr-1.5 pl-1"
+            className="flex items-center gap-1.5 border border-line bg-background py-1 pr-1.5 pl-1"
           >
             <Avatar size="sm">
               <AvatarImage src={member.avatar_url ?? undefined} alt="" />
               <AvatarFallback className="font-sans text-[9px]">{initials(member)}</AvatarFallback>
             </Avatar>
-            <span className="font-sans text-[12.5px] text-ink">{member.full_name ?? member.email}</span>
+            <span className="font-sans text-[12.5px] text-foreground">{member.full_name ?? member.email}</span>
             <button
               type="button"
               onClick={() => handleUntag(member)}
               aria-label={`Remove ${member.full_name ?? member.email}`}
-              className="flex size-4 items-center justify-center rounded-full text-faint transition-colors duration-150 hover:bg-wash hover:text-ink"
+              className="flex size-4 items-center justify-center text-foreground/50 transition-colors duration-150 ease-fluid hover:bg-muted hover:text-foreground"
             >
               ×
             </button>
@@ -96,7 +97,10 @@ export function TaggedMembersSection({
         ))}
 
         <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger className="rounded-input border border-line-input bg-paper px-[13px] py-[7px] font-sans text-[12.5px] text-body transition-colors duration-200 hover:bg-wash hover:text-ink">
+          <PopoverTrigger
+            render={<Button variant="secondary" size="sm" />}
+            nativeButton
+          >
             + Tag member
           </PopoverTrigger>
           <PopoverContent align="start" className="w-64">
@@ -112,24 +116,24 @@ export function TaggedMembersSection({
                   key={member.id}
                   type="button"
                   onClick={() => handleTag(member)}
-                  className="flex items-center gap-2 rounded-[8px] px-1.5 py-1.5 text-left transition-colors duration-150 hover:bg-wash"
+                  className="flex items-center gap-2 px-1.5 py-1.5 text-left transition-colors duration-150 ease-fluid hover:bg-muted/40"
                 >
                   <Avatar size="sm">
                     <AvatarImage src={member.avatar_url ?? undefined} alt="" />
                     <AvatarFallback className="font-sans text-[9px]">{initials(member)}</AvatarFallback>
                   </Avatar>
                   <span className="flex flex-col">
-                    <span className="font-sans text-[12.5px] text-ink">
+                    <span className="font-sans text-[12.5px] text-foreground">
                       {member.full_name ?? member.email}
                     </span>
                     {member.full_name && (
-                      <span className="font-sans text-[10.5px] text-faint">{member.email}</span>
+                      <span className="font-sans text-[10.5px] text-foreground/50">{member.email}</span>
                     )}
                   </span>
                 </button>
               ))}
               {results.length === 0 && (
-                <span className="px-1.5 py-2 font-sans text-[12px] text-faint">
+                <span className="px-1.5 py-2 font-sans text-[12px] text-foreground/50">
                   {query ? "No matches" : "Everyone's tagged"}
                 </span>
               )}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ToggleForm } from "@/components/events/ToggleForm";
-import { Sticker } from "@/components/stickers/Sticker";
-import { StarPolygon } from "@/components/stickers/shapes";
+import { TriangleScatter } from "@/components/decor/shapes";
+import { PageHeader } from "@/components/ui/page-header";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function NewEventPage({
@@ -23,32 +23,18 @@ export default async function NewEventPage({
   }
 
   return (
-    <div className="relative flex flex-col gap-[19px]">
-      <Sticker
-        floatVariant="float2"
-        floatDuration="15s"
-        wrapperClassName="pointer-events-none absolute -top-4 right-[6%] z-0"
-        className="pointer-events-auto opacity-[0.35]"
-      >
-        <StarPolygon size={70} />
-      </Sticker>
+    <div className="relative flex flex-col gap-6">
+      <TriangleScatter count={4} seed={51} opacity={0.2} className="z-0 h-48" />
       <Link
         href="/calendar"
-        className="relative z-10 w-fit font-mono text-[10.5px] tracking-[0.08em] text-faint uppercase transition-colors duration-200 ease-brand hover:text-ink"
+        className="t-eyebrow relative z-10 w-fit text-foreground/50 transition-colors duration-200 ease-fluid hover:text-foreground"
       >
         ← Calendar
       </Link>
-      <div className="flex flex-col gap-[5px]">
-        <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-          New event
-        </h1>
-        <p className="font-mono text-[10px] tracking-[0.14em] text-faint uppercase">
-          Step 1 of 2
-        </p>
-      </div>
+      <PageHeader eyebrow="Step 1 of 2" title="New event" className="relative z-10" />
       {ideaId && ideaPitch && (
-        <p className="relative z-10 font-sans text-[12.5px] text-body">
-          Converting from External: <span className="font-medium text-ink">{ideaPitch}</span>
+        <p className="relative z-10 font-sans text-[13px] text-subtle">
+          Converting from External: <span className="font-medium text-foreground">{ideaPitch}</span>
         </p>
       )}
       <ToggleForm defaultMediaOn={media === "1"} defaultDate={date} defaultName={ideaPitch ?? undefined} ideaId={ideaId} />

@@ -12,7 +12,7 @@ export function MediaSection({
 }) {
   return (
     <SectionCard title="Media" eventId={eventId} section="media" done={done}>
-      <p className="font-sans text-[12.5px] text-faint">
+      <p className="font-sans text-[12.5px] text-foreground/50">
         Photos, videos, and zip files dropped here also show up in Gallery.
       </p>
       <EvidenceUploader
@@ -20,7 +20,7 @@ export function MediaSection({
         section="media"
         bucket="media"
         dropLabel="event media"
-        label="Drop images, video or .zip — multiple files welcome"
+        label="Drop images, video or .zip, multiple files welcome"
         initialFiles={files}
         accept={{
           "image/*": [],

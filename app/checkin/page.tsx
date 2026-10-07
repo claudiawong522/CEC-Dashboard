@@ -1,8 +1,8 @@
 import { getCurrentSignInEvent } from "@/lib/actions/signin";
 import { CheckInForm } from "@/components/signin/CheckInForm";
 import { BrandMark } from "@/components/app-shell/BrandMark";
-import { Sticker } from "@/components/stickers/Sticker";
-import { CloudPuff } from "@/components/stickers/shapes";
+import { Sticker } from "@/components/decor/Sticker";
+import { Marquee, TriangleScatter } from "@/components/decor/shapes";
 
 // One QR code, printed once, on a poster that gets reused every week. Which
 // event a scan belongs to is resolved from today's date rather than from the
@@ -28,26 +28,26 @@ export default async function CheckInPage({
   const event = await getCurrentSignInEvent();
   const isKiosk = kiosk === "1" || kiosk === "true";
 
-  // overflow-hidden matters: the CloudPuff below is deliberately hung off the
-  // right edge, and unclipped it widens the document. On a 375px phone the page
-  // scrolled sideways to 455px.
+  // overflow-hidden keeps the triangle scatter from widening the document on
+  // a phone.
   return (
-    <div className="relative flex min-h-svh flex-col overflow-hidden bg-page">
-      <CloudPuff
-        size={320}
-        className="pointer-events-none absolute -top-24 -right-20 opacity-[0.16] blur-[2px]"
-      />
+    <div className="relative flex min-h-svh flex-col overflow-hidden bg-background">
+      <TriangleScatter count={6} seed={121} min={28} max={80} opacity={0.22} />
 
-      <header className="relative z-10 mx-auto flex w-full max-w-[520px] items-center gap-2.5 px-6 pt-8 pb-2">
+      <header className="relative z-10 flex items-center gap-3 border-b border-line px-6 py-4 sm:px-10">
         <Sticker floatVariant="none" wrapperClassName="shrink-0">
           <BrandMark className="h-[22px] w-6" />
         </Sticker>
-        <span className="font-sans text-[17px] font-medium tracking-[-0.014em] text-ink">
+        <span className="font-display text-[14px] font-bold tracking-tight text-foreground uppercase">
           Cornell Entrepreneurship Club
         </span>
       </header>
 
-      <main className="relative z-10 mx-auto flex w-full max-w-[520px] flex-1 flex-col justify-center px-6 pt-4 pb-16">
+      <main className="relative z-10 mx-auto flex w-full max-w-[520px] flex-1 flex-col justify-center gap-6 px-6 pt-8 pb-16">
+        <Marquee
+          items={["Innovate", "Disrupt", "Iterate", "Launch", "Scale", "Build", "Create", "Ship", "Grow", "Hustle"]}
+          className="-mx-6 w-auto"
+        />
         <CheckInForm event={event} kiosk={isKiosk} />
       </main>
     </div>

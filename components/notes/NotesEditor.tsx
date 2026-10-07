@@ -8,27 +8,28 @@ import { en } from "@blocknote/core/locales";
 import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 
-// design/BRAND_KIT.md colours, mapped onto BlockNote's theme API — this is
-// the library's own customization surface, not a fork of its internals.
+// design/BRAND_KIT.md v2 colours (white, black, flat mint), mapped onto
+// BlockNote's theme API: the library's own customization surface, not a fork
+// of its internals.
 const brandTheme = {
   colors: {
-    editor: { text: "var(--ink)", background: "transparent" },
-    menu: { text: "var(--ink)", background: "var(--paper)" },
-    tooltip: { text: "var(--page)", background: "var(--ink)" },
-    hovered: { text: "var(--ink)", background: "var(--hover)" },
-    selected: { text: "var(--ink)", background: "var(--hover)" },
-    disabled: { text: "var(--faint)", background: "var(--paper)" },
-    shadow: "rgba(35,32,28,.5)",
-    border: "rgba(35,32,28,.1)",
+    editor: { text: "var(--black)", background: "transparent" },
+    menu: { text: "var(--black)", background: "var(--white)" },
+    tooltip: { text: "var(--white)", background: "var(--black)" },
+    hovered: { text: "var(--black)", background: "var(--muted)" },
+    selected: { text: "var(--black)", background: "var(--mint-soft)" },
+    disabled: { text: "var(--faint)", background: "var(--white)" },
+    shadow: "rgba(0,0,0,.14)",
+    border: "var(--black)",
     highlights: {
-      orange: { text: "var(--ink)", background: "rgba(232,88,61,.26)" },
+      orange: { text: "var(--black)", background: "var(--mint-soft)" },
     },
   },
-  borderRadius: 10,
-  fontFamily: "var(--font-hanken-grotesk), system-ui, sans-serif",
+  borderRadius: 0,
+  fontFamily: "var(--font-dm-sans), system-ui, sans-serif",
 };
 
-// design/README.md's exact copy — BlockNote's own default is
+// design/README.md's exact copy. BlockNote's own default is
 // "Enter text or type '/' for commands".
 const dictionary = {
   ...en,

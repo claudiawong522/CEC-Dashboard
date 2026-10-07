@@ -71,15 +71,15 @@ export function AttachSignIns({
   const router = useRouter();
 
   return (
-    <div className="flex flex-col gap-[11px] rounded-[10px] border border-amber/40 bg-amber/[0.07] p-[19px]">
-      <div className="flex flex-col gap-[3px]">
-        <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+    <div className="flex flex-col gap-3 border border-amber bg-amber/10 p-5">
+      <div className="flex flex-col gap-1">
+        <span className="t-eyebrow text-foreground/50">
           not filed yet
         </span>
-        <p className="font-sans text-[14px] font-medium text-ink">
+        <p className="font-display text-[15px] font-bold text-foreground">
           {count} sign in{count === 1 ? "" : "s"} today with no event attached
         </p>
-        <p className="max-w-[62ch] font-sans text-[12.5px] leading-[1.7] text-body">
+        <p className="max-w-[62ch] font-sans text-[12.5px] leading-[1.7] text-subtle">
           {events.length
             ? "They counted, and everyone got their tick. Attach them to today's event so the night reads properly in the history."
             : "They counted, and everyone got their tick. Add today's event to the calendar, turn its sign in on, and this will offer to file them."}
@@ -87,11 +87,11 @@ export function AttachSignIns({
       </div>
 
       {events.length > 0 && (
-        <div className="flex flex-wrap items-center gap-[11px]">
+        <div className="flex flex-wrap items-center gap-3">
           <select
             value={chosen}
             onChange={(e) => setChosen(e.target.value)}
-            className="rounded-[7px] border border-[rgba(35,32,28,0.14)] bg-paper px-3 py-2 font-sans text-[13px] text-ink"
+            className="border border-line bg-background px-3 py-2 font-sans text-[13px] text-foreground outline-none transition-[border-color] duration-200 ease-fluid hover:border-foreground/40 focus-visible:border-foreground"
           >
             {events.map((event) => (
               <option key={event.id} value={event.id}>
@@ -143,28 +143,28 @@ export function SignInBoard({
   const milestones = roster.filter((row) => [3, 5, 10, 15, 20, 25, 30].includes(row.visitNumber));
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[19px]">
+    <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
       <div className="flex flex-wrap items-baseline justify-between gap-3">
-        <div className="flex flex-col gap-[3px]">
-          <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+        <div className="flex flex-col gap-1">
+          <span className="t-eyebrow text-foreground/50">
             signed in today{event ? ` · ${event.venue}` : ""}
           </span>
-          <p className="font-sans text-[19px] leading-[1.3] font-medium tracking-[-0.018em] text-ink">
+          <p className="font-display text-[18px] font-bold text-foreground">
             {event ? event.name : "No event on the calendar"}
           </p>
         </div>
         <div className="flex items-baseline gap-2">
-          <span className="font-sans text-[31px] leading-none font-medium tracking-[-0.024em] text-ink">
+          <span className="t-display text-[32px] text-foreground">
             {roster.length}
           </span>
-          <span className="font-sans text-[12.5px] text-faint">
+          <span className="font-sans text-[12.5px] text-foreground/50">
             {composition(roster.length, newcomers)}
           </span>
         </div>
       </div>
 
       {milestones.length > 0 && (
-        <p className="font-sans text-[12.5px] leading-[1.7] text-body">
+        <p className="font-sans text-[12.5px] leading-[1.7] text-subtle">
           Worth a shout-out:{" "}
           {milestones
             .map((row) => `${row.fullName.split(" ")[0]} (${row.visitNumber})`)
@@ -173,7 +173,7 @@ export function SignInBoard({
       )}
 
       {roster.length === 0 ? (
-        <p className="font-sans text-[13px] text-faint">
+        <p className="font-sans text-[13px] text-foreground/50">
           Nobody yet. The list fills in as people scan the code.
         </p>
       ) : (
@@ -182,33 +182,33 @@ export function SignInBoard({
             <div
               key={row.signinId}
               className={`flex items-start justify-between gap-4 py-2.5 ${
-                i < roster.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                i < roster.length - 1 ? "border-b border-line" : ""
               }`}
             >
               <div className="flex min-w-0 flex-col gap-[2px]">
-                <span className="flex items-center gap-2 font-sans text-[13.5px] text-ink">
+                <span className="flex items-center gap-2 font-sans text-[13.5px] text-foreground">
                   <span className="truncate">{row.fullName}</span>
                   {row.isMember && (
-                    <span className="shrink-0 font-mono text-[9px] tracking-[0.1em] text-faint uppercase">
+                    <span className="t-eyebrow shrink-0 border border-line px-2 py-0.5 text-foreground/50">
                       member
                     </span>
                   )}
                 </span>
-                <span className="truncate font-mono text-[10px] tracking-[0.04em] text-faint">
+                <span className="truncate font-sans text-[12px] text-foreground/50">
                   {row.email}
                 </span>
                 {/* The standing facts, which is the point of the sign in
                     asking for them. A host scanning this list wants to know
                     who is in the room, not to go and look everyone up. */}
                 {(row.affiliation || row.linkedinUrl) && (
-                  <span className="flex flex-wrap items-baseline gap-x-2 gap-y-[2px] font-sans text-[12.5px] leading-[1.6] text-body">
+                  <span className="flex flex-wrap items-baseline gap-x-2 gap-y-[2px] font-sans text-[12.5px] leading-[1.6] text-subtle">
                     {row.affiliation && <span>{row.affiliation}</span>}
                     {row.linkedinUrl && (
                       <a
                         href={row.linkedinUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="font-mono text-[10px] tracking-[0.06em] text-faint uppercase underline decoration-[rgba(35,32,28,0.25)] underline-offset-[3px] transition-colors duration-200 hover:text-ink"
+                        className="t-eyebrow link-underline text-foreground/50 transition-colors duration-200 hover:text-foreground"
                       >
                         linkedin
                       </a>
@@ -216,28 +216,28 @@ export function SignInBoard({
                   </span>
                 )}
                 {row.background && (
-                  <span className="max-w-[52ch] font-sans text-[12.5px] leading-[1.6] text-body">
+                  <span className="max-w-[52ch] font-sans text-[12.5px] leading-[1.6] text-subtle">
                     {row.background}
                   </span>
                 )}
                 {row.answers.map((answer) => (
                   <span
                     key={answer.prompt}
-                    className="max-w-[52ch] font-sans text-[12.5px] leading-[1.6] text-body"
+                    className="max-w-[52ch] font-sans text-[12.5px] leading-[1.6] text-subtle"
                   >
-                    <span className="text-faint">{answer.prompt}</span> {answer.answer}
+                    <span className="text-foreground/50">{answer.prompt}</span> {answer.answer}
                   </span>
                 ))}
               </div>
               <div className="flex shrink-0 flex-col items-end gap-[2px]">
-                <span className="font-mono text-[10px] tracking-[0.06em] text-faint">
+                <span className="t-eyebrow text-foreground/50">
                   {timeOfDay(row.signedInAt)}
                 </span>
-                <span className="font-sans text-[12px] text-body">
+                <span className="font-sans text-[12px] text-subtle">
                   {row.visitNumber === 1 ? "first visit" : `visit ${row.visitNumber}`}
                 </span>
                 {row.source === "kiosk" && (
-                  <span className="font-mono text-[9px] tracking-[0.1em] text-faint uppercase">
+                  <span className="t-eyebrow text-foreground/50">
                     kiosk
                   </span>
                 )}

@@ -110,9 +110,9 @@ export function ToggleForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex max-w-[580px] flex-col gap-[19px]">
+    <form onSubmit={handleSubmit(onSubmit)} className="relative z-10 flex max-w-[580px] flex-col gap-5">
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="name" className="font-sans text-[12px] font-normal text-body">
+        <Label htmlFor="name" className="font-sans text-[12px] font-normal text-subtle">
           Event name
         </Label>
         <Input id="name" {...register("name")} />
@@ -120,9 +120,9 @@ export function ToggleForm({
       </div>
 
       <div className="flex items-center justify-between">
-        <Label className="font-sans text-[12px] font-normal text-body">When</Label>
+        <Label className="font-sans text-[12px] font-normal text-subtle">When</Label>
         <label className="flex items-center gap-2">
-          <span className="font-sans text-[12px] text-body">All day</span>
+          <span className="font-sans text-[12px] text-subtle">All day</span>
           <Controller
             name="allDay"
             control={control}
@@ -131,7 +131,7 @@ export function ToggleForm({
                 checked={field.value}
                 onCheckedChange={(checked) => {
                   field.onChange(checked);
-                  // Times stay required by the schema even when hidden —
+                  // Times stay required by the schema even when hidden:
                   // an all-day event just gets a fixed full-day range under
                   // the hood instead of asking the user to pick one.
                   if (checked) {
@@ -146,7 +146,7 @@ export function ToggleForm({
       </div>
       <div className="flex gap-[11px]">
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="eventDate" className="font-sans text-[12px] font-normal text-body">
+          <Label htmlFor="eventDate" className="font-sans text-[12px] font-normal text-subtle">
             Start date
           </Label>
           <Controller
@@ -168,7 +168,7 @@ export function ToggleForm({
           )}
         </div>
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="eventEndDate" className="font-sans text-[12px] font-normal text-body">
+          <Label htmlFor="eventEndDate" className="font-sans text-[12px] font-normal text-subtle">
             End date
           </Label>
           <Controller
@@ -193,7 +193,7 @@ export function ToggleForm({
       {!values.allDay && (
         <div className="flex gap-[11px]">
           <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor="eventStartTime" className="font-sans text-[12px] font-normal text-body">
+            <Label htmlFor="eventStartTime" className="font-sans text-[12px] font-normal text-subtle">
               Start time
             </Label>
             <Controller
@@ -208,7 +208,7 @@ export function ToggleForm({
             )}
           </div>
           <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor="eventEndTime" className="font-sans text-[12px] font-normal text-body">
+            <Label htmlFor="eventEndTime" className="font-sans text-[12px] font-normal text-subtle">
               End time
             </Label>
             <Controller
@@ -227,7 +227,7 @@ export function ToggleForm({
 
       <div className="flex gap-[11px]">
         <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="repeatsFrequency" className="font-sans text-[12px] font-normal text-body">
+          <Label htmlFor="repeatsFrequency" className="font-sans text-[12px] font-normal text-subtle">
             Repeats
           </Label>
           <Controller
@@ -254,7 +254,7 @@ export function ToggleForm({
         </div>
         {values.repeatsFrequency && (
           <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor="repeatsEndsMode" className="font-sans text-[12px] font-normal text-body">
+            <Label htmlFor="repeatsEndsMode" className="font-sans text-[12px] font-normal text-subtle">
               Ends
             </Label>
             <Controller
@@ -276,7 +276,7 @@ export function ToggleForm({
         )}
         {values.repeatsFrequency && values.repeatsEndsMode !== "count" && (
           <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor="repeatsEndDate" className="font-sans text-[12px] font-normal text-body">
+            <Label htmlFor="repeatsEndDate" className="font-sans text-[12px] font-normal text-subtle">
               End date
             </Label>
             <Controller
@@ -293,7 +293,7 @@ export function ToggleForm({
         )}
         {values.repeatsFrequency && values.repeatsEndsMode === "count" && (
           <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor="repeatsOccurrenceCount" className="font-sans text-[12px] font-normal text-body">
+            <Label htmlFor="repeatsOccurrenceCount" className="font-sans text-[12px] font-normal text-subtle">
               Occurrences
             </Label>
             <Controller
@@ -320,7 +320,7 @@ export function ToggleForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="venue" className="font-sans text-[12px] font-normal text-body">
+        <Label htmlFor="venue" className="font-sans text-[12px] font-normal text-subtle">
           Venue
         </Label>
         <Input id="venue" {...register("venue")} />
@@ -329,22 +329,22 @@ export function ToggleForm({
 
       <div className="flex flex-col gap-[9px]">
         <div className="flex flex-col gap-[3px]">
-          <p className="font-sans text-[14px] font-medium text-ink">What does this event need?</p>
-          <p className="font-sans text-[12.5px] text-faint">
+          <p className="font-display text-[18px] font-bold text-foreground">What does this event need?</p>
+          <p className="font-sans text-[12.5px] text-foreground/50">
             Each one you turn on becomes a section to prep in step 2.
           </p>
         </div>
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+        <div className="overflow-hidden border border-line bg-background shadow-soft">
           {TOGGLE_ITEMS.map((item, i) => (
             <div
               key={item.key}
-              className={`flex items-center justify-between px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                i < TOGGLE_ITEMS.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+              className={`flex items-center justify-between px-[15px] py-3 transition-colors duration-200 ease-fluid hover:bg-muted/40 ${
+                i < TOGGLE_ITEMS.length - 1 ? "border-b border-line" : ""
               }`}
             >
               <Label
                 htmlFor={item.key}
-                className="gap-[9px] font-sans text-[13.5px] font-normal text-ink"
+                className="gap-[9px] font-sans text-[13.5px] font-normal text-foreground"
               >
                 <SectionFlag color={SECTION_COLORS[item.label]} />
                 {item.label}
@@ -366,10 +366,10 @@ export function ToggleForm({
       </div>
 
       <div className="flex items-center gap-[14px]">
-        <Button type="submit" loading={isPending} className="px-5 py-2.5 text-[13px]">
+        <Button type="submit" loading={isPending}>
           {isPending ? "Creating…" : "Continue"}
         </Button>
-        <span className="font-sans text-[12.5px] text-faint">
+        <span className="font-sans text-[12.5px] text-foreground/50">
           {sectionsSelected} sections selected
         </span>
       </div>

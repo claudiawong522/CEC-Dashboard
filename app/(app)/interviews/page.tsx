@@ -3,8 +3,9 @@ import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
 import { InterviewAdmin, type Cycle, type Slot } from "@/components/interviews/InterviewAdmin";
 import { formatSlot } from "@/lib/validation/interview-schemas";
-import { Sticker } from "@/components/stickers/Sticker";
-import { Seal } from "@/components/stickers/shapes";
+import { Sticker } from "@/components/decor/Sticker";
+import { Seal, TriangleScatter } from "@/components/decor/shapes";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default async function InterviewsPage() {
   const session = await getSession();
@@ -38,44 +39,44 @@ export default async function InterviewsPage() {
   );
 
   return (
-    <div className="relative flex flex-col gap-[17px]">
-      <div className="relative z-10 flex items-end justify-between gap-4">
-        <div className="flex flex-col gap-[5px]">
-          <h1 className="font-sans text-[24px] leading-[1.2] font-medium tracking-[-0.022em] text-ink">
-            Interviews
-          </h1>
-          <span className="font-sans text-[12.5px] text-body">
-            {cycle ? `${cycle.name} is open.` : "No cycle is open right now."}
-          </span>
-        </div>
-        {cycle && (
-          <Sticker floatVariant="none" wrapperClassName="shrink-0">
-            <Seal label={`${all.filter((s) => s.is_claimed).length}/${all.length}`} size={40} />
-          </Sticker>
-        )}
-      </div>
+    <div className="relative flex flex-col gap-6">
+      <TriangleScatter count={4} seed={81} opacity={0.2} />
+
+      <PageHeader
+        className="relative z-10"
+        title="Interviews"
+        actions={
+          cycle && (
+            <Sticker floatVariant="none" wrapperClassName="shrink-0">
+              <Seal label={`${all.filter((s) => s.is_claimed).length}/${all.length}`} size={40} />
+            </Sticker>
+          )
+        }
+      >
+        {cycle ? `${cycle.name} is open.` : "No cycle is open right now."}
+      </PageHeader>
 
       {/* An interviewer who isn't an admin only needs their own day. */}
       {mine.length > 0 && (
         <div className="relative z-10 flex flex-col gap-2.5">
-          <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+          <span className="t-eyebrow text-foreground/50">
             your interviews
           </span>
-          <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+          <div className="overflow-hidden border border-line bg-background shadow-soft">
             {mine.map((slot, index) => (
               <div
                 key={slot.id}
-                className={`grid grid-cols-[1.6fr_1fr_auto] items-center gap-3 px-[15px] py-3 ${
-                  index < mine.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+                className={`grid grid-cols-[1.6fr_1fr_auto] items-center gap-3 px-4 py-3 ${
+                  index < mine.length - 1 ? "border-b border-line" : ""
                 }`}
               >
-                <span className="truncate font-sans text-[12.5px] text-ink">
+                <span className="truncate font-sans text-[12.5px] text-foreground">
                   {formatSlot(slot.start_time, slot.end_time)}
                 </span>
-                <span className="truncate font-sans text-[12px] text-body">
+                <span className="truncate font-sans text-[12px] text-subtle">
                   {slot.location ?? "—"}
                 </span>
-                <span className="justify-self-end font-mono text-[11px] text-strong">
+                <span className="t-eyebrow justify-self-end text-foreground">
                   {slot.applicant_netid}
                 </span>
               </div>
@@ -90,7 +91,7 @@ export default async function InterviewsPage() {
         </div>
       ) : (
         mine.length === 0 && (
-          <p className="relative z-10 rounded-card border border-[rgba(35,32,28,0.07)] bg-paper px-[15px] py-8 text-center font-sans text-[13px] text-faint">
+          <p className="relative z-10 border border-line bg-background px-4 py-8 text-center font-sans text-[13px] text-foreground/50 shadow-soft">
             Nothing booked with you yet.
           </p>
         )

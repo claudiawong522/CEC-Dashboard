@@ -8,8 +8,8 @@ export function SaveIndicator({ status, className }: { status: AutoSaveStatus; c
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 font-mono text-[10px] tracking-[0.08em] uppercase transition-opacity duration-300",
-        status === "error" ? "text-destructive" : "text-faint",
+        "t-eyebrow inline-flex items-center gap-1 transition-opacity duration-300",
+        status === "error" ? "text-red" : "text-foreground/50",
         className,
       )}
     >

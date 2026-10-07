@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -50,14 +51,14 @@ export function ShoutoutForm({ members }: { members: ChatPerson[] }) {
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper p-[15px]">
-      <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+    <div className="flex flex-col gap-4 border border-line bg-background p-4 shadow-soft">
+      <span className="t-eyebrow text-foreground/50">
         give a shoutout
       </span>
 
-      <div className="grid gap-[15px] sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div className="flex flex-col gap-1.5">
-          <Label className="font-sans text-[12px] font-normal text-body">Who?</Label>
+          <Label>Who?</Label>
           {/* Without items the trigger showed the selected member's raw uuid. */}
           <Select
             items={{
@@ -96,40 +97,33 @@ export function ShoutoutForm({ members }: { members: ChatPerson[] }) {
 
         {namingOutsider && (
           <div className="flex flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-body">Their name</Label>
+            <Label>Their name</Label>
             <Input
               value={receiverName}
               onChange={(event) => setReceiverName(event.target.value)}
-              className="bg-page"
             />
           </div>
         )}
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label className="font-sans text-[12px] font-normal text-body">What did they do?</Label>
+        <Label>What did they do?</Label>
         <Textarea
           value={message}
           maxLength={500}
           placeholder="Stayed until 1am rewiring the demo table so it actually worked."
           onChange={(event) => setMessage(event.target.value)}
-          className="bg-page"
         />
       </div>
 
       <div className="flex items-center justify-between gap-4">
         <label className="flex items-center gap-2">
           <Switch checked={isAnonymous} onCheckedChange={setIsAnonymous} />
-          <span className="font-sans text-[12.5px] text-body">Post anonymously</span>
+          <span className="font-sans text-[12.5px] text-subtle">Post anonymously</span>
         </label>
-        <button
-          type="button"
-          disabled={isPending}
-          onClick={submit}
-          className="rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
-        >
+        <Button type="button" disabled={isPending} onClick={submit}>
           {isPending ? "Posting" : "Post"}
-        </button>
+        </Button>
       </div>
     </div>
   );

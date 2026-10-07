@@ -29,9 +29,9 @@ import type { LucideIcon } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
 import { COFFEE_CHAT_SIGNUP_ENABLED } from "@/lib/features";
 import { BrandMark } from "@/components/app-shell/BrandMark";
-import { SidebarSeam } from "@/components/app-shell/SidebarSeam";
-import { Sticker } from "@/components/stickers/Sticker";
-import { CloudPuff, BeadRow } from "@/components/stickers/shapes";
+import { IntroPlane } from "@/components/app-shell/IntroPlane";
+import { Sticker } from "@/components/decor/Sticker";
+import { TriRow } from "@/components/decor/shapes";
 import {
   Avatar,
   AvatarFallback,
@@ -81,7 +81,6 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const isCalendar = pathname === "/calendar" || pathname.startsWith("/calendar/");
   // External is a speaker-outreach pipeline with contact info that never
   // opted into being visible club-wide — admin-only end to end, unlike
   // every other nav destination, so it only appears for that role.
@@ -147,49 +146,45 @@ export function AppShell({
     .toUpperCase();
 
   return (
-    <div className="flex h-svh items-stretch overflow-hidden bg-canvas">
-      <aside className="relative flex w-[76px] shrink-0 flex-col justify-between overflow-hidden bg-paper p-4 transition-[width] duration-200 ease-brand md:w-[272px]">
-        <CloudPuff
-          size={260}
-          className="pointer-events-none absolute -top-16 -left-20 opacity-[0.14] blur-[2px]"
-        />
+    <div className="flex h-svh items-stretch overflow-hidden bg-background">
+      <IntroPlane />
 
-        {/* min-h-0 so this column may shrink below its content height. Without
-            it a flex child refuses to go under its intrinsic size, the nav
-            grows past the viewport, and `overflow-hidden` on the shell simply
-            cuts the last groups off: Admin was unreachable on a laptop once
-            the nav grew to six groups. */}
-        <div className="relative flex min-h-0 flex-1 flex-col gap-8">
-          <Link href="/calendar" className="flex items-center justify-center gap-2.5 px-2 md:justify-start">
+      {/* The site's nav, turned on its side: white, a hairline edge, display
+          type for the wordmark and group heads, and a mint underline on the
+          active destination. */}
+      <aside className="relative flex w-[68px] shrink-0 flex-col justify-between border-r border-line bg-background px-3 py-5 transition-[width] duration-200 ease-fluid md:w-[264px] md:px-5">
+        <div className="relative flex min-h-0 flex-1 flex-col gap-7">
+          <Link href="/calendar" className="flex items-center justify-center gap-3 md:justify-start">
             <Sticker floatVariant="none" wrapperClassName="shrink-0">
-              <BrandMark className="h-[22px] w-6" />
+              <BrandMark className="h-[24px] w-[26px]" />
             </Sticker>
-            <span className="hidden font-sans text-[17px] font-medium tracking-[-0.014em] text-ink md:inline">
-              CEC Dashboard
+            <span className="hidden font-display text-[13px] leading-[1.15] font-bold tracking-tight text-foreground uppercase md:inline">
+              Cornell
+              <br />
+              Entrepreneurship Club
             </span>
           </Link>
 
-          <form onSubmit={handleSearchSubmit} className="relative hidden px-2 md:block">
-            <SearchIcon className="pointer-events-none absolute top-1/2 left-4.5 size-3.5 -translate-y-1/2 text-faint" />
+          <form onSubmit={handleSearchSubmit} className="relative hidden md:block">
+            <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-foreground/40" />
             <input
               type="search"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search events"
-              className="w-full rounded-input border border-line-input bg-page py-2 pr-2.5 pl-8 font-sans text-[12.5px] text-ink placeholder:text-faint outline-none transition-[border-color,box-shadow] duration-[220ms] focus-visible:border-strong focus-visible:ring-[3px] focus-visible:ring-[rgba(35,32,28,0.05)]"
+              className="w-full border border-line bg-background py-2 pr-2.5 pl-8 font-sans text-[13px] text-foreground placeholder:text-foreground/40 outline-none transition-[border-color] duration-200 ease-fluid hover:border-foreground/40 focus-visible:border-foreground"
             />
           </form>
 
           {/* The nav is the part that scrolls, so the brand, the search and the
-              account row below stay put. `-mr-1 pr-1` keeps the scrollbar off
-              the labels, and the thin warm bar is quieter than the platform
-              default against paper. */}
-          <nav className="-mr-1 flex min-h-0 flex-1 flex-col gap-[13px] overflow-y-auto pr-1 [scrollbar-color:rgba(35,32,28,0.14)_transparent] [scrollbar-width:thin]">
+              account row below stay put. min-h-0 lets this column shrink under
+              its content; without it the last groups fall off a laptop screen. */}
+          <nav className="-mr-2 flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto pr-2 [scrollbar-color:rgba(0,0,0,0.25)_transparent] [scrollbar-width:thin]">
             {navGroups.map((group) => (
-              <div key={group.heading} className="flex flex-col gap-px">
+              <div key={group.heading} className="flex flex-col gap-0.5">
                 {/* Hidden on the icon-only rail, where a heading would be a
                     truncated word above a column of glyphs. */}
-                <span className="hidden px-3.5 pb-1 font-mono text-[9px] tracking-[0.13em] text-faded uppercase md:block">
+                <span className="t-eyebrow hidden pb-2 text-foreground/40 md:block">
                   {group.heading}
                 </span>
                 {group.items.map((item) => {
@@ -202,17 +197,28 @@ export function AppShell({
                       href={item.href}
                       title={item.label}
                       className={cn(
-                        "relative flex h-[38px] items-center justify-center gap-2.5 rounded-btn px-3.5 font-sans text-[14px] transition-colors duration-200 ease-brand md:justify-start",
+                        "group/nav relative flex h-9 items-center justify-center gap-3 font-sans text-[14px] transition-colors duration-200 ease-fluid md:justify-start",
                         active
-                          ? "bg-cent-tint font-medium text-ink"
-                          : "font-normal text-faint hover:text-ink",
+                          ? "font-medium text-foreground"
+                          : "text-foreground/55 hover:text-foreground",
                       )}
                     >
-                      {active && (
-                        <span className="absolute top-1.5 bottom-1.5 left-0 w-[2.5px] rounded-full bg-cent" />
-                      )}
-                      <Icon className="size-4 shrink-0" />
-                      <span className="hidden md:inline">{item.label}</span>
+                      <Icon
+                        className={cn(
+                          "size-4 shrink-0 transition-[box-shadow] duration-200",
+                          active && "shadow-[0_3px_0_0_var(--mint)] md:shadow-none",
+                        )}
+                      />
+                      <span
+                        className={cn(
+                          "hidden pb-px md:inline",
+                          active
+                            ? "shadow-[inset_0_-2px_0_0_var(--mint)]"
+                            : "link-underline",
+                        )}
+                      >
+                        {item.label}
+                      </span>
                     </Link>
                   );
                 })}
@@ -221,19 +227,19 @@ export function AppShell({
           </nav>
         </div>
 
-        <div className="relative flex shrink-0 items-center gap-2 pt-4">
+        <div className="relative flex shrink-0 items-center gap-3 border-t border-line pt-4">
           <Sticker
             floatVariant="none"
             wrapperClassName="hidden shrink-0 md:block"
             className="opacity-70 transition-opacity duration-200 hover:opacity-100"
           >
-            <BeadRow size={7} gap={5} />
+            <TriRow size={8} gap={4} />
           </Sticker>
 
           <DropdownMenu>
-            <DropdownMenuTrigger className="mx-auto rounded-full outline-none md:mx-0 md:ml-auto">
+            <DropdownMenuTrigger className="mx-auto outline-none focus-visible:ring-2 focus-visible:ring-mint md:mx-0 md:ml-auto">
               <Avatar className="size-8">
-                <AvatarFallback className="bg-wash text-[11.5px] font-medium text-strong transition-colors duration-200 hover:bg-line-strong">
+                <AvatarFallback className="transition-colors duration-200 hover:bg-mint">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -242,30 +248,30 @@ export function AppShell({
               align="start"
               side="top"
               sideOffset={8}
-              className="w-[212px] rounded-card border border-line bg-paper p-3.5 shadow-menu ring-0"
+              className="w-[224px] p-3"
             >
               <DropdownMenuGroup>
-                <DropdownMenuLabel className="flex flex-col gap-0.5 p-0">
-                  <span className="font-sans text-[13px] font-medium text-ink">
+                <DropdownMenuLabel className="flex flex-col gap-0.5 p-0 normal-case tracking-normal">
+                  <span className="font-display text-[13px] font-bold text-foreground">
                     {profile.full_name ?? profile.email}
                   </span>
-                  <span className="font-sans text-[11.5px] font-normal text-faint">
+                  <span className="font-sans text-[12px] font-normal text-foreground/55">
                     {profile.email}
                   </span>
                 </DropdownMenuLabel>
-                <DropdownMenuSeparator className="-mx-3.5 my-2.5 bg-line" />
+                <DropdownMenuSeparator className="-mx-3 my-2.5" />
                 {/* The only way into /profile. It is deliberately not a nav
                     destination, because it belongs to the person rather than to
                     the club, but with no link at all people could not find the
                     page that fills in the directory they are asked to fill in. */}
                 <DropdownMenuItem
-                  className="-mx-1.5 rounded-chip px-1.5 py-1.5 font-sans text-[12.5px] text-body focus:bg-wash focus:text-ink"
+                  className="-mx-1.5 px-1.5 py-1.5 font-sans text-[13px]"
                   onClick={() => router.push("/profile")}
                 >
                   Your profile
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  className="-mx-1.5 rounded-chip px-1.5 py-1.5 font-sans text-[12.5px] text-body focus:bg-wash focus:text-ink"
+                  className="-mx-1.5 px-1.5 py-1.5 font-sans text-[13px]"
                   onClick={() => signOutFormRef.current?.requestSubmit()}
                 >
                   Sign out
@@ -282,24 +288,11 @@ export function AppShell({
         />
       </aside>
 
-      <div
-        className="relative min-w-0 flex-1"
-        style={{
-          backgroundImage:
-            "radial-gradient(ellipse 1100px 760px at 50% 30%, var(--page) 55%, var(--canvas) 100%), url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/></svg>\")",
-          backgroundBlendMode: "normal, overlay",
-        }}
-      >
-        <SidebarSeam />
-        <main className="relative z-10 h-full overflow-y-auto">
-          <div
-            className="mx-auto w-full max-w-[1120px] py-8 pr-10 pl-[66px]"
-            style={isCalendar ? undefined : { zoom: 1.08 }}
-          >
-            {children}
-          </div>
-        </main>
-      </div>
+      <main className="relative min-w-0 flex-1 overflow-y-auto">
+        <div className="mx-auto w-full max-w-[1240px] px-6 py-8 sm:px-10 sm:py-10 lg:px-14">
+          {children}
+        </div>
+      </main>
     </div>
   );
 }

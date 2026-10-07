@@ -3,13 +3,11 @@
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { firstPrepSection, SECTION_COLORS } from "@/lib/utils/section-colors";
-import { Sticker } from "@/components/stickers/Sticker";
-import { Sparkle } from "@/components/stickers/shapes";
 import type { CalendarEvent } from "./CalendarView";
 
-// design/CEC Pages.dc.html "02c · year view" — recreated directly (not via
-// FullCalendar's multiMonth plugin, which renders full per-month day-grids
-// rather than the kit's compact bead-tile layout).
+// Year view, recreated directly (not via FullCalendar's multiMonth plugin,
+// which renders full per-month day-grids rather than the compact bead-tile
+// layout).
 const MONTH_LABELS = [
   "jan", "feb", "mar", "apr", "may", "jun",
   "jul", "aug", "sep", "oct", "nov", "dec",
@@ -36,15 +34,6 @@ export function YearView({
 
   return (
     <div className="relative mx-auto w-full max-w-[1040px]">
-      <Sticker
-        floatVariant="float1"
-        floatDuration="17s"
-        wrapperClassName="pointer-events-none absolute -top-10 -right-8 z-0"
-        className="pointer-events-auto opacity-[0.55]"
-      >
-        <Sparkle size={72} />
-      </Sticker>
-
       <div className="relative grid grid-cols-4 gap-4">
       {MONTH_LABELS.map((label, i) => {
         const isCurrentMonth = today.getFullYear() === year && today.getMonth() === i;
@@ -56,31 +45,14 @@ export function YearView({
             type="button"
             onClick={() => onSelectMonth(i)}
             className={cn(
-              "relative overflow-hidden rounded-[10px] border bg-paper p-5 text-left transition-[transform,border-color] duration-200 ease-brand hover:-translate-y-0.5",
-              isCurrentMonth
-                ? "border-[rgba(35,32,28,0.18)]"
-                : "border-[rgba(35,32,28,0.07)] hover:border-[rgba(35,32,28,0.18)]",
+              "relative overflow-hidden bg-background p-5 text-left transition-[transform,border-color,box-shadow] duration-300 ease-fluid hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm",
+              isCurrentMonth ? "border-2 border-foreground" : "border border-line",
             )}
           >
-            {isCurrentMonth && (
-              <Sticker
-                floatVariant="none"
-                wrapperClassName="absolute -right-2 -top-2 z-10"
-                className="block size-14 rounded-full opacity-80 blur-[8px]"
-              >
-                <div
-                  aria-hidden="true"
-                  className="size-full rounded-full"
-                  style={{
-                    background: "radial-gradient(circle, rgba(224,185,74,.8), transparent 72%)",
-                  }}
-                />
-              </Sticker>
-            )}
             <div
               className={cn(
-                "relative font-mono text-[14px] tracking-[0.1em] uppercase",
-                isCurrentMonth ? "font-medium text-ink" : "text-body",
+                "t-eyebrow relative text-[14px]",
+                isCurrentMonth ? "font-bold text-foreground" : "text-subtle",
               )}
             >
               {label}
@@ -95,7 +67,7 @@ export function YearView({
                     e.stopPropagation();
                     router.push(`/events/${event.id}`);
                   }}
-                  className="size-[9px] shrink-0 rounded-full transition-transform duration-150 hover:scale-125"
+                  className="size-1.5 shrink-0 transition-transform duration-150 hover:scale-125"
                   style={{ background: SECTION_COLORS[firstPrepSection(event)] }}
                 />
               ))}

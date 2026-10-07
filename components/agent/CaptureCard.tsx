@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { AlertTriangleIcon } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,7 +20,7 @@ import type { CapturedProposal } from "@/lib/agent/types";
 
 // The confirm card. Everything the model proposed is editable before it is
 // written, and the commit sends what is on screen rather than what came back
-// from the model — that difference is the entire safety property of this
+// from the model. That difference is the entire safety property of this
 // screen, not a UI nicety.
 export function CaptureCard() {
   const [text, setText] = useState("");
@@ -70,8 +71,8 @@ export function CaptureCard() {
   }
 
   return (
-    <div className="flex flex-col gap-[15px] rounded-card border border-[rgba(35,32,28,0.07)] bg-paper p-[19px]">
-      <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+    <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
+      <span className="t-eyebrow text-foreground/50">
         capture a conversation
       </span>
 
@@ -82,24 +83,24 @@ export function CaptureCard() {
         className="min-h-[110px]"
       />
 
-      <button
+      <Button
         type="button"
+        className="w-fit"
         disabled={isPending || text.trim().length < 15}
         onClick={propose}
-        className="w-fit rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
       >
         {isPending && !proposal ? "Reading" : "Pull out the records"}
-      </button>
+      </Button>
 
       {proposal && (
-        <div className="flex flex-col gap-[15px] rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-page p-[15px]">
-          <span className="font-mono text-[9px] tracking-[0.13em] text-faint uppercase">
+        <div className="flex flex-col gap-4 border border-line bg-muted/40 p-4">
+          <span className="t-eyebrow text-foreground/50">
             proposed · nothing is saved yet
           </span>
 
           {proposal.duplicates.length > 0 && (
-            <div className="flex flex-col gap-2 rounded-[8px] border border-[rgba(224,185,74,0.4)] bg-amber/10 p-[11px]">
-              <span className="flex items-center gap-1.5 font-sans text-[12.5px] text-strong">
+            <div className="flex flex-col gap-2 border border-amber bg-amber/10 p-3">
+              <span className="flex items-center gap-1.5 font-sans text-[13px] font-medium text-foreground">
                 <AlertTriangleIcon className="size-3.5" />
                 Might already be in the CRM
               </span>
@@ -111,9 +112,9 @@ export function CaptureCard() {
                     checked={proposal.contact.existingContactId === duplicate.id}
                     onChange={() => setContact("existingContactId", duplicate.id)}
                   />
-                  <span className="font-sans text-[12.5px] text-body">
+                  <span className="font-sans text-[13px] text-subtle">
                     Add to {duplicate.name}{" "}
-                    <span className="text-faint">({duplicate.reason})</span>
+                    <span className="text-foreground/50">({duplicate.reason})</span>
                   </span>
                 </label>
               ))}
@@ -124,14 +125,14 @@ export function CaptureCard() {
                   checked={proposal.contact.existingContactId === null}
                   onChange={() => setContact("existingContactId", null)}
                 />
-                <span className="font-sans text-[12.5px] text-body">
+                <span className="font-sans text-[13px] text-subtle">
                   No, this is someone new
                 </span>
               </label>
             </div>
           )}
 
-          <div className="grid gap-[15px] sm:grid-cols-2">
+          <div className="grid gap-4 sm:grid-cols-2">
             <Field label="Name">
               <Input
                 value={proposal.contact.name}
@@ -194,21 +195,12 @@ export function CaptureCard() {
           </Field>
 
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setProposal(null)}
-              className="rounded-btn border border-[rgba(35,32,28,0.14)] px-[15px] py-[9px] font-sans text-[12.5px] text-body transition-[background-color,border-color,color] duration-200 ease-brand hover:border-[rgba(35,32,28,0.24)] hover:bg-wash hover:text-ink"
-            >
+            <Button type="button" variant="outline" onClick={() => setProposal(null)}>
               Discard
-            </button>
-            <button
-              type="button"
-              disabled={isPending}
-              onClick={commit}
-              className="rounded-btn bg-ink px-[19px] py-[10px] font-sans text-[13px] text-page transition-transform duration-200 ease-brand hover:-translate-y-0.5 active:scale-[0.975] disabled:pointer-events-none disabled:opacity-50"
-            >
+            </Button>
+            <Button type="button" disabled={isPending} onClick={commit}>
               {isPending ? "Saving" : "Save to the CRM"}
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -219,7 +211,7 @@ export function CaptureCard() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <Label className="font-sans text-[12px] font-normal text-body">{label}</Label>
+      <Label className="t-eyebrow text-foreground/50">{label}</Label>
       {children}
     </div>
   );

@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { SECTION_COLORS } from "@/lib/utils/section-colors";
@@ -40,27 +41,30 @@ export function SectionsDialog({
 }) {
   return (
     <Dialog>
-      <DialogTrigger className="flex size-8 items-center justify-center rounded-btn text-faint transition-colors duration-200 hover:bg-wash hover:text-ink">
-        <SlidersHorizontal className="size-4" />
+      <DialogTrigger
+        render={<Button variant="outline" size="icon-sm" aria-label="Sections" />}
+        nativeButton
+      >
+        <SlidersHorizontal />
       </DialogTrigger>
-      <DialogContent className="rounded-card border border-line bg-paper p-4 ring-0 sm:max-w-[380px]">
+      <DialogContent className="border border-line bg-background p-4 shadow-soft ring-0 sm:max-w-[380px]">
         <DialogHeader>
-          <DialogTitle className="font-sans text-[15px] font-medium text-ink">Sections</DialogTitle>
+          <DialogTitle className="font-display text-[18px] font-bold text-foreground">Sections</DialogTitle>
         </DialogHeader>
-        <p className="font-sans text-[12px] leading-[1.5] text-faint">
+        <p className="font-sans text-[12px] leading-[1.5] text-foreground/50">
           Turn sections on or off. Anything already filled in stays put if you turn one back on.
         </p>
-        <div className="overflow-hidden rounded-[10px] border border-[rgba(35,32,28,0.1)] bg-paper">
+        <div className="overflow-hidden border border-line bg-background">
           {SECTION_ITEMS.map((item, i) => (
             <div
               key={item.key}
-              className={`flex items-center justify-between px-[15px] py-3 transition-colors duration-200 hover:bg-wash ${
-                i < SECTION_ITEMS.length - 1 ? "border-b border-[rgba(35,32,28,0.07)]" : ""
+              className={`flex items-center justify-between px-[15px] py-3 transition-colors duration-200 ease-fluid hover:bg-muted/40 ${
+                i < SECTION_ITEMS.length - 1 ? "border-b border-line" : ""
               }`}
             >
               <Label
                 htmlFor={`section-${item.key}`}
-                className="gap-[9px] font-sans text-[13.5px] font-normal text-ink"
+                className="gap-[9px] font-sans text-[13.5px] font-normal text-foreground"
               >
                 <SectionFlag color={SECTION_COLORS[item.label]} />
                 {item.label}
