@@ -13,14 +13,20 @@ const validProfile = {
   position: "Member",
   hometown: "Bethpage, NY",
   about: "",
+  hobbies: "",
+  building: "",
   linkedin_url: "",
   portfolio_url: "",
+  github_url: "",
+  show_on_site: true,
 };
 
 describe("profileSchema", () => {
   it("turns cleared optional fields into null rather than empty strings", () => {
     const parsed = profileSchema.parse(validProfile);
     expect(parsed.pronouns).toBeNull();
+    expect(parsed.hobbies).toBeNull();
+    expect(parsed.github_url).toBeNull();
     expect(parsed.minor).toBeNull();
     expect(parsed.about).toBeNull();
     expect(parsed.linkedin_url).toBeNull();

@@ -121,7 +121,18 @@ export function MemberDirectory({ members }: { members: MemberProfile[] }) {
               <div className="flex items-center gap-2.5">
                 {/* Open to coffee chats is the one thing worth spotting while
                     scanning, so that portrait sits on mint. */}
-                <div
+                {member.avatar_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={member.avatar_url}
+                    alt=""
+                    className={cn(
+                      "size-[34px] shrink-0 border-2 border-foreground object-cover",
+                      member.open_to_chats && "shadow-[2px_2px_0_0_var(--mint)]",
+                    )}
+                  />
+                ) : (
+                  <div
                   className={cn(
                     "flex size-[34px] shrink-0 items-center justify-center border-2 border-foreground font-display text-[11.5px] font-bold text-foreground",
                     member.open_to_chats ? "bg-mint" : "bg-muted/40",
@@ -129,6 +140,7 @@ export function MemberDirectory({ members }: { members: MemberProfile[] }) {
                 >
                   {memberInitials(member)}
                 </div>
+                )}
                 <div className="flex min-w-0 flex-col gap-0.5">
                   <span className="truncate font-sans text-[13.5px] font-medium text-foreground">
                     {member.full_name ?? member.email}

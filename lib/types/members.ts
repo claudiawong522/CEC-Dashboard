@@ -16,8 +16,12 @@ export type MemberProfile = Profile & {
   position: string;
   hometown: string | null;
   about: string | null;
+  hobbies: string | null;
+  building: string | null;
   linkedin_url: string | null;
   portfolio_url: string | null;
+  github_url: string | null;
+  show_on_site: boolean;
   active: boolean;
   interests: string[];
   open_to_chats: boolean;
@@ -29,8 +33,9 @@ export type MemberProfile = Profile & {
 // different fields and then disagreeing about which are present.
 export const MEMBER_COLUMNS =
   "id, email, full_name, avatar_url, role, status, netid, pronouns, major, minor, " +
-  "college, graduation_year, team, position, hometown, about, linkedin_url, " +
-  "portfolio_url, active, interests, open_to_chats, chat_blurb";
+  "college, graduation_year, team, position, hometown, about, hobbies, building, " +
+  "linkedin_url, portfolio_url, github_url, show_on_site, active, interests, " +
+  "open_to_chats, chat_blurb";
 
 export function memberInitials(member: Pick<MemberProfile, "full_name" | "email">): string {
   return (member.full_name ?? member.email)

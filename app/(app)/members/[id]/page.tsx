@@ -52,9 +52,18 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
 
         <div className="relative z-10 flex flex-col gap-4">
           <div className="flex items-center gap-3.5">
-            <div className="flex size-[52px] shrink-0 items-center justify-center border-2 border-foreground bg-muted/40 font-display text-[16px] font-bold text-foreground">
-              {memberInitials(member)}
-            </div>
+            {member.avatar_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={member.avatar_url}
+                alt=""
+                className="size-[52px] shrink-0 border-2 border-foreground object-cover"
+              />
+            ) : (
+              <div className="flex size-[52px] shrink-0 items-center justify-center border-2 border-foreground bg-muted/40 font-display text-[16px] font-bold text-foreground">
+                {memberInitials(member)}
+              </div>
+            )}
 
             <div className="flex min-w-0 flex-col gap-1">
               <h1 className="t-display text-[28px] text-foreground">
