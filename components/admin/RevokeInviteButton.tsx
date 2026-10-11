@@ -10,6 +10,7 @@ export function RevokeInviteButton({ userId, email }: { userId: string; email: s
     try {
       const result = await revokeInvite(userId);
       if (!result.ok) toast.error(result.message);
+      else toast.success("Invite revoked");
     } catch {
       toast.error("Couldn't cancel invite — try again");
     }

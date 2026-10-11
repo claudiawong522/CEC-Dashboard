@@ -11,7 +11,7 @@ const SUGGESTIONS = [
   "Who is on the generalist subteam?",
   "What did we learn from the last demo day?",
   "What's coming up this month?",
-  "Who has we already reached out to at a VC?",
+  "Who have we already reached out to at a VC?",
 ];
 
 // Citations link back to the record they came from, so an answer is checkable

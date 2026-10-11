@@ -41,7 +41,7 @@ export function InviteForm() {
         // sending mail, and says so in its own message.
         toast.success(result.message ?? `Invite sent to ${trimmed}`);
         setEmail("");
-        setRole("view");
+        setRole("edit");
       } catch {
         toast.error("Couldn't send invite");
       }

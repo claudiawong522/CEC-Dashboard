@@ -169,7 +169,7 @@ export function ExternalDetail({
       try {
         await setIdeaStage(idea.id, next);
         if (isBackward) {
-          toast(`Moved back to ${STAGE_LABELS[from]}`, {
+          toast(`Moved back to ${STAGE_LABELS[next]}`, {
             action: { label: "Undo", onClick: () => changeStage(from, true) },
           });
         }
