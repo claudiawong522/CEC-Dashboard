@@ -15,7 +15,7 @@ function StageTag({ stage }: { stage: StageValue }) {
     <span
       className={
         "t-eyebrow flex shrink-0 items-center gap-1.5 border px-2 py-0.5 " +
-        (isTerminal ? "border-foreground bg-mint/20 text-foreground" : "border-line text-subtle") +
+        (isTerminal ? "border-foreground bg-mint text-foreground" : "border-line text-subtle") +
         (stage === "declined" ? " border-red/40 bg-transparent text-red" : "")
       }
     >
@@ -38,11 +38,14 @@ export function ExternalList({
 
   return (
     <div className="relative z-10 flex flex-col gap-4">
-      <div className="flex flex-wrap gap-1.5">
+      {/* On phones the stage chips are one row that scrolls sideways inside
+          the page gutter rather than wrapping into a block of seven. */}
+      <div className="-mx-4 flex w-[calc(100%+2rem)] gap-1.5 overflow-x-auto px-4 py-0.5 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:flex-wrap sm:overflow-visible sm:px-0">
         <button
+          type="button"
           onClick={() => setFilter("all")}
           className={
-            "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-colors duration-200 ease-fluid " +
+            "t-eyebrow flex shrink-0 items-center gap-1.5 border px-2.5 py-1.5 whitespace-nowrap transition-colors duration-200 ease-fluid max-md:min-h-11 max-md:px-3 " +
             (filter === "all" ? "border-foreground bg-foreground text-background" : "border-line text-foreground/50 hover:border-foreground hover:text-foreground")
           }
         >
@@ -56,9 +59,10 @@ export function ExternalList({
           return (
             <button
               key={stage}
+              type="button"
               onClick={() => setFilter(stage)}
               className={
-                "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-colors duration-200 ease-fluid " +
+                "t-eyebrow flex shrink-0 items-center gap-1.5 border px-2.5 py-1.5 whitespace-nowrap transition-colors duration-200 ease-fluid max-md:min-h-11 max-md:px-3 " +
                 (active ? "border-foreground bg-foreground text-background" : "border-line text-foreground/50 hover:border-foreground hover:text-foreground")
               }
             >
@@ -82,7 +86,7 @@ export function ExternalList({
               .filter((a): a is AdminInfo => !!a);
             const closed = isClosedStage(idea.stage);
             // The first closed lead earns a divider, but only when live
-            // leads sit above it — filtering down to just Declined shouldn't
+            // leads sit above it; filtering down to just Declined shouldn't
             // label a list that is entirely closed.
             const startsClosedGroup = closed && i > 0 && !isClosedStage(visible[i - 1].stage);
             return (
@@ -97,7 +101,7 @@ export function ExternalList({
                 )}
                 <div
                   className={
-                    "group relative flex items-center gap-4 px-3 py-[19px] transition-[background-color,box-shadow] duration-200 ease-fluid hover:bg-muted/40 hover:shadow-[inset_3px_0_0_0_var(--mint)] " +
+                    "group relative flex flex-wrap items-center gap-x-4 gap-y-2 px-3 py-3 transition-[background-color,box-shadow] duration-200 ease-fluid hover:bg-muted/40 hover:shadow-[inset_3px_0_0_0_var(--mint)] sm:flex-nowrap sm:py-[19px] " +
                     (i < visible.length - 1 ? "border-b border-line" : "")
                   }
                 >
@@ -108,7 +112,7 @@ export function ExternalList({
                   />
                   <span
                     className={
-                      "pointer-events-none relative flex-1 truncate font-sans text-[15px] font-medium " +
+                      "pointer-events-none relative min-w-0 basis-full truncate font-sans text-[15px] font-medium sm:basis-auto sm:flex-1 " +
                       (closed ? "text-subtle" : "text-foreground")
                     }
                   >
@@ -121,7 +125,7 @@ export function ExternalList({
                       doesn't leave 72px of dead row, but each avatar takes
                       its pointer events back: they carry a `title` with the
                       owner's name, and that never fires without hover. */}
-                  <span className="pointer-events-none relative flex min-w-[72px] justify-end">
+                  <span className="pointer-events-none relative ml-auto flex justify-end sm:ml-0 sm:min-w-[72px]">
                     {owners.map((o, j) => (
                       <span
                         key={j}
@@ -137,7 +141,7 @@ export function ExternalList({
                     ideaId={idea.id}
                     pitch={idea.pitch}
                     isConverted={idea.stage === "converted"}
-                    className="relative opacity-100 transition-opacity duration-200 ease-fluid md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100"
+                    className="relative opacity-100 transition-opacity duration-200 ease-fluid md:opacity-0 md:group-hover:opacity-100 md:focus-visible:opacity-100 max-md:-my-1.5"
                   />
                 </div>
               </div>

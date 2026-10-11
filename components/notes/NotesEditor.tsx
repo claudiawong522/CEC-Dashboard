@@ -5,7 +5,6 @@ import { useCreateBlockNote } from "@blocknote/react";
 import { BlockNoteView } from "@blocknote/mantine";
 import type { PartialBlock } from "@blocknote/core";
 import { en } from "@blocknote/core/locales";
-import "@blocknote/core/fonts/inter.css";
 import "@blocknote/mantine/style.css";
 
 // design/BRAND_KIT.md v2 colours (white, black, flat mint), mapped onto
@@ -20,6 +19,8 @@ const brandTheme = {
     selected: { text: "var(--black)", background: "var(--mint-soft)" },
     disabled: { text: "var(--faint)", background: "var(--white)" },
     shadow: "rgba(0,0,0,.14)",
+    // BlockNote paints the empty-block placeholder in its side-menu colour.
+    sideMenu: "rgba(0,0,0,.4)",
     border: "var(--black)",
     highlights: {
       orange: { text: "var(--black)", background: "var(--mint-soft)" },

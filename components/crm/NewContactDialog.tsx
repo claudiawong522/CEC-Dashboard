@@ -73,16 +73,14 @@ export function NewContactDialog() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger className="brutalist-border flex h-9 shrink-0 items-center gap-1.5 bg-mint px-4 font-display text-[12px] font-bold tracking-wide uppercase transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint">
+      <DialogTrigger render={<Button />} nativeButton>
         <PlusIcon className="size-3.5" />
         Add contact
       </DialogTrigger>
       <DialogContent className="sm:max-w-[420px]">
         <DialogHeader>
-          <DialogTitle className="font-display text-[18px] font-bold text-foreground">
-            New contact
-          </DialogTitle>
-          <DialogDescription className="font-sans text-[13px] text-subtle">
+          <DialogTitle>New contact</DialogTitle>
+          <DialogDescription>
             Enough to find them again. The rest goes on their page.
           </DialogDescription>
         </DialogHeader>
@@ -135,7 +133,7 @@ export function NewContactDialog() {
         </div>
 
         <DialogFooter>
-                    <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+          <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button type="button" disabled={isPending || !name.trim()} onClick={submit}>
