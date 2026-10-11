@@ -269,8 +269,8 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
         <div className="flex flex-col gap-0.5">
           <Label>Show on cornellec.com</Label>
           <span className="font-sans text-[11.5px] text-foreground/50">
-            Your photo, name, major, year, about, hobbies and links appear on the public members page.
-            Email and netid never do.
+            Off until you turn it on. When on, your photo, name, major, year, about, hobbies and
+            links appear on the public members page. Email and netid never do.
           </span>
         </div>
         <Switch
