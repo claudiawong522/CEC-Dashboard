@@ -33,11 +33,11 @@ export function SectionCard({
   // title, not a wash over the card.
   return (
     <div
-      className="min-h-[352px] border border-line border-t-[3px] bg-background px-[22px] py-5 shadow-soft"
+      className="border border-line border-t-[3px] bg-background px-4 py-5 shadow-soft sm:px-[22px] md:min-h-[352px]"
       style={{ borderTopColor: tint ?? "var(--black)" }}
     >
       <div className="flex animate-fadeUp flex-col gap-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-3">
           <span className="flex items-center gap-2.5 font-display text-[18px] font-bold text-foreground">
             {tint && (
               <span

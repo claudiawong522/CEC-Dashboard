@@ -53,7 +53,7 @@ export function TaggedMembersSection({
       try {
         await tagMember(eventId, member.id);
       } catch {
-        toast.error("Couldn't tag member — try again");
+        toast.error("Couldn't tag member. Try again.");
         setTagged((prev) => prev.filter((m) => m.id !== member.id));
       }
     });
@@ -65,7 +65,7 @@ export function TaggedMembersSection({
       try {
         await untagMember(eventId, member.id);
       } catch {
-        toast.error("Couldn't remove member — try again");
+        toast.error("Couldn't remove member. Try again.");
         setTagged((prev) => [...prev, member]);
       }
     });
@@ -73,12 +73,12 @@ export function TaggedMembersSection({
 
   return (
     <div className="flex flex-col gap-1.5 border-t border-line pt-4">
-      <Label className="font-sans text-[12px] font-normal text-subtle">Members</Label>
+      <Label>Members</Label>
       <div className="flex flex-wrap items-center gap-2">
         {tagged.map((member) => (
           <span
             key={member.id}
-            className="flex items-center gap-1.5 border border-line bg-background py-1 pr-1.5 pl-1"
+            className="flex items-center gap-1.5 border border-line bg-background py-1 pr-1.5 pl-1 max-md:py-1.5 max-md:pr-0"
           >
             <Avatar size="sm">
               <AvatarImage src={member.avatar_url ?? undefined} alt="" />
@@ -89,7 +89,7 @@ export function TaggedMembersSection({
               type="button"
               onClick={() => handleUntag(member)}
               aria-label={`Remove ${member.full_name ?? member.email}`}
-              className="flex size-4 items-center justify-center text-foreground/50 transition-colors duration-150 ease-fluid hover:bg-muted hover:text-foreground"
+              className="flex size-4 items-center justify-center max-md:-my-2 max-md:size-10 text-foreground/50 transition-colors duration-150 ease-fluid hover:bg-muted hover:text-foreground"
             >
               ×
             </button>
@@ -116,7 +116,7 @@ export function TaggedMembersSection({
                   key={member.id}
                   type="button"
                   onClick={() => handleTag(member)}
-                  className="flex items-center gap-2 px-1.5 py-1.5 text-left transition-colors duration-150 ease-fluid hover:bg-muted/40"
+                  className="flex items-center gap-2 px-1.5 py-1.5 text-left max-md:min-h-11 transition-colors duration-150 ease-fluid hover:bg-muted/40"
                 >
                   <Avatar size="sm">
                     <AvatarImage src={member.avatar_url ?? undefined} alt="" />

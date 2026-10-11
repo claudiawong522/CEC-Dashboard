@@ -38,6 +38,7 @@ import { MarketingSection } from "@/components/events/sections/MarketingSection"
 import { MediaSection } from "@/components/events/sections/MediaSection";
 import { SECTION_COLORS, type SectionLabel } from "@/lib/utils/section-colors";
 import { Confetti, TriangleScatter } from "@/components/decor/shapes";
+import { PageHeader } from "@/components/ui/page-header";
 import type {
   EventRow,
   SpeakerRow,
@@ -158,7 +159,7 @@ export function DetailsForm({
       try {
         await setEventSectionEnabled(event.id, section, enabled);
       } catch {
-        toast.error("Couldn't update section — try again");
+        toast.error("Couldn't update section. Try again.");
         setSectionFlags((prev) => ({ ...prev, [section]: !enabled }));
       }
     });
@@ -196,91 +197,98 @@ export function DetailsForm({
       <TriangleScatter count={4} seed={61} opacity={0.18} className="z-0 h-40" />
       <Link
         href="/calendar"
-        className="t-eyebrow relative z-10 w-fit text-foreground/50 transition-colors duration-200 ease-fluid hover:text-foreground"
+        className="t-eyebrow relative z-10 inline-flex w-fit items-center text-foreground/50 transition-colors duration-200 ease-fluid hover:text-foreground max-md:min-h-11"
       >
         ← Calendar
       </Link>
-      <div className="relative z-10 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span className="t-eyebrow text-foreground/50">
-            Step 2 of 2
-          </span>
-          <span
-            className={cn(
-              "t-eyebrow relative overflow-visible border px-2 py-0.5 text-foreground",
-              doneCount === doneable.length ? "border-foreground bg-mint" : "border-line bg-mint/20",
-            )}
-          >
-            {doneCount} of {doneable.length} done
-            {doneCount === doneable.length && (
-              <Confetti
-                size={28}
-                className="pointer-events-none absolute -top-1.5 -right-1.5 opacity-90"
-              />
-            )}
-          </span>
-        </div>
-        <div className="flex items-center gap-1">
-          <SectionsDialog flags={sectionFlags} onToggle={handleToggleSection} />
-          <DeleteEventDialog eventId={event.id} isRecurring={!!event.recurring_series_id} />
-        </div>
-      </div>
+      <PageHeader
+        className="relative z-10"
+        eyebrow="Event · Step 2 of 2"
+        title={<span className="[overflow-wrap:anywhere]">{name.trim() || "Untitled event"}</span>}
+        actions={
+          <>
+            <span
+              className={cn(
+                "t-eyebrow relative mr-1 overflow-visible border px-2 py-1 text-foreground tabular-nums",
+                doneCount === doneable.length ? "border-foreground bg-mint" : "border-line bg-background",
+              )}
+            >
+              {doneCount} of {doneable.length} done
+              {doneCount === doneable.length && (
+                <Confetti
+                  size={28}
+                  className="pointer-events-none absolute -top-1.5 -right-1.5 opacity-90"
+                />
+              )}
+            </span>
+            <SectionsDialog flags={sectionFlags} onToggle={handleToggleSection} />
+            <DeleteEventDialog eventId={event.id} isRecurring={!!event.recurring_series_id} />
+          </>
+        }
+      />
 
-      <div className="relative z-10 flex flex-col gap-4 border border-line bg-background px-5 py-5 shadow-soft">
-        <div className="flex items-end gap-3">
-          <div className="flex flex-[2] flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-subtle">Event name</Label>
+      <div className="relative z-10 flex flex-col gap-4 border border-line bg-background p-4 shadow-soft sm:p-5">
+        {/* Phones stack the header: name full width, the two dates side by
+            side, then All day and the save state on their own row. From md
+            the wrappers dissolve (md:contents) back into the one flat row. */}
+        <div className="flex flex-col gap-3 md:flex-row md:items-end">
+          <div className="flex flex-col gap-1.5 md:flex-[2]">
+            <Label>Event name</Label>
             <Input value={name} onChange={(e) => setName(e.target.value)} />
           </div>
-          <div className="flex flex-1 flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-subtle">Start date</Label>
-            <DatePicker
-              value={date}
-              onChange={(v) => {
-                setDate(v);
-                if (endDate === date || !endDate) setEndDate(v);
-              }}
-            />
+          <div className="grid grid-cols-2 gap-3 md:contents">
+            <div className="flex min-w-0 flex-col gap-1.5 md:flex-1">
+              <Label>Start date</Label>
+              <DatePicker
+                value={date}
+                onChange={(v) => {
+                  setDate(v);
+                  if (endDate === date || !endDate) setEndDate(v);
+                }}
+              />
+            </div>
+            <div className="flex min-w-0 flex-col gap-1.5 md:flex-1">
+              <Label>End date</Label>
+              <DatePicker value={endDate} onChange={setEndDate} />
+            </div>
           </div>
-          <div className="flex flex-1 flex-col gap-1.5">
-            <Label className="font-sans text-[12px] font-normal text-subtle">End date</Label>
-            <DatePicker value={endDate} onChange={setEndDate} />
+          <div className="flex items-center justify-between gap-3 md:contents">
+            <label className="flex min-h-11 items-center gap-2 md:min-h-0 md:pb-2.5">
+              <span className="font-sans text-[12px] text-subtle">All day</span>
+              <Switch
+                checked={allDay}
+                onCheckedChange={(checked) => {
+                  setAllDay(checked);
+                  if (checked) {
+                    setStartTime("00:00");
+                    setEndTime("23:45");
+                  }
+                }}
+              />
+            </label>
+            <SaveIndicator status={headerStatus} className="md:pb-2.5" />
           </div>
-          <label className="flex items-center gap-2 pb-2.5">
-            <span className="font-sans text-[12px] text-subtle">All day</span>
-            <Switch
-              checked={allDay}
-              onCheckedChange={(checked) => {
-                setAllDay(checked);
-                if (checked) {
-                  setStartTime("00:00");
-                  setEndTime("23:45");
-                }
-              }}
-            />
-          </label>
-          <SaveIndicator status={headerStatus} className="pb-2.5" />
         </div>
         {!allDay && (
-          <div className="flex items-end gap-3">
-            <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-subtle">Start time</Label>
+          <div className="grid grid-cols-2 gap-3 md:flex md:items-end">
+            <div className="flex min-w-0 flex-col gap-1.5 md:flex-1">
+              <Label>Start time</Label>
               <TimePicker value={startTime} onChange={setStartTime} />
             </div>
-            <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-subtle">End time</Label>
+            <div className="flex min-w-0 flex-col gap-1.5 md:flex-1">
+              <Label>End time</Label>
               <TimePicker value={endTime} onChange={setEndTime} />
             </div>
-            <div className="flex-[2]" />
+            <div className="hidden md:block md:flex-[2]" />
           </div>
         )}
 
         <TaggedMembersSection eventId={event.id} taggedMembers={taggedMembers} allMembers={allMembers} />
 
         {recurringSeries && (
-          <div className="flex items-end gap-3 border-t border-line pt-4">
-            <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-subtle">Repeats</Label>
+          <div className="grid grid-cols-2 gap-3 border-t border-line pt-4 md:flex md:items-end">
+            <div className="flex min-w-0 flex-col gap-1.5 md:flex-1">
+              <Label>Repeats</Label>
               <Select
                 items={REPEAT_LABELS}
                 value={repeatsFrequency}
@@ -296,8 +304,8 @@ export function DetailsForm({
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-subtle">Ends</Label>
+            <div className="flex min-w-0 flex-col gap-1.5 md:flex-1">
+              <Label>Ends</Label>
               <Select
                 items={ENDS_MODE_LABELS}
                 value={repeatsEndsMode}
@@ -312,8 +320,8 @@ export function DetailsForm({
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex flex-1 flex-col gap-1.5">
-              <Label className="font-sans text-[12px] font-normal text-subtle">
+            <div className="col-span-2 flex min-w-0 flex-col gap-1.5 md:flex-1">
+              <Label>
                 {repeatsEndsMode === "date" ? "End date" : "Occurrences"}
               </Label>
               {repeatsEndsMode === "date" ? (
@@ -328,20 +336,63 @@ export function DetailsForm({
                 />
               )}
             </div>
-            <div className="flex-[2] font-sans text-[11.5px] text-foreground/50">
+            <div className="col-span-2 font-sans md:flex-[2] text-[11.5px] text-foreground/50">
               Changing this only affects occurrences that haven&apos;t happened yet. Past ones are
               left as-is.
             </div>
-            <SaveIndicator status={repeatsStatus} className="pb-2.5" />
+            <SaveIndicator status={repeatsStatus} className="md:pb-2.5" />
           </div>
         )}
       </div>
 
-      <div className="relative z-10 flex gap-6">
-        <nav className="relative flex w-[184px] shrink-0 flex-col">
-          {/* The active-tab indicator: a flat mint tint sliding behind the row. */}
+      <div className="relative z-10 flex flex-col gap-4 md:flex-row md:gap-6">
+        {/* Phones: the sections become one horizontally scrolling row above
+            the card, bled to the screen edges, the active tab underlined in
+            mint the way the sidebar marks the current page. */}
+        <div
+          role="tablist"
+          aria-label="Sections"
+          className="-mx-4 flex overflow-x-auto overscroll-x-contain border-b border-line px-4 [scrollbar-width:none] sm:-mx-10 sm:px-10 md:hidden [&::-webkit-scrollbar]:hidden"
+        >
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === tab.key}
+              onClick={(e) => {
+                setActiveTab(tab.key);
+                e.currentTarget.scrollIntoView({ inline: "nearest", block: "nearest" });
+              }}
+              className={cn(
+                "relative flex h-11 shrink-0 items-center gap-2 px-3 font-sans text-[14px] whitespace-nowrap transition-[color,box-shadow] duration-200 ease-fluid focus-visible:outline-offset-[-2px]",
+                activeTab === tab.key
+                  ? "font-medium text-foreground shadow-[inset_0_-3px_0_0_var(--mint)]"
+                  : "text-subtle",
+              )}
+            >
+              <span
+                className="inline-block h-2 w-[9px] shrink-0"
+                style={{
+                  background: tab.label === "Notes" ? "var(--amber)" : SECTION_COLORS[tab.label],
+                  clipPath: "polygon(50% 0,100% 100%,0 100%)",
+                }}
+              />
+              {tab.label}
+              {tab.key !== "notes" && tab.done && (
+                <span aria-label="done" className="size-1.5 shrink-0 bg-mint-dark" />
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Desktop: the kit's vertical tabs. Hairline left rule, a 3px mint
+            bar slid between rows by animating `top`, done rows marked with a
+            6px mint-dark square. */}
+        <nav className="relative hidden w-[184px] shrink-0 flex-col border-l border-line md:flex">
           <div
-            className="absolute inset-x-0 h-9 bg-mint/20 transition-[top] duration-[340ms] ease-indicator"
+            aria-hidden="true"
+            className="absolute -left-px h-9 w-[3px] bg-mint transition-[top] duration-[340ms] ease-fluid"
             style={{ top: activeIndex * 36 }}
           />
           {tabs.map((tab) => (
@@ -350,8 +401,8 @@ export function DetailsForm({
               type="button"
               onClick={() => setActiveTab(tab.key)}
               className={cn(
-                "relative flex h-9 items-center gap-[9px] px-[13px] font-sans text-[13px] transition-colors duration-200 ease-fluid hover:text-foreground",
-                activeTab === tab.key ? "font-medium text-foreground" : "text-subtle",
+                "relative flex h-9 items-center gap-[9px] pr-3 pl-4 font-sans text-[13px] transition-colors duration-200 ease-fluid hover:text-foreground focus-visible:outline-offset-[-2px]",
+                activeTab === tab.key ? "font-medium text-foreground" : "text-foreground/55",
               )}
             >
               <span
@@ -364,7 +415,8 @@ export function DetailsForm({
               {tab.label}
               {tab.key !== "notes" && (
                 <span
-                  className="ml-auto size-2 bg-mint transition-opacity duration-300"
+                  aria-hidden="true"
+                  className="ml-auto size-1.5 bg-mint-dark transition-opacity duration-300"
                   style={{ opacity: tab.done ? 1 : 0 }}
                 />
               )}

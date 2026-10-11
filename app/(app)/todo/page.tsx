@@ -87,15 +87,15 @@ export default async function TodoPage() {
               key={event.id}
               href={`/events/${event.id}`}
               style={i < STAGGER_CAP ? { animationDelay: `${0.05 + i * 0.07}s` } : undefined}
-              className={`flex flex-col gap-[9px] px-4 py-3.5 transition-colors duration-200 ease-fluid hover:bg-muted/40 ${
+              className={`flex flex-col gap-[9px] px-4 py-3.5 focus-visible:outline-offset-[-2px] transition-colors duration-200 ease-fluid hover:bg-muted/40 ${
                 i < STAGGER_CAP ? "animate-riseIn" : ""
               } ${i < rows.length - 1 ? "border-b border-line" : ""}`}
             >
-              <div className="flex items-baseline justify-between">
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
                 <span className="font-sans text-[14px] font-medium text-foreground">{event.name}</span>
-                <span className="t-eyebrow text-foreground/50">
+                <span className="t-eyebrow shrink-0 text-foreground/50 tabular-nums sm:whitespace-nowrap">
                   {formatEventDate(event.event_date)} · {formatEventTime(event.event_time)}
-                  {event.event_end_time ? `–${formatEventTime(event.event_end_time)}` : ""}
+                  {event.event_end_time ? ` to ${formatEventTime(event.event_end_time)}` : ""}
                 </span>
               </div>
               <div className="flex flex-wrap gap-1.5">

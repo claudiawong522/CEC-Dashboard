@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -8,7 +8,16 @@ import interactionPlugin from "@fullcalendar/interaction";
 import type { EventClickArg, EventDropArg, DatesSetArg, EventMountArg } from "@fullcalendar/core";
 import type { DateClickArg } from "@fullcalendar/interaction";
 import type FullCalendarType from "@fullcalendar/react";
-import { addDays, addYears, format, isSameMonth, startOfWeek, subYears } from "date-fns";
+import {
+  addDays,
+  addMonths,
+  addYears,
+  format,
+  isSameMonth,
+  startOfMonth,
+  startOfWeek,
+  subYears,
+} from "date-fns";
 import { toast } from "sonner";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -18,6 +27,25 @@ import { rescheduleEvent } from "@/lib/actions/events";
 import { TriangleScatter } from "@/components/decor/shapes";
 import { WeekView } from "./WeekView";
 import { YearView } from "./YearView";
+import { MobileMonth } from "./MobileMonth";
+
+// Below md the month is the compact phone grid, not FullCalendar. Read from
+// matchMedia through useSyncExternalStore so it follows a resize or rotation
+// without an effect; the server snapshot says desktop, which is what
+// FullCalendar (client only anyway) expects.
+const PHONE_QUERY = "(max-width: 767.98px)";
+function subscribePhone(onChange: () => void) {
+  const mq = window.matchMedia(PHONE_QUERY);
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+}
+function useIsPhone() {
+  return useSyncExternalStore(
+    subscribePhone,
+    () => window.matchMedia(PHONE_QUERY).matches,
+    () => false,
+  );
+}
 
 // FullCalendar renders directly to the DOM and its date formatting can
 // differ slightly between the server render and the client's timezone,
@@ -70,6 +98,20 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
   // calendarRef.current.gotoDate(). Instead it remounts fresh from this
   // date every time you re-enter month view.
   const [monthViewDate, setMonthViewDate] = useState(() => new Date());
+  const isPhone = useIsPhone();
+  // The phone month's selected day; today until someone taps another.
+  const [selectedDay, setSelectedDay] = useState(() => new Date());
+  const phoneMonth = viewType === "month" && isPhone;
+
+  // Moving the phone month keeps the selection inside it: today when the
+  // month holds today, otherwise the 1st. FullCalendar remounts from
+  // monthViewDate, so it is kept in step for a later switch to desktop.
+  function shiftPhoneMonth(target: Date) {
+    const month = startOfMonth(target);
+    setCurrentDate(month);
+    setMonthViewDate(month);
+    setSelectedDay(isSameMonth(month, new Date()) ? new Date() : month);
+  }
 
   const fcEvents = events.map((event) => ({
     id: event.id,
@@ -100,7 +142,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
   function handleEventDrop(info: EventDropArg) {
     const newDate = info.event.startStr.slice(0, 10);
     rescheduleEvent(info.event.id, newDate).catch(() => {
-      toast.error("Couldn't move that event — try again");
+      toast.error("Couldn't move that event. Try again.");
       info.revert();
     });
   }
@@ -115,13 +157,15 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
   }
 
   function goPrev() {
-    if (viewType === "month") calendarRef.current?.getApi().prev();
+    if (phoneMonth) shiftPhoneMonth(addMonths(startOfMonth(currentDate), -1));
+    else if (viewType === "month") calendarRef.current?.getApi().prev();
     else if (viewType === "week") setCurrentDate((d) => addDays(d, -7));
     else setCurrentDate((d) => subYears(d, 1));
   }
 
   function goNext() {
-    if (viewType === "month") calendarRef.current?.getApi().next();
+    if (phoneMonth) shiftPhoneMonth(addMonths(startOfMonth(currentDate), 1));
+    else if (viewType === "month") calendarRef.current?.getApi().next();
     else if (viewType === "week") setCurrentDate((d) => addDays(d, 7));
     else setCurrentDate((d) => addYears(d, 1));
   }
@@ -129,16 +173,23 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
   function goToday() {
     if (viewType === "month") calendarRef.current?.getApi().today();
     setCurrentDate(new Date());
+    setMonthViewDate(new Date());
+    setSelectedDay(new Date());
   }
 
   const weekStart = startOfWeek(currentDate);
   const weekEnd = addDays(weekStart, 6);
   const weekTitle = isSameMonth(weekStart, weekEnd)
-    ? `${format(weekStart, "MMM d")} — ${format(weekEnd, "d")}`
-    : `${format(weekStart, "MMM d")} — ${format(weekEnd, "MMM d")}`;
+    ? `${format(weekStart, "MMM d")} to ${format(weekEnd, "d")}`
+    : `${format(weekStart, "MMM d")} to ${format(weekEnd, "MMM d")}`;
 
-  const title =
-    viewType === "month" ? monthTitle : viewType === "week" ? weekTitle : format(currentDate, "yyyy");
+  const title = phoneMonth
+    ? format(currentDate, "MMMM yyyy")
+    : viewType === "month"
+      ? monthTitle
+      : viewType === "week"
+        ? weekTitle
+        : format(currentDate, "yyyy");
 
   return (
     <div className="flex flex-col gap-6">
@@ -150,18 +201,23 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
           <Button variant="outline" size="icon-sm" aria-label="Next" onClick={goNext}>
             <ChevronRight />
           </Button>
-          <Button variant="outline" size="sm" onClick={goToday}>
+          <Button variant="outline" size="sm" onClick={goToday} className="max-sm:hidden">
             Today
           </Button>
         </div>
 
         <div
           className={cn(
-            "t-display order-first w-full text-foreground sm:order-none sm:w-auto",
+            "t-display order-first flex w-full items-center justify-between gap-3 text-foreground sm:order-none sm:w-auto",
             viewType === "year" ? "text-[24px]" : "text-[20px]",
           )}
         >
-          {title}
+          <span>{title}</span>
+          {/* Phones: Today moves up beside the title so the arrows and the
+              view switch share one row. */}
+          <Button variant="outline" size="sm" onClick={goToday} className="sm:hidden">
+            Today
+          </Button>
         </div>
 
         {/* Segmented control: a 2px black group, the active segment inverted. */}
@@ -172,7 +228,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
               type="button"
               onClick={() => setViewType(v.key)}
               className={cn(
-                "t-eyebrow px-3 py-2 transition-colors duration-200 ease-fluid",
+                "t-eyebrow px-3 py-2 transition-colors duration-200 ease-fluid focus-visible:outline-offset-[-2px] max-md:h-10 max-md:px-3.5",
                 viewType === v.key
                   ? "bg-foreground text-background"
                   : "text-foreground/50 hover:bg-muted/60 hover:text-foreground",
@@ -184,7 +240,16 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
         </div>
       </div>
 
-      {viewType === "month" && (
+      {phoneMonth && (
+        <MobileMonth
+          events={events}
+          month={currentDate}
+          selectedDay={selectedDay}
+          onSelectDay={setSelectedDay}
+        />
+      )}
+
+      {viewType === "month" && !isPhone && (
         <div className="relative overflow-hidden bg-background">
           {/* Logo tiles behind the day grid: a day cell's own link always
               wins the click, and each triangle still pops where it peeks
@@ -224,6 +289,7 @@ export function CalendarView({ events }: { events: CalendarEvent[] }) {
             const target = new Date(currentDate.getFullYear(), monthIndex, 1);
             setCurrentDate(target);
             setMonthViewDate(target);
+            setSelectedDay(isSameMonth(target, new Date()) ? new Date() : target);
             setViewType("month");
           }}
         />
