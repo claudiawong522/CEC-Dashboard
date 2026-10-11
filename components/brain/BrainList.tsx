@@ -11,6 +11,7 @@ import {
   type BrainKind,
 } from "@/lib/validation/brain-schemas";
 import { cn } from "@/lib/utils";
+import { formatClubDate } from "@/lib/utils/dates";
 
 export function BrainList({ notes }: { notes: BrainNote[] }) {
   const [query, setQuery] = useState("");
@@ -132,7 +133,7 @@ export function BrainList({ notes }: { notes: BrainNote[] }) {
                 {BRAIN_KIND_LABELS[note.kind]}
                 {note.semester && ` · ${note.semester}`} ·{" "}
                 {note.author?.full_name ?? note.author?.email ?? "the club"} ·{" "}
-                {new Date(note.updated_at).toLocaleDateString(undefined, {
+                {formatClubDate(note.updated_at, {
                   month: "short",
                   day: "numeric",
                 })}

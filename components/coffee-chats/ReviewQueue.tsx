@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { reviewChat } from "@/lib/actions/coffeeChats";
 import { partnerName, type CoffeeChat } from "@/lib/types/coffee-chats";
+import { formatClubDate } from "@/lib/utils/dates";
 
 export function ReviewQueue({
   chats,
@@ -66,7 +67,7 @@ export function ReviewQueue({
                 </span>
               </span>
               <span className="t-eyebrow text-foreground/50">
-                {new Date(chat.submitted_at).toLocaleDateString(undefined, {
+                {formatClubDate(chat.submitted_at, {
                   month: "short",
                   day: "numeric",
                 })}
