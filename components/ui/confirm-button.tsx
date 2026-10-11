@@ -55,7 +55,7 @@ export function ConfirmButton({
       {asking && (
         <span
           className={cn(
-            "absolute top-1/2 z-20 flex -translate-y-1/2 items-center gap-2 border border-foreground bg-background px-2.5 py-1.5 font-display text-[10px] font-medium tracking-[0.12em] whitespace-nowrap text-foreground/60 uppercase shadow-soft",
+            "absolute top-1/2 z-20 flex -translate-y-1/2 items-center gap-2 border border-foreground bg-background px-2.5 py-1.5 font-display text-[10px] font-medium tracking-[0.12em] whitespace-nowrap text-foreground/60 uppercase shadow-soft max-md:py-0",
             align === "right" ? "right-0" : "left-0",
           )}
         >
@@ -69,7 +69,7 @@ export function ConfirmButton({
                 setAsking(false);
               })
             }
-            className="font-bold text-red transition-colors duration-150 hover:text-foreground disabled:opacity-50"
+            className="font-bold text-red transition-colors duration-150 hover:text-foreground disabled:opacity-50 max-md:min-h-11 max-md:px-2"
           >
             {isPending ? "…" : yesLabel}
           </button>
@@ -77,7 +77,7 @@ export function ConfirmButton({
             type="button"
             onClick={() => setAsking(false)}
             disabled={isPending}
-            className="text-foreground/60 transition-colors duration-150 hover:text-foreground disabled:opacity-50"
+            className="text-foreground/60 transition-colors duration-150 hover:text-foreground disabled:opacity-50 max-md:min-h-11 max-md:px-2"
           >
             {cancelLabel}
           </button>

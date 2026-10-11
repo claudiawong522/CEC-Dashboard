@@ -18,7 +18,7 @@ export function MissingKeyNotice({
   return (
     <div
       role="status"
-      className="flex flex-col gap-[5px] rounded-[10px] border border-[rgba(232,184,48,0.45)] bg-amber/[0.09] px-[15px] py-3"
+      className="flex flex-col gap-[5px] border border-line border-l-[3px] border-l-amber bg-background px-[15px] py-3"
     >
       <span className="t-eyebrow text-foreground">
         missing api key

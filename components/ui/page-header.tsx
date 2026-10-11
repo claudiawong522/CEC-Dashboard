@@ -24,7 +24,7 @@ export function PageHeader({
     <div className={cn("flex flex-wrap items-end justify-between gap-x-6 gap-y-4", className)}>
       <div className="flex min-w-0 flex-col gap-3">
         {eyebrow && <span className="t-eyebrow text-foreground/50">{eyebrow}</span>}
-        <h1 className="t-display text-[32px] text-foreground sm:text-[36px]">{title}</h1>
+        <h1 className="t-display text-[28px] text-balance break-words text-foreground sm:text-[36px]">{title}</h1>
         <MintRule className="w-20" />
         {children && (
           <p className="max-w-[60ch] font-sans text-[14px] leading-[1.6] text-subtle">{children}</p>
