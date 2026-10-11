@@ -83,7 +83,15 @@ export function NoteEditorPanel({
     });
   }
 
-  const initialContent = Array.isArray(note.content) ? (note.content as PartialBlock[]) : [];
+  // A captured note has a body but no block document yet, so it starts as
+  // one paragraph per line of that body. The first edit then saves real
+  // blocks and the sync trigger keeps body in step, instead of an empty
+  // editor overwriting the paste.
+  const initialContent: PartialBlock[] = Array.isArray(note.content)
+    ? (note.content as PartialBlock[])
+    : note.body.trim()
+      ? note.body.split("\n").map((line) => ({ type: "paragraph", content: line }))
+      : [];
 
   return (
     <div className="flex flex-col gap-5">
