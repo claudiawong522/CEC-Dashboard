@@ -17,7 +17,7 @@ import {
 
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[crm] couldn't ${what}:`, error.message);
-  return actionFailed(`Couldn't ${what} — try again`);
+  return actionFailed(`Couldn't ${what}. Try again`);
 }
 
 // Everything here is admin-only, matching the RLS on outreach_contacts and
@@ -150,7 +150,7 @@ export async function deleteContact(contactId: string): Promise<ActionResult> {
 
   if ((count ?? 0) > 0) {
     return actionFailed(
-      "This person is named on a lead in External — take them off it first",
+      "This person is named on a lead in External. Take them off it first",
     );
   }
 

@@ -27,7 +27,7 @@ export const cycleSchema = z.object({
     .refine((list) => list.length > 0, "Paste at least one netid")
     .refine(
       (list) => list.every((netid) => NETID.test(netid)),
-      "Some of those don't look like netids — a netid looks like ab123",
+      "Some of those don't look like netids. A netid looks like ab123",
     ),
 });
 export type CycleInput = z.input<typeof cycleSchema>;

@@ -16,7 +16,7 @@ import { ithacaInstant } from "@/lib/utils/signin-window";
 
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[interviews] couldn't ${what}:`, error.message);
-  return actionFailed(`Couldn't ${what} — try again`);
+  return actionFailed(`Couldn't ${what}. Try again`);
 }
 
 export async function createCycle(input: CycleInput): Promise<ActionResult> {
@@ -39,7 +39,7 @@ export async function createCycle(input: CycleInput): Promise<ActionResult> {
     // cycle" is never ambiguous and an applicant can't be shown two sets of
     // slots.
     if (error.code === "23505") {
-      return actionFailed("A cycle is already open — close that one first");
+      return actionFailed("A cycle is already open. Close that one first");
     }
     return databaseFailure("open that cycle", error);
   }
@@ -61,7 +61,7 @@ export async function closeCycle(cycleId: string): Promise<ActionResult> {
 
   revalidatePath("/interviews");
   revalidatePath("/apply");
-  return actionOk("Closed — applicants can no longer see or claim slots");
+  return actionOk("Closed. Applicants can no longer see or claim slots");
 }
 
 export async function addSlots(input: SlotInput): Promise<ActionResult> {
@@ -119,7 +119,7 @@ export async function deleteSlot(slotId: string): Promise<ActionResult> {
 
   if (error) return databaseFailure("remove that slot", error);
   if (!deleted || deleted.length === 0) {
-    return actionFailed("That slot is claimed — release it first");
+    return actionFailed("That slot is claimed. Release it first");
   }
 
   revalidatePath("/interviews");
@@ -139,7 +139,7 @@ export async function releaseSlot(slotId: string): Promise<ActionResult> {
 
   revalidatePath("/interviews");
   revalidatePath("/apply");
-  return actionOk("Released — someone else can take it");
+  return actionOk("Released. Someone else can take it");
 }
 
 // The applicant side. An applicant is the student tier: a Cornell account
@@ -169,7 +169,7 @@ export async function claimSlot(slotId: string): Promise<ActionResult> {
     return databaseFailure("book that slot", error);
   }
   if (!claimed || claimed.length === 0) {
-    return actionFailed("Someone just took that one — pick another");
+    return actionFailed("Someone just took that one. Pick another");
   }
 
   revalidatePath("/interviews");

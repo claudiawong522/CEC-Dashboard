@@ -16,7 +16,7 @@ import {
 
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[members] couldn't ${what}:`, error.message);
-  return actionFailed(`Couldn't ${what} — try again`);
+  return actionFailed(`Couldn't ${what}. Try again`);
 }
 
 // Editing your own profile is the one write in this app available to every

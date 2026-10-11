@@ -9,7 +9,7 @@ import { attendanceSchema, type AttendanceInput } from "@/lib/validation/club-sc
 
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[attendance] couldn't ${what}:`, error.message);
-  return actionFailed(`Couldn't ${what} — try again`);
+  return actionFailed(`Couldn't ${what}. Try again`);
 }
 
 export async function recordAttendance(input: AttendanceInput): Promise<ActionResult> {

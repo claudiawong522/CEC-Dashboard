@@ -19,7 +19,7 @@ import {
 
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[coffee-chats] couldn't ${what}:`, error.message);
-  return actionFailed(`Couldn't ${what} — try again`);
+  return actionFailed(`Couldn't ${what}. Try again`);
 }
 
 export async function submitChat(input: SubmitChatInput): Promise<ActionResult> {
@@ -64,7 +64,7 @@ export async function submitChat(input: SubmitChatInput): Promise<ActionResult> 
   }
 
   revalidatePath("/coffee-chats");
-  return actionOk("Submitted — an admin will approve it shortly");
+  return actionOk("Submitted. An admin will approve it shortly");
 }
 
 // A sent-back square is offered again (BingoBoard), but the unique index on
@@ -157,7 +157,7 @@ export async function reviewChat(input: ReviewChatInput): Promise<ActionResult> 
 
   if (error) return databaseFailure("review that chat", error);
   if (!updated || updated.length === 0) {
-    return actionFailed("Someone already reviewed that one — refresh the queue");
+    return actionFailed("Someone already reviewed that one. Refresh the queue");
   }
 
   revalidatePath("/coffee-chats");
@@ -211,7 +211,7 @@ export async function deleteCategory(categoryId: string): Promise<ActionResult> 
   if (error) return databaseFailure("remove that square", error);
 
   revalidatePath("/coffee-chats");
-  return actionOk("Square removed — any chats on it are kept as uncategorised");
+  return actionOk("Square removed. Any chats on it are kept as uncategorised");
 }
 
 // The selfie bucket is private, unlike the event buckets, because these are
