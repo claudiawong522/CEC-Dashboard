@@ -110,8 +110,13 @@ for (const m of siteMembers) {
   if (empty(profile.linkedin_url) && m.linkedin) patch.linkedin_url = withScheme(m.linkedin);
   if ((empty(profile.position) || profile.position === "Member") && m.role) patch.position = m.role;
 
+  // A Google sign-in avatar is whatever Google had on file, usually a letter
+  // tile. The site photo is a chosen headshot, so it replaces that too. A
+  // photo someone uploaded here themselves (portraits bucket) is kept.
+  const replaceableAvatar =
+    empty(profile.avatar_url) || /googleusercontent\.com/.test(profile.avatar_url);
   let avatarNote = "";
-  if (empty(profile.avatar_url) && m.image) {
+  if (replaceableAvatar && m.image) {
     const file = join(sitePath, "public", m.image);
     if (existsSync(file)) {
       avatarNote = ` + photo ${m.image}`;
