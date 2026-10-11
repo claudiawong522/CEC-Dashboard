@@ -69,7 +69,7 @@ const normalise = (name) =>
     .normalize("NFD")
     .replace(/[̀-ͯ]/g, "")
     .toLowerCase()
-    .replace(/\s*'\d{2}$/, "")
+    .replace(/\s*['\u2019]\d{2}$/, "")
     .replace(/\(.*?\)/g, "")
     .split(",")[0]
     .replace(/\s+/g, " ")
@@ -84,8 +84,17 @@ if (error) {
   console.error("couldn't read profiles:", error.message);
   process.exit(1);
 }
+// Two accounts with the same name are ambiguous: skip them and say so rather
+// than writing one person's site bio and photo into the wrong account.
 const byName = new Map();
-for (const p of profiles) if (p.full_name) byName.set(normalise(p.full_name), p);
+const ambiguous = new Set();
+for (const p of profiles) {
+  if (!p.full_name) continue;
+  const key = normalise(p.full_name);
+  if (byName.has(key)) ambiguous.add(key);
+  byName.set(key, p);
+}
+const done = new Set();
 
 const empty = (v) => v === null || v === undefined || v === "";
 const withScheme = (v) => (/^https?:\/\//i.test(v) ? v : `https://${v}`);
@@ -93,7 +102,14 @@ const withScheme = (v) => (/^https?:\/\//i.test(v) ? v : `https://${v}`);
 let matched = 0;
 const unmatched = [];
 for (const m of siteMembers) {
-  const profile = byName.get(normalise(m.name));
+  const key = normalise(m.name);
+  if (ambiguous.has(key)) {
+    unmatched.push(`${m.name} (${m.list}): two dashboard accounts share this name, fix by hand`);
+    continue;
+  }
+  if (done.has(key)) continue;
+  done.add(key);
+  const profile = byName.get(key);
   if (!profile) {
     unmatched.push(`${m.name} (${m.list})`);
     continue;
