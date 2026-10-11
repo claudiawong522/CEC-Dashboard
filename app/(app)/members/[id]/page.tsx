@@ -2,7 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 // lucide dropped its brand icons in v1, so LinkedIn gets the generic link
 // glyph and the label carries the meaning.
-import { ArrowLeftIcon, GlobeIcon, LinkIcon } from "lucide-react";
+import { ArrowLeftIcon, CodeXmlIcon, GlobeIcon, LinkIcon } from "lucide-react";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
 import { MEMBER_COLUMNS, classLabel, memberInitials, type MemberProfile } from "@/lib/types/members";
@@ -111,6 +111,8 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
             <Field label="major" value={member.major} />
             <Field label="minor" value={member.minor} />
             <Field label="college" value={member.college} />
+            <Field label="hobbies" value={member.hobbies} />
+            <Field label="building" value={member.building} />
             <Field label="email" value={member.email} />
             {/* A netid is only shown to the person themselves and to admins.
                 It's the Cornell-wide handle, and the directory doesn't need
@@ -120,7 +122,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
             )}
           </div>
 
-          {(member.linkedin_url || member.portfolio_url) && (
+          {(member.linkedin_url || member.portfolio_url || member.github_url) && (
             <div className="flex flex-wrap items-center gap-2.5">
               {member.linkedin_url && (
                 <a
@@ -142,6 +144,17 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
                 >
                   <GlobeIcon className="size-3.5" />
                   Portfolio
+                </a>
+              )}
+              {member.github_url && (
+                <a
+                  href={member.github_url}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="link-underline flex items-center gap-1.5 font-sans text-[12.5px] text-subtle transition-colors duration-200 hover:text-foreground"
+                >
+                  <CodeXmlIcon className="size-3.5" />
+                  GitHub
                 </a>
               )}
             </div>
