@@ -40,7 +40,7 @@ export function RoleSelect({ userId, role }: { userId: string; role: Role }) {
     <Select items={ROLE_LABELS} value={value} onValueChange={(v) => handleChange(v as Role)}>
       <SelectTrigger
         disabled={isPending}
-        className="t-eyebrow w-auto min-h-0 justify-self-start gap-1.5 border-line bg-background px-2 py-1 text-subtle hover:border-foreground hover:text-foreground data-[size=default]:min-h-0 [&_svg]:text-foreground/50"
+        className="t-eyebrow w-auto min-h-0 justify-self-start gap-1.5 border-line bg-background px-2 py-1 text-subtle hover:border-foreground hover:text-foreground data-[size=default]:min-h-0 max-md:min-h-11 max-md:px-3 max-md:data-[size=default]:min-h-11 [&_svg]:text-foreground/50"
       >
         <SelectValue />
       </SelectTrigger>

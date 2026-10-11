@@ -93,7 +93,7 @@ export function SubmitChatDialog({
         .upload(path, file);
 
       if (uploadError) {
-        toast.error("Couldn't upload that photo — try again");
+        toast.error("Couldn't upload that photo. Try again");
         return;
       }
 

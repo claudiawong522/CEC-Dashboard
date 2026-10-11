@@ -42,7 +42,7 @@ function UpcomingEventsLink() {
       href={LUMA_URL}
       target="_blank"
       rel="noopener noreferrer"
-      className="brutalist-border inline-flex items-center gap-2 bg-transparent px-4 py-2 font-display text-[12px] font-bold tracking-wide text-foreground uppercase transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-background"
+      className="brutalist-border inline-flex min-h-11 w-full items-center justify-center gap-2 bg-transparent px-4 py-2 font-display sm:w-auto text-[12px] font-bold tracking-wide text-foreground uppercase transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-background"
     >
       See what&rsquo;s coming up
       <svg
@@ -272,7 +272,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
 
     if (milestone && !kiosk) {
       return (
-        <div className="relative flex flex-col items-center gap-4 overflow-hidden border-2 border-foreground bg-background p-7 text-center shadow-mint">
+        <div className="relative flex flex-col items-center gap-4 overflow-hidden border-2 border-foreground bg-background p-5 text-center shadow-mint sm:p-7">
           {/* The one bright element on the page: a mint band across the top,
               which is what makes this feel like an occasion. */}
           <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-mint" />
@@ -510,12 +510,13 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
 
       {error && <p className="font-sans text-[12px] text-red">{error}</p>}
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
         <Button
           type="button"
+          size="lg"
           loading={isPending}
           onClick={step === "email" ? continueFromEmail : submit}
-          className="px-5 py-3 text-[14px]"
+          className="w-full px-5 text-[14px] sm:w-auto"
         >
           {step === "email" ? "Continue" : "Sign in"}
         </Button>
@@ -526,7 +527,7 @@ export function CheckInForm({ event, kiosk }: { event: CurrentEvent; kiosk: bool
               setStep("email");
               setError(null);
             }}
-            className="link-underline font-sans text-[12.5px] text-foreground/50 transition-colors duration-200 hover:text-foreground"
+            className="link-underline min-h-11 self-center font-sans text-[13px] text-foreground/50 transition-colors duration-200 hover:text-foreground sm:self-auto"
           >
             Wrong email?
           </button>

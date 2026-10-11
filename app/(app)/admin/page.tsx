@@ -15,7 +15,7 @@ export default async function AdminPage() {
   const supabase = await createClient();
   // Removed people are gone from this screen entirely. Their row survives in
   // the database because everything they authored points at it, but nothing
-  // here should hint that they were ever members — inviting them again is
+  // here should hint that they were ever members; inviting them again is
   // what brings them back, and it looks like any other first-time invite.
   const { data: users } = await supabase
     .from("profiles")
@@ -39,11 +39,11 @@ export default async function AdminPage() {
 
       <div className="relative z-10 flex flex-col gap-4">
         <PageHeader title="Admin" />
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
           <div className="flex size-[26px] shrink-0 items-center justify-center border-2 border-foreground bg-background font-display text-[9.5px] font-bold text-foreground">
             {initials}
           </div>
-          <span className="font-sans text-[13px] text-subtle">
+          <span className="min-w-0 font-sans text-[13px] break-words text-subtle">
             Signed in as {session.profile.full_name ?? session.profile.email} ·{" "}
             {session.profile.email}
           </span>

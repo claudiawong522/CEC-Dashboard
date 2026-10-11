@@ -59,7 +59,7 @@ export function BingoBoard({
       </div>
 
       {/* The board itself: a 2px black frame around square tiles. */}
-      <div className="grid gap-2.5 border-2 border-foreground bg-background p-2.5 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-2 gap-2 border-2 border-foreground bg-background p-2 sm:gap-2.5 sm:p-2.5 lg:grid-cols-3">
         {squares.map(({ category, chat }) => {
           const status = chat?.status;
           const selfie = chat ? selfieUrls[chat.selfie_url] : undefined;
@@ -75,7 +75,7 @@ export function BingoBoard({
               disabled={!canSubmit}
               onClick={() => setOpenSquare({ category, chat })}
               className={cn(
-                "group relative flex min-h-[132px] flex-col justify-between overflow-hidden border p-4 text-left transition-[background-color,border-color,box-shadow] duration-200 ease-fluid",
+                "group relative flex min-h-[124px] min-w-0 flex-col justify-between gap-3 overflow-hidden border p-3 text-left sm:min-h-[132px] sm:p-4 transition-[background-color,border-color,box-shadow] duration-200 ease-fluid",
                 status === "approved"
                   ? "border-foreground bg-mint"
                   : "border-line bg-background",
@@ -96,7 +96,7 @@ export function BingoBoard({
               )}
 
               <div className="relative z-10 flex flex-col gap-1">
-                <span className="font-display text-[14px] font-bold text-foreground">
+                <span className="font-display text-[14px] font-bold break-words text-foreground">
                   {category.name}
                 </span>
                 {category.description && (
@@ -106,7 +106,7 @@ export function BingoBoard({
                 )}
               </div>
 
-              <div className="relative z-10 flex items-center gap-1.5">
+              <div className="relative z-10 flex flex-wrap items-center gap-1.5">
                 {status === "approved" && (
                   <span className="t-eyebrow flex items-center gap-1.5 text-foreground">
                     <CheckIcon className="size-3" />
@@ -137,7 +137,7 @@ export function BingoBoard({
         })}
       </div>
 
-      {/* One dialog for the whole board rather than one per tile — the file
+      {/* One dialog for the whole board rather than one per tile: the file
           input and its object URL only need to exist for the square actually
           being filled. */}
       <SubmitChatDialog

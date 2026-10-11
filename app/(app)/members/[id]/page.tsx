@@ -41,7 +41,7 @@ export default async function MemberPage({ params }: { params: Promise<{ id: str
     <div className="relative flex flex-col gap-6">
       <Link
         href="/members"
-        className="link-underline flex w-fit items-center gap-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-foreground"
+        className="link-underline flex w-fit items-center gap-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-foreground max-md:min-h-11 max-md:text-[13px]"
       >
         <ArrowLeftIcon className="size-3.5" />
         Members

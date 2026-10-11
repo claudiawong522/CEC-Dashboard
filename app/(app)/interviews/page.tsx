@@ -74,7 +74,7 @@ export default async function InterviewsPage() {
                   {formatSlot(slot.start_time, slot.end_time)}
                 </span>
                 <span className="truncate font-sans text-[12px] text-subtle">
-                  {slot.location ?? "—"}
+                  {slot.location ?? "No location"}
                 </span>
                 <span className="t-eyebrow justify-self-end text-foreground">
                   {slot.applicant_netid}

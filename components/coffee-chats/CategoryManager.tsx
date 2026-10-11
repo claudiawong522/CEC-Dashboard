@@ -75,7 +75,7 @@ export function CategoryManager({ categories }: { categories: ChatCategory[] }) 
           {categories.map((category) => (
             <span
               key={category.id}
-              className="t-eyebrow flex items-center gap-1.5 border border-line px-2 py-0.5 text-foreground"
+              className="t-eyebrow flex items-center gap-1.5 border border-line px-2 py-0.5 text-foreground max-md:py-0 max-md:pr-0"
             >
               {category.name}
               <button
@@ -83,7 +83,7 @@ export function CategoryManager({ categories }: { categories: ChatCategory[] }) 
                 disabled={isPending}
                 aria-label={`Remove ${category.name}`}
                 onClick={() => remove(category.id, category.name)}
-                className="transition-colors duration-200 hover:text-red"
+                className="flex items-center justify-center transition-colors duration-200 hover:text-red max-md:size-11"
               >
                 <Trash2Icon className="size-3" />
               </button>
