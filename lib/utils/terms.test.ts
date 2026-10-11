@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getEventTerm, currentTermKey, termFromKey } from "@/lib/utils/terms";
+import { getEventTerm, currentTermKey, termFromKey, compareTermsNewestFirst } from "@/lib/utils/terms";
 
 describe("getEventTerm", () => {
   it("buckets August through December as Fall", () => {
@@ -38,5 +38,12 @@ describe("termFromKey", () => {
   it("round-trips a key back to its season", () => {
     expect(termFromKey("F26").season).toBe("Fall");
     expect(termFromKey("S27").season).toBe("Spring");
+  });
+});
+
+describe("compareTermsNewestFirst", () => {
+  it("orders by year, then Fall ahead of the same year Spring", () => {
+    const terms = ["S26", "F25", "F26", "S25", "S27"].map(termFromKey);
+    expect(terms.sort(compareTermsNewestFirst).map((t) => t.key)).toEqual(["S27", "F26", "S26", "F25", "S25"]);
   });
 });

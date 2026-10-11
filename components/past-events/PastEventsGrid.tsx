@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getEventTerm } from "@/lib/utils/terms";
+import { compareTermsNewestFirst, getEventTerm } from "@/lib/utils/terms";
 import { formatEventDate, formatEventTime } from "@/lib/utils/format-event-time";
 import { Sticker } from "@/components/decor/Sticker";
 import { Seal, TriangleScatter } from "@/components/decor/shapes";
@@ -24,7 +24,7 @@ export function PastEventsGrid({ events }: { events: PastEvent[] }) {
 
   const terms = Array.from(
     new Map(events.map((e) => [getEventTerm(e.event_date).key, getEventTerm(e.event_date)])).values(),
-  ).sort((a, b) => b.key.localeCompare(a.key));
+  ).sort(compareTermsNewestFirst);
 
   const visible = activeTerm
     ? events.filter((e) => getEventTerm(e.event_date).key === activeTerm)
