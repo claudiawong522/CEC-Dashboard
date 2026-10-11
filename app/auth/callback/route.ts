@@ -97,7 +97,7 @@ export async function GET(request: Request) {
       status: "active",
     });
   } else {
-    // Refresh the Google-sourced fields on every sign-in, not just on the
+    // Fill the Google-sourced fields on sign-in, not just on the
     // invited -> active flip. Someone who accepted by clicking the invite
     // email's own link has no Google metadata at that moment
     // (inviteUserByEmail creates a bare auth user with none), so their name
@@ -107,10 +107,21 @@ export async function GET(request: Request) {
     // `role` is deliberately untouched, so an invite's role grant survives.
     // Null values are skipped rather than written, so a sign-in that somehow
     // arrives without metadata can't blank out a name we already have.
+    //
+    // Name and photo are only filled when missing (or when the photo is still
+    // an earlier Google one). A headshot uploaded in the dashboard or copied
+    // from cornellec.com, and a name set by an admin, must survive sign-in.
+    const { data: current } = await admin
+      .from("profiles")
+      .select("full_name, avatar_url")
+      .eq("id", user.id)
+      .maybeSingle();
+    const photoIsReplaceable =
+      !current?.avatar_url || /googleusercontent\.com/.test(current.avatar_url);
     const patch = {
       ...(existing.status === "invited" ? { status: "active" } : {}),
-      ...(googleName ? { full_name: googleName } : {}),
-      ...(googleAvatar ? { avatar_url: googleAvatar } : {}),
+      ...(googleName && !current?.full_name ? { full_name: googleName } : {}),
+      ...(googleAvatar && photoIsReplaceable ? { avatar_url: googleAvatar } : {}),
     };
     if (Object.keys(patch).length > 0) {
       await admin.from("profiles").update(patch).eq("id", user.id);
