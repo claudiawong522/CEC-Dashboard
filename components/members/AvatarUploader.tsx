@@ -8,31 +8,51 @@ import { updateOwnAvatar } from "@/lib/actions/members";
 import { publicFileUrl } from "@/lib/utils/storage";
 import { Button } from "@/components/ui/button";
 
-const SIZE = 800;
+const SIZE = 1200;
+const QUALITY = 0.9;
 const MAX_INPUT_BYTES = 15 * 1024 * 1024;
 
-// Centre-crops and downsizes in the browser, so a 6 MB phone photo lands in
-// storage as a ~60 KB webp. The portraits bucket is public and the free tier
-// is 1 GB, which this keeps comfortably far away.
+// Centre-crops and downsizes in the browser to a 1200px square webp at 0.9,
+// large and sharp enough for cornellec.com's member photos while a 6 MB phone
+// photo still lands in storage at a few hundred KB. A smaller source is kept
+// at its own size rather than upscaled. Only the current photo is kept (see
+// clearOldPhotos), so the public bucket holds one file per member.
 async function toSquareWebp(file: File): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
   const side = Math.min(bitmap.width, bitmap.height);
   const sx = (bitmap.width - side) / 2;
   const sy = (bitmap.height - side) / 2;
+  const out = Math.min(SIZE, side);
   const canvas = document.createElement("canvas");
-  canvas.width = SIZE;
-  canvas.height = SIZE;
+  canvas.width = out;
+  canvas.height = out;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("Canvas unavailable");
-  ctx.drawImage(bitmap, sx, sy, side, side, 0, 0, SIZE, SIZE);
+  ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(bitmap, sx, sy, side, side, 0, 0, out, out);
   bitmap.close();
   return new Promise((resolve, reject) => {
     canvas.toBlob(
       (blob) => (blob ? resolve(blob) : reject(new Error("Couldn't encode the image"))),
       "image/webp",
-      0.86,
+      QUALITY,
     );
   });
+}
+
+// Best effort: removes every object in the member's avatars folder except
+// `keep`, so a replaced or removed photo doesn't linger in the public bucket.
+// A failure here only leaves an orphan behind, so it is not reported.
+async function clearOldPhotos(memberId: string, keep: string | null) {
+  try {
+    const supabase = createClient();
+    const folder = `avatars/${memberId}`;
+    const { data } = await supabase.storage.from("portraits").list(folder);
+    const stale = (data ?? []).map((o) => `${folder}/${o.name}`).filter((path) => path !== keep);
+    if (stale.length) await supabase.storage.from("portraits").remove(stale);
+  } catch {
+    // ignored on purpose
+  }
 }
 
 export function AvatarUploader({
@@ -72,6 +92,7 @@ export function AvatarUploader({
       if (!result.ok) throw new Error(result.message);
       setUrl(publicUrl);
       toast.success("Photo updated");
+      void clearOldPhotos(memberId, path);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Couldn't upload that photo");
     } finally {
@@ -89,6 +110,8 @@ export function AvatarUploader({
       return;
     }
     setUrl(null);
+    toast.success("Photo removed");
+    void clearOldPhotos(memberId, null);
   }
 
   return (

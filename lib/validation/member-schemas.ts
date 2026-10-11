@@ -9,14 +9,12 @@ export const TEAM_LABELS: Record<Team, string> = {
   generalist: "Generalist",
 };
 
-// Subteam colours reuse the fixed section palette rather than inventing new
-// ones: Events is the club's calendar work (teal, same as Venue/Attendees),
-// Media matches Marketing's coral. Generalist keeps the amber that Operations
-// had, since it is the catch-all the way Operations was, and blue is freed up
-// by Builders going away.
+// Subteam colours reuse the fixed section palette (design/BRAND_KIT.md
+// Subteams): Events blue, Media teal like the Media section, Generalist amber, the catch-all the way
+// Operations was.
 export const TEAM_COLORS: Record<Team, string> = {
-  events: "var(--teal)",
-  media: "var(--coral)",
+  events: "var(--blue)",
+  media: "var(--teal)",
   generalist: "var(--amber)",
 };
 
@@ -88,6 +86,27 @@ export const profileSchema = z.object({
 // server action typed with it would refuse the very values the form sends.
 export type ProfileInput = z.input<typeof profileSchema>;
 export type ProfileValues = z.output<typeof profileSchema>;
+
+export type ProfileField = keyof ProfileInput;
+export type ProfileFieldErrors = Partial<Record<ProfileField, string>>;
+
+// The profile auto-saves as one draft, so one half-typed field must not hold
+// every other field hostage: each field is validated on its own, the valid
+// ones are returned for saving and the rest come back as per-field errors.
+export function parseProfileFields(values: ProfileInput): {
+  data: Partial<ProfileValues>;
+  errors: ProfileFieldErrors;
+} {
+  const data: Record<string, unknown> = {};
+  const errors: ProfileFieldErrors = {};
+  const shape = profileSchema.shape;
+  for (const key of Object.keys(shape) as ProfileField[]) {
+    const result = shape[key].safeParse(values[key]);
+    if (result.success) data[key] = result.data;
+    else errors[key] = result.error.issues[0]?.message ?? "Check this field";
+  }
+  return { data: data as Partial<ProfileValues>, errors };
+}
 
 // Matching preferences are edited on their own card and saved on their own,
 // so they validate separately: someone toggling "open to chats" shouldn't be

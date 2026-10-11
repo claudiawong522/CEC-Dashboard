@@ -295,10 +295,19 @@
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border;
+  }
+  /* One focus ring for everything a keyboard can reach: the kit's 2px mint
+     ring, 2px out. It lives in the base layer, so a control that draws its
+     own focus state (inputs darken their border, Button uses ring-*) opts
+     out with `outline-none` and nothing else has to remember to add it. */
+  :focus-visible {
+    outline: 2px solid var(--mint);
+    outline-offset: 2px;
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-tap-highlight-color: transparent;
   }
   html {
     @apply font-sans;
@@ -488,10 +497,50 @@
   caret-color: var(--black);
   padding-inline: 0 !important;
 }
+/* BlockNote's derived radius and shadow tokens: square, and the kit's one
+   soft shadow on the formatting toolbar and every popover it opens. */
+.bn-root {
+  --bn-font-family: var(--font-dm-sans), system-ui, sans-serif !important;
+  --bn-border-radius: 0px !important;
+  --bn-border-radius-small: 0px !important;
+  --bn-border-radius-medium: 0px !important;
+  --bn-border-radius-large: 0px !important;
+  --bn-shadow-medium: var(--shadow-soft) !important;
+  --bn-shadow-light: var(--shadow-soft) !important;
+}
+/* The core stylesheet names Inter literally on .bn-default-styles, so the
+   theme's fontFamily never reaches the text. Body copy is DM Sans; headings
+   are Space Grotesk 700 in normal case, like a card title. */
+.bn-editor,
+.bn-default-styles {
+  font-family: var(--font-dm-sans), system-ui, sans-serif !important;
+}
+.bn-editor h1,
+.bn-editor h2,
+.bn-editor h3,
+.bn-default-styles h1,
+.bn-default-styles h2,
+.bn-default-styles h3 {
+  font-family: var(--font-display), system-ui, sans-serif !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+}
 /* BlockNote italicises its empty-block placeholder; the kit has no italics. */
 .bn-block-content:has(.ProseMirror-trailingBreak:only-child):after {
   font-style: normal !important;
-  color: rgba(0, 0, 0, 0.35);
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+/* No italics anywhere, so the toolbar does not offer them. */
+.bn-toolbar [data-test="italic"] {
+  display: none !important;
+}
+.bn-toolbar,
+.bn-toolbar .mantine-Button-root,
+.bn-toolbar .mantine-ActionIcon-root {
+  border-radius: 0 !important;
+}
+.bn-toolbar {
+  box-shadow: var(--shadow-soft) !important;
 }
 
 /* The slash menu's icon/subtitle/shortcut layout is Mantine's own component,
@@ -517,7 +566,7 @@
 }
 .bn-suggestion-menu-item {
   padding: 7px 8px;
-  border-radius: 0;
+  border-radius: 0 !important;
   transition: background-color 150ms var(--e-default);
 }
 .bn-suggestion-menu-item[aria-selected="true"],

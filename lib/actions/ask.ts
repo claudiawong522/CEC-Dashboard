@@ -34,7 +34,7 @@ export async function ask(question: string): Promise<AskResult> {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     console.error("[ask] ANTHROPIC_API_KEY is not set");
-    return { ok: false, message: "The ask bar isn't configured yet — ask an admin" };
+    return { ok: false, message: "The ask bar isn't configured yet. Ask an admin" };
   }
 
   const supabase = await createClient();
@@ -150,8 +150,8 @@ export async function ask(question: string): Promise<AskResult> {
   } catch (error) {
     console.error("[ask] failed:", error);
     if (error instanceof Anthropic.RateLimitError) {
-      return { ok: false, message: "Too many questions at once — try again in a moment" };
+      return { ok: false, message: "Too many questions at once. Try again in a moment" };
     }
-    return { ok: false, message: "Couldn't answer that — try again" };
+    return { ok: false, message: "Couldn't answer that. Try again" };
   }
 }

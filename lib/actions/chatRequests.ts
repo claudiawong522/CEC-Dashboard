@@ -37,7 +37,7 @@ export async function submitChatRequest(input: ChatRequestInput): Promise<Action
     .eq("email", email)
     .maybeSingle<{ id: string }>();
   if (member) {
-    return actionFailed("You're already a member — use the coffee chat board instead");
+    return actionFailed("You're already a member. Use the coffee chat board instead");
   }
 
   const background = [major, gradYear].filter(Boolean).join(", ") || null;
@@ -74,7 +74,7 @@ export async function submitChatRequest(input: ChatRequestInput): Promise<Action
   if (error) {
     // The partial unique index on (guest_id) where status = 'pending'.
     if (error.code === "23505") {
-      return actionFailed("You've already got a request waiting — someone will be in touch");
+      return actionFailed("You've already got a request waiting. Someone will be in touch");
     }
     return databaseFailure("send your request", error);
   }
@@ -111,7 +111,7 @@ export async function claimChatRequest(requestId: string): Promise<ActionResult>
   if (!data?.length) return actionFailed("Someone just took that one");
 
   revalidatePath("/chat-requests");
-  return actionOk("Yours — reach out and say hello");
+  return actionOk("Yours. Reach out and say hello");
 }
 
 /** Put one back, for when a member claims and then can't do it. */

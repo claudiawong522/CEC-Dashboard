@@ -70,7 +70,7 @@ export function EvidenceUploader({
           { id, bucket, storage_path: path, file_name: file.name, mime_type: file.type },
         ]);
       } catch {
-        toast.error(`Uploaded ${file.name} but failed to save it — try again`);
+        toast.error(`Uploaded ${file.name} but failed to save it. Try again.`);
       }
     }
 
@@ -101,7 +101,7 @@ export function EvidenceUploader({
       <div
         {...getRootProps()}
         className={cn(
-          "group relative cursor-pointer overflow-hidden border-2 border-dashed border-line px-6 py-6 text-center transition-colors duration-200 ease-fluid hover:border-foreground hover:bg-mint/10",
+          "group relative cursor-pointer overflow-hidden border-2 border-dashed border-line px-4 py-6 text-center sm:px-6 transition-colors duration-200 ease-fluid hover:border-foreground hover:bg-mint/10",
           isDragActive && "border-foreground bg-mint/10",
         )}
       >
@@ -116,14 +116,14 @@ export function EvidenceUploader({
           {files.map((file) => (
             <div
               key={file.id}
-              className="group/thumb relative flex size-[58px] items-center justify-center overflow-hidden border border-line bg-background transition-[transform,border-color,box-shadow] duration-200 ease-fluid hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm"
+              className="group/thumb relative flex size-[58px] max-md:size-[72px] items-center justify-center overflow-hidden border border-line bg-background transition-[transform,border-color,box-shadow] duration-200 ease-fluid hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm"
             >
               {file.mime_type?.startsWith("image/") ? (
                 <Image
                   src={publicFileUrl(file.bucket, file.storage_path)}
                   alt={file.file_name ?? "evidence"}
                   fill
-                  sizes="58px"
+                  sizes="72px"
                   className="object-cover"
                 />
               ) : (
@@ -132,7 +132,8 @@ export function EvidenceUploader({
               <button
                 type="button"
                 onClick={() => handleDelete(file.id)}
-                className="absolute top-0.5 right-0.5 border border-foreground bg-background p-0.5 opacity-0 transition-opacity group-hover/thumb:opacity-100"
+                aria-label={`Remove ${file.file_name ?? "file"}`}
+                className="absolute top-0.5 right-0.5 border border-foreground bg-background p-0.5 opacity-0 transition-opacity group-hover/thumb:opacity-100 focus-visible:opacity-100 max-md:p-1.5 max-md:opacity-100 max-md:after:absolute max-md:after:-inset-2"
               >
                 <X className="size-3" />
               </button>

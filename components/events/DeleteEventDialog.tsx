@@ -6,6 +6,8 @@ import { Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -33,7 +35,7 @@ export function DeleteEventDialog({
         await deleteEvent(eventId, scope);
       } catch (err) {
         if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
-        toast.error("Couldn't delete — try again");
+        toast.error("Couldn't delete. Try again.");
       }
     });
   }
@@ -46,18 +48,16 @@ export function DeleteEventDialog({
       >
         <Trash2 />
       </DialogTrigger>
-      <DialogContent className="border border-line bg-background p-4 shadow-soft ring-0 sm:max-w-[360px]">
+      <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle className="font-display text-[18px] font-bold text-foreground">
-            Delete this event?
-          </DialogTitle>
+          <DialogTitle>Delete this event?</DialogTitle>
+          <DialogDescription>
+            This removes it and everything attached to it (files, notes, prep) for good.
+          </DialogDescription>
         </DialogHeader>
-        <p className="font-sans text-[12px] leading-[1.5] text-foreground/50">
-          This removes it and everything attached to it (files, notes, prep) for good.
-        </p>
 
         {isRecurring && (
-          <div className="flex flex-col gap-1.5">
+          <div role="radiogroup" aria-label="Which events" className="flex flex-col gap-1.5">
             {(
               [
                 { value: "single", label: "Just this event" },
@@ -67,18 +67,21 @@ export function DeleteEventDialog({
               <button
                 key={option.value}
                 type="button"
+                role="radio"
+                aria-checked={scope === option.value}
                 onClick={() => setScope(option.value)}
                 className={cn(
-                  "flex items-center gap-2.5 border px-2.5 py-2 text-left font-sans text-[13px] transition-colors duration-150 ease-fluid",
+                  "flex min-h-11 items-center gap-2.5 border bg-background px-3 py-2 text-left font-sans text-[14px] transition-colors duration-150 ease-fluid md:min-h-0 md:text-[13px]",
                   scope === option.value
-                    ? "border-foreground bg-red/10 text-foreground"
+                    ? "border-foreground text-foreground"
                     : "border-line text-subtle hover:border-foreground",
                 )}
               >
                 <span
+                  aria-hidden="true"
                   className={cn(
-                    "size-3 shrink-0 border-2 border-foreground",
-                    scope === option.value ? "bg-red" : "bg-transparent",
+                    "size-3 shrink-0 border-2 border-foreground transition-colors duration-150",
+                    scope === option.value ? "bg-mint" : "bg-transparent",
                   )}
                 />
                 {option.label}
@@ -87,14 +90,14 @@ export function DeleteEventDialog({
           </div>
         )}
 
-        <div className="flex justify-end gap-2 pt-1">
+        <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button type="button" variant="destructive" loading={isPending} onClick={confirmDelete}>
             {isPending ? "Deleting…" : "Delete"}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

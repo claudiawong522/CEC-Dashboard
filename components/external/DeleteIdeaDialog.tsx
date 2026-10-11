@@ -6,6 +6,8 @@ import { Trash2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -41,10 +43,10 @@ export function DeleteIdeaDialog({
         setOpen(false);
       } catch (err) {
         // The redirect the detail-page variant ends on surfaces here as a
-        // thrown NEXT_REDIRECT — let it through or the navigation is
+        // thrown NEXT_REDIRECT; let it through or the navigation is
         // swallowed and the user gets a false "couldn't delete".
         if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
-        toast.error("Couldn't delete — try again");
+        toast.error("Couldn't delete. Try again.");
       }
     });
   }
@@ -55,32 +57,30 @@ export function DeleteIdeaDialog({
         title="Delete lead"
         aria-label={`Delete ${pitch || "untitled lead"}`}
         className={cn(
-          "flex size-8 shrink-0 items-center justify-center text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red",
+          "flex size-8 shrink-0 items-center justify-center text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red hover:text-background max-md:size-11",
           className,
         )}
       >
         <Trash2 className="size-4" />
       </DialogTrigger>
-      <DialogContent className="p-5 sm:max-w-[360px]">
+      <DialogContent className="sm:max-w-[380px]">
         <DialogHeader>
-          <DialogTitle className="font-display text-[18px] font-bold text-foreground">
-            Delete this lead?
-          </DialogTitle>
+          <DialogTitle>Delete this lead?</DialogTitle>
+          <DialogDescription>
+            {pitch ? <span className="font-medium text-foreground">“{pitch}”</span> : "This lead"}{" "}
+            goes for good: contacts, owners and notes with it.
+            {isConverted && " The event it became stays on the calendar."}
+          </DialogDescription>
         </DialogHeader>
-        <p className="font-sans text-[13px] leading-[1.6] text-foreground/50">
-          {pitch ? <span className="text-subtle">“{pitch}”</span> : "This lead"} goes for good:
-          contacts, owners and notes with it.
-          {isConverted && " The event it became stays on the calendar."}
-        </p>
 
-        <div className="flex justify-end gap-2 pt-1">
+        <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>
             Cancel
           </Button>
           <Button type="button" variant="destructive" loading={isPending} onClick={confirmDelete}>
             {isPending ? "Deleting…" : "Delete"}
           </Button>
-        </div>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

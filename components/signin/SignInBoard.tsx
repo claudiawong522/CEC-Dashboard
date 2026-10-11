@@ -35,6 +35,8 @@ export function SignInToggle({ eventId, enabled }: { eventId: string; enabled: b
 
   return (
     <Switch
+      aria-label="Sign in open for this event"
+      className="after:-inset-y-[11px]"
       checked={on}
       disabled={isPending}
       onCheckedChange={(checked) => {
@@ -91,7 +93,7 @@ export function AttachSignIns({
           <select
             value={chosen}
             onChange={(e) => setChosen(e.target.value)}
-            className="border border-line bg-background px-3 py-2 font-sans text-[13px] text-foreground outline-none transition-[border-color] duration-200 ease-fluid hover:border-foreground/40 focus-visible:border-foreground"
+            className="w-full min-w-0 border border-line bg-background px-3 py-2 font-sans text-[16px] text-foreground outline-none max-md:min-h-11 sm:w-auto sm:max-w-[320px] md:text-[13px] transition-[border-color] duration-200 ease-fluid hover:border-foreground/40 focus-visible:border-foreground"
           >
             {events.map((event) => (
               <option key={event.id} value={event.id}>
@@ -113,7 +115,7 @@ export function AttachSignIns({
                 router.refresh();
               });
             }}
-            className="px-4 py-2 text-[13px]"
+            className="w-full px-4 py-2 text-[13px] sm:w-auto"
           >
             Attach
           </Button>
@@ -208,7 +210,7 @@ export function SignInBoard({
                         href={row.linkedinUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="t-eyebrow link-underline text-foreground/50 transition-colors duration-200 hover:text-foreground"
+                        className="t-eyebrow link-underline text-foreground/50 transition-colors duration-200 hover:text-foreground max-md:-my-4 max-md:py-4"
                       >
                         linkedin
                       </a>

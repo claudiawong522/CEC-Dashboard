@@ -11,7 +11,7 @@ import { IntroPlane } from "@/components/app-shell/IntroPlane";
 import { ArrowUpRightIcon } from "lucide-react";
 
 const ERROR_MESSAGES: Record<string, string> = {
-  not_invited: "This app is invite-only — ask an admin to invite your email first.",
+  not_invited: "This app is invite-only. Ask an admin to invite your email first.",
   removed: "Your access to this app was removed. Ask an admin if you think that's a mistake.",
   unknown: "Something went wrong signing you in. Please try again.",
   provider_disabled:
@@ -41,7 +41,7 @@ export default function LoginPage() {
   // session tokens in the URL hash. We deliberately throw them away and ask
   // for a Google sign-in instead.
   //
-  // Consuming them "works" — it signs the person in immediately — but a
+  // Consuming them "works" (it signs the person in immediately), but a
   // Supabase invite creates a bare auth user with no name attached, so an
   // account accepted this way has nothing to show in Admin but a dash. And
   // because sessions don't expire, that person may never sign in again for
@@ -54,7 +54,7 @@ export default function LoginPage() {
     const hashParams = new URLSearchParams(window.location.hash.slice(1));
     if (hashParams.get("access_token") && hashParams.get("refresh_token")) {
       // Strip the tokens from the address bar even though we never use
-      // them — they're live credentials until they expire, and they've no
+      // them: they're live credentials until they expire, and they've no
       // business sitting in browser history or a pasted URL.
       window.history.replaceState(null, "", window.location.pathname);
       // react-hooks/set-state-in-effect is right in general and wrong here.
@@ -109,7 +109,7 @@ export default function LoginPage() {
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
         // Always show Google's account picker, even if this browser already
-        // has an active Google session — otherwise Google silently reuses
+        // has an active Google session; otherwise Google silently reuses
         // whichever account is already signed in instead of letting the
         // person choose. No `hd` domain hint anymore either: invites (see
         // lib/actions/admin.ts) aren't limited to @cornell.edu, so hinting
@@ -126,19 +126,19 @@ export default function LoginPage() {
       {/* The site's hero ornament: the logo's tiles, scattered. */}
       <TriangleScatter count={9} seed={3} min={28} max={96} opacity={0.3} />
 
-      <header className="relative z-10 flex items-center gap-3 border-b border-line px-6 py-4 sm:px-10">
+      <header className="relative z-10 flex items-center gap-3 border-b border-line pt-[max(16px,env(safe-area-inset-top))] pr-[max(16px,env(safe-area-inset-right))] pb-4 pl-[max(16px,env(safe-area-inset-left))] sm:px-10">
         <Sticker floatVariant="none" wrapperClassName="shrink-0">
           <BrandMark className="h-[22px] w-6" />
         </Sticker>
-        <span className="font-display text-[14px] font-bold tracking-tight text-foreground uppercase">
+        <span className="font-display text-[13px] font-bold tracking-tight text-foreground uppercase sm:text-[14px]">
           Cornell Entrepreneurship Club
         </span>
         <span className="t-eyebrow ml-auto hidden text-foreground/40 sm:inline">Members and alumni only</span>
       </header>
 
-      <div className="relative z-10 flex flex-1 flex-col justify-center px-6 py-16 sm:px-10">
-        <div className="mx-auto flex w-full max-w-[880px] flex-col gap-8">
-          <h1 className="t-display text-[34px] text-balance text-foreground sm:text-[56px] md:text-[72px] lg:text-[96px] xl:text-[104px]">
+      <div className="relative z-10 flex flex-1 flex-col justify-center px-4 pt-12 pb-[max(48px,env(safe-area-inset-bottom))] sm:px-10 sm:py-16">
+        <div className="mx-auto flex w-full max-w-[880px] flex-col gap-7 sm:gap-8">
+          <h1 className="t-display text-[clamp(32px,10vw,40px)] text-foreground sm:text-[56px] md:text-[72px] lg:text-[96px] xl:text-[104px]">
             Cornell
             <br />
             Entrepreneurship
@@ -148,24 +148,24 @@ export default function LoginPage() {
 
           <Marquee
             items={["Innovate", "Disrupt", "Iterate", "Launch", "Scale", "Build", "Create", "Ship", "Grow", "Hustle"]}
-            className="-mx-6 w-auto sm:-mx-10"
+            className="-mx-4 w-auto sm:-mx-10"
           />
 
-          <p className="max-w-[48ch] font-sans text-[17px] leading-[1.55] text-subtle sm:text-[20px]">
+          <p className="max-w-[48ch] font-sans text-[16px] leading-[1.55] text-subtle sm:text-[20px]">
             {cameFromInvite
               ? "You're invited. Sign in with Google to finish setting up your account."
               : "Dashboard for CEC Members and Alumni"}
           </p>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <Button onClick={signInWithGoogle} size="lg" className="gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
+            <Button onClick={signInWithGoogle} size="lg" className="w-full gap-3 sm:w-auto">
               <GoogleIcon className="size-4" />
               Sign in with Google
             </Button>
             <Button
               variant="outline"
               size="lg"
-              className="gap-2"
+              className="w-full gap-2 sm:w-auto"
               render={<a href="https://cornellec.com" />}
               nativeButton={false}
             >

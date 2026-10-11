@@ -37,7 +37,7 @@ export default async function CoffeeChatsPage() {
       .order("board_position")
       .returns<ChatCategory[]>(),
     // RLS already limits this to approved chats plus the viewer's own (plus
-    // everything, for an admin), so there's no status filter here — adding
+    // everything, for an admin), so there's no status filter here. Adding
     // one would just duplicate the policy in a place it can drift from.
     supabase
       .from("coffee_chats")

@@ -103,7 +103,7 @@ export function ChatSignupForm() {
         />
       </div>
 
-      <div className="flex gap-3">
+      <div className="flex flex-col gap-4 sm:flex-row sm:gap-3">
         <div className="flex flex-1 flex-col gap-1.5">
           <Label htmlFor="major">
             Major <span className="text-foreground/50">(optional)</span>
@@ -116,7 +116,7 @@ export function ChatSignupForm() {
             className="py-3 text-[16px]"
           />
         </div>
-        <div className="flex w-[130px] flex-col gap-1.5">
+        <div className="flex flex-col gap-1.5 sm:w-[130px]">
           <Label htmlFor="gradYear">
             Grad year <span className="text-foreground/50">(optional)</span>
           </Label>
@@ -150,7 +150,7 @@ export function ChatSignupForm() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => toggle(tag)}
-                className={`t-eyebrow border px-2 py-1 transition-[background-color,border-color,color] duration-200 ease-fluid ${
+                className={`t-eyebrow border px-2 py-1 transition-[background-color,border-color,color] duration-200 ease-fluid max-md:min-h-11 max-md:px-3 ${
                   on
                     ? "border-foreground bg-mint text-foreground"
                     : "border-line bg-background text-subtle hover:border-foreground hover:text-foreground"
@@ -180,7 +180,7 @@ export function ChatSignupForm() {
       {error && <p className="font-sans text-[12px] text-red">{error}</p>}
 
       <div>
-        <Button type="button" loading={isPending} onClick={submit} className="px-5 py-3 text-[14px]">
+        <Button type="button" size="lg" loading={isPending} onClick={submit} className="w-full px-5 text-[14px] sm:w-auto">
           Ask for a chat
         </Button>
       </div>

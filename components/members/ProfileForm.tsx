@@ -17,7 +17,12 @@ import { SaveIndicator } from "@/components/events/SaveIndicator";
 import { AvatarUploader } from "@/components/members/AvatarUploader";
 import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { updateOwnProfile } from "@/lib/actions/members";
-import { TEAMS, TEAM_LABELS, type Team } from "@/lib/validation/member-schemas";
+import {
+  TEAMS,
+  TEAM_LABELS,
+  type ProfileFieldErrors,
+  type Team,
+} from "@/lib/validation/member-schemas";
 import { memberInitials, type MemberProfile } from "@/lib/types/members";
 
 // Everything on this card auto-saves 700ms after the last keystroke, the same
@@ -73,23 +78,34 @@ function toDraft(member: MemberProfile): Draft {
 function Field({
   label,
   hint,
+  error,
   children,
 }: {
   label: string;
   hint?: string;
+  error?: string;
   children: React.ReactNode;
 }) {
   return (
     <div className="flex flex-col gap-1.5">
       <Label>{label}</Label>
       {children}
-      {hint && <span className="font-sans text-[11.5px] text-foreground/50">{hint}</span>}
+      {error ? (
+        <span role="alert" className="font-sans text-[11.5px] text-red">
+          {error}
+        </span>
+      ) : (
+        hint && <span className="font-sans text-[11.5px] text-foreground/50">{hint}</span>
+      )}
     </div>
   );
 }
 
 export function ProfileForm({ member }: { member: MemberProfile }) {
   const [draft, setDraft] = useState<Draft>(() => toDraft(member));
+  // Per-field problems from the last save. The other fields still saved;
+  // these show under their own input instead of a toast per keystroke.
+  const [errors, setErrors] = useState<ProfileFieldErrors>({});
 
   const status = useAutoSave(draft, async (value) => {
     const result = await updateOwnProfile({
@@ -113,8 +129,10 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
       github_url: value.github_url,
       show_on_site: value.show_on_site,
     });
+    setErrors(result.fieldErrors ?? {});
     if (!result.ok) {
-      toast.error(result.message);
+      // One id, so repeated failures replace the toast instead of stacking.
+      toast.error(result.message, { id: "profile-save" });
       // Rejecting here keeps the indicator on "Couldn't save" rather than
       // flashing a green check for a write the server refused.
       throw new Error(result.message);
@@ -141,8 +159,12 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
       />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Name">
-          <Input value={draft.full_name} onChange={(e) => set("full_name", e.target.value)} />
+        <Field label="Name" error={errors.full_name}>
+          <Input
+            value={draft.full_name}
+            aria-invalid={!!errors.full_name}
+            onChange={(e) => set("full_name", e.target.value)}
+          />
         </Field>
         <Field label="Pronouns">
           <Input
@@ -151,16 +173,18 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
             onChange={(e) => set("pronouns", e.target.value)}
           />
         </Field>
-        <Field label="Netid" hint="Used to match you to interview slots.">
+        <Field label="Netid" hint="Used to match you to interview slots." error={errors.netid}>
           <Input
             value={draft.netid}
+            aria-invalid={!!errors.netid}
             placeholder="ab123"
             onChange={(e) => set("netid", e.target.value)}
           />
         </Field>
-        <Field label="Position">
+        <Field label="Position" error={errors.position}>
           <Input
             value={draft.position}
+            aria-invalid={!!errors.position}
             placeholder="Member"
             onChange={(e) => set("position", e.target.value)}
           />
@@ -190,9 +214,10 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
             </SelectContent>
           </Select>
         </Field>
-        <Field label="Graduation year">
+        <Field label="Graduation year" error={errors.graduation_year}>
           <Input
             value={draft.graduation_year}
+            aria-invalid={!!errors.graduation_year}
             inputMode="numeric"
             placeholder="2027"
             onChange={(e) => set("graduation_year", e.target.value)}
@@ -242,23 +267,26 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Field label="LinkedIn">
+        <Field label="LinkedIn" error={errors.linkedin_url}>
           <Input
             value={draft.linkedin_url}
+            aria-invalid={!!errors.linkedin_url}
             placeholder="https://linkedin.com/in/…"
             onChange={(e) => set("linkedin_url", e.target.value)}
           />
         </Field>
-        <Field label="Portfolio">
+        <Field label="Portfolio" error={errors.portfolio_url}>
           <Input
             value={draft.portfolio_url}
+            aria-invalid={!!errors.portfolio_url}
             placeholder="https://…"
             onChange={(e) => set("portfolio_url", e.target.value)}
           />
         </Field>
-        <Field label="GitHub">
+        <Field label="GitHub" error={errors.github_url}>
           <Input
             value={draft.github_url}
+            aria-invalid={!!errors.github_url}
             placeholder="https://github.com/…"
             onChange={(e) => set("github_url", e.target.value)}
           />

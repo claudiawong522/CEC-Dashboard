@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { CLUB_TIME_ZONE } from "@/lib/utils/signin-window";
 
 // Cornell netids: two or three letters then digits. Validated because this is
 // the join key an applicant is approved by — a typo silently means "this
@@ -26,7 +27,7 @@ export const cycleSchema = z.object({
     .refine((list) => list.length > 0, "Paste at least one netid")
     .refine(
       (list) => list.every((netid) => NETID.test(netid)),
-      "Some of those don't look like netids — a netid looks like ab123",
+      "Some of those don't look like netids. A netid looks like ab123",
     ),
 });
 export type CycleInput = z.input<typeof cycleSchema>;
@@ -53,12 +54,15 @@ export type SlotInput = z.input<typeof slotSchema>;
 export function formatSlot(startIso: string, endIso: string): string {
   const start = new Date(startIso);
   const end = new Date(endIso);
-  const day = start.toLocaleDateString(undefined, {
+  // Pinned to Ithaca so the server render and the browser agree, whatever
+  // zone either one runs in.
+  const day = start.toLocaleDateString("en-US", {
     weekday: "short",
     month: "short",
     day: "numeric",
+    timeZone: CLUB_TIME_ZONE,
   });
   const time = (date: Date) =>
-    date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
-  return `${day}, ${time(start)}–${time(end)}`;
+    date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: CLUB_TIME_ZONE });
+  return `${day}, ${time(start)} to ${time(end)}`;
 }

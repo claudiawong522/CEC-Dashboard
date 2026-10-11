@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/requireRole";
 import { createClient } from "@/lib/supabase/server";
+import { dateFieldToInstant } from "@/lib/utils/dates";
 import { actionFailed, actionOk, type ActionResult } from "@/lib/actions/result";
 import {
   contactSchema,
@@ -16,7 +17,7 @@ import {
 
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[crm] couldn't ${what}:`, error.message);
-  return actionFailed(`Couldn't ${what} — try again`);
+  return actionFailed(`Couldn't ${what}. Try again`);
 }
 
 // Everything here is admin-only, matching the RLS on outreach_contacts and
@@ -149,7 +150,7 @@ export async function deleteContact(contactId: string): Promise<ActionResult> {
 
   if ((count ?? 0) > 0) {
     return actionFailed(
-      "This person is named on a lead in External — take them off it first",
+      "This person is named on a lead in External. Take them off it first",
     );
   }
 
@@ -174,7 +175,7 @@ export async function logInteraction(input: InteractionInput): Promise<ActionRes
     contact_id: values.contactId,
     profile_id: session.profile.id,
     kind: values.kind,
-    occurred_at: new Date(values.occurredAt).toISOString(),
+    occurred_at: dateFieldToInstant(values.occurredAt),
     summary: values.summary,
     body: values.body,
   });

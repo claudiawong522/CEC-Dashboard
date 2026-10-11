@@ -24,7 +24,7 @@ export function DoneCheckbox({
         await setSectionDone(eventId, section, next);
       } catch {
         setDone(!next);
-        toast.error("Couldn't update — try again");
+        toast.error("Couldn't update. Try again.");
       }
     });
   }
@@ -34,7 +34,7 @@ export function DoneCheckbox({
       type="button"
       disabled={isPending}
       onClick={handleChange}
-      className="inline-flex items-center gap-[9px] py-1.5 pr-3 pl-1.5 transition-colors duration-200 ease-fluid hover:bg-muted/40"
+      className="inline-flex shrink-0 items-center gap-[9px] py-1.5 pr-3 pl-1.5 max-md:min-h-11 transition-colors duration-200 ease-fluid hover:bg-muted/40"
     >
       <span
         className="flex size-5 items-center justify-center border-2 border-foreground transition-[background-color] duration-[260ms] ease-fluid"

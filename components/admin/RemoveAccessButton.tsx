@@ -12,17 +12,17 @@ export function RemoveAccessButton({ userId, email }: { userId: string; email: s
       if (result.ok) toast.success("Access removed");
       else toast.error(result.message);
     } catch {
-      // Only the unexpected reaches here — a thrown error's message is
+      // Only the unexpected reaches here: a thrown error's message is
       // replaced by a generic Next.js string in production, so showing it
       // would be worse than this. See lib/actions/result.ts.
-      toast.error("Couldn't remove access — try again");
+      toast.error("Couldn't remove access. Try again");
     }
   }
 
   return (
     <ConfirmButton
       trigger={<UserMinus className="size-3.5" />}
-      triggerClassName="flex size-6 shrink-0 items-center justify-center text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red"
+      triggerClassName="flex size-6 shrink-0 items-center justify-center max-md:size-11 text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red"
       triggerTitle={`Remove ${email}'s access`}
       askLabel="Remove access?"
       yesLabel="Remove"

@@ -38,3 +38,11 @@ export function termFromKey(key: string): Term {
     color: season === "Fall" ? "var(--coral)" : "var(--teal)",
   };
 }
+
+// Newest term first: by year, then Fall ahead of that year's Spring (Spring
+// comes first in the calendar year, so it is the older of the two).
+export function compareTermsNewestFirst(a: Term, b: Term): number {
+  const year = (t: Term) => Number(t.key.slice(1));
+  const rank = (t: Term) => (t.season === "Fall" ? 1 : 0);
+  return year(b) - year(a) || rank(b) - rank(a);
+}

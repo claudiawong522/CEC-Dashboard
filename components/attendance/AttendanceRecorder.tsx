@@ -187,7 +187,7 @@ export function AttendanceRecorder({
               disabled={already}
               onClick={() => toggle(member.id)}
               className={cn(
-                "t-eyebrow border px-2 py-1 transition-[background-color,border-color,color] duration-200 ease-fluid",
+                "t-eyebrow border px-2 py-1 max-md:min-h-11 max-md:px-3 transition-[background-color,border-color,color] duration-200 ease-fluid",
                 already
                   ? "cursor-default border-line bg-mint/20 text-foreground/50"
                   : active

@@ -44,7 +44,7 @@ function SelectTrigger({
         "group/select-trigger",
         // Brand surface and radius by default. Every call site used to repeat
         // `rounded-input border-line-input bg-page` to get here.
-        "flex w-fit items-center justify-between gap-2 border border-line bg-background py-2.5 pr-2.5 pl-3 font-sans text-[14px] text-foreground whitespace-nowrap transition-[background-color,border-color] duration-200 ease-fluid outline-none select-none hover:border-foreground/40 focus-visible:border-foreground data-[popup-open]:border-foreground disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-red data-placeholder:text-foreground/40 data-[size=default]:min-h-9 data-[size=sm]:min-h-8 data-[size=sm]:py-2 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "flex w-fit items-center justify-between gap-2 border border-line bg-background py-2.5 pr-2.5 pl-3 font-sans text-[14px] text-foreground whitespace-nowrap transition-[background-color,border-color] duration-200 ease-fluid outline-none select-none hover:border-foreground/40 focus-visible:border-foreground data-[popup-open]:border-foreground disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-red data-placeholder:text-foreground/40 data-[size=default]:min-h-9 data-[size=sm]:min-h-8 max-md:data-[size=default]:min-h-11 max-md:data-[size=sm]:min-h-11 data-[size=sm]:py-2 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}
@@ -132,7 +132,7 @@ function SelectItem({
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn(
-        "relative flex w-full cursor-default items-center gap-2 py-2 pr-8 pl-2.5 font-sans text-[13px] text-subtle outline-hidden transition-colors duration-150 select-none focus:bg-muted/60 focus:text-foreground data-selected:font-medium data-selected:text-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+        "relative flex w-full cursor-default items-center gap-2 py-2 pr-8 pl-2.5 font-sans text-[13px] max-md:min-h-11 text-subtle outline-hidden transition-colors duration-150 select-none focus:bg-muted/60 focus:text-foreground data-selected:font-medium data-selected:text-foreground data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
         className
       )}
       {...props}

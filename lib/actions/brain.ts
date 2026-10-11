@@ -15,7 +15,7 @@ import {
 
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[brain] couldn't ${what}:`, error.message);
-  return actionFailed(`Couldn't ${what} — try again`);
+  return actionFailed(`Couldn't ${what}. Try again`);
 }
 
 export async function createNote(

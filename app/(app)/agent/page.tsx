@@ -53,7 +53,7 @@ export default async function AgentPage() {
 
       <div className="relative z-10 flex flex-col gap-4">
         {followUps.length > 0 && (
-          <div className="flex flex-col gap-2.5 border border-line bg-background p-5 shadow-soft">
+          <div className="flex flex-col gap-2.5 border border-line bg-background p-4 shadow-soft sm:p-5">
             <span className="t-eyebrow text-foreground/50">
               gone quiet · {followUps.length}
             </span>
@@ -61,7 +61,7 @@ export default async function AgentPage() {
               <Link
                 key={followUp.contactId}
                 href={`/crm/${followUp.contactId}`}
-                className="flex items-center gap-2.5 px-2 py-1.5 transition-colors duration-200 ease-fluid hover:bg-muted/40"
+                className="flex items-center gap-2.5 px-2 py-1.5 transition-colors duration-200 ease-fluid hover:bg-muted/40 max-md:min-h-11"
               >
                 <AlarmClockIcon className="size-3 shrink-0 text-foreground/50" />
                 <span className="shrink-0 font-sans text-[13px] font-medium text-foreground">

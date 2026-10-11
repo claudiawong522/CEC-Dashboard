@@ -13,7 +13,7 @@ import type { Role } from "@/lib/auth/getSession";
 // like a migration that never ran on production actually gets diagnosed.
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[admin] couldn't ${what}:`, error.message);
-  return actionFailed(`Couldn't ${what} — try again`);
+  return actionFailed(`Couldn't ${what}. Try again`);
 }
 
 export async function updateUserRole(userId: string, role: Role): Promise<ActionResult> {
@@ -74,7 +74,7 @@ export async function inviteUser(email: string, role: Role): Promise<ActionResul
     if (reviveError) return databaseFailure("send invite", reviveError);
 
     revalidatePath("/admin");
-    return actionOk(`${normalizedEmail} can sign in again — no new email was sent`);
+    return actionOk(`${normalizedEmail} can sign in again. No new email was sent`);
   }
 
   if (existingProfile) return actionFailed("This person already has access");
@@ -204,7 +204,7 @@ export async function revokeInvite(userId: string): Promise<ActionResult> {
     return databaseFailure("cancel the invite", error);
   }
   if (!deleted || deleted.length === 0) {
-    return actionFailed("This invite was already accepted — refresh to see their current access");
+    return actionFailed("This invite was already accepted. Refresh to see their current access");
   }
 
   await admin.auth.admin.deleteUser(userId);
@@ -238,9 +238,9 @@ export async function removeAccess(userId: string): Promise<ActionResult> {
     .select("id, role, status")
     .eq("id", userId)
     .maybeSingle<{ id: string; role: Role; status: string }>();
-  if (!target) return actionFailed("That person no longer exists — refresh the page");
+  if (!target) return actionFailed("That person no longer exists. Refresh the page");
   if (target.status === "revoked") {
-    return actionFailed("Their access was already removed — refresh the page");
+    return actionFailed("Their access was already removed. Refresh the page");
   }
 
   // Nobody can be left without a way back in. Counting active admins rather
@@ -253,7 +253,7 @@ export async function removeAccess(userId: string): Promise<ActionResult> {
       .eq("role", "admin")
       .eq("status", "active");
     if ((count ?? 0) <= 1) {
-      return actionFailed("This is the only admin left — make someone else an admin first");
+      return actionFailed("This is the only admin left. Make someone else an admin first");
     }
   }
 

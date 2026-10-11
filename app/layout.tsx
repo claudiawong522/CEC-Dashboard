@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { DM_Sans, Space_Grotesk } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -20,6 +20,15 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: "CEC Dashboard",
   description: "Cornell Entrepreneurship Club internal tooling",
+};
+
+// viewport-fit=cover lets the phone top bar and drawer pad themselves with
+// env(safe-area-inset-*) instead of the browser letterboxing the notch.
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#ffffff",
 };
 
 export default function RootLayout({

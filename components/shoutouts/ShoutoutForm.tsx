@@ -117,7 +117,7 @@ export function ShoutoutForm({ members }: { members: ChatPerson[] }) {
       </div>
 
       <div className="flex items-center justify-between gap-4">
-        <label className="flex items-center gap-2">
+        <label className="flex min-h-11 cursor-pointer items-center gap-2">
           <Switch checked={isAnonymous} onCheckedChange={setIsAnonymous} />
           <span className="font-sans text-[12.5px] text-subtle">Post anonymously</span>
         </label>

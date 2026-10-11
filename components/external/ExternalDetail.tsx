@@ -169,12 +169,12 @@ export function ExternalDetail({
       try {
         await setIdeaStage(idea.id, next);
         if (isBackward) {
-          toast(`Moved back to ${STAGE_LABELS[from]}`, {
+          toast(`Moved back to ${STAGE_LABELS[next]}`, {
             action: { label: "Undo", onClick: () => changeStage(from, true) },
           });
         }
       } catch {
-        toast.error("Couldn't update stage — try again");
+        toast.error("Couldn't update stage, try again");
       }
     });
   }
@@ -189,7 +189,7 @@ export function ExternalDetail({
         const { id, contactId } = await addPerson(idea.id);
         setLocalPeople((prev) => [...prev, { id, idea_id: idea.id, contact_id: contactId, name: "", email: null }]);
       } catch {
-        toast.error("Couldn't add person — try again");
+        toast.error("Couldn't add person, try again");
       }
     });
   }
@@ -200,7 +200,7 @@ export function ExternalDetail({
       try {
         await removePerson(idea.id, personId);
       } catch {
-        toast.error("Couldn't remove person — try again");
+        toast.error("Couldn't remove person, try again");
       }
     });
   }
@@ -210,7 +210,7 @@ export function ExternalDetail({
       try {
         await toggleOwner(idea.id, profileId);
       } catch {
-        toast.error("Couldn't update owners — try again");
+        toast.error("Couldn't update owners, try again");
       }
     });
   }
@@ -226,7 +226,7 @@ export function ExternalDetail({
   return (
     <div className="relative z-10 flex flex-col gap-5">
       <div className="flex items-center justify-between gap-3">
-        <Link href="/external" className="t-eyebrow link-underline w-fit text-foreground/50 transition-colors duration-200 ease-fluid hover:text-foreground">
+        <Link href="/external" className="t-eyebrow link-underline flex w-fit items-center text-foreground/50 max-md:min-h-11 transition-colors duration-200 ease-fluid hover:text-foreground">
           ← All leads
         </Link>
         <DeleteIdeaDialog ideaId={idea.id} pitch={pitch} isConverted={isConverted} returnToList />
@@ -269,7 +269,7 @@ export function ExternalDetail({
                 type="button"
                 onClick={() => toggleOwnerLocal(a.id)}
                 className={
-                  "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-colors duration-200 ease-fluid " +
+                  "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-colors duration-200 ease-fluid max-md:min-h-11 max-md:px-3 " +
                   (on ? "border-foreground bg-mint text-foreground" : "border-line text-foreground/50 hover:border-foreground hover:text-foreground")
                 }
               >
@@ -323,7 +323,7 @@ export function ExternalDetail({
         <Textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Log calls, replies, anything worth remembering — just start typing…"
+          placeholder="Log calls, replies, anything worth remembering. Just start typing…"
           rows={5}
         />
       </div>

@@ -15,7 +15,7 @@ export default async function MembersPage() {
   const supabase = await createClient();
   // Same exclusion /admin makes: someone whose access was removed isn't a
   // member any more, so they don't appear here either. Inactive members do
-  // appear (behind a toggle) — that's alumni, not removal.
+  // appear (behind a toggle): that's alumni, not removal.
   const { data: members } = await supabase
     .from("profiles")
     .select(MEMBER_COLUMNS)

@@ -29,7 +29,7 @@ function TabsIndicator({ className, ...props }: TabsPrimitive.Indicator.Props) {
     <TabsPrimitive.Indicator
       data-slot="tabs-indicator"
       className={cn(
-        "absolute -left-px top-(--active-tab-top) h-9 w-[3px] bg-mint transition-[top] duration-[340ms] ease-fluid",
+        "absolute -left-px top-(--active-tab-top) h-9 w-[3px] max-md:h-11 bg-mint transition-[top] duration-[340ms] ease-fluid",
         className
       )}
       {...props}
@@ -47,7 +47,7 @@ function TabsTab({
     <TabsPrimitive.Tab
       data-slot="tabs-tab"
       className={cn(
-        "relative flex h-9 items-center gap-[9px] pr-3 pl-4 font-sans text-[13px] text-foreground/55 outline-none transition-colors duration-200 ease-fluid hover:text-foreground data-active:font-medium data-active:text-foreground",
+        "relative flex h-9 items-center gap-[9px] pr-3 pl-4 font-sans max-md:h-11 text-[13px] text-foreground/55 focus-visible:outline-offset-[-2px] transition-colors duration-200 ease-fluid hover:text-foreground data-active:font-medium data-active:text-foreground",
         className
       )}
       {...props}

@@ -11,6 +11,7 @@ import {
   type BrainKind,
 } from "@/lib/validation/brain-schemas";
 import { cn } from "@/lib/utils";
+import { formatClubDate } from "@/lib/utils/dates";
 
 export function BrainList({ notes }: { notes: BrainNote[] }) {
   const [query, setQuery] = useState("");
@@ -47,18 +48,21 @@ export function BrainList({ notes }: { notes: BrainNote[] }) {
   return (
     <div className="flex flex-col gap-[15px]">
       <div className="flex flex-wrap items-center gap-2.5">
-        <div className="relative min-w-[220px] flex-1">
+        <div className="relative w-full min-w-0 sm:w-auto sm:min-w-[220px] sm:flex-1">
           <SearchIcon className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-foreground/40" />
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Search everything written down"
-            className="w-full border border-line bg-background py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-foreground placeholder:text-foreground/40 outline-none transition-[border-color] duration-200 ease-fluid hover:border-foreground/40 focus-visible:border-foreground"
+            aria-label="Search notes"
+            className="w-full border border-line bg-background py-2.5 pr-3 pl-8.5 font-sans text-[13.5px] text-foreground max-md:min-h-11 max-md:text-[16px] placeholder:text-foreground/40 outline-none transition-[border-color] duration-200 ease-fluid hover:border-foreground/40 focus-visible:border-foreground"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-1.5">
+        {/* On phones the chips are one row that scrolls sideways inside the
+            page gutter rather than wrapping into a block. */}
+        <div className="-mx-4 flex w-[calc(100%+2rem)] items-center gap-1.5 overflow-x-auto px-4 py-0.5 [scrollbar-width:none] sm:mx-0 sm:w-auto sm:flex-wrap sm:overflow-visible sm:px-0">
           {BRAIN_KINDS.map((value) => {
             const active = kind === value;
             return (
@@ -67,7 +71,7 @@ export function BrainList({ notes }: { notes: BrainNote[] }) {
                 type="button"
                 onClick={() => setKind(active ? null : value)}
                 className={cn(
-                  "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-[background-color,border-color,color] duration-200 ease-fluid",
+                  "t-eyebrow flex shrink-0 items-center gap-1.5 border px-2.5 py-1.5 whitespace-nowrap transition-[background-color,border-color,color] duration-200 ease-fluid max-md:min-h-11 max-md:px-3",
                   active
                     ? "border-foreground bg-mint text-foreground"
                     : "border-line bg-background text-subtle hover:border-foreground hover:text-foreground",
@@ -85,7 +89,7 @@ export function BrainList({ notes }: { notes: BrainNote[] }) {
               type="button"
               onClick={() => setSemester(semester === value ? null : value)}
               className={cn(
-                "t-eyebrow border px-2.5 py-1.5 transition-[background-color,border-color,color] duration-200 ease-fluid",
+                "t-eyebrow shrink-0 border px-2.5 py-1.5 whitespace-nowrap transition-[background-color,border-color,color] duration-200 ease-fluid max-md:min-h-11 max-md:px-3",
                 semester === value
                   ? "border-foreground bg-mint text-foreground"
                   : "border-line bg-background text-subtle hover:border-foreground hover:text-foreground",
@@ -132,7 +136,7 @@ export function BrainList({ notes }: { notes: BrainNote[] }) {
                 {BRAIN_KIND_LABELS[note.kind]}
                 {note.semester && ` · ${note.semester}`} ·{" "}
                 {note.author?.full_name ?? note.author?.email ?? "the club"} ·{" "}
-                {new Date(note.updated_at).toLocaleDateString(undefined, {
+                {formatClubDate(note.updated_at, {
                   month: "short",
                   day: "numeric",
                 })}

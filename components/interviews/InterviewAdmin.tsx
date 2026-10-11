@@ -61,7 +61,7 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
           <Label>Who got through</Label>
           <Textarea
             value={netids}
-            placeholder="Paste netids or Cornell emails straight from the spreadsheet — commas, spaces or newlines all work."
+            placeholder="Paste netids or Cornell emails straight from the spreadsheet: commas, spaces or newlines all work."
             onChange={(event) => setNetids(event.target.value)}
           />
         </div>
@@ -93,7 +93,7 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
             type="button"
             disabled={isPending}
             onClick={() => run(() => closeCycle(cycle.id))}
-            className="link-underline font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-red disabled:pointer-events-none"
+            className="link-underline inline-flex items-center font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-red disabled:pointer-events-none max-md:min-h-11 max-md:text-[13px]"
           >
             Close cycle
           </button>
@@ -170,7 +170,7 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
 
       {slots.length > 0 && (
         <div className="overflow-hidden border border-line bg-background shadow-soft">
-          <div className="t-eyebrow grid grid-cols-[1.6fr_1fr_1fr_auto] gap-3 border-b border-line bg-muted/40 px-4 py-2.5 text-foreground/50">
+          <div className="t-eyebrow hidden grid-cols-[1.6fr_1fr_1fr_auto] gap-3 border-b border-line bg-muted/40 px-4 py-2.5 text-foreground/50 md:grid">
             <span>when</span>
             <span>where</span>
             <span>who</span>
@@ -179,22 +179,22 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
           {slots.map((slot, index) => (
             <div
               key={slot.id}
-              className={`grid grid-cols-[1.6fr_1fr_1fr_auto] items-center gap-3 px-4 py-3 transition-colors duration-200 hover:bg-muted/40 ${
+              className={`grid grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-4 py-3 transition-colors duration-200 hover:bg-muted/40 md:grid-cols-[1.6fr_1fr_1fr_auto] md:gap-3 ${
                 index < slots.length - 1 ? "border-b border-line" : ""
               }`}
             >
-              <span className="truncate font-sans text-[12.5px] text-foreground">
+              <span className="col-span-2 truncate font-sans text-[13px] text-foreground md:col-span-1 md:text-[12.5px]">
                 {formatSlot(slot.start_time, slot.end_time)}
               </span>
-              <span className="truncate font-sans text-[12px] text-subtle">
-                {slot.location ?? "—"}
+              <span className="col-start-1 row-start-2 truncate font-sans text-[12px] text-subtle md:col-start-auto md:row-start-auto">
+                {slot.location ?? "No location"}
               </span>
-              <span className="t-eyebrow truncate text-foreground">
+              <span className="t-eyebrow col-start-2 row-start-2 truncate text-foreground md:col-start-auto md:row-start-auto">
                 {slot.applicant_netid ?? (
                   <span className="font-sans text-[12px] text-foreground/50">open</span>
                 )}
               </span>
-              <span className="flex justify-end gap-1">
+              <span className="col-start-3 row-span-2 row-start-1 flex justify-end gap-1 md:col-start-auto md:row-span-1 md:row-start-auto">
                 {slot.is_claimed ? (
                   <button
                     type="button"
@@ -202,7 +202,7 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
                     aria-label="Release this slot"
                     title="Release this slot"
                     onClick={() => run(() => releaseSlot(slot.id))}
-                    className="p-1 text-foreground/50 transition-colors duration-200 hover:text-foreground disabled:pointer-events-none"
+                    className="flex items-center justify-center p-1 text-foreground/50 transition-colors duration-200 hover:text-foreground disabled:pointer-events-none max-md:size-11"
                   >
                     <UndoIcon className="size-3.5" />
                   </button>
@@ -212,7 +212,7 @@ export function InterviewAdmin({ cycle, slots }: { cycle: Cycle | null; slots: S
                     disabled={isPending}
                     aria-label="Delete this slot"
                     onClick={() => run(() => deleteSlot(slot.id))}
-                    className="p-1 text-foreground/50 transition-colors duration-200 hover:text-red disabled:pointer-events-none"
+                    className="flex items-center justify-center p-1 text-foreground/50 transition-colors duration-200 hover:text-red disabled:pointer-events-none max-md:size-11"
                   >
                     <Trash2Icon className="size-3.5" />
                   </button>

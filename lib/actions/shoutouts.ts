@@ -10,7 +10,7 @@ import { shoutoutSchema, type ShoutoutInput } from "@/lib/validation/club-schema
 
 function databaseFailure(what: string, error: { message: string }): ActionResult {
   console.error(`[shoutouts] couldn't ${what}:`, error.message);
-  return actionFailed(`Couldn't ${what} — try again`);
+  return actionFailed(`Couldn't ${what}. Try again`);
 }
 
 export async function giveShoutout(input: ShoutoutInput): Promise<ActionResult> {

@@ -11,7 +11,7 @@ import { cn } from "@/lib/utils";
 // Filtering happens in the browser rather than as a round trip. A club
 // directory is a few hundred rows at most, they're already all on the page,
 // and typing into a filter that re-queries per keystroke feels worse than
-// one that doesn't — this is the same trade Past Events makes with its term
+// one that doesn't; this is the same trade Past Events makes with its term
 // seals.
 function matches(member: MemberProfile, query: string): boolean {
   if (!query) return true;
@@ -85,7 +85,7 @@ export function MemberDirectory({ members }: { members: MemberProfile[] }) {
                 type="button"
                 onClick={() => setTeam(active ? null : value)}
                 className={cn(
-                  "t-eyebrow flex items-center gap-1.5 border px-2 py-1 transition-[background-color,border-color,color] duration-200 ease-fluid",
+                  "t-eyebrow flex items-center gap-1.5 border px-2 py-1 max-md:min-h-11 max-md:px-3 transition-[background-color,border-color,color] duration-200 ease-fluid",
                   active
                     ? "border-foreground bg-mint text-foreground"
                     : "border-line bg-background text-subtle hover:border-foreground hover:text-foreground",

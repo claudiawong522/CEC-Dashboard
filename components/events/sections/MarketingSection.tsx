@@ -98,12 +98,12 @@ export function MarketingSection({
 
   return (
     <SectionCard title="Marketing" eventId={eventId} section="marketing" done={done}>
-      <div className="grid grid-cols-2 gap-x-5 gap-y-[9px]">
+      <div className="grid grid-cols-2 gap-x-5 gap-y-[9px] max-md:gap-x-3 max-md:gap-y-0">
         {ITEMS.map((item) => (
           <label
             key={item.key}
             className={cn(
-              "flex items-center gap-[9px] font-sans text-[13px]",
+              "flex items-center gap-[9px] font-sans text-[13px] max-md:min-h-11 max-md:text-[14px]",
               state[item.key] ? "text-foreground" : "text-subtle",
             )}
           >
@@ -118,7 +118,7 @@ export function MarketingSection({
           <div
             key={item.id}
             className={cn(
-              "group flex items-center gap-[9px] font-sans text-[13px]",
+              "group flex min-w-0 items-center gap-[9px] font-sans text-[13px] max-md:min-h-11 max-md:text-[14px]",
               item.done ? "text-foreground" : "text-subtle",
             )}
           >
@@ -130,7 +130,8 @@ export function MarketingSection({
             <button
               type="button"
               onClick={() => handleDeleteCustom(item.id)}
-              className="font-sans text-[12px] text-foreground/40 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red"
+              aria-label={`Remove ${item.label}`}
+              className="flex shrink-0 items-center justify-center font-sans text-[12px] text-foreground/40 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red focus-visible:opacity-100 max-md:size-11 max-md:opacity-100"
             >
               <X className="size-3.5" />
             </button>
@@ -149,7 +150,7 @@ export function MarketingSection({
             }
           }}
           placeholder="Add a custom channel…"
-          className="max-w-[260px] px-[11px] py-2 text-[12.5px]"
+          className="max-w-[260px] flex-1 px-[11px] py-2 text-[12.5px]"
         />
         <Button size="sm" variant="outline" onClick={handleAddCustom} disabled={!newLabel.trim()}>
           Add

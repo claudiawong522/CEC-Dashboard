@@ -1,5 +1,6 @@
 import "server-only";
 import type Anthropic from "@anthropic-ai/sdk";
+import { clubToday } from "@/lib/utils/dates";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // The ask bar's retrieval layer.
@@ -147,7 +148,7 @@ export async function runAskTool(
           ? rows
               .map(
                 (m) =>
-                  `${m.full_name ?? m.email} — ${m.position}${m.team ? `, ${m.team}` : ""}${
+                  `${m.full_name ?? m.email}, ${m.position}${m.team ? `, ${m.team}` : ""}${
                     m.major ? `, ${m.major}` : ""
                   }${m.graduation_year ? `, class of ${m.graduation_year}` : ""}`,
               )
@@ -162,7 +163,7 @@ export async function runAskTool(
     }
 
     case "list_upcoming_events": {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = clubToday();
       const { data } = await supabase
         .from("events")
         .select("id, name, event_date, event_time, venue")
@@ -176,7 +177,7 @@ export async function runAskTool(
       const rows = data ?? [];
       return {
         text: rows.length
-          ? rows.map((e) => `${e.event_date} ${e.event_time} — ${e.name} at ${e.venue}`).join("\n")
+          ? rows.map((e) => `${e.event_date} ${e.event_time}: ${e.name} at ${e.venue}`).join("\n")
           : "Nothing is scheduled from today onward.",
         citations: rows.map((e) => ({ id: e.id, label: e.name, kind: "event" as const })),
       };
@@ -206,7 +207,7 @@ export async function runAskTool(
           ? rows
               .map(
                 (e) =>
-                  `${e.event_date} — ${e.name} at ${e.venue}, ${
+                  `${e.event_date}: ${e.name} at ${e.venue}, ${
                     e.attendance?.[0]?.count ?? 0
                   } recorded as attending`,
               )
@@ -286,7 +287,7 @@ export async function runAskTool(
           ? rows
               .map(
                 (c) =>
-                  `${c.id} — ${c.name}${c.title ? `, ${c.title}` : ""}${
+                  `${c.id}: ${c.name}${c.title ? `, ${c.title}` : ""}${
                     c.company ? ` at ${c.company}` : ""
                   } (${c.type}, ${c.status}${
                     c.last_touched_at

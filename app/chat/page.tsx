@@ -15,18 +15,18 @@ export default function ChatSignupPage() {
     <div className="relative flex min-h-svh flex-col overflow-hidden bg-background">
       <TriangleScatter count={6} seed={111} min={28} max={80} opacity={0.22} />
 
-      <header className="relative z-10 flex items-center gap-3 border-b border-line px-6 py-4 sm:px-10">
+      <header className="relative z-10 flex items-center gap-3 border-b border-line pt-[max(16px,env(safe-area-inset-top))] pr-[max(16px,env(safe-area-inset-right))] pb-4 pl-[max(16px,env(safe-area-inset-left))] sm:px-10">
         <Sticker floatVariant="none" wrapperClassName="shrink-0">
           <BrandMark className="h-[22px] w-6" />
         </Sticker>
-        <span className="font-display text-[14px] font-bold tracking-tight text-foreground uppercase">
+        <span className="font-display text-[13px] font-bold tracking-tight text-foreground uppercase sm:text-[14px]">
           Cornell Entrepreneurship Club
         </span>
       </header>
 
-      <main className="relative z-10 mx-auto flex w-full max-w-[560px] flex-1 flex-col gap-6 px-6 pt-10 pb-16">
+      <main className="relative z-10 mx-auto flex w-full max-w-[560px] flex-1 flex-col gap-6 px-4 pt-8 pb-[max(64px,env(safe-area-inset-bottom))] sm:px-6 sm:pt-10">
         <div className="flex flex-col gap-3">
-          <h1 className="t-display text-[40px] text-foreground">
+          <h1 className="t-display text-[32px] text-balance text-foreground sm:text-[40px]">
             Chat with a member
           </h1>
           <MintRule className="w-20" />

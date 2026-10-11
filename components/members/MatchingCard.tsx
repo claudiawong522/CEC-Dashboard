@@ -80,17 +80,10 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
         <Switch checked={openToChats} onCheckedChange={setOpenToChats} />
       </label>
 
-      {/* The rest of the card is only meaningful once the toggle is on, but
-          it stays mounted rather than unmounting: someone turning it off for
-          a semester shouldn't come back to an empty blurb they have to
-          rewrite. It just stops being published. */}
-      <div
-        className={
-          openToChats
-            ? "flex flex-col gap-4"
-            : "pointer-events-none flex flex-col gap-4 opacity-45"
-        }
-      >
+      {/* Always editable, toggle on or off: the blurb can be written before
+          opting in, and someone turning it off for a semester comes back to
+          the blurb they had. It just stops being shown. */}
+      <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-1.5">
           <Label>
             What you&rsquo;re happy to chat about
@@ -101,8 +94,15 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
             placeholder="Happy to talk about breaking into hardware, Cornell CS, or why our build nights run late."
             onChange={(event) => setBlurb(event.target.value)}
           />
-          <span className="t-eyebrow self-end text-foreground/50">
-            {blurb.length} / 280
+          <span className="flex items-start justify-between gap-3">
+            <span className="font-sans text-[11.5px] text-foreground/70">
+              {openToChats && !blurb.trim()
+                ? "Add a line so people know what to ask you about. Until then your profile shows no blurb."
+                : ""}
+            </span>
+            <span className="t-eyebrow shrink-0 text-foreground/50">
+              {blurb.length} / 280
+            </span>
           </span>
         </div>
 
@@ -126,7 +126,7 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
                   type="button"
                   aria-pressed={on}
                   onClick={() => toggleInterest(tag)}
-                  className={`t-eyebrow border px-2 py-1 transition-[background-color,border-color,color] duration-200 ease-fluid ${
+                  className={`t-eyebrow border px-2 py-1 max-md:min-h-11 max-md:px-3 transition-[background-color,border-color,color] duration-200 ease-fluid ${
                     on
                       ? "border-foreground bg-mint text-foreground"
                       : "border-line bg-background text-subtle hover:border-foreground hover:text-foreground"
