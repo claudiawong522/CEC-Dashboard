@@ -9,14 +9,12 @@ export const TEAM_LABELS: Record<Team, string> = {
   generalist: "Generalist",
 };
 
-// Subteam colours reuse the fixed section palette rather than inventing new
-// ones: Events is the club's calendar work (teal, same as Venue/Attendees),
-// Media matches Marketing's coral. Generalist keeps the amber that Operations
-// had, since it is the catch-all the way Operations was, and blue is freed up
-// by Builders going away.
+// Subteam colours reuse the fixed section palette (design/BRAND_KIT.md
+// Subteams): Events blue, Media teal like the Media section, Generalist amber, the catch-all the way
+// Operations was.
 export const TEAM_COLORS: Record<Team, string> = {
-  events: "var(--teal)",
-  media: "var(--coral)",
+  events: "var(--blue)",
+  media: "var(--teal)",
   generalist: "var(--amber)",
 };
 

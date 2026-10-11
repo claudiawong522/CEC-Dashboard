@@ -174,7 +174,7 @@ export function ExternalDetail({
           });
         }
       } catch {
-        toast.error("Couldn't update stage — try again");
+        toast.error("Couldn't update stage, try again");
       }
     });
   }
@@ -189,7 +189,7 @@ export function ExternalDetail({
         const { id, contactId } = await addPerson(idea.id);
         setLocalPeople((prev) => [...prev, { id, idea_id: idea.id, contact_id: contactId, name: "", email: null }]);
       } catch {
-        toast.error("Couldn't add person — try again");
+        toast.error("Couldn't add person, try again");
       }
     });
   }
@@ -200,7 +200,7 @@ export function ExternalDetail({
       try {
         await removePerson(idea.id, personId);
       } catch {
-        toast.error("Couldn't remove person — try again");
+        toast.error("Couldn't remove person, try again");
       }
     });
   }
@@ -210,7 +210,7 @@ export function ExternalDetail({
       try {
         await toggleOwner(idea.id, profileId);
       } catch {
-        toast.error("Couldn't update owners — try again");
+        toast.error("Couldn't update owners, try again");
       }
     });
   }
@@ -323,7 +323,7 @@ export function ExternalDetail({
         <Textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
-          placeholder="Log calls, replies, anything worth remembering — just start typing…"
+          placeholder="Log calls, replies, anything worth remembering. Just start typing…"
           rows={5}
         />
       </div>
