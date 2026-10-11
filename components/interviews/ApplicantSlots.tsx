@@ -55,7 +55,7 @@ export function ApplicantSlots({ slots, netid }: { slots: ApplicantSlot[]; netid
             type="button"
             disabled={isPending}
             onClick={() => run(() => releaseOwnSlot(mine.id))}
-            className="link-underline mt-1 w-fit font-sans text-[12px] text-subtle transition-colors duration-200 hover:text-foreground disabled:pointer-events-none"
+            className="link-underline mt-1 inline-flex w-fit items-center font-sans text-[12px] text-subtle max-md:min-h-11 max-md:text-[13px] transition-colors duration-200 hover:text-foreground disabled:pointer-events-none"
           >
             Give it up and pick another
           </button>

@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getSession } from "@/lib/auth/getSession";
-import { NotesEditor } from "@/components/notes/NotesEditor";
+import { NotesEditor } from "@/components/notes/NotesEditorClient";
 import { PageHeader } from "@/components/ui/page-header";
 
 import { saveNotesDoc } from "@/lib/actions/notes";
@@ -28,7 +28,7 @@ export default async function NotesPage() {
       <PageHeader title="Notes" />
 
       <div className="relative">
-        <span className="absolute top-0.5 bottom-0.5 -left-4 w-[3px] bg-mint" />
+        <span className="absolute top-0.5 bottom-0.5 -left-3 w-[3px] bg-mint sm:-left-4" />
         <NotesEditor initialContent={content} editable={editable} onSave={saveNotesDoc} />
       </div>
 

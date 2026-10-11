@@ -101,7 +101,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
               </button>
               <Link
                 href={`/events/${file.event_id}`}
-                className="truncate font-sans text-[11px] text-foreground/50 transition-colors duration-150 ease-fluid hover:text-foreground"
+                className="block truncate font-sans text-[11px] text-foreground/50 transition-colors duration-150 ease-fluid hover:text-foreground max-md:-mb-4 max-md:pt-0.5 max-md:pb-6 max-md:text-[12px]"
               >
                 {file.events?.name ?? "Untitled event"}
               </Link>
@@ -124,7 +124,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                       type="button"
                       onClick={() => go(-1)}
                       aria-label="Previous photo"
-                      className="absolute top-1/2 left-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center border-2 border-foreground bg-background text-foreground transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint"
+                      className="absolute top-1/2 left-2 z-10 flex size-9 -translate-y-1/2 items-center max-md:size-11 justify-center border-2 border-foreground bg-background text-foreground transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint"
                     >
                       <ChevronLeft className="size-5" />
                     </button>
@@ -132,14 +132,14 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                       type="button"
                       onClick={() => go(1)}
                       aria-label="Next photo"
-                      className="absolute top-1/2 right-2 z-10 flex size-9 -translate-y-1/2 items-center justify-center border-2 border-foreground bg-background text-foreground transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint"
+                      className="absolute top-1/2 right-2 z-10 flex size-9 -translate-y-1/2 items-center max-md:size-11 justify-center border-2 border-foreground bg-background text-foreground transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint"
                     >
                       <ChevronRight className="size-5" />
                     </button>
                   </>
                 )}
                 {openFile.mime_type?.startsWith("image/") ? (
-                  <div className="relative h-[78vh] w-full overflow-hidden bg-foreground/5">
+                  <div className="relative h-[60svh] w-full overflow-hidden bg-foreground/5 sm:h-[78vh]">
                     <Image
                       src={publicFileUrl(openFile.bucket, openFile.storage_path)}
                       alt={openFile.file_name ?? "media"}
@@ -153,7 +153,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                     src={publicFileUrl(openFile.bucket, openFile.storage_path)}
                     controls
                     autoPlay
-                    className="max-h-[78vh] w-full bg-foreground/5"
+                    className="max-h-[60svh] w-full bg-foreground/5 sm:max-h-[78vh]"
                   />
                 ) : (
                   <div className="flex h-[40vh] items-center justify-center bg-foreground/5 font-sans text-[13px] text-foreground/50">
@@ -169,7 +169,7 @@ export function PhotoGrid({ files }: { files: MediaFile[] }) {
                 )}
                 <Link
                   href={`/events/${openFile.event_id}`}
-                  className="self-start border border-line bg-background px-2.5 py-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-150 ease-fluid hover:border-foreground hover:text-foreground"
+                  className="self-start border border-line bg-background px-2.5 py-1.5 font-sans text-[12px] text-foreground/50 max-md:flex max-md:min-h-11 max-md:items-center transition-colors duration-150 ease-fluid hover:border-foreground hover:text-foreground"
                 >
                   {openFile.events?.name ?? "Untitled event"}
                 </Link>

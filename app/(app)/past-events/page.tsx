@@ -72,7 +72,7 @@ export default async function PastEventsPage() {
       .like("mime_type", "image/%")
       .order("created_at", { ascending: true });
 
-    // First image uploaded per event becomes its cover — mediaFiles is
+    // First image uploaded per event becomes its cover; mediaFiles is
     // ordered oldest-first, so the first time we see an event_id wins and
     // later duplicates are skipped.
     for (const file of mediaFiles ?? []) {

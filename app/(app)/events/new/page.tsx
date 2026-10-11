@@ -27,7 +27,7 @@ export default async function NewEventPage({
       <TriangleScatter count={4} seed={51} opacity={0.2} className="z-0 h-48" />
       <Link
         href="/calendar"
-        className="t-eyebrow relative z-10 w-fit text-foreground/50 transition-colors duration-200 ease-fluid hover:text-foreground"
+        className="t-eyebrow relative z-10 inline-flex w-fit items-center text-foreground/50 transition-colors duration-200 ease-fluid hover:text-foreground max-md:min-h-11"
       >
         ← Calendar
       </Link>

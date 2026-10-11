@@ -4,6 +4,7 @@ import { SlidersHorizontal } from "lucide-react";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -47,24 +48,24 @@ export function SectionsDialog({
       >
         <SlidersHorizontal />
       </DialogTrigger>
-      <DialogContent className="border border-line bg-background p-4 shadow-soft ring-0 sm:max-w-[380px]">
+      <DialogContent className="sm:max-w-[400px]">
         <DialogHeader>
-          <DialogTitle className="font-display text-[18px] font-bold text-foreground">Sections</DialogTitle>
+          <DialogTitle>Sections</DialogTitle>
         </DialogHeader>
-        <p className="font-sans text-[12px] leading-[1.5] text-foreground/50">
+        <DialogDescription>
           Turn sections on or off. Anything already filled in stays put if you turn one back on.
-        </p>
+        </DialogDescription>
         <div className="overflow-hidden border border-line bg-background">
           {SECTION_ITEMS.map((item, i) => (
             <div
               key={item.key}
-              className={`flex items-center justify-between px-[15px] py-3 transition-colors duration-200 ease-fluid hover:bg-muted/40 ${
+              className={`flex min-h-11 items-center justify-between px-[15px] py-2 transition-colors duration-200 ease-fluid hover:bg-muted/40 ${
                 i < SECTION_ITEMS.length - 1 ? "border-b border-line" : ""
               }`}
             >
               <Label
                 htmlFor={`section-${item.key}`}
-                className="gap-[9px] font-sans text-[13.5px] font-normal text-foreground"
+                className="flex-1 gap-[9px] self-stretch font-sans text-[14px] font-normal tracking-normal text-foreground normal-case"
               >
                 <SectionFlag color={SECTION_COLORS[item.label]} />
                 {item.label}

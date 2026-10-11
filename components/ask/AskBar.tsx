@@ -78,12 +78,12 @@ export function AskBar() {
           disabled={isPending}
           onChange={(event) => setQuestion(event.target.value)}
           placeholder="Ask anything about the club"
-          className="w-full border-2 border-foreground bg-background py-3.5 pr-[92px] pl-11 font-sans text-[15px] text-foreground placeholder:text-foreground/40 outline-none transition-[box-shadow] duration-200 ease-fluid focus-visible:shadow-mint-sm disabled:opacity-60"
+          className="w-full border-2 border-foreground bg-background py-3.5 pr-[92px] pl-11 font-sans text-[15px] text-foreground max-md:text-[16px] placeholder:text-foreground/40 outline-none transition-[box-shadow] duration-200 ease-fluid focus-visible:shadow-mint-sm disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={isPending || !question.trim()}
-          className="brutalist-border absolute top-1/2 right-2 flex h-8 -translate-y-1/2 items-center gap-1.5 bg-mint px-3 font-display text-[11px] font-bold tracking-wide uppercase transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40"
+          className="brutalist-border absolute top-1/2 right-2 flex h-8 -translate-y-1/2 items-center justify-center gap-1.5 bg-mint px-3 font-display max-md:right-1 max-md:h-11 max-md:min-w-11 text-[11px] font-bold tracking-wide uppercase transition-colors duration-200 ease-fluid hover:bg-foreground hover:text-mint active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40"
         >
           {isPending ? "Asking" : <CornerDownLeftIcon className="size-3.5" />}
         </button>
@@ -105,7 +105,7 @@ export function AskBar() {
                 setQuestion(suggestion);
                 submit(suggestion);
               }}
-              className="border border-line bg-background px-3 py-1.5 font-sans text-[12px] text-subtle transition-[background-color,border-color,color] duration-200 ease-fluid hover:border-foreground hover:bg-muted/40 hover:text-foreground"
+              className="border border-line bg-background px-3 py-1.5 text-left font-sans text-[12px] text-subtle max-md:min-h-11 transition-[background-color,border-color,color] duration-200 ease-fluid hover:border-foreground hover:bg-muted/40 hover:text-foreground"
             >
               {suggestion}
             </button>

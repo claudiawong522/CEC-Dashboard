@@ -19,7 +19,7 @@ export function RevokeInviteButton({ userId, email }: { userId: string; email: s
   return (
     <ConfirmButton
       trigger={<X className="size-3.5" />}
-      triggerClassName="flex size-6 shrink-0 items-center justify-center text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red"
+      triggerClassName="flex size-6 shrink-0 items-center justify-center max-md:size-11 text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red"
       triggerTitle={`Cancel invite to ${email}`}
       askLabel="Cancel invite?"
       yesLabel="Yes"

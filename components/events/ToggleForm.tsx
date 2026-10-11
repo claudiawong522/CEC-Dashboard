@@ -104,7 +104,7 @@ export function ToggleForm({
         await createEvent(values, ideaId);
       } catch (err) {
         if (err instanceof Error && err.message === "NEXT_REDIRECT") throw err;
-        toast.error("Couldn't create event — try again");
+        toast.error("Couldn't create event. Try again.");
       }
     });
   }
@@ -112,7 +112,7 @@ export function ToggleForm({
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="relative z-10 flex max-w-[580px] flex-col gap-5">
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="name" className="font-sans text-[12px] font-normal text-subtle">
+        <Label htmlFor="name">
           Event name
         </Label>
         <Input id="name" {...register("name")} />
@@ -120,8 +120,8 @@ export function ToggleForm({
       </div>
 
       <div className="flex items-center justify-between">
-        <Label className="font-sans text-[12px] font-normal text-subtle">When</Label>
-        <label className="flex items-center gap-2">
+        <Label>When</Label>
+        <label className="flex items-center gap-2 max-md:min-h-11">
           <span className="font-sans text-[12px] text-subtle">All day</span>
           <Controller
             name="allDay"
@@ -145,8 +145,8 @@ export function ToggleForm({
         </label>
       </div>
       <div className="flex gap-[11px]">
-        <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="eventDate" className="font-sans text-[12px] font-normal text-subtle">
+        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <Label htmlFor="eventDate">
             Start date
           </Label>
           <Controller
@@ -167,8 +167,8 @@ export function ToggleForm({
             <p className="font-sans text-[12px] text-destructive">{errors.eventDate.message}</p>
           )}
         </div>
-        <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="eventEndDate" className="font-sans text-[12px] font-normal text-subtle">
+        <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <Label htmlFor="eventEndDate">
             End date
           </Label>
           <Controller
@@ -192,8 +192,8 @@ export function ToggleForm({
       </div>
       {!values.allDay && (
         <div className="flex gap-[11px]">
-          <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor="eventStartTime" className="font-sans text-[12px] font-normal text-subtle">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <Label htmlFor="eventStartTime">
               Start time
             </Label>
             <Controller
@@ -207,8 +207,8 @@ export function ToggleForm({
               <p className="font-sans text-[12px] text-destructive">{errors.eventStartTime.message}</p>
             )}
           </div>
-          <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor="eventEndTime" className="font-sans text-[12px] font-normal text-subtle">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <Label htmlFor="eventEndTime">
               End time
             </Label>
             <Controller
@@ -225,9 +225,9 @@ export function ToggleForm({
         </div>
       )}
 
-      <div className="flex gap-[11px]">
-        <div className="flex flex-1 flex-col gap-1.5">
-          <Label htmlFor="repeatsFrequency" className="font-sans text-[12px] font-normal text-subtle">
+      <div className="grid grid-cols-2 gap-[11px] sm:flex">
+        <div className="col-span-2 flex min-w-0 flex-col gap-1.5 sm:col-span-1 sm:flex-1">
+          <Label htmlFor="repeatsFrequency">
             Repeats
           </Label>
           <Controller
@@ -253,8 +253,8 @@ export function ToggleForm({
           />
         </div>
         {values.repeatsFrequency && (
-          <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor="repeatsEndsMode" className="font-sans text-[12px] font-normal text-subtle">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <Label htmlFor="repeatsEndsMode">
               Ends
             </Label>
             <Controller
@@ -275,8 +275,8 @@ export function ToggleForm({
           </div>
         )}
         {values.repeatsFrequency && values.repeatsEndsMode !== "count" && (
-          <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor="repeatsEndDate" className="font-sans text-[12px] font-normal text-subtle">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <Label htmlFor="repeatsEndDate">
               End date
             </Label>
             <Controller
@@ -292,8 +292,8 @@ export function ToggleForm({
           </div>
         )}
         {values.repeatsFrequency && values.repeatsEndsMode === "count" && (
-          <div className="flex flex-1 flex-col gap-1.5">
-            <Label htmlFor="repeatsOccurrenceCount" className="font-sans text-[12px] font-normal text-subtle">
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <Label htmlFor="repeatsOccurrenceCount">
               Occurrences
             </Label>
             <Controller
@@ -320,7 +320,7 @@ export function ToggleForm({
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="venue" className="font-sans text-[12px] font-normal text-subtle">
+        <Label htmlFor="venue">
           Venue
         </Label>
         <Input id="venue" {...register("venue")} />
@@ -338,13 +338,13 @@ export function ToggleForm({
           {TOGGLE_ITEMS.map((item, i) => (
             <div
               key={item.key}
-              className={`flex items-center justify-between px-[15px] py-3 transition-colors duration-200 ease-fluid hover:bg-muted/40 ${
+              className={`flex items-center justify-between px-[15px] py-3 transition-colors duration-200 ease-fluid hover:bg-muted/40 max-md:min-h-11 max-md:py-1.5 ${
                 i < TOGGLE_ITEMS.length - 1 ? "border-b border-line" : ""
               }`}
             >
               <Label
                 htmlFor={item.key}
-                className="gap-[9px] font-sans text-[13.5px] font-normal text-foreground"
+                className="flex-1 gap-[9px] self-stretch font-sans text-[13.5px] font-normal tracking-normal text-foreground normal-case max-md:text-[14px]"
               >
                 <SectionFlag color={SECTION_COLORS[item.label]} />
                 {item.label}
@@ -365,8 +365,8 @@ export function ToggleForm({
         </div>
       </div>
 
-      <div className="flex items-center gap-[14px]">
-        <Button type="submit" loading={isPending}>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-[14px]">
+        <Button type="submit" loading={isPending} className="max-sm:w-full">
           {isPending ? "Creating…" : "Continue"}
         </Button>
         <span className="font-sans text-[12.5px] text-foreground/50">

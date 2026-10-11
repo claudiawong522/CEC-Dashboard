@@ -3,11 +3,16 @@ import { RevokeInviteButton } from "@/components/admin/RevokeInviteButton";
 import { RemoveAccessButton } from "@/components/admin/RemoveAccessButton";
 import type { Profile } from "@/lib/auth/getSession";
 
-// Removed people never arrive here — app/(app)/admin/page.tsx filters
+// Removed people never arrive here: app/(app)/admin/page.tsx filters
 // status='revoked' out of the query, so this table only ever shows invited
 // and active rows. Their profile row still exists in the database, since
 // everything they authored references it; it just isn't anyone's business
 // on this screen. Getting them back is a fresh invite, not a restore.
+
+// On phones each row is a small card: name over email on the left, access
+// under them, and the remove action pinned to the right edge. From md up it
+// is the four-column table.
+const ROW_GRID = "md:grid-cols-[1.3fr_1.6fr_0.9fr_44px]";
 
 export function UserTable({
   users,
@@ -20,7 +25,7 @@ export function UserTable({
 }) {
   return (
     <div className="border border-line bg-background">
-      <div className="t-eyebrow grid grid-cols-[1.3fr_1.6fr_0.9fr_24px] gap-3 border-b border-foreground bg-muted px-4 py-2.5 text-foreground">
+      <div className={`t-eyebrow hidden gap-3 border-b border-foreground bg-muted px-4 py-2.5 text-foreground md:grid ${ROW_GRID}`}>
         <span>name</span>
         <span>email</span>
         <span>access</span>
@@ -32,37 +37,42 @@ export function UserTable({
         return (
           <div
             key={user.id}
-            className={`grid grid-cols-[1.3fr_1.6fr_0.9fr_24px] items-center gap-3 px-4 py-3 transition-colors duration-200 ease-fluid hover:bg-muted/40 ${
+            className={`grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1 px-4 py-3 transition-colors duration-200 ease-fluid hover:bg-muted/40 md:gap-3 ${ROW_GRID} ${
               i < users.length - 1 ? "border-b border-line" : ""
             }`}
           >
             <span
-              className={`truncate font-sans text-[13px] ${
+              className={`col-start-1 truncate font-sans text-[14px] md:col-start-auto md:text-[13px] ${
                 isPending ? "text-foreground/50" : "text-foreground"
               } ${isSelf ? "font-medium" : "font-normal"}`}
             >
-              {isPending ? "Invite pending" : (user.full_name ?? "—")}
+              {isPending ? "Invite pending" : (user.full_name ?? "No name yet")}
             </span>
-            <span className="truncate font-sans text-[12.5px] text-subtle">{user.email}</span>
+            <span className="col-start-1 truncate font-sans text-[12.5px] text-subtle md:col-start-auto">
+              {user.email}
+            </span>
             {isPending ? (
               <span
-                className="t-eyebrow justify-self-start border border-amber bg-amber/10 px-2 py-0.5 text-foreground"
+                className="t-eyebrow col-start-1 mt-1.5 inline-flex items-center gap-1.5 justify-self-start border border-line px-2 py-0.5 text-foreground md:col-start-auto md:mt-0"
                 title={`Will become ${user.role} on accept`}
               >
+                <span aria-hidden="true" className="size-1.5 shrink-0 bg-amber" />
                 pending · {user.role}
               </span>
             ) : isSelf ? (
-              <span className="t-eyebrow justify-self-start border border-foreground bg-mint px-2 py-0.5 text-foreground">
+              <span className="t-eyebrow col-start-1 mt-1.5 justify-self-start border border-foreground bg-mint px-2 py-0.5 text-foreground md:col-start-auto md:mt-0">
                 {user.role}
               </span>
             ) : canManageRoles ? (
-              <RoleSelect userId={user.id} role={user.role} />
+              <span className="col-start-1 mt-1.5 md:col-start-auto md:mt-0">
+                <RoleSelect userId={user.id} role={user.role} />
+              </span>
             ) : (
-              <span className="t-eyebrow justify-self-start border border-line px-2 py-0.5 text-subtle">
+              <span className="t-eyebrow col-start-1 mt-1.5 justify-self-start border border-line px-2 py-0.5 text-subtle md:col-start-auto md:mt-0">
                 {user.role}
               </span>
             )}
-            <span className="flex justify-end">
+            <span className="col-start-2 row-span-3 row-start-1 flex justify-end md:col-start-auto md:row-span-1 md:row-start-auto">
               {/* No action against yourself: removeAccess refuses it server-side
                   anyway, so offering the button would only ever produce an error. */}
               {!canManageRoles || isSelf ? null : isPending ? (

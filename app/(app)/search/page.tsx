@@ -23,7 +23,7 @@ export default async function SearchPage({
   const supabase = await createClient();
 
   // `,` and `()` are structural characters in PostgREST's .or() filter
-  // syntax — strip them out of the raw search term so it can't be used to
+  // syntax, so strip them out of the raw search term so it can't be used to
   // inject extra filter clauses.
   const safeQuery = query.replace(/[,()]/g, " ");
 
@@ -65,9 +65,9 @@ export default async function SearchPage({
             <Link
               key={event.id}
               href={`/events/${event.id}`}
-              className="flex items-center justify-between gap-3 border border-line bg-background px-4 py-3 shadow-soft transition-[box-shadow,transform,border-color] duration-300 ease-fluid hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm"
+              className="flex flex-col items-start gap-1.5 border border-line bg-background px-4 py-3 shadow-soft transition-[box-shadow,transform,border-color] duration-300 ease-fluid hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3"
             >
-              <div className="flex min-w-0 flex-col gap-0.5">
+              <div className="flex w-full min-w-0 flex-col gap-0.5 sm:w-auto">
                 <span className="truncate font-sans text-[14px] font-medium text-foreground">
                   {event.name}
                 </span>
@@ -78,7 +78,7 @@ export default async function SearchPage({
                   {formatEventDate(event.event_date)} · {formatEventTime(event.event_time)}
                 </span>
                 {event.is_complete && (
-                  <span className="t-eyebrow border border-teal/40 px-2 py-0.5 text-teal">
+                  <span className="t-eyebrow border border-foreground bg-mint px-2 py-0.5 text-foreground">
                     Done
                   </span>
                 )}

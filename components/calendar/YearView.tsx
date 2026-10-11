@@ -34,7 +34,7 @@ export function YearView({
 
   return (
     <div className="relative mx-auto w-full max-w-[1040px]">
-      <div className="relative grid grid-cols-4 gap-4">
+      <div className="relative grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
       {MONTH_LABELS.map((label, i) => {
         const isCurrentMonth = today.getFullYear() === year && today.getMonth() === i;
         const monthEvents = eventsByMonth[i];
@@ -45,7 +45,7 @@ export function YearView({
             type="button"
             onClick={() => onSelectMonth(i)}
             className={cn(
-              "relative overflow-hidden bg-background p-5 text-left transition-[transform,border-color,box-shadow] duration-300 ease-fluid hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm",
+              "relative overflow-hidden bg-background p-4 text-left sm:p-5 transition-[transform,border-color,box-shadow] duration-300 ease-fluid hover:-translate-y-0.5 hover:border-foreground hover:shadow-mint-sm",
               isCurrentMonth ? "border-2 border-foreground" : "border border-line",
             )}
           >
@@ -67,7 +67,7 @@ export function YearView({
                     e.stopPropagation();
                     router.push(`/events/${event.id}`);
                   }}
-                  className="size-1.5 shrink-0 transition-transform duration-150 hover:scale-125"
+                  className="size-1.5 shrink-0 transition-transform duration-150 hover:scale-125 max-md:pointer-events-none"
                   style={{ background: SECTION_COLORS[firstPrepSection(event)] }}
                 />
               ))}

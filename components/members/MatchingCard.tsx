@@ -126,7 +126,7 @@ export function MatchingCard({ member }: { member: MemberProfile }) {
                   type="button"
                   aria-pressed={on}
                   onClick={() => toggleInterest(tag)}
-                  className={`t-eyebrow border px-2 py-1 transition-[background-color,border-color,color] duration-200 ease-fluid ${
+                  className={`t-eyebrow border px-2 py-1 max-md:min-h-11 max-md:px-3 transition-[background-color,border-color,color] duration-200 ease-fluid ${
                     on
                       ? "border-foreground bg-mint text-foreground"
                       : "border-line bg-background text-subtle hover:border-foreground hover:text-foreground"

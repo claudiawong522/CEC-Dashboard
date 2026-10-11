@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeftIcon, Trash2Icon } from "lucide-react";
@@ -31,6 +31,8 @@ import type { ContactWithOrg, Interaction, Organization } from "@/lib/types/crm"
 import { formatClubDate } from "@/lib/utils/dates";
 import type { ChatPerson } from "@/lib/types/coffee-chats";
 import { InteractionTimeline } from "@/components/crm/InteractionTimeline";
+import { PageHeader } from "@/components/ui/page-header";
+import { ConfirmButton } from "@/components/ui/confirm-button";
 
 const NONE = "__none__";
 
@@ -46,7 +48,6 @@ export function ContactDetail({
   admins: ChatPerson[];
 }) {
   const router = useRouter();
-  const [isDeleting, startDelete] = useTransition();
 
   const [draft, setDraft] = useState({
     name: contact.name,
@@ -80,47 +81,46 @@ export function ContactDetail({
     setDraft((current) => ({ ...current, [key]: value }));
   }
 
-  function remove() {
-    startDelete(async () => {
-      const result = await deleteContact(contact.id);
-      if (!result.ok) {
-        toast.error(result.message);
-        return;
-      }
-      toast.success(result.message ?? "Deleted");
-      router.replace("/crm");
-    });
+  async function remove() {
+    const result = await deleteContact(contact.id);
+    if (!result.ok) {
+      toast.error(result.message);
+      return;
+    }
+    toast.success(result.message ?? "Deleted");
+    router.replace("/crm");
   }
 
   return (
     <div className="flex flex-col gap-5">
       <Link
         href="/crm"
-        className="link-underline flex w-fit items-center gap-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-foreground"
+        className="link-underline -my-3 flex min-h-11 w-fit items-center gap-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-foreground md:my-0 md:min-h-0"
       >
         <ArrowLeftIcon className="size-3.5" />
         CRM
       </Link>
 
-      <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
-        <div className="flex items-center justify-between gap-3">
-          <h1 className="t-display text-[28px] text-foreground">
-            {draft.name || "Unnamed contact"}
-          </h1>
-          <div className="flex items-center gap-2.5">
+      <PageHeader
+        eyebrow={`Contact · ${draft.type.charAt(0).toUpperCase() + draft.type.slice(1)} · ${CONTACT_STATUS_LABELS[draft.status]}`}
+        title={<span className="break-words">{draft.name.trim() || "Unnamed contact"}</span>}
+        actions={
+          <>
             <SaveIndicator status={status} />
-            <button
-              type="button"
-              disabled={isDeleting}
-              aria-label="Delete this contact"
-              onClick={remove}
-              className="p-1.5 text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red disabled:pointer-events-none disabled:opacity-50"
-            >
-              <Trash2Icon className="size-3.5" />
-            </button>
-          </div>
-        </div>
+            <ConfirmButton
+              trigger={<Trash2Icon className="size-4" />}
+              triggerTitle="Delete this contact"
+              triggerClassName="inline-flex size-9 items-center justify-center border-2 border-foreground text-foreground transition-colors duration-200 ease-fluid hover:border-red hover:bg-red hover:text-background max-md:size-11"
+              askLabel="Delete contact?"
+              yesLabel="Delete"
+              cancelLabel="Keep"
+              onConfirm={remove}
+            />
+          </>
+        }
+      />
 
+      <div className="flex flex-col gap-4 border border-line bg-background p-4 shadow-soft sm:p-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Name">
             <Input value={draft.name} onChange={(e) => set("name", e.target.value)} />

@@ -85,7 +85,14 @@ Emphasis inside prose is one 600-weight DM Sans word, or a `link-underline` link
 | ghost | no border, `foreground/60` | `muted/60` wash, black text |
 | destructive | red text | red fill, white text |
 | link | DM Sans 500, `link-underline` | mint underline grows in |
-Press: `scale(.98)`. Focus: 2px mint ring, 2px offset. Sizes: xs 28, sm 32, default 36, lg 44px.
+Press: `scale(.98)`. Focus: 2px mint ring, 2px offset. Sizes: xs 28, sm 32, default 36, lg 44px (all 44px
+under `md`). Ghost, destructive and link carry `border-transparent` in the variant, not the base, so a
+`buttonVariants()` class on a link keeps its border.
+
+## Focus
+One global `:focus-visible` rule in `globals.css`: 2px solid mint outline, 2px offset, for every
+focusable thing (nav links, lockup, chips, hand-rolled triggers). Controls with their own focus state
+(inputs darken the border, Button draws `ring-*`) opt out with `outline-none`.
 
 ## Controls
 - **Input / Textarea / Select trigger / Date and time pickers:** 1px `line`, white, 14px DM Sans; hover
@@ -102,7 +109,12 @@ Press: `scale(.98)`. Focus: 2px mint ring, 2px offset. Sizes: xs 28, sm 32, defa
   fill white text.
 - **Menus, popovers, selects:** 1px black border, white, `shadow-soft`, items 13px `subtle` hover
   `muted/60` wash and black text; group labels `t-eyebrow` at `foreground/50`.
-- **Dialog:** 2px black border, `shadow-mint-lg`, `t-display` title, footer on `muted/40`.
+- **Dialog:** 2px black border, `shadow-mint-lg`, `t-display` 22px title, footer on `muted/40`. Feature
+  dialogs never override these (no hairline border, no `shadow-soft`, no 18px titles).
+- **Toast (sonner):** white, 1px black border, `shadow-soft`, radius 0, DM Sans 13px; applied through
+  `toastOptions.classNames` with `!` utilities because sonner's own styles win otherwise.
+- **Notice (`MissingKeyNotice`):** hairline frame with a 3px amber left bar, white ground, radius 0.
+- **Pending tag:** hairline `t-eyebrow` tag with a 6px amber square, no tint.
 - **Avatar:** square, 2px black border, initials in display 700 11px on `muted`.
 - **Drop zone:** 2px dashed `line`, hover black border and `mint/10` wash. Thumbnails square, hairline.
 - **Confirm (inline):** a bordered `t-eyebrow` tag with the yes in red, cancel in `foreground/60`.
@@ -146,12 +158,37 @@ load, never on in-app navigation. `prefers-reduced-motion` drops drift, stagger,
 marquee; colour and border transitions stay.
 
 ## Shell
-- Sidebar 264px (68px icon rail under `md`), white, 1px `line` right edge. Lockup, search input, grouped
+- Sidebar 264px from `md` up, white, 1px `line` right edge. Lockup, search input, grouped
   nav with `t-eyebrow` group heads at `foreground/40`, items 14px at `foreground/55` hover black; the
-  active item's label carries a 2px mint underline (`shadow-[inset_0_-2px_0_0_var(--mint)]`), the rail
-  shows it under the icon. Foot: `TriRow` + square avatar opening the account menu.
-- Content: plain white, `max-w-[1240px]`, 40 to 56px side padding. No letterbox, no canvas colour, no
-  texture, no zoom.
+  active item's label carries a 2px mint underline (`shadow-[inset_0_-2px_0_0_var(--mint)]`). Foot:
+  `TriRow` + square avatar opening the account menu. Admin (Settings) shows to admins only.
+- Phones (under `md`): no rail. A 56px top bar (hairline bottom edge, safe-area padded) with the mark,
+  "CEC" in `t-display` 18px and a 44px outline menu button. The menu opens a left drawer
+  (`min(320px, 100vw - 48px)`, 2px black right edge, black/40 scrim, 300ms slide, `ease-fluid`) with
+  the lockup and a 44px close button, the search, the same grouped nav at 44px rows / 15px, and the
+  account row (avatar, name, email, "Your profile" and "Sign out" as two lg buttons). It locks scroll,
+  makes `<main>` inert, closes on route change, Escape and a tap on the scrim, and returns focus to
+  the menu button.
+- Content: plain white, `max-w-[1240px]`, 16px side padding on phones, 40 to 56px from `sm` up. No
+  letterbox, no canvas colour, no texture, no zoom.
+
+## Phones
+- Every tap target is at least 44px under `md`. The primitives do it themselves: every Button size is
+  44px tall (icon sizes 44px square), inputs, select and picker triggers are `min-h-11`, menu and
+  select items `min-h-11`, vertical tab rows 44px. Switch and Checkbox keep their look and widen the
+  hit area with an `::after`. Inline text links and icon actions in dense lists keep their look and get
+  a 44px hit area through padding and a negative margin.
+- Inputs and textareas set 16px text under `md` so iOS does not zoom on focus.
+- Page title (`PageHeader`) is 28px under `sm`, balanced and allowed to break long words.
+- Dialogs keep a 16px margin on every side, cap at `100svh - 2rem` and scroll inside; padding 20px;
+  footer buttons full width and stacked (primary on top).
+- Table-like lists (admin users, CRM, interview slots) become stacked cards under `md`: header row
+  hidden, the row's action pinned right. Wide grids that must stay grids scroll inside their own frame;
+  the page itself never scrolls sideways.
+- Filter chip rows scroll sideways in one line inside the gutter, chips 44px.
+- Hover-only actions (thumbnail delete, marketing item delete) are always visible on phones.
+- Public pages (login, check-in, chat, apply): primary buttons full width under `sm`, header padded for
+  safe areas, wordmark 13px, login hero `clamp(32px, 10vw, 40px)`.
 - Login and the public pages (check-in, chat sign-up, student apply) have no sidebar: a hairline header
   row with the lockup, the hero title, the marquee, and a scatter behind.
 
@@ -159,8 +196,28 @@ marquee; colour and border transitions stay.
 Month grid (`.fc-cec` in `globals.css`): 1px black frame, hairline cells, weekday row on `muted` in
 `t-eyebrow`, day numbers display 500 12px, adjacent-month cells `#FAFAFA`. Today: 2px black inset
 outline and a mint underline under the number. Chips: white, hairline, 3px section-colour left bar,
-hover black border + `shadow-mint-sm` + 1px lift. Week view: today column `muted/30`, blocks as chips.
-Year view: hairline month tiles, current month 2px black, `size-1.5` section-colour squares per event.
+hover black border + `shadow-mint-sm` + 1px lift. Week view: 7am to 11pm, today column `muted/30`,
+blocks as chips; an event before 7am or after 11pm is clamped into the first or last row with a
+chevron and its real time, never dropped. Year view: hairline month tiles, current month 2px black,
+`size-1.5` section-colour squares per event; 4 columns, 2 under `sm`.
+
+Phones (under `md`): month is a compact grid (day numbers, up to three 6px section squares per day,
+then an outlined square for more) above an agenda of the selected day. Today is selected on load;
+today and the selected day carry the 2px black inset, the selected day is mint filled, only today keeps
+the mint underline. Agenda cards: hairline, 3px section bar on the left, linked-card lift; an empty day
+offers "+ New event on <date>". Week view scrolls sideways (640px minimum) under a sticky hour gutter
+and opens with today in view. Today sits beside the title.
+
+## Event step 2
+Starts with `PageHeader` (eyebrow "Event · Step 2 of 2", title the live event name, done count,
+Sections and Delete on the right). Desktop keeps the vertical tabs (3px mint bar via `top`, 6px
+`mint-dark` done squares). On phones the header fields stack and the tabs become a horizontally
+scrolling row above the card, the active tab marked with a 2px mint underline. The delete-scope choice
+is a pair of radio rows: hairline, selected = black border and a mint square marker, no red tint.
+
+## Subteams
+Member subteam colours reuse the section tiles: Events blue, Media teal (matching the Media section),
+Generalist amber. Shown as a swatch or bar, never as a tint behind text.
 
 ## Implementation gotchas
 1. Animate the tab indicator with `top`, not `transform`.
@@ -181,3 +238,21 @@ Year view: hairline month tiles, current month 2px black, `size-1.5` section-col
   the shell's canvas letterbox, noise texture, seam lace and zoom hack removed; an intro plane and
   `PageHeader` added; FullCalendar and BlockNote restyled. Section colours retuned to the logo tiles.
   v1 token names remain as aliases so untouched code keeps compiling.
+- **2026-10-11, mobile pass and QA kit fixes.** Phones get a top bar and drawer instead of the 68px
+  icon rail, 16px gutters and 44px tap targets from the primitives (see "Phones"). Added: the global
+  mint `:focus-visible` rule; phone rules for dialogs (16px margins, internal scroll, stacked full-width
+  footer), tables (stacked cards), filter chips (sideways scroll), public pages and the 28px phone page
+  title; the phone month grid with a day agenda, the 7am to 11pm week view with clamped outliers, the
+  sideways-scrolling phone week, a 2-column phone year; the event step 2 header and phone tab row;
+  subteam colours (Events blue, Media teal, Generalist amber; `TEAM_COLORS` in
+  `lib/validation/member-schemas.ts` still says Events teal and Media coral and needs updating to match).
+  Fixed to the kit: `border-transparent` moved out of the Button base; toasts actually take the black
+  border and `shadow-soft`; every feature dialog uses the primitive (2px black, `shadow-mint-lg`, 22px
+  title); delete-scope rows lose the red tint; step 2 indicator is the 3px bar and 6px done squares;
+  MissingKeyNotice and the pending invite tag lose their amber tints; BlockNote renders in DM Sans with
+  Space Grotesk 700 headings in normal case, `foreground/40` placeholder, square slash menu,
+  `shadow-soft` toolbar and no Italic button. Detail pages (event, contact, brain note, external lead)
+  start with `PageHeader`, eyebrows naming the kind ("Contact · Kind · Status", "Brain note · Kind",
+  "External lead · Stage"); their delete actions use the inline confirm. Terminal tags (Converted,
+  Done in search) are a flat mint fill. Empty values read "No name yet" / "No location" instead of a
+  dash; user-visible ranges use "to" ("Oct 11 to 17", "7:30PM to 9:00PM").

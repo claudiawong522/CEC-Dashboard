@@ -40,7 +40,8 @@ function DialogOverlay({
 }
 
 // A dialog is the site's card at full strength: 2px black border and the
-// big hard mint shadow.
+// big hard mint shadow. On phones it keeps a 16px margin on every side and
+// scrolls inside itself, so a long form never runs off the screen.
 function DialogContent({
   className,
   children,
@@ -55,7 +56,7 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-5 border-2 border-foreground bg-popover p-6 text-sm text-popover-foreground shadow-mint-lg duration-200 ease-fluid outline-none sm:max-w-md data-open:animate-in data-open:fade-in-0 data-open:slide-in-from-bottom-2 data-closed:animate-out data-closed:fade-out-0",
+          "fixed top-1/2 left-1/2 z-50 grid max-h-[calc(100svh-2rem)] w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-5 overflow-y-auto overscroll-contain border-2 border-foreground bg-popover p-5 text-sm text-popover-foreground shadow-mint-lg duration-200 ease-fluid outline-none sm:max-w-md sm:p-6 data-open:animate-in data-open:fade-in-0 data-open:slide-in-from-bottom-2 data-closed:animate-out data-closed:fade-out-0",
           className
         )}
         {...props}
@@ -67,7 +68,7 @@ function DialogContent({
             render={
               <Button
                 variant="ghost"
-                className="absolute top-3 right-3"
+                className="absolute top-2 right-2 sm:top-3 sm:right-3"
                 size="icon-sm"
               />
             }
@@ -85,7 +86,7 @@ function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="dialog-header"
-      className={cn("flex flex-col gap-2 pr-8", className)}
+      className={cn("flex flex-col gap-2 pr-10 sm:pr-8", className)}
       {...props}
     />
   )
@@ -103,7 +104,7 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "-mx-6 -mb-6 flex flex-col-reverse gap-2 border-t border-line bg-muted/40 p-4 sm:flex-row sm:justify-end",
+        "-mx-5 -mb-5 flex flex-col-reverse gap-2 border-t border-line bg-muted/40 p-4 *:w-full sm:-mx-6 sm:-mb-6 sm:flex-row sm:justify-end sm:*:w-auto",
         className
       )}
       {...props}

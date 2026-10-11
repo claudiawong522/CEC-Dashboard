@@ -155,7 +155,7 @@ function TimePicker({
         id={id}
         onKeyDown={handleKeyDown}
         className={cn(
-          "flex h-auto w-full min-w-0 items-center gap-2 border border-line bg-background px-3 py-2.5 font-sans text-[14px] text-foreground transition-[border-color] duration-200 ease-fluid outline-none hover:border-foreground/40 focus-visible:border-foreground data-[popup-open]:border-foreground",
+          "flex h-auto w-full min-w-0 items-center gap-2 border border-line bg-background px-3 py-2.5 font-sans text-[14px] text-foreground max-md:min-h-11 transition-[border-color] duration-200 ease-fluid outline-none hover:border-foreground/40 focus-visible:border-foreground data-[popup-open]:border-foreground",
           !value && "text-foreground/40",
           className,
         )}

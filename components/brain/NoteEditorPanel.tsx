@@ -1,12 +1,14 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeftIcon, Trash2Icon } from "lucide-react";
 import { toast } from "sonner";
 import type { PartialBlock } from "@blocknote/core";
-import { NotesEditor } from "@/components/notes/NotesEditor";
+import { NotesEditor } from "@/components/notes/NotesEditorClient";
+import { PageHeader } from "@/components/ui/page-header";
+import { ConfirmButton } from "@/components/ui/confirm-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -43,7 +45,6 @@ export function NoteEditorPanel({
   contacts: { id: string; name: string }[];
 }) {
   const router = useRouter();
-  const [isDeleting, startDelete] = useTransition();
 
   const [draft, setDraft] = useState({
     title: note.title,
@@ -71,16 +72,14 @@ export function NoteEditorPanel({
     setDraft((current) => ({ ...current, [key]: value }));
   }
 
-  function remove() {
-    startDelete(async () => {
-      const result = await deleteNote(note.id);
-      if (!result.ok) {
-        toast.error(result.message);
-        return;
-      }
-      toast.success(result.message ?? "Deleted");
-      router.replace("/brain");
-    });
+  async function remove() {
+    const result = await deleteNote(note.id);
+    if (!result.ok) {
+      toast.error(result.message);
+      return;
+    }
+    toast.success(result.message ?? "Deleted");
+    router.replace("/brain");
   }
 
   // A captured note has a body but no block document yet, so it starts as
@@ -97,42 +96,46 @@ export function NoteEditorPanel({
     <div className="flex flex-col gap-5">
       <Link
         href="/brain"
-        className="link-underline flex w-fit items-center gap-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-foreground"
+        className="link-underline -my-3 flex min-h-11 w-fit items-center gap-1.5 font-sans text-[12px] text-foreground/50 transition-colors duration-200 hover:text-foreground md:my-0 md:min-h-0"
       >
         <ArrowLeftIcon className="size-3.5" />
         Brain
       </Link>
 
-      <div className="flex flex-col gap-4 border border-line bg-background p-5 shadow-soft">
-        <div className="flex items-center justify-between gap-3">
-          <span className="flex min-w-0 items-center gap-2">
+      <PageHeader
+        eyebrow={
+          <span className="flex items-center gap-2">
             <span className="size-2 shrink-0" style={{ background: BRAIN_KIND_COLORS[draft.kind] }} />
-            <span className="t-eyebrow text-foreground/50">
-              {BRAIN_KIND_LABELS[draft.kind]}
-            </span>
+            Brain note · {BRAIN_KIND_LABELS[draft.kind]}
           </span>
-          <span className="flex items-center gap-2.5">
+        }
+        title={<span className="break-words">{draft.title.trim() || "Untitled"}</span>}
+        actions={
+          <>
             <SaveIndicator status={status} />
             {canDelete && (
-              <button
-                type="button"
-                disabled={isDeleting}
-                aria-label="Delete this note"
-                onClick={remove}
-                className="p-1.5 text-foreground/50 transition-colors duration-200 ease-fluid hover:bg-red/10 hover:text-red disabled:pointer-events-none disabled:opacity-50"
-              >
-                <Trash2Icon className="size-3.5" />
-              </button>
+              <ConfirmButton
+                trigger={<Trash2Icon className="size-4" />}
+                triggerTitle="Delete this note"
+                triggerClassName="inline-flex size-9 items-center justify-center border-2 border-foreground text-foreground transition-colors duration-200 ease-fluid hover:border-red hover:bg-red hover:text-background max-md:size-11"
+                askLabel="Delete note?"
+                yesLabel="Delete"
+                cancelLabel="Keep"
+                onConfirm={remove}
+              />
             )}
-          </span>
-        </div>
+          </>
+        }
+      />
 
-        <Input
-          value={draft.title}
-          disabled={!editable}
-          onChange={(event) => set("title", event.target.value)}
-          className="t-display border-transparent bg-transparent px-0 py-1 text-[28px] text-foreground hover:border-transparent focus-visible:border-transparent"
-        />
+      <div className="flex flex-col gap-4 border border-line bg-background p-4 shadow-soft sm:p-5">
+        <Field label="Title">
+          <Input
+            value={draft.title}
+            disabled={!editable}
+            onChange={(event) => set("title", event.target.value)}
+          />
+        </Field>
 
         <div className="grid gap-4 sm:grid-cols-3">
           <Field label="Kind">
@@ -193,7 +196,7 @@ export function NoteEditorPanel({
       </div>
 
       <div className="relative">
-        <span className="absolute top-0.5 bottom-0.5 -left-4 w-[3px] bg-mint" />
+        <span className="absolute top-0.5 bottom-0.5 -left-3 w-[3px] bg-mint sm:-left-4" />
         {/* The editor writes `content`; a database trigger keeps `body` in
             sync from it, so what gets typed here is searchable without the
             page having to flatten anything itself. */}
