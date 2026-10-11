@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { getSession } from "@/lib/auth/getSession";
 import { requireRole } from "@/lib/auth/requireRole";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { actionFailed, actionOk, type ActionResult } from "@/lib/actions/result";
 import { currentTermKey } from "@/lib/utils/terms";
 import {
@@ -54,7 +55,7 @@ export async function submitChat(input: SubmitChatInput): Promise<ActionResult> 
 
   if (error) {
     if (error.code === "23505") {
-      return actionFailed("You've already filled that square this semester");
+      return resubmitRejected(supabase, session.profile, parsed.data, semester);
     }
     if (error.code === "23514") {
       return actionFailed("Pick someone other than yourself");
@@ -64,6 +65,69 @@ export async function submitChat(input: SubmitChatInput): Promise<ActionResult> 
 
   revalidatePath("/coffee-chats");
   return actionOk("Submitted — an admin will approve it shortly");
+}
+
+// A sent-back square is offered again (BingoBoard), but the unique index on
+// (submitter_id, category_id, semester) still holds the rejected row. Reuse
+// that row: put it back to pending with the new partner and selfie, then drop
+// the old selfie so it is not left behind in the bucket. Members cannot update
+// their own chats (that would let them approve themselves), so this one,
+// narrowly scoped write goes through the service role.
+async function resubmitRejected(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  profile: { id: string; role: string },
+  values: SubmitChatInput,
+  semester: string,
+): Promise<ActionResult> {
+  if (profile.role !== "edit" && profile.role !== "admin") {
+    return actionFailed("You don't have access to submit chats");
+  }
+
+  const { data: existing } = await supabase
+    .from("coffee_chats")
+    .select("id, status, selfie_url")
+    .eq("submitter_id", profile.id)
+    .eq("category_id", values.categoryId!)
+    .eq("semester", semester)
+    .maybeSingle<{ id: string; status: string; selfie_url: string }>();
+
+  if (!existing || existing.status !== "rejected") {
+    return actionFailed("You've already filled that square this semester");
+  }
+
+  const admin = createAdminClient();
+  const { data: updated, error } = await admin
+    .from("coffee_chats")
+    .update({
+      partner_id: values.partnerId,
+      partner_guest_id: values.partnerGuestId,
+      selfie_url: values.storagePath,
+      status: "pending",
+      review_note: null,
+      reviewed_by: null,
+      reviewed_at: null,
+      submitted_at: new Date().toISOString(),
+    })
+    .eq("id", existing.id)
+    .eq("submitter_id", profile.id)
+    .eq("status", "rejected")
+    .select("id");
+
+  if (error) {
+    if (error.code === "23514") return actionFailed("Pick someone other than yourself");
+    return databaseFailure("submit your chat", error);
+  }
+  if (!updated || updated.length === 0) {
+    return actionFailed("You've already filled that square this semester");
+  }
+
+  if (existing.selfie_url && existing.selfie_url !== values.storagePath) {
+    const { error: removeError } = await admin.storage.from(SELFIE_BUCKET).remove([existing.selfie_url]);
+    if (removeError) console.error("[coffee-chats] couldn't remove the old selfie:", removeError.message);
+  }
+
+  revalidatePath("/coffee-chats");
+  return actionOk("Submitted. An admin will approve it shortly");
 }
 
 export async function reviewChat(input: ReviewChatInput): Promise<ActionResult> {
