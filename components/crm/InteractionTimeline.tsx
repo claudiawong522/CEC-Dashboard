@@ -21,6 +21,7 @@ import {
   type InteractionKind,
 } from "@/lib/validation/crm-schemas";
 import type { Interaction } from "@/lib/types/crm";
+import { clubToday, formatClubDate } from "@/lib/utils/dates";
 
 // Section colours are fixed by the kit. An interaction is correspondence, so
 // it borrows Speaker/Marketing's coral for email and meetings and stays
@@ -34,7 +35,7 @@ const KIND_COLORS: Record<InteractionKind, string> = {
 };
 
 function today(): string {
-  return new Date().toISOString().slice(0, 10);
+  return clubToday();
 }
 
 export function InteractionTimeline({
@@ -163,7 +164,7 @@ export function InteractionTimeline({
                 )}
                 <span className="t-eyebrow text-foreground/50">
                   {INTERACTION_KIND_LABELS[interaction.kind]} ·{" "}
-                  {new Date(interaction.occurred_at).toLocaleDateString(undefined, {
+                  {formatClubDate(interaction.occurred_at, {
                     month: "short",
                     day: "numeric",
                     year: "numeric",

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth/requireRole";
 import { createClient } from "@/lib/supabase/server";
+import { dateFieldToInstant } from "@/lib/utils/dates";
 import { actionFailed, actionOk, type ActionResult } from "@/lib/actions/result";
 import {
   contactSchema,
@@ -174,7 +175,7 @@ export async function logInteraction(input: InteractionInput): Promise<ActionRes
     contact_id: values.contactId,
     profile_id: session.profile.id,
     kind: values.kind,
-    occurred_at: new Date(values.occurredAt).toISOString(),
+    occurred_at: dateFieldToInstant(values.occurredAt),
     summary: values.summary,
     body: values.body,
   });

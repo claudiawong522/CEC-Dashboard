@@ -46,6 +46,11 @@ export function clubDateToInstant(date: string): string {
   return new Date(guess - offsetMinutes * 60_000).toISOString();
 }
 
+/** A form or model "when" value as an instant: date-only means that day in Ithaca. */
+export function dateFieldToInstant(value: string): string {
+  return /^\d{4}-\d{2}-\d{2}$/.test(value) ? clubDateToInstant(value) : new Date(value).toISOString();
+}
+
 /** Formats an instant on the Ithaca calendar, identically on server and client. */
 export function formatClubDate(
   value: string | Date,

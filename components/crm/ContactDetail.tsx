@@ -28,6 +28,7 @@ import {
   type Visibility,
 } from "@/lib/validation/crm-schemas";
 import type { ContactWithOrg, Interaction, Organization } from "@/lib/types/crm";
+import { formatClubDate } from "@/lib/utils/dates";
 import type { ChatPerson } from "@/lib/types/coffee-chats";
 import { InteractionTimeline } from "@/components/crm/InteractionTimeline";
 
@@ -214,7 +215,7 @@ export function ContactDetail({
         {contact.last_touched_at && (
           <span className="t-eyebrow text-foreground/50">
             last touched{" "}
-            {new Date(contact.last_touched_at).toLocaleDateString(undefined, {
+            {formatClubDate(contact.last_touched_at, {
               month: "short",
               day: "numeric",
               year: "numeric",

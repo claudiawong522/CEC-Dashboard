@@ -1,5 +1,21 @@
 import { describe, it, expect } from "vitest";
-import { shiftDate, rescheduledRange, clubDateToInstant, formatClubDate } from "@/lib/utils/dates";
+import {
+  shiftDate,
+  rescheduledRange,
+  clubDateToInstant,
+  dateFieldToInstant,
+  formatClubDate,
+} from "@/lib/utils/dates";
+
+describe("dateFieldToInstant", () => {
+  it("treats a date-only value as that day in Ithaca, not UTC midnight", () => {
+    expect(dateFieldToInstant("2026-10-11")).toBe("2026-10-11T16:00:00.000Z");
+  });
+
+  it("passes a full timestamp through", () => {
+    expect(dateFieldToInstant("2026-10-11T22:30:00Z")).toBe("2026-10-11T22:30:00.000Z");
+  });
+});
 
 describe("shiftDate", () => {
   it("moves a date-only string by whole days", () => {

@@ -1,5 +1,6 @@
 import "server-only";
 import type Anthropic from "@anthropic-ai/sdk";
+import { clubToday } from "@/lib/utils/dates";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 // The ask bar's retrieval layer.
@@ -162,7 +163,7 @@ export async function runAskTool(
     }
 
     case "list_upcoming_events": {
-      const today = new Date().toISOString().slice(0, 10);
+      const today = clubToday();
       const { data } = await supabase
         .from("events")
         .select("id, name, event_date, event_time, venue")
