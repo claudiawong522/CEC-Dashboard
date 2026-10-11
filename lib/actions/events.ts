@@ -32,6 +32,7 @@ import {
   type MarketingValues,
   type RecurringValues,
 } from "@/lib/validation/event-schemas";
+import { clubToday, rescheduledRange } from "@/lib/utils/dates";
 
 type Toggles = {
   hasSpeaker: boolean;
@@ -43,16 +44,23 @@ type Toggles = {
   hasRecurring: boolean;
 };
 
+// Per-table done flags to start a new occurrence with, so a regenerated
+// occurrence of a series inherits the series-wide done state.
+const DONE_TABLES = ["event_speaker", "event_attendees", "event_money", "event_food", "event_marketing"] as const;
+type ChildDone = Partial<Record<(typeof DONE_TABLES)[number], boolean>>;
+
 async function insertChildRows(
   supabase: Awaited<ReturnType<typeof createClient>>,
   eventId: string,
   toggles: Toggles,
+  done: ChildDone = {},
 ) {
-  if (toggles.hasSpeaker) await supabase.from("event_speaker").insert({ event_id: eventId });
-  if (toggles.hasAttendees) await supabase.from("event_attendees").insert({ event_id: eventId });
-  if (toggles.hasMoney) await supabase.from("event_money").insert({ event_id: eventId });
-  if (toggles.hasFood) await supabase.from("event_food").insert({ event_id: eventId });
-  if (toggles.hasMarketing) await supabase.from("event_marketing").insert({ event_id: eventId });
+  const row = (table: keyof ChildDone) => ({ event_id: eventId, done: done[table] ?? false });
+  if (toggles.hasSpeaker) await supabase.from("event_speaker").insert(row("event_speaker"));
+  if (toggles.hasAttendees) await supabase.from("event_attendees").insert(row("event_attendees"));
+  if (toggles.hasMoney) await supabase.from("event_money").insert(row("event_money"));
+  if (toggles.hasFood) await supabase.from("event_food").insert(row("event_food"));
+  if (toggles.hasMarketing) await supabase.from("event_marketing").insert(row("event_marketing"));
   // event_recurring has no user-facing "done" checkbox anymore (recurrence
   // isn't a prep task) — insert it pre-satisfied so it never blocks
   // events.is_complete.
@@ -204,6 +212,18 @@ export async function deleteEvent(eventId: string, scope: "single" | "following"
   const { error: deleteError } = await supabase.from("events").delete().in("id", idsToDelete);
   if (deleteError) throw new Error(deleteError.message);
 
+  // Nothing cascades from events to recurring_series (the FK points the other
+  // way), so drop the series row once no event references it.
+  if (event.recurring_series_id) {
+    const { count } = await supabase
+      .from("events")
+      .select("id", { count: "exact", head: true })
+      .eq("recurring_series_id", event.recurring_series_id);
+    if (count === 0) {
+      await supabase.from("recurring_series").delete().eq("id", event.recurring_series_id);
+    }
+  }
+
   revalidatePath("/calendar");
   revalidatePath("/todo");
   revalidatePath("/past-events");
@@ -217,7 +237,19 @@ export async function rescheduleEvent(eventId: string, eventDate: string) {
   await requireRole("edit");
   const supabase = await createClient();
 
-  const { error } = await supabase.from("events").update({ event_date: eventDate }).eq("id", eventId);
+  const { data: existing, error: existingError } = await supabase
+    .from("events")
+    .select("event_date, event_end_date")
+    .eq("id", eventId)
+    .single();
+  if (existingError || !existing) throw new Error(existingError?.message ?? "Event not found");
+
+  // The end date moves with the start, so a multi-day event keeps its span
+  // and the end >= start check holds whichever way it is dragged.
+  const { error } = await supabase
+    .from("events")
+    .update(rescheduledRange(existing.event_date, existing.event_end_date, eventDate))
+    .eq("id", eventId);
   if (error) throw new Error(error.message);
 
   revalidatePath(`/events/${eventId}`);
@@ -263,7 +295,7 @@ export async function updateEventHeader(
   // together — occurrences that have already happened are left untouched.
   const dayShift = differenceInCalendarDays(parseISO(parsed.eventDate), parseISO(existing.event_date));
   if (existing.recurring_series_id && dayShift !== 0) {
-    const today = formatISO(new Date(), { representation: "date" });
+    const today = clubToday();
     const { data: siblings } = await supabase
       .from("events")
       .select("id, event_date, event_end_date")
@@ -642,7 +674,7 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
   const { data: seriesEvents, error: seriesEventsError } = await supabase
     .from("events")
     .select(
-      "id, name, event_date, event_end_date, all_day, event_time, event_end_time, venue, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media, is_recurring_parent",
+      "id, name, event_date, event_end_date, all_day, event_time, event_end_time, venue, has_speaker, has_attendees, has_money, has_food, has_marketing, has_media, is_recurring_parent, venue_done, media_done",
     )
     .eq("recurring_series_id", seriesId);
   if (seriesEventsError || !seriesEvents?.length) {
@@ -652,15 +684,28 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
   // The event the caller is currently viewing is always protected too, even
   // if it's a future occurrence — otherwise editing the series from a
   // not-yet-happened occurrence could delete the very page you're on.
-  const today = formatISO(new Date(), { representation: "date" });
+  const today = clubToday();
   const protectedEvents = seriesEvents.filter(
     (e) => e.is_recurring_parent || e.event_date <= today || e.id === eventId,
   );
   const anchor = protectedEvents.reduce((latest, e) => (e.event_date > latest.event_date ? e : latest));
 
-  const toDelete = seriesEvents
-    .filter((e) => !e.is_recurring_parent && e.event_date > anchor.event_date)
-    .map((e) => e.id);
+  // protectedEvents is exactly what survives below, so "ends after N times"
+  // counts the nights already held rather than starting over.
+  const newDates = occurrenceDatesAfter(parseISO(anchor.event_date), parsed, protectedEvents.length).map(
+    (date) => formatISO(date, { representation: "date" }),
+  );
+
+  // A future occurrence whose date is still in the new schedule is kept as it
+  // is, done flags and filled-in prep included. Only the dates the new cadence
+  // drops are deleted, and only the dates it adds are created.
+  const keptDates = new Set<string>();
+  const toDelete: string[] = [];
+  for (const e of seriesEvents) {
+    if (e.is_recurring_parent || e.event_date <= anchor.event_date) continue;
+    if (newDates.includes(e.event_date) && !keptDates.has(e.event_date)) keptDates.add(e.event_date);
+    else toDelete.push(e.id);
+  }
   if (toDelete.length) {
     const { error: deleteError } = await supabase.from("events").delete().in("id", toDelete);
     if (deleteError) throw new Error(deleteError.message);
@@ -687,18 +732,25 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
     hasRecurring: false,
   };
 
+  // Done is series-wide (setSectionDone writes every occurrence), so a new
+  // occurrence starts from the anchor's done state rather than from nothing.
+  const anchorDone: ChildDone = {};
+  for (const table of DONE_TABLES) {
+    const { data } = await supabase.from(table).select("done").eq("event_id", anchor.id).maybeSingle();
+    if (data) anchorDone[table] = data.done;
+  }
+
   const createdIds: string[] = [];
   const spanDays = differenceInCalendarDays(parseISO(anchor.event_end_date), parseISO(anchor.event_date));
-  // protectedEvents is exactly what survives the delete above, so "ends after
-  // N times" counts the nights already held rather than starting over.
-  const dates = occurrenceDatesAfter(parseISO(anchor.event_date), parsed, protectedEvents.length);
-  for (const date of dates) {
+  for (const date of newDates.filter((d) => !keptDates.has(d)).map((d) => parseISO(d))) {
     const { data: child, error: childError } = await supabase
       .from("events")
       .insert({
         name: anchor.name,
         event_date: formatISO(date, { representation: "date" }),
         event_end_date: formatISO(addDays(date, spanDays), { representation: "date" }),
+        venue_done: anchor.venue_done,
+        media_done: anchor.media_done,
         all_day: anchor.all_day,
         event_time: anchor.event_time,
         event_end_time: anchor.event_end_time,
@@ -718,7 +770,7 @@ export async function updateRecurringSeries(eventId: string, values: RecurringVa
       .single();
 
     if (!childError && child) {
-      await insertChildRows(supabase, child.id, toggles);
+      await insertChildRows(supabase, child.id, toggles, anchorDone);
       createdIds.push(child.id);
     }
   }
