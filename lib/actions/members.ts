@@ -96,12 +96,8 @@ export async function updateOwnMatching(values: MatchingInput): Promise<ActionRe
     return actionFailed(parsed.error.issues[0]?.message ?? "Check the highlighted fields");
   }
 
-  // Being listed with nothing to say is worse than not being listed: a
-  // student picking someone to ask has only the blurb to go on.
-  if (parsed.data.open_to_chats && !parsed.data.chat_blurb) {
-    return actionFailed("Add a line about what you're happy to chat about first");
-  }
-
+  // Opting in before writing a blurb is allowed: the card prompts for one
+  // inline, and the member page only shows the chat section once both exist.
   const supabase = await createClient();
   const { error } = await supabase
     .from("profiles")
