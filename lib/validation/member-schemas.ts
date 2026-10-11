@@ -89,6 +89,27 @@ export const profileSchema = z.object({
 export type ProfileInput = z.input<typeof profileSchema>;
 export type ProfileValues = z.output<typeof profileSchema>;
 
+export type ProfileField = keyof ProfileInput;
+export type ProfileFieldErrors = Partial<Record<ProfileField, string>>;
+
+// The profile auto-saves as one draft, so one half-typed field must not hold
+// every other field hostage: each field is validated on its own, the valid
+// ones are returned for saving and the rest come back as per-field errors.
+export function parseProfileFields(values: ProfileInput): {
+  data: Partial<ProfileValues>;
+  errors: ProfileFieldErrors;
+} {
+  const data: Record<string, unknown> = {};
+  const errors: ProfileFieldErrors = {};
+  const shape = profileSchema.shape;
+  for (const key of Object.keys(shape) as ProfileField[]) {
+    const result = shape[key].safeParse(values[key]);
+    if (result.success) data[key] = result.data;
+    else errors[key] = result.error.issues[0]?.message ?? "Check this field";
+  }
+  return { data: data as Partial<ProfileValues>, errors };
+}
+
 // Matching preferences are edited on their own card and saved on their own,
 // so they validate separately: someone toggling "open to chats" shouldn't be
 // blocked by an unrelated half-typed URL elsewhere on the page.
