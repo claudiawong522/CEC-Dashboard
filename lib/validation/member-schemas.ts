@@ -18,6 +18,27 @@ export const TEAM_COLORS: Record<Team, string> = {
   generalist: "var(--amber)",
 };
 
+// Board titles offered on /admin. Free text is still allowed, since a new
+// role can appear before anyone updates this list; cornellec.com sorts people
+// into Co-Presidents, Executive Board and Members from this value.
+export const POSITION_SUGGESTIONS = [
+  "Co-President",
+  "Head of Events",
+  "Head of Media",
+  "Head of Recruitment",
+  "Head of Socials",
+  "Head of Internal Operations",
+  "New Member Educator",
+  "Member",
+  "New Member",
+] as const;
+
+export const positionSchema = z
+  .string()
+  .trim()
+  .min(1, "A position can't be empty")
+  .max(60, "Keep it under 60 characters");
+
 // An optional free-text field arrives from a form as "" when the person
 // cleared it, and "" is not null — storing it would leave the column
 // technically populated with nothing, so every empty string becomes null on
@@ -66,7 +87,8 @@ export const profileSchema = z.object({
       "Enter a four-digit year",
     ),
   team: z.enum(TEAMS).nullable(),
-  position: z.string().trim().min(1, "Required"),
+  // position is not here on purpose: only an admin sets it (updateMemberPosition
+  // in lib/actions/admin.ts), and 0056 blocks a member from writing it.
   hometown: optionalText,
   about: optionalText,
   hobbies: optionalText,

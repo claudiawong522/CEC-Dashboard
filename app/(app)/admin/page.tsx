@@ -1,12 +1,11 @@
 import { redirect } from "next/navigation";
 import { getSession } from "@/lib/auth/getSession";
 import { createClient } from "@/lib/supabase/server";
-import { UserTable } from "@/components/admin/UserTable";
+import { UserTable, type AdminUser } from "@/components/admin/UserTable";
 import { InviteForm } from "@/components/admin/InviteForm";
 import { PageHeader } from "@/components/ui/page-header";
 import { Sticker } from "@/components/decor/Sticker";
 import { TriangleScatter, TriRow } from "@/components/decor/shapes";
-import type { Profile } from "@/lib/auth/getSession";
 
 export default async function AdminPage() {
   const session = await getSession();
@@ -22,10 +21,10 @@ export default async function AdminPage() {
   // what brings them back, and it looks like any other first-time invite.
   const { data: users } = await supabase
     .from("profiles")
-    .select("id, email, full_name, avatar_url, role, status")
+    .select("id, email, full_name, avatar_url, role, status, position")
     .neq("status", "revoked")
     .order("full_name", { ascending: true, nullsFirst: false })
-    .returns<Profile[]>();
+    .returns<AdminUser[]>();
 
   const initials = (session.profile.full_name ?? session.profile.email)
     .split(/\s+/)

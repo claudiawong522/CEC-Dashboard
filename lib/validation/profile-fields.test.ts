@@ -10,7 +10,6 @@ const draft = {
   college: "",
   graduation_year: "2027",
   team: null,
-  position: "Member",
   hometown: "",
   about: "",
   hobbies: "",
