@@ -276,3 +276,7 @@ Generalist amber. Shown as a swatch or bar, never as a tint behind text.
   black box with `shadow-mint-sm` plus the mint underline. Members and Gallery are back on the
   sidebar as their own rows; the People hub is now "Community" (Coffee Chats, Shoutouts,
   Leaderboard) so it no longer reads as a second Members.
+- **2026-10-12, more sidebar rows.** Most destinations are their own row again at 44px (52px in the
+  drawer): Calendar, Todo | Gallery, Events | Members, Coffee Chats, Shoutouts, Leaderboard | Notes,
+  Brain, Ask | Outreach, Admin, with a `line` hairline between groups. Only Events (Past Events,
+  Attendance, Sign ins) and Outreach stay as hubs. Fits 1440x900 without scrolling.
