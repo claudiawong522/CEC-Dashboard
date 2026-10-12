@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, Fragment } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { SearchIcon, MenuIcon, XIcon } from "lucide-react";
+import { ChevronRightIcon, SearchIcon, MenuIcon, XIcon } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
 import { isNavActive, navFor } from "@/lib/nav/hubs";
 import { BrandMark } from "@/components/app-shell/BrandMark";
@@ -152,6 +152,18 @@ export function AppShell({
             >
               {item.label}
             </span>
+            {item.count !== undefined && (
+              // Hub rows open a page of cards; the count and arrow say so.
+              <span
+                aria-label={`${item.count} pages`}
+                className="ml-auto flex items-center gap-1 font-display text-[11px] tracking-widest text-foreground/45"
+              >
+                <span className="border border-current px-1.5 py-px leading-none">
+                  {item.count}
+                </span>
+                <ChevronRightIcon aria-hidden="true" className="size-4" />
+              </span>
+            )}
           </Link>
         </Fragment>
       );
