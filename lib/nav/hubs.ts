@@ -220,6 +220,8 @@ export type NavEntry = {
   match: string[];
   /** Entries sharing a group sit together; the sidebar draws a rule between groups. */
   group: "daily" | "events" | "people" | "knowledge" | "manage";
+  /** Set on hub rows: how many pages the hub opens onto. */
+  count?: number;
 };
 
 /**
@@ -239,6 +241,7 @@ export function navFor(role: Role): NavEntry[] {
         icon: found.icon,
         match: found.links.map((link) => link.href),
         group: slug === "events" ? "events" : "manage",
+        count: found.links.length,
       },
     ];
   };
