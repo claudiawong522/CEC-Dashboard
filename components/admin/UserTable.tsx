@@ -17,7 +17,6 @@ export type AdminUser = Profile & { position: string };
 // under them, then position, and the remove action pinned to the right edge.
 // From md up it is the five-column table.
 const ROW_GRID = "md:grid-cols-[1.2fr_1.5fr_1.1fr_0.9fr_44px]";
-const POSITION_LIST_ID = "admin-position-suggestions";
 
 export function UserTable({
   users,
@@ -34,11 +33,6 @@ export function UserTable({
   );
   return (
     <div className="border border-line bg-background">
-      <datalist id={POSITION_LIST_ID}>
-        {suggestions.map((position) => (
-          <option key={position} value={position} />
-        ))}
-      </datalist>
       <div className={`t-eyebrow hidden gap-3 border-b border-foreground bg-muted px-4 py-2.5 text-foreground md:grid ${ROW_GRID}`}>
         <span>name</span>
         <span>email</span>
@@ -71,7 +65,7 @@ export function UserTable({
                 <PositionInput
                   userId={user.id}
                   position={user.position}
-                  listId={POSITION_LIST_ID}
+                  options={suggestions}
                   label={`Position for ${user.full_name ?? user.email}`}
                 />
               </span>

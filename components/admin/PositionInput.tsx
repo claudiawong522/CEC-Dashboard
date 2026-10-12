@@ -3,81 +3,116 @@
 import { useRef, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { updateMemberPosition } from "@/lib/actions/admin";
 
-// Saves on blur or Enter, only when the value actually changed. The
-// suggestions come from one <datalist> rendered by UserTable, so any title
-// can still be typed.
+// Sentinel for the "type your own" row; no real title can start with "__".
+const CUSTOM = "__custom";
+
+// A real dropdown of known titles. Picking "Custom title" swaps in a text box
+// that saves on blur or Enter (Escape cancels), for a one-off title.
 export function PositionInput({
   userId,
   position,
-  listId,
+  options,
   label,
 }: {
   userId: string;
   position: string;
-  listId: string;
+  options: string[];
   label: string;
 }) {
-  const [value, setValue] = useState(position);
   const [saved, setSaved] = useState(position);
+  const [custom, setCustom] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
-  // Escape blurs too, and blur saves; this tells that blur to skip it.
   const cancelled = useRef(false);
 
-  function save() {
-    if (cancelled.current) {
-      cancelled.current = false;
-      setValue(saved);
-      return;
-    }
-    const next = value.trim();
-    if (next === saved) {
-      setValue(saved);
-      return;
-    }
-    if (!next) {
-      setValue(saved);
-      toast.error("A position can't be empty");
-      return;
-    }
+  const choices = options.includes(saved) ? options : [saved, ...options];
+  const items = Object.fromEntries([
+    ...choices.map((title) => [title, title]),
+    [CUSTOM, "Custom title…"],
+  ]);
+
+  function save(next: string) {
+    const title = next.trim();
+    if (!title || title === saved) return;
+    const previous = saved;
+    setSaved(title);
     startTransition(async () => {
       try {
-        const result = await updateMemberPosition(userId, next);
+        const result = await updateMemberPosition(userId, title);
         if (!result.ok) {
-          setValue(saved);
+          setSaved(previous);
           toast.error(result.message);
           return;
         }
-        setSaved(next);
-        setValue(next);
         toast.success("Position updated");
       } catch {
-        setValue(saved);
+        setSaved(previous);
         toast.error("Couldn't update position");
       }
     });
   }
 
+  if (custom !== null) {
+    return (
+      <Input
+        autoFocus
+        value={custom}
+        aria-label={label}
+        placeholder="Type a title"
+        disabled={isPending}
+        onChange={(e) => setCustom(e.target.value)}
+        onBlur={() => {
+          if (!cancelled.current) save(custom);
+          cancelled.current = false;
+          setCustom(null);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            e.currentTarget.blur();
+          }
+          if (e.key === "Escape") {
+            cancelled.current = true;
+            e.currentTarget.blur();
+          }
+        }}
+        className="py-1.5 text-[13px] md:max-w-[220px]"
+      />
+    );
+  }
+
   return (
-    <Input
-      value={value}
-      list={listId}
-      aria-label={label}
-      disabled={isPending}
-      onChange={(e) => setValue(e.target.value)}
-      onBlur={save}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") {
-          e.preventDefault();
-          e.currentTarget.blur();
-        }
-        if (e.key === "Escape") {
-          cancelled.current = true;
-          e.currentTarget.blur();
-        }
+    <Select
+      items={items}
+      value={saved}
+      onValueChange={(v) => {
+        if (v === CUSTOM) setCustom("");
+        else if (typeof v === "string") save(v);
       }}
-      className="py-1.5 text-[13px] md:max-w-[220px]"
-    />
+    >
+      <SelectTrigger
+        aria-label={label}
+        disabled={isPending}
+        className="w-full justify-between border-line bg-background px-2.5 py-1.5 text-[13px] hover:border-foreground md:max-w-[220px] max-md:min-h-11 [&_svg]:text-foreground/50"
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent className="min-w-max">
+        {choices.map((title) => (
+          <SelectItem key={title} value={title}>
+            {title}
+          </SelectItem>
+        ))}
+        <SelectItem value={CUSTOM}>Custom title…</SelectItem>
+      </SelectContent>
+    </Select>
   );
 }
