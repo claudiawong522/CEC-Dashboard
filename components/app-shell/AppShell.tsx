@@ -99,8 +99,8 @@ export function AppShell({
         type="search"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Search events"
-        aria-label="Search events"
+        placeholder="Search"
+        aria-label="Search"
         className="h-11 w-full border border-line bg-background pr-2.5 pl-8 font-sans text-[16px] text-foreground placeholder:text-foreground/40 outline-none transition-[border-color] duration-200 ease-fluid hover:border-foreground/40 focus-visible:border-foreground md:h-auto md:py-2 md:text-[13px]"
       />
     </form>
