@@ -299,11 +299,16 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
           <span className="font-sans text-[11.5px] text-foreground/50">
             Off until you turn it on. When on, everything you fill in here appears on the public
             members page. Email and netid never do, unless you turn on the email button below.
+            Turning it off removes you from the site entirely.
           </span>
         </div>
         <Switch
           checked={draft.show_on_site}
-          onCheckedChange={(checked) => set("show_on_site", checked)}
+          onCheckedChange={(checked) => {
+            set("show_on_site", checked);
+            // Leaving the site takes the Email button with it.
+            if (!checked) set("show_email_on_site", false);
+          }}
         />
       </div>
 
