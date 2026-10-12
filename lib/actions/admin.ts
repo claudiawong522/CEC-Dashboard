@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { actionFailed, actionOk, type ActionResult } from "@/lib/actions/result";
 import type { Role } from "@/lib/auth/getSession";
+import { pingSiteRevalidate } from "@/lib/site-sync";
+import { positionSchema } from "@/lib/validation/member-schemas";
 
 // A database error isn't something the person clicking can do anything about,
 // and its text names columns and constraints, so they get a plain retry line
@@ -32,6 +34,34 @@ export async function updateUserRole(userId: string, role: Role): Promise<Action
   if (error) return databaseFailure("update their role", error);
 
   revalidatePath("/admin");
+  return actionOk();
+}
+
+// Position is admin-only: members can't edit it from /profile, and 0056
+// makes the database refuse it from anyone but an admin or the service role.
+// cornellec.com places people by it, so the site is told to refresh.
+export async function updateMemberPosition(
+  userId: string,
+  position: string,
+): Promise<ActionResult> {
+  await requireRole("admin");
+  const parsed = positionSchema.safeParse(position);
+  if (!parsed.success) return actionFailed(parsed.error.issues[0]?.message ?? "Check the position");
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .update({ position: parsed.data })
+    .eq("id", userId)
+    .select("id");
+  if (error) return databaseFailure("update their position", error);
+  if (!data || data.length === 0) return actionFailed("That person no longer exists. Refresh the page");
+
+  revalidatePath("/admin");
+  revalidatePath("/profile");
+  revalidatePath("/members");
+  revalidatePath(`/members/${userId}`);
+  pingSiteRevalidate();
   return actionOk();
 }
 

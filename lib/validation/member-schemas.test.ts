@@ -10,7 +10,6 @@ const validProfile = {
   college: "Engineering",
   graduation_year: "2027",
   team: "generalist" as const,
-  position: "Member",
   hometown: "Bethpage, NY",
   about: "",
   hobbies: "",

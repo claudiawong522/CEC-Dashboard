@@ -42,7 +42,6 @@ type Draft = {
   college: string;
   graduation_year: string;
   team: Team | "none";
-  position: string;
   hometown: string;
   about: string;
   hobbies: string;
@@ -64,7 +63,6 @@ function toDraft(member: MemberProfile): Draft {
     college: member.college ?? "",
     graduation_year: member.graduation_year ? String(member.graduation_year) : "",
     team: member.team ?? "none",
-    position: member.position,
     hometown: member.hometown ?? "",
     about: member.about ?? "",
     hobbies: member.hobbies ?? "",
@@ -184,13 +182,12 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
             onChange={(e) => set("netid", e.target.value)}
           />
         </Field>
-        <Field label="Position" error={errors.position}>
-          <Input
-            value={draft.position}
-            aria-invalid={!!errors.position}
-            placeholder="Member"
-            onChange={(e) => set("position", e.target.value)}
-          />
+        {/* Position decides where cornellec.com lists someone, so only an
+            admin sets it (from /admin); the database refuses it from here too. */}
+        <Field label="Position" hint="Set by an admin.">
+          <p className="flex items-center border border-line bg-muted px-3 py-2.5 font-sans text-[14px] text-foreground max-md:min-h-11 max-md:text-[16px]">
+            {member.position}
+          </p>
         </Field>
         <Field label="Subteam">
           <Select
