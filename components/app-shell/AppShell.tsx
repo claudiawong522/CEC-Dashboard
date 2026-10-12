@@ -3,33 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  SearchIcon,
-  CalendarDaysIcon,
-  CheckSquareIcon,
-  ArchiveIcon,
-  ImageIcon,
-  NotebookPenIcon,
-  UsersIcon,
-  UsersRoundIcon,
-  CoffeeIcon,
-  MegaphoneIcon,
-  ClipboardCheckIcon,
-  DoorOpenIcon,
-  ContactIcon,
-  BrainIcon,
-  SparklesIcon,
-  MessagesSquareIcon,
-  UserRoundCheckIcon,
-  BotIcon,
-  ShieldCheckIcon,
-  TrophyIcon,
-  MenuIcon,
-  XIcon,
-} from "lucide-react";
-import type { LucideIcon } from "lucide-react";
+import { SearchIcon, MenuIcon, XIcon } from "lucide-react";
 import type { Profile } from "@/lib/auth/getSession";
-import { COFFEE_CHAT_SIGNUP_ENABLED } from "@/lib/features";
+import { isNavActive, navFor } from "@/lib/nav/hubs";
 import { BrandMark } from "@/components/app-shell/BrandMark";
 import { IntroPlane } from "@/components/app-shell/IntroPlane";
 import { Sticker } from "@/components/decor/Sticker";
@@ -47,32 +23,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 
-// Grouped rather than one flat list. An admin sees eighteen destinations, and
-// undifferentiated they read as eighteen unrelated things: Notes and Brain sat
-// between Gallery and Members, CRM and External were separated by Agent. The
-// headings are the cheapest way to say what belongs with what.
-type NavItem = { href: string; label: string; icon: LucideIcon };
-type NavGroup = { heading: string; items: NavItem[] };
-
-const EVENT_ITEMS: NavItem[] = [
-  { href: "/calendar", label: "Calendar", icon: CalendarDaysIcon },
-  { href: "/todo", label: "Todo", icon: CheckSquareIcon },
-  { href: "/past-events", label: "Past Events", icon: ArchiveIcon },
-  { href: "/photos", label: "Gallery", icon: ImageIcon },
-];
-
-const PEOPLE_ITEMS: NavItem[] = [
-  { href: "/members", label: "Members", icon: UsersRoundIcon },
-  { href: "/coffee-chats", label: "Coffee Chats", icon: CoffeeIcon },
-  { href: "/shoutouts", label: "Shoutouts", icon: MegaphoneIcon },
-];
-
-const KNOWLEDGE_ITEMS: NavItem[] = [
-  { href: "/notes", label: "Notes", icon: NotebookPenIcon },
-  { href: "/brain", label: "Brain", icon: BrainIcon },
-  { href: "/ask", label: "Ask", icon: SparklesIcon },
-];
-
 export function AppShell({
   profile,
   children,
@@ -81,48 +31,10 @@ export function AppShell({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  // Attendance and Sign ins are the same job seen from two sides, so they sit
-  // together with the leaderboard. Recruiting only appears when there is
-  // something in it.
-  const doorItems: NavItem[] = [
-    { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
-    { href: "/signins", label: "Sign ins", icon: DoorOpenIcon },
-    { href: "/leaderboard", label: "Leaderboard", icon: TrophyIcon },
-  ];
-
-  const recruitingItems: NavItem[] = [
-    ...(COFFEE_CHAT_SIGNUP_ENABLED
-      ? [{ href: "/chat-requests", label: "Chat Requests", icon: MessagesSquareIcon }]
-      : []),
-    ...(profile.role === "admin"
-      ? [{ href: "/interviews", label: "Interviews", icon: UserRoundCheckIcon }]
-      : []),
-  ];
-
-  // Outreach is admin-only end to end: these hold contact details for people
-  // who never agreed to be visible club-wide.
-  const outreachItems: NavItem[] =
-    profile.role === "admin"
-      ? [
-          { href: "/crm", label: "CRM", icon: ContactIcon },
-          { href: "/external", label: "External", icon: UsersIcon },
-          { href: "/agent", label: "Agent", icon: BotIcon },
-        ]
-      : [];
-
-  // /admin is admin-only: the page redirects anyone else server side, and the
-  // nav never shows it to them.
-  const settingsItems: NavItem[] =
-    profile.role === "admin" ? [{ href: "/admin", label: "Admin", icon: ShieldCheckIcon }] : [];
-
-  const navGroups: NavGroup[] = [
-    { heading: "Events", items: EVENT_ITEMS },
-    { heading: "People", items: [...PEOPLE_ITEMS, ...doorItems] },
-    { heading: "Recruiting", items: recruitingItems },
-    { heading: "Outreach", items: outreachItems },
-    { heading: "Knowledge", items: KNOWLEDGE_ITEMS },
-    { heading: "Settings", items: settingsItems },
-  ].filter((group) => group.items.length > 0);
+  // Calendar, Todo, four hubs and Admin: short enough to fit a 720px laptop
+  // screen without scrolling. Everything deeper lives on a hub page; see
+  // lib/nav/hubs.ts.
+  const navEntries = navFor(profile.role);
 
   const router = useRouter();
   const signOutFormRef = useRef<HTMLFormElement>(null);
@@ -172,10 +84,6 @@ export function AppShell({
     }
   }
 
-  function isActive(href: string) {
-    return pathname === href || pathname.startsWith(`${href}/`);
-  }
-
   const initials = (profile.full_name ?? profile.email)
     .split(/\s+/)
     .map((part) => part[0])
@@ -213,40 +121,33 @@ export function AppShell({
 
   function navList(variant: "drawer" | "sidebar") {
     const drawer = variant === "drawer";
-    return navGroups.map((group) => (
-      <div key={group.heading} className={cn("flex flex-col", !drawer && "gap-0.5")}>
-        <span className={cn("t-eyebrow text-foreground/40", drawer ? "pb-1" : "pb-2")}>
-          {group.heading}
-        </span>
-        {group.items.map((item) => {
-          const active = isActive(item.href);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={drawer ? closeDrawer : undefined}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "flex items-center gap-3 font-sans transition-colors duration-200 ease-fluid",
-                drawer ? "h-11 text-[15px]" : "h-9 text-[14px]",
-                active ? "font-medium text-foreground" : "text-foreground/55 hover:text-foreground",
-              )}
-            >
-              <Icon className="size-4 shrink-0" />
-              <span
-                className={cn(
-                  "pb-px",
-                  active ? "shadow-[inset_0_-2px_0_0_var(--mint)]" : "link-underline",
-                )}
-              >
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
-      </div>
-    ));
+    return navEntries.map((item) => {
+      const active = isNavActive(item, pathname);
+      const Icon = item.icon;
+      return (
+        <Link
+          key={item.href}
+          href={item.href}
+          onClick={drawer ? closeDrawer : undefined}
+          aria-current={active ? "page" : undefined}
+          className={cn(
+            "flex items-center gap-3 font-sans transition-colors duration-200 ease-fluid",
+            drawer ? "h-11 text-[15px]" : "h-10 text-[14px]",
+            active ? "font-medium text-foreground" : "text-foreground/55 hover:text-foreground",
+          )}
+        >
+          <Icon className="size-4 shrink-0" />
+          <span
+            className={cn(
+              "pb-px",
+              active ? "shadow-[inset_0_-2px_0_0_var(--mint)]" : "link-underline",
+            )}
+          >
+            {item.label}
+          </span>
+        </Link>
+      );
+    });
   }
 
   return (
@@ -277,7 +178,7 @@ export function AppShell({
         </Button>
       </header>
 
-      {/* Phone drawer: the same grouped nav, search and account row as the
+      {/* Phone drawer: the same nav, search and account row as the
           sidebar, full height from the left. Visibility waits out the slide
           so the panel animates both ways and is inert while closed. */}
       <div
@@ -322,7 +223,7 @@ export function AppShell({
 
           <div className="shrink-0 px-4 pt-4">{searchForm}</div>
 
-          <nav className="flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto overscroll-contain px-4 py-5">
+          <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4 py-5">
             {navList("drawer")}
           </nav>
 
@@ -376,10 +277,10 @@ export function AppShell({
 
           {searchForm}
 
-          {/* The nav is the part that scrolls, so the brand, the search and the
-              account row below stay put. min-h-0 lets this column shrink under
-              its content; without it the last groups fall off a laptop screen. */}
-          <nav className="-mr-2 flex min-h-0 flex-1 flex-col gap-5 overflow-y-auto pr-2 [scrollbar-color:rgba(0,0,0,0.25)_transparent] [scrollbar-width:thin]">
+          {/* Seven entries at most, so this fits a laptop without scrolling.
+              It still may scroll on a very short window: min-h-0 lets it
+              shrink so the account row below stays put. */}
+          <nav className="-mr-2 flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto pr-2 [scrollbar-color:rgba(0,0,0,0.25)_transparent] [scrollbar-width:thin]">
             {navList("sidebar")}
           </nav>
         </div>

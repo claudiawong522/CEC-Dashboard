@@ -158,14 +158,24 @@ load, never on in-app navigation. `prefers-reduced-motion` drops drift, stagger,
 marquee; colour and border transitions stay.
 
 ## Shell
-- Sidebar 264px from `md` up, white, 1px `line` right edge. Lockup, search input, grouped
-  nav with `t-eyebrow` group heads at `foreground/40`, items 14px at `foreground/55` hover black; the
-  active item's label carries a 2px mint underline (`shadow-[inset_0_-2px_0_0_var(--mint)]`). Foot:
-  `TriRow` + square avatar opening the account menu. Admin (Settings) shows to admins only.
+- Sidebar 264px from `md` up, white, 1px `line` right edge. Lockup, search input, then a flat nav
+  of at most seven 40px rows (Calendar, Todo, Events, People, Outreach, Knowledge, Admin), 14px at
+  `foreground/55` hover black, no group heads; it must fit 1280x720 without scrolling. The active
+  item's label carries a 2px mint underline (`shadow-[inset_0_-2px_0_0_var(--mint)]`). Foot:
+  `TriRow` + square avatar opening the account menu. Admin shows to admins only.
+- Hubs (`/hub/[hub]`, defined in `lib/nav/hubs.ts`, which the sidebar reads too): a new destination
+  goes on a hub, not in the sidebar. A hub page is `PageHeader` (title, one-line description), one
+  `TriangleScatter`, and a grid of linked cards (1 column on phones, 2 from `sm`, 3 from `xl`, 16px
+  gaps): hairline, `shadow-soft`, a 3px section-colour bar across the top (Events blue, People teal,
+  Outreach coral, Knowledge amber), the sidebar's lucide icon at 20px with a `foreground/40` arrow
+  that turns black and nudges 2px on hover, the label in `t-display` 20px, one line of `subtle` 14px.
+  Cards lift like every linked card (300ms, `ease-fluid`). A hub's nav item is active on the hub and
+  on every page under it (`/crm/123` lights Outreach; `/events/...` lights Calendar). Cards a role
+  cannot open are left out, and a hub with none left drops out of the nav and 404s.
 - Phones (under `md`): no rail. A 56px top bar (hairline bottom edge, safe-area padded) with the mark,
   "CEC" in `t-display` 18px and a 44px outline menu button. The menu opens a left drawer
   (`min(320px, 100vw - 48px)`, 2px black right edge, black/40 scrim, 300ms slide, `ease-fluid`) with
-  the lockup and a 44px close button, the search, the same grouped nav at 44px rows / 15px, and the
+  the lockup and a 44px close button, the search, the same nav at 44px rows / 15px, and the
   account row (avatar, name, email, "Your profile" and "Sign out" as two lg buttons). It locks scroll,
   makes `<main>` inert, closes on route change, Escape and a tap on the scrim, and returns focus to
   the menu button.
@@ -256,3 +266,8 @@ Generalist amber. Shown as a swatch or bar, never as a tint behind text.
   "External lead · Stage"); their delete actions use the inline confirm. Terminal tags (Converted,
   Done in search) are a flat mint fill. Empty values read "No name yet" / "No location" instead of a
   dash; user-visible ranges use "to" ("Oct 11 to 17", "7:30PM to 9:00PM").
+- **2026-10-12, sidebar hubs.** The grouped sidebar (eighteen entries for an admin) scrolled on a
+  laptop. It is now Calendar, Todo, four hub pages and Admin; Past Events, Gallery, Attendance and
+  Sign ins sit on the Events hub, Members, Coffee Chats, Shoutouts and Leaderboard on People, CRM,
+  External, Agent and Interviews (and Chat Requests when switched on) on Outreach, Notes, Brain and Ask
+  on Knowledge. Hub card pattern added under "Shell". No routes moved.
