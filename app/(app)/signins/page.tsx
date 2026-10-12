@@ -38,9 +38,6 @@ function shiftDate(dateStr: string, days: number): string {
 export default async function SignInsPage() {
   const session = await getSession();
   if (!session) redirect("/login");
-  // Same rule as /attendance: a view-only account reads the club, it doesn't
-  // work the door.
-  if (session.profile.role === "view") redirect("/calendar");
 
   const supabase = await createClient();
   const today = wallClockDate();

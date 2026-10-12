@@ -1,7 +1,8 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 
-export type Role = "view" | "edit" | "admin";
+// Two roles. The old read-only "view" role was retired in 0053: every member edits.
+export type Role = "edit" | "admin";
 export type ProfileStatus = "invited" | "active" | "revoked";
 
 export type Profile = {

@@ -94,7 +94,6 @@ export default async function ChatRequestsPage() {
       ranked={ranked}
       claimed={claimed}
       myInterests={me?.interests ?? []}
-      canClaim={session.profile.role !== "view"}
       isAdmin={session.profile.role === "admin"}
     />
   );

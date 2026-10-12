@@ -91,9 +91,6 @@ export async function submitChatRequest(input: ChatRequestInput): Promise<Action
 export async function claimChatRequest(requestId: string): Promise<ActionResult> {
   const session = await getSession();
   if (!session) throw new Error("Not signed in");
-  if (session.profile.role === "view") {
-    return actionFailed("View-only accounts can't take chat requests");
-  }
 
   const supabase = await createClient();
   const { data, error } = await supabase

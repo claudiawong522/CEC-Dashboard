@@ -33,6 +33,7 @@ import {
   type RecurringValues,
 } from "@/lib/validation/event-schemas";
 import { clubToday, rescheduledRange } from "@/lib/utils/dates";
+import { seriesEditUpdates } from "@/lib/utils/series-edit";
 
 type Toggles = {
   hasSpeaker: boolean;
@@ -271,49 +272,38 @@ export async function updateEventHeader(
 
   const { data: existing, error: existingError } = await supabase
     .from("events")
-    .select("event_date, recurring_series_id")
+    .select("id, name, event_date, event_end_date, all_day, event_time, event_end_time, recurring_series_id")
     .eq("id", eventId)
     .single();
   if (existingError || !existing) throw new Error(existingError?.message ?? "Event not found");
 
-  const { error } = await supabase
-    .from("events")
-    .update({
-      name: parsed.name,
-      event_date: parsed.eventDate,
-      event_end_date: parsed.eventEndDate,
-      all_day: parsed.allDay,
-      event_time: parsed.eventStartTime,
-      event_end_time: parsed.eventEndTime,
-    })
-    .eq("id", eventId);
-
+  const after = {
+    name: parsed.name,
+    event_date: parsed.eventDate,
+    event_end_date: parsed.eventEndDate,
+    all_day: parsed.allDay,
+    event_time: parsed.eventStartTime,
+    event_end_time: parsed.eventEndTime,
+  };
+  const { error } = await supabase.from("events").update(after).eq("id", eventId);
   if (error) throw new Error(error.message);
 
-  // Moving one occurrence's date shifts every other occurrence in the same
-  // series by the same number of days, so the whole series' schedule moves
-  // together — occurrences that have already happened are left untouched.
-  const dayShift = differenceInCalendarDays(parseISO(parsed.eventDate), parseISO(existing.event_date));
-  if (existing.recurring_series_id && dayShift !== 0) {
-    const today = clubToday();
-    const { data: siblings } = await supabase
+  // A name, date or time edit on one occurrence carries to that occurrence
+  // and every later one in its series that hasn't happened yet, as the same
+  // change on Ithaca's wall clock. Earlier and past occurrences, with their
+  // check-ins and prep, are left exactly as they were.
+  if (existing.recurring_series_id) {
+    const { data: occurrences, error: occurrencesError } = await supabase
       .from("events")
-      .select("id, event_date, event_end_date")
+      .select("id, name, event_date, event_end_date, all_day, event_time, event_end_time")
       .eq("recurring_series_id", existing.recurring_series_id)
-      .neq("id", eventId)
-      .gt("event_date", today);
+      .gte("event_date", existing.event_date);
+    if (occurrencesError) throw new Error(occurrencesError.message);
 
-    for (const sibling of siblings ?? []) {
-      await supabase
-        .from("events")
-        .update({
-          event_date: formatISO(addDays(parseISO(sibling.event_date), dayShift), { representation: "date" }),
-          event_end_date: formatISO(addDays(parseISO(sibling.event_end_date), dayShift), {
-            representation: "date",
-          }),
-        })
-        .eq("id", sibling.id);
-      revalidatePath(`/events/${sibling.id}`);
+    for (const { id, patch } of seriesEditUpdates(existing, after, occurrences ?? [], clubToday())) {
+      const { error: siblingError } = await supabase.from("events").update(patch).eq("id", id);
+      if (siblingError) throw new Error(siblingError.message);
+      revalidatePath(`/events/${id}`);
     }
   }
 

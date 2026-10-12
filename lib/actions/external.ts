@@ -12,17 +12,17 @@ import {
   notesSchema,
   type StageValue,
 } from "@/lib/validation/external-schemas";
-import type { IdeaRow } from "@/lib/types/external";
+import { contactNameForIdea, type IdeaRow } from "@/lib/types/external";
 
 function revalidateIdea(ideaId: string) {
   revalidatePath("/external");
   revalidatePath(`/external/${ideaId}`);
 }
 
-// Quick-add only ever needs a name — everything else (pitch detail, contact
+// Quick-add only ever needs a name. Everything else (pitch detail, contact
 // info, owners) gets filled in on the detail view, which the caller navigates
-// to with the id returned here. The typed name doubles as both the idea's
-// pitch title and its first person.
+// to with the id returned here. It no longer creates a CRM contact: a lead
+// reaches the CRM only when an admin asks for it with `moveIdeaToCrm`.
 export async function createIdea(name: string) {
   const session = await requireRole("admin");
   const parsed = quickAddSchema.parse({ name });
@@ -35,22 +35,56 @@ export async function createIdea(name: string) {
     .single();
   if (error || !idea) throw new Error(error?.message ?? "Failed to add lead");
 
-  // Since 0037 a person on a pitch is a pointer at a CRM contact, so the
-  // quick-add's name creates the contact and the join row points at it.
+  revalidatePath("/external");
+  return idea.id as string;
+}
+
+// "Move to CRM" on a lead. A lead is in the CRM once a person on it points at
+// a contact (external_idea_people is the link), so this is idempotent: if
+// one is already linked, its contact comes back and nothing new is made.
+// Otherwise the lead's name becomes a contact and a join row links the two.
+export async function moveIdeaToCrm(ideaId: string) {
+  await requireRole("admin");
+  const supabase = await createClient();
+
+  const { data: idea, error: ideaError } = await supabase
+    .from("external_ideas")
+    .select("pitch")
+    .eq("id", ideaId)
+    .maybeSingle<Pick<IdeaRow, "pitch">>();
+  if (ideaError || !idea) throw new Error(ideaError?.message ?? "Lead not found");
+
+  const { data: linked } = await supabase
+    .from("external_idea_people")
+    .select("id, contact_id")
+    .eq("idea_id", ideaId)
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle<{ id: string; contact_id: string }>();
+  if (linked) return { contactId: linked.contact_id, personId: null, name: null };
+
+  const name = contactNameForIdea(idea.pitch);
   const { data: contact, error: contactError } = await supabase
     .from("outreach_contacts")
-    .insert({ name: parsed.name, type: "speaker", visibility: "exec", source: "external pipeline" })
+    .insert({ name, type: "speaker", visibility: "exec", source: "external pipeline" })
     .select("id")
     .single();
   if (contactError || !contact) throw new Error(contactError?.message ?? "Failed to add contact");
 
-  const { error: personError } = await supabase
+  const { data: person, error: personError } = await supabase
     .from("external_idea_people")
-    .insert({ idea_id: idea.id, contact_id: contact.id });
-  if (personError) throw new Error(personError.message);
+    .insert({ idea_id: ideaId, contact_id: contact.id })
+    .select("id")
+    .single();
+  if (personError || !person) {
+    // Don't leave an unlinked contact behind if the link failed.
+    await supabase.from("outreach_contacts").delete().eq("id", contact.id);
+    throw new Error(personError?.message ?? "Failed to link contact");
+  }
 
-  revalidatePath("/external");
-  return idea.id as string;
+  revalidateIdea(ideaId);
+  revalidatePath("/crm");
+  return { contactId: contact.id as string, personId: person.id as string, name };
 }
 
 export async function updatePitch(ideaId: string, pitch: string) {
@@ -86,7 +120,7 @@ export async function updateIdeaNotes(ideaId: string, notes: string) {
   revalidateIdea(ideaId);
 }
 
-// Handles every stage move — the stepper, the Declined shortcut, and
+// Handles every stage move: the stepper, the Declined shortcut, and
 // Reactivate all funnel through here. Declining stashes the current stage
 // in prev_stage first so Reactivate has somewhere to go back to; moving to
 // any other stage is a plain write.
@@ -111,7 +145,7 @@ export async function setIdeaStage(ideaId: string, stage: StageValue) {
   revalidateIdea(ideaId);
 }
 
-// Hard delete — people and owners cascade with the row. A converted lead's
+// Hard delete. People and owners cascade with the row. A converted lead's
 // event is deliberately left alone: it lives on its own in /calendar once
 // it exists, and nuking a real event from the outreach list would surprise.
 export async function deleteIdea(ideaId: string) {
@@ -122,7 +156,7 @@ export async function deleteIdea(ideaId: string) {
   revalidatePath("/external");
 }
 
-// Deleting from a list row can stay on /external — the revalidate above
+// Deleting from a list row can stay on /external: the revalidate above
 // re-renders this route and the row just goes. Deleting from the lead's own
 // page can't: revalidating re-renders the current route too, which would run
 // /external/[id] straight into notFound() before we could leave. So this
@@ -133,7 +167,7 @@ export async function deleteIdeaAndReturnToList(ideaId: string) {
   redirect("/external", "replace");
 }
 
-// Adds an empty stub the admin then types into, exactly as before — the stub
+// Adds an empty stub the admin then types into, exactly as before. The stub
 // is now a blank CRM contact plus a join row rather than a blank name on the
 // join row.
 export async function addPerson(ideaId: string) {
@@ -191,7 +225,7 @@ export async function updatePerson(ideaId: string, personId: string, values: { n
 }
 
 // Removes the person from this pitch only. The contact survives, along with
-// whatever has already been said to them — taking someone off a panel idea
+// whatever has already been said to them. Taking someone off a panel idea
 // is not a reason to forget the conversation.
 export async function removePerson(ideaId: string, personId: string) {
   await requireRole("admin");

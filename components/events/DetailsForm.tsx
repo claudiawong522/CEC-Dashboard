@@ -283,6 +283,12 @@ export function DetailsForm({
           </div>
         )}
 
+        {event.recurring_series_id && (
+          <p className="font-sans text-[11.5px] text-foreground/50">
+            Name and time changes apply to this and future occurrences. Past ones are left as-is.
+          </p>
+        )}
+
         <TaggedMembersSection eventId={event.id} taggedMembers={taggedMembers} allMembers={allMembers} />
 
         {recurringSeries && (

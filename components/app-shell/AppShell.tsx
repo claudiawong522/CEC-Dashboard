@@ -82,19 +82,13 @@ export function AppShell({
 }) {
   const pathname = usePathname();
   // Attendance and Sign ins are the same job seen from two sides, so they sit
-  // together. Working the door is edit-or-admin work, the same rule /signins
-  // enforces server side, so a view-only account gets none of it, except the
-  // leaderboard, which anyone signed in can see, because it is the thing being
-  // dangled in front of people who keep turning up. Recruiting only appears
-  // when there is something in it.
-  const doorItems: NavItem[] =
-    profile.role === "view"
-      ? [{ href: "/leaderboard", label: "Leaderboard", icon: TrophyIcon }]
-      : [
-          { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
-          { href: "/signins", label: "Sign ins", icon: DoorOpenIcon },
-          { href: "/leaderboard", label: "Leaderboard", icon: TrophyIcon },
-        ];
+  // together with the leaderboard. Recruiting only appears when there is
+  // something in it.
+  const doorItems: NavItem[] = [
+    { href: "/attendance", label: "Attendance", icon: ClipboardCheckIcon },
+    { href: "/signins", label: "Sign ins", icon: DoorOpenIcon },
+    { href: "/leaderboard", label: "Leaderboard", icon: TrophyIcon },
+  ];
 
   const recruitingItems: NavItem[] = [
     ...(COFFEE_CHAT_SIGNUP_ENABLED
@@ -116,8 +110,8 @@ export function AppShell({
         ]
       : [];
 
-  // /admin still renders a read-only roster for everyone else, but the nav
-  // only promises it to the people who can act on it.
+  // /admin is admin-only: the page redirects anyone else server side, and the
+  // nav never shows it to them.
   const settingsItems: NavItem[] =
     profile.role === "admin" ? [{ href: "/admin", label: "Admin", icon: ShieldCheckIcon }] : [];
 

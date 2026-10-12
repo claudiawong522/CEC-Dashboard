@@ -36,13 +36,11 @@ export function RequestPool({
   ranked,
   claimed,
   myInterests,
-  canClaim,
   isAdmin,
 }: {
   ranked: RankedRequest<OpenRequest>[];
   claimed: ClaimedRequest[];
   myInterests: string[];
-  canClaim: boolean;
   isAdmin: boolean;
 }) {
   const [isPending, startTransition] = useTransition();
@@ -135,7 +133,7 @@ export function RequestPool({
                   <div className="flex items-center gap-3">
                     <Button
                       type="button"
-                      disabled={isPending || !canClaim}
+                      disabled={isPending}
                       onClick={() => run(() => claimChatRequest(request.id))}
                     >
                       Claim

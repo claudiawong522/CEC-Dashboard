@@ -45,9 +45,6 @@ export function RoleSelect({ userId, role }: { userId: string; role: Role }) {
         <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        <SelectItem value="view">
-          View
-        </SelectItem>
         <SelectItem value="edit">
           Edit
         </SelectItem>
