@@ -271,3 +271,8 @@ Generalist amber. Shown as a swatch or bar, never as a tint behind text.
   Sign ins sit on the Events hub, Members, Coffee Chats, Shoutouts and Leaderboard on People, CRM,
   External, Agent and Interviews (and Chat Requests when switched on) on Outreach, Notes, Brain and Ask
   on Knowledge. Hub card pattern added under "Shell". No routes moved.
+- **2026-10-12, bigger sidebar.** With fewer entries the nav earns more room: rows are 48px (56px in
+  the phone drawer), Space Grotesk 500 uppercase at 15px with 20px icons, and the active row is a 2px
+  black box with `shadow-mint-sm` plus the mint underline. Members and Gallery are back on the
+  sidebar as their own rows; the People hub is now "Community" (Coffee Chats, Shoutouts,
+  Leaderboard) so it no longer reads as a second Members.

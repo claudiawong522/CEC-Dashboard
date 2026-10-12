@@ -8,12 +8,14 @@ function activeLabel(role: "admin" | "edit", pathname: string) {
 }
 
 describe("sidebar nav", () => {
-  it("stays at seven entries for an admin and five for a member", () => {
+  it("stays at nine entries for an admin and seven for a member", () => {
     expect(navFor("admin").map((e) => e.label)).toEqual([
       "Calendar",
       "Todo",
+      "Members",
+      "Gallery",
       "Events",
-      "People",
+      "Community",
       "Outreach",
       "Knowledge",
       "Admin",
@@ -21,8 +23,10 @@ describe("sidebar nav", () => {
     expect(navFor("edit").map((e) => e.label)).toEqual([
       "Calendar",
       "Todo",
+      "Members",
+      "Gallery",
       "Events",
-      "People",
+      "Community",
       "Knowledge",
     ]);
   });

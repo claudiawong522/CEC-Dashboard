@@ -131,16 +131,18 @@ export function AppShell({
           onClick={drawer ? closeDrawer : undefined}
           aria-current={active ? "page" : undefined}
           className={cn(
-            "flex items-center gap-3 font-sans transition-colors duration-200 ease-fluid",
-            drawer ? "h-11 text-[15px]" : "h-10 text-[14px]",
-            active ? "font-medium text-foreground" : "text-foreground/55 hover:text-foreground",
+            "flex items-center gap-4 border-2 px-3 font-display font-medium tracking-wide uppercase transition-[color,background-color,border-color,box-shadow] duration-200 ease-fluid",
+            drawer ? "h-14 text-[16px]" : "h-12 text-[15px]",
+            active
+              ? "border-foreground bg-background text-foreground shadow-mint-sm"
+              : "border-transparent text-foreground/60 hover:border-line hover:text-foreground",
           )}
         >
-          <Icon className="size-4 shrink-0" />
+          <Icon className="size-5 shrink-0" />
           <span
             className={cn(
               "pb-px",
-              active ? "shadow-[inset_0_-2px_0_0_var(--mint)]" : "link-underline",
+              active ? "shadow-[inset_0_-2px_0_0_var(--mint)]" : "",
             )}
           >
             {item.label}
@@ -223,7 +225,7 @@ export function AppShell({
 
           <div className="shrink-0 px-4 pt-4">{searchForm}</div>
 
-          <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain px-4 py-5">
+          <nav className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain px-4 py-5">
             {navList("drawer")}
           </nav>
 
@@ -269,7 +271,7 @@ export function AppShell({
       {/* The site's nav, turned on its side: white, a hairline edge, display
           type for the wordmark and group heads, and a mint underline on the
           active destination. Desktop only; phones get the bar and drawer. */}
-      <aside className="relative hidden w-[264px] shrink-0 flex-col justify-between border-r border-line bg-background px-5 py-5 md:flex">
+      <aside className="relative hidden w-[288px] shrink-0 flex-col justify-between border-r border-line bg-background px-5 py-5 md:flex">
         <div className="relative flex min-h-0 flex-1 flex-col gap-7">
           <Link href="/calendar" className="self-start">
             {lockup}
@@ -280,7 +282,7 @@ export function AppShell({
           {/* Seven entries at most, so this fits a laptop without scrolling.
               It still may scroll on a very short window: min-h-0 lets it
               shrink so the account row below stays put. */}
-          <nav className="-mr-2 flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto pr-2 [scrollbar-color:rgba(0,0,0,0.25)_transparent] [scrollbar-width:thin]">
+          <nav className="-mr-2 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-2 [scrollbar-color:rgba(0,0,0,0.25)_transparent] [scrollbar-width:thin]">
             {navList("sidebar")}
           </nav>
         </div>
