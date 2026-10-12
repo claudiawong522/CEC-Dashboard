@@ -22,6 +22,7 @@ export type MemberProfile = Profile & {
   portfolio_url: string | null;
   github_url: string | null;
   show_on_site: boolean;
+  show_email_on_site: boolean;
   active: boolean;
   interests: string[];
   open_to_chats: boolean;
@@ -34,7 +35,7 @@ export type MemberProfile = Profile & {
 export const MEMBER_COLUMNS =
   "id, email, full_name, avatar_url, role, status, netid, pronouns, major, minor, " +
   "college, graduation_year, team, position, hometown, about, hobbies, building, " +
-  "linkedin_url, portfolio_url, github_url, show_on_site, active, interests, " +
+  "linkedin_url, portfolio_url, github_url, show_on_site, show_email_on_site, active, interests, " +
   "open_to_chats, chat_blurb";
 
 export function memberInitials(member: Pick<MemberProfile, "full_name" | "email">): string {

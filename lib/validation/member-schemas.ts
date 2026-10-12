@@ -79,6 +79,8 @@ export const profileSchema = z.object({
   // Opt-in to cornellec.com's members page. Off for new accounts; the
   // profile page is where someone turns it on.
   show_on_site: z.boolean().default(false),
+  // Separate opt-in for an Email button on the public members page.
+  show_email_on_site: z.boolean().default(false),
 });
 // Two types, not one. The form holds what an <input> gives back — every field
 // a string, including the year — and the schema's transforms are what turn
