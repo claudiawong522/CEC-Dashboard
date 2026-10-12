@@ -21,6 +21,9 @@ export default async function ExternalPage() {
       .from("external_ideas")
       .select(`*, external_idea_people(${PERSON_EMBED}), external_idea_owners(profile_id)`)
       .order("created_at", { ascending: false })
+      // Oldest person first, so the row's "In CRM" link and the detail
+      // page agree on which contact a lead points at.
+      .order("created_at", { referencedTable: "external_idea_people", ascending: true })
       .returns<IdeaWithRelations[]>(),
     supabase
       .from("profiles")

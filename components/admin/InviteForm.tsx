@@ -18,9 +18,8 @@ import type { Role } from "@/lib/auth/getSession";
 import { ROLE_LABELS } from "@/lib/utils/role-labels";
 export function InviteForm() {
   const [email, setEmail] = useState("");
-  // Edit, not view: a member is a member, and the read-only default was how
-  // every invite so far ended up read-only. View is still selectable for an
-  // alum or an outside collaborator who should only look.
+  // A member is a member: every invite starts at edit, and admin is the only
+  // other choice since the read-only role was retired.
   const [role, setRole] = useState<Role>("edit");
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
@@ -75,9 +74,6 @@ export function InviteForm() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="view">
-              View
-            </SelectItem>
             <SelectItem value="edit">
               Edit
             </SelectItem>

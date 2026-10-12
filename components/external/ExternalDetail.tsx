@@ -11,6 +11,8 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { TimePicker } from "@/components/ui/time-picker";
 import { SaveIndicator } from "@/components/events/SaveIndicator";
 import { DeleteIdeaDialog } from "@/components/external/DeleteIdeaDialog";
+import { MoveToCrmButton } from "@/components/external/MoveToCrmButton";
+import { PageHeader } from "@/components/ui/page-header";
 import { useAutoSave } from "@/lib/hooks/use-autosave";
 import { STAGES, STAGE_LABELS, type StageValue } from "@/lib/validation/external-schemas";
 import {
@@ -23,7 +25,7 @@ import {
   removePerson,
   toggleOwner,
 } from "@/lib/actions/external";
-import type { IdeaRow, IdeaPersonRow, AdminInfo } from "@/lib/types/external";
+import { crmContactId, type IdeaRow, type IdeaPersonRow, type AdminInfo } from "@/lib/types/external";
 
 function FieldLabel({ children, indicator }: { children: React.ReactNode; indicator?: React.ReactNode }) {
   return (
@@ -224,131 +226,150 @@ export function ExternalDetail({
   const isConverted = stage === "converted";
 
   return (
-    <div className="relative z-10 flex flex-col gap-5">
-      <div className="flex items-center justify-between gap-3">
-        <Link href="/external" className="t-eyebrow link-underline flex w-fit items-center text-foreground/50 max-md:min-h-11 transition-colors duration-200 ease-fluid hover:text-foreground">
-          ← All leads
-        </Link>
-        <DeleteIdeaDialog ideaId={idea.id} pitch={pitch} isConverted={isConverted} returnToList />
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <FieldLabel indicator={<SaveIndicator status={pitchStatus} />}>Idea</FieldLabel>
-        <Input
-          value={pitch}
-          onChange={(e) => setPitch(e.target.value)}
-          placeholder="What's the idea?"
-          className="font-display text-[18px] font-bold text-foreground"
-        />
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <span className="t-eyebrow text-foreground/50">People</span>
-        <div className="flex gap-2 px-0.5">
-          <span className="t-eyebrow flex-[1.1] text-foreground/50">Name</span>
-          <span className="t-eyebrow flex-[1.4] text-foreground/50">Email</span>
-        </div>
-        <div className="flex flex-col gap-1.5">
-          {localPeople.map((p) => (
-            <PersonRow key={p.id} ideaId={idea.id} person={p} onRemove={() => handleRemovePerson(p.id)} />
-          ))}
-        </div>
-        <Button type="button" variant="outline" size="sm" className="w-fit" onClick={handleAddPerson}>
-          + Add person
-        </Button>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <span className="t-eyebrow text-foreground/50">Follow-up owners</span>
-        <div className="flex flex-wrap gap-1.5">
-          {admins.map((a) => {
-            const on = owners.includes(a.id);
-            return (
-              <button
-                key={a.id}
-                type="button"
-                onClick={() => toggleOwnerLocal(a.id)}
-                className={
-                  "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-colors duration-200 ease-fluid max-md:min-h-11 max-md:px-3 " +
-                  (on ? "border-foreground bg-mint text-foreground" : "border-line text-foreground/50 hover:border-foreground hover:text-foreground")
-                }
-              >
-                <span className={"size-1.5 " + (on ? "bg-foreground" : "bg-faint")} />
-                {a.full_name ?? a.email}
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {!isConverted && (
-        <div className="flex flex-col gap-2">
-          <span className="t-eyebrow text-foreground/50">Stage</span>
-          <StageStepper idea={{ ...idea, stage, prev_stage: prevStage }} onStageChange={changeStage} />
-        </div>
-      )}
-
-      {isConverted && idea.converted_event_id && (
-        <div className="flex items-center gap-3 border border-foreground bg-mint/20 px-4 py-3">
-          <span className="t-eyebrow text-foreground">Converted</span>
-          <Link
-            href={`/events/${idea.converted_event_id}`}
-            className="link-underline font-sans text-[13px] font-medium text-foreground"
-          >
-            View event →
+    <>
+      <PageHeader
+        eyebrow={`External lead · ${STAGE_LABELS[stage]}`}
+        title={<span className="break-words">{pitch.trim() || "Untitled lead"}</span>}
+        actions={
+          <MoveToCrmButton
+            ideaId={idea.id}
+            contactId={crmContactId(localPeople)}
+            onMoved={({ contactId, personId, name }) => {
+              if (!personId) return;
+              setLocalPeople((prev) => [
+                ...prev,
+                { id: personId, idea_id: idea.id, contact_id: contactId, name: name ?? "", email: null },
+              ]);
+            }}
+          />
+        }
+      />
+      <div className="relative z-10 flex flex-col gap-5">
+        <div className="flex items-center justify-between gap-3">
+          <Link href="/external" className="t-eyebrow link-underline flex w-fit items-center text-foreground/50 max-md:min-h-11 transition-colors duration-200 ease-fluid hover:text-foreground">
+            ← All leads
           </Link>
+          <DeleteIdeaDialog ideaId={idea.id} pitch={pitch} isConverted={isConverted} returnToList />
         </div>
-      )}
 
-      {!isConverted && (
         <div className="flex flex-col gap-1.5">
-          <FieldLabel indicator={<SaveIndicator status={dateTimeStatus} />}>Target date &amp; time</FieldLabel>
-          <div className="flex gap-2">
-            <DatePicker
-              value={dateTime.targetDate}
-              onChange={(v) => setDateTime((prev) => ({ ...prev, targetDate: v }))}
-              className="w-[176px]"
-            />
-            <TimePicker
-              value={dateTime.targetTime}
-              onChange={(v) => setDateTime((prev) => ({ ...prev, targetTime: v }))}
-              className="w-[132px]"
-            />
+          <FieldLabel indicator={<SaveIndicator status={pitchStatus} />}>Idea</FieldLabel>
+          <Input
+            value={pitch}
+            onChange={(e) => setPitch(e.target.value)}
+            placeholder="What's the idea?"
+            className="font-display text-[18px] font-bold text-foreground"
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <span className="t-eyebrow text-foreground/50">People</span>
+          <div className="flex gap-2 px-0.5">
+            <span className="t-eyebrow flex-[1.1] text-foreground/50">Name</span>
+            <span className="t-eyebrow flex-[1.4] text-foreground/50">Email</span>
+          </div>
+          <div className="flex flex-col gap-1.5">
+            {localPeople.map((p) => (
+              <PersonRow key={p.id} ideaId={idea.id} person={p} onRemove={() => handleRemovePerson(p.id)} />
+            ))}
+          </div>
+          <Button type="button" variant="outline" size="sm" className="w-fit" onClick={handleAddPerson}>
+            + Add person
+          </Button>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <span className="t-eyebrow text-foreground/50">Follow-up owners</span>
+          <div className="flex flex-wrap gap-1.5">
+            {admins.map((a) => {
+              const on = owners.includes(a.id);
+              return (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => toggleOwnerLocal(a.id)}
+                  className={
+                    "t-eyebrow flex items-center gap-1.5 border px-2.5 py-1.5 transition-colors duration-200 ease-fluid max-md:min-h-11 max-md:px-3 " +
+                    (on ? "border-foreground bg-mint text-foreground" : "border-line text-foreground/50 hover:border-foreground hover:text-foreground")
+                  }
+                >
+                  <span className={"size-1.5 " + (on ? "bg-foreground" : "bg-faint")} />
+                  {a.full_name ?? a.email}
+                </button>
+              );
+            })}
           </div>
         </div>
-      )}
 
-      <div className="flex flex-col gap-1.5">
-        <FieldLabel indicator={<SaveIndicator status={notesStatus} />}>Notes</FieldLabel>
-        <Textarea
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
-          placeholder="Log calls, replies, anything worth remembering. Just start typing…"
-          rows={5}
-        />
-      </div>
+        {!isConverted && (
+          <div className="flex flex-col gap-2">
+            <span className="t-eyebrow text-foreground/50">Stage</span>
+            <StageStepper idea={{ ...idea, stage, prev_stage: prevStage }} onStageChange={changeStage} />
+          </div>
+        )}
 
-      {!isConverted && (
-        <div className="flex items-center justify-between gap-3 border-t border-line pt-3.5">
-          <Button type="button" variant={stage === "declined" ? "outline" : "destructive"} onClick={handleDeclineToggle} disabled={isPending}>
-            {stage === "declined" ? "Reactivate" : "Decline"}
-          </Button>
-          <Link
-            href={
-              stage === "date_set"
-                ? `/events/new?ideaId=${idea.id}${dateTime.targetDate ? `&date=${dateTime.targetDate}` : ""}`
-                : "#"
-            }
-            aria-disabled={stage !== "date_set"}
-            className={
-              buttonVariants({ variant: "default" }) +
-              (stage !== "date_set" ? " pointer-events-none opacity-50" : "")
-            }
-          >
-            Convert to event →
-          </Link>
+        {isConverted && idea.converted_event_id && (
+          <div className="flex items-center gap-3 border border-foreground bg-mint/20 px-4 py-3">
+            <span className="t-eyebrow text-foreground">Converted</span>
+            <Link
+              href={`/events/${idea.converted_event_id}`}
+              className="link-underline font-sans text-[13px] font-medium text-foreground"
+            >
+              View event →
+            </Link>
+          </div>
+        )}
+
+        {!isConverted && (
+          <div className="flex flex-col gap-1.5">
+            <FieldLabel indicator={<SaveIndicator status={dateTimeStatus} />}>Target date &amp; time</FieldLabel>
+            <div className="flex gap-2">
+              <DatePicker
+                value={dateTime.targetDate}
+                onChange={(v) => setDateTime((prev) => ({ ...prev, targetDate: v }))}
+                className="w-[176px]"
+              />
+              <TimePicker
+                value={dateTime.targetTime}
+                onChange={(v) => setDateTime((prev) => ({ ...prev, targetTime: v }))}
+                className="w-[132px]"
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-col gap-1.5">
+          <FieldLabel indicator={<SaveIndicator status={notesStatus} />}>Notes</FieldLabel>
+          <Textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Log calls, replies, anything worth remembering. Just start typing…"
+            rows={5}
+          />
         </div>
-      )}
-    </div>
+
+        {!isConverted && (
+          <div className="flex items-center justify-between gap-3 border-t border-line pt-3.5">
+            <Button type="button" variant={stage === "declined" ? "outline" : "destructive"} onClick={handleDeclineToggle} disabled={isPending}>
+              {stage === "declined" ? "Reactivate" : "Decline"}
+            </Button>
+            <Link
+              href={
+                stage === "date_set"
+                  ? `/events/new?ideaId=${idea.id}${dateTime.targetDate ? `&date=${dateTime.targetDate}` : ""}`
+                  : "#"
+              }
+              aria-disabled={stage !== "date_set"}
+              className={
+                buttonVariants({ variant: "default" }) +
+                (stage !== "date_set" ? " pointer-events-none opacity-50" : "")
+              }
+            >
+              Convert to event →
+            </Link>
+          </div>
+        )}
+      </div>
+    </>
   );
 }

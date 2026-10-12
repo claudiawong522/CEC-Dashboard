@@ -6,7 +6,8 @@ import { STAGE_VALUES, STAGE_LABELS, type StageValue } from "@/lib/validation/ex
 import { stageDotProps, isClosedStage } from "@/lib/utils/external-stage";
 import { initials } from "@/lib/utils/initials";
 import { DeleteIdeaDialog } from "@/components/external/DeleteIdeaDialog";
-import type { IdeaWithRelations, AdminInfo } from "@/lib/types/external";
+import { MoveToCrmButton } from "@/components/external/MoveToCrmButton";
+import { crmContactId, type IdeaWithRelations, type AdminInfo } from "@/lib/types/external";
 
 function StageTag({ stage }: { stage: StageValue }) {
   const dot = stageDotProps(stage);
@@ -137,6 +138,11 @@ export function ExternalList({
                       </span>
                     ))}
                   </span>
+                  <MoveToCrmButton
+                    ideaId={idea.id}
+                    contactId={crmContactId(idea.external_idea_people)}
+                    className="relative shrink-0"
+                  />
                   <DeleteIdeaDialog
                     ideaId={idea.id}
                     pitch={idea.pitch}

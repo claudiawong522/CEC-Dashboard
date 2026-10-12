@@ -16,8 +16,16 @@ function databaseFailure(what: string, error: { message: string }): ActionResult
   return actionFailed(`Couldn't ${what}. Try again`);
 }
 
+// Role arrives from the client, so it is checked at runtime too: the type
+// alone would let a stale tab send the retired "view" role straight through.
+const ROLES: readonly Role[] = ["edit", "admin"];
+function isRole(value: unknown): value is Role {
+  return typeof value === "string" && (ROLES as readonly string[]).includes(value);
+}
+
 export async function updateUserRole(userId: string, role: Role): Promise<ActionResult> {
   await requireRole("admin");
+  if (!isRole(role)) return actionFailed("Pick Edit or Admin");
   const supabase = await createClient();
 
   const { error } = await supabase.from("profiles").update({ role }).eq("id", userId);
@@ -38,6 +46,7 @@ const INVITE_ALLOWED_DOMAINS = (process.env.INVITE_ALLOWED_DOMAINS ?? "cornell.e
 
 export async function inviteUser(email: string, role: Role): Promise<ActionResult> {
   const session = await requireRole("admin");
+  if (!isRole(role)) return actionFailed("Pick Edit or Admin");
 
   const normalizedEmail = email.trim().toLowerCase();
   const domain = normalizedEmail.split("@")[1];

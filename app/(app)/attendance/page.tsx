@@ -22,10 +22,6 @@ export default async function AttendancePage() {
   const session = await getSession();
   if (!session) redirect("/login");
 
-  // Taking attendance is an edit-role action, and a view-only account has no
-  // reason to be on this screen at all.
-  if (session.profile.role === "view") redirect("/calendar");
-
   const supabase = await createClient();
   const semester = currentTermKey();
   const term = termFromKey(semester);

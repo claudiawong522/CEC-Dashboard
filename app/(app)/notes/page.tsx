@@ -19,7 +19,7 @@ export default async function NotesPage() {
     .eq("id", CLUB_NOTES_ID)
     .maybeSingle();
 
-  const editable = session?.profile.role === "edit" || session?.profile.role === "admin";
+  const editable = !!session;
   const content = Array.isArray(doc?.content) ? doc.content : [];
 
   // No decor on this screen: nothing may ever sit over the editor.
@@ -33,7 +33,7 @@ export default async function NotesPage() {
       </div>
 
       <span className="font-sans text-[12px] text-foreground/50">
-        Autosaves. View-role members see the same page read-only, with no handles or slash menu.
+        Autosaves.
       </span>
     </div>
   );

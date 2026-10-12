@@ -11,6 +11,9 @@ import type { Profile } from "@/lib/auth/getSession";
 export default async function AdminPage() {
   const session = await getSession();
   if (!session) redirect("/login");
+  // Admin-only. Members get bounced before anything here is queried, so the
+  // roster and the invite form never render for them.
+  if (session.profile.role !== "admin") redirect("/calendar");
 
   const supabase = await createClient();
   // Removed people are gone from this screen entirely. Their row survives in
@@ -54,16 +57,13 @@ export default async function AdminPage() {
       </div>
 
       <div className="relative z-10 flex flex-col gap-4">
-        {session.profile.role === "admin" && <InviteForm />}
+        <InviteForm />
 
         <UserTable
           users={users ?? []}
-          canManageRoles={session.profile.role === "admin"}
+          canManageRoles
           currentUserId={session.profile.id}
         />
-        <span className="font-sans text-[12px] text-foreground/50">
-          Non-admins see the same table with static role badges.
-        </span>
       </div>
     </div>
   );

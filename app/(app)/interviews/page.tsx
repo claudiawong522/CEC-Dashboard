@@ -10,7 +10,6 @@ import { PageHeader } from "@/components/ui/page-header";
 export default async function InterviewsPage() {
   const session = await getSession();
   if (!session) redirect("/login");
-  if (session.profile.role === "view") redirect("/calendar");
 
   const supabase = await createClient();
   const isAdmin = session.profile.role === "admin";

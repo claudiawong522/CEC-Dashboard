@@ -19,10 +19,8 @@ function databaseFailure(what: string, error: { message: string }): ActionResult
   return actionFailed(`Couldn't ${what}. Try again`);
 }
 
-// Editing your own profile is the one write in this app available to every
-// role, 'view' included: an alumni account that can't change an event still
-// has a name and a bio of their own. So this checks for a session rather
-// than calling requireRole.
+// Editing your own profile is open to every signed-in member, so this checks
+// for a session rather than calling requireRole.
 //
 // Nothing here can touch role or status even if it were passed: the schema
 // doesn't carry those fields, the RLS policy scopes the row to auth.uid(),

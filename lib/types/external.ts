@@ -61,3 +61,15 @@ export type AdminInfo = { full_name: string | null; email: string };
 // The embed the list and detail pages both select, kept in one place so the
 // two can't drift into asking for different columns.
 export const PERSON_EMBED = "id, idea_id, contact_id, contact:outreach_contacts(name, email)";
+
+// A lead is in the CRM once any person on it points at a contact; the first
+// one (by insert order) is the contact "Move to CRM" links to.
+export function crmContactId(people: { contact_id: string }[] | null | undefined): string | null {
+  return people?.[0]?.contact_id ?? null;
+}
+
+// The contact name "Move to CRM" gives a lead with no people yet: the lead's
+// own name, which quick-add takes as a person's name in the first place.
+export function contactNameForIdea(pitch: string): string {
+  return pitch.trim() || "Untitled lead";
+}
