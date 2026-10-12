@@ -8,6 +8,7 @@ import {
   CoffeeIcon,
   ContactIcon,
   DoorOpenIcon,
+  HeartHandshakeIcon,
   ImageIcon,
   LayersIcon,
   LibraryIcon,
@@ -20,15 +21,14 @@ import {
   TrophyIcon,
   UserRoundCheckIcon,
   UsersIcon,
-  UsersRoundIcon,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import type { Role } from "@/lib/auth/getSession";
 import { COFFEE_CHAT_SIGNUP_ENABLED } from "@/lib/features";
 
 // The sidebar used to list every destination, eighteen for an admin, and it
-// scrolled on a laptop. Now it lists the two screens people open daily
-// (Calendar, Todo) and four hubs; each hub is a page of cards to the deeper
+// scrolled on a laptop. Now it lists the screens people open most (Calendar,
+// Todo, Members, Gallery) and four hubs; each hub is a page of cards to the deeper
 // screens. Both the sidebar and the hub pages read this file, so a
 // destination cannot appear in one and be missing from the other.
 
@@ -61,7 +61,7 @@ function hubDefs(role: Role): Hub[] {
       slug: "events",
       href: "/hub/events",
       label: "Events",
-      description: "Everything after the calendar: what happened, who came, and the photos.",
+      description: "Everything after the calendar: what happened and who came.",
       icon: LayersIcon,
       color: "blue",
       links: [
@@ -70,12 +70,6 @@ function hubDefs(role: Role): Hub[] {
           label: "Past Events",
           description: "Every event that has already happened, newest first.",
           icon: ArchiveIcon,
-        },
-        {
-          href: "/photos",
-          label: "Gallery",
-          description: "Photos from club events.",
-          icon: ImageIcon,
         },
         {
           href: "/attendance",
@@ -94,17 +88,11 @@ function hubDefs(role: Role): Hub[] {
     {
       slug: "people",
       href: "/hub/people",
-      label: "People",
-      description: "The club itself: who is in it, who has met whom, and who showed up.",
-      icon: UsersRoundIcon,
+      label: "Community",
+      description: "Getting to know each other: coffee chats, shoutouts and the leaderboard.",
+      icon: HeartHandshakeIcon,
       color: "teal",
       links: [
-        {
-          href: "/members",
-          label: "Members",
-          description: "Everyone in the club and what they work on.",
-          icon: UsersRoundIcon,
-        },
         {
           href: "/coffee-chats",
           label: "Coffee Chats",
@@ -230,6 +218,9 @@ export function navFor(role: Role): NavEntry[] {
     // Event detail and the new-event flow are reached from the calendar.
     { href: "/calendar", label: "Calendar", icon: CalendarDaysIcon, match: ["/events"] },
     { href: "/todo", label: "Todo", icon: CheckSquareIcon, match: [] },
+    // Opened often enough to earn their own row rather than a hub card.
+    { href: "/members", label: "Members", icon: UsersIcon, match: ["/profile"] },
+    { href: "/photos", label: "Gallery", icon: ImageIcon, match: [] },
     ...hubsFor(role).map((hub) => ({
       href: hub.href,
       label: hub.label,
