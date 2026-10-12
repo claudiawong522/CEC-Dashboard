@@ -8,26 +8,34 @@ function activeLabel(role: "admin" | "edit", pathname: string) {
 }
 
 describe("sidebar nav", () => {
-  it("stays at nine entries for an admin and seven for a member", () => {
+  it("lists the big rows for an admin and a member", () => {
     expect(navFor("admin").map((e) => e.label)).toEqual([
       "Calendar",
       "Todo",
-      "Members",
       "Gallery",
       "Events",
-      "Community",
+      "Members",
+      "Coffee Chats",
+      "Shoutouts",
+      "Leaderboard",
+      "Notes",
+      "Brain",
+      "Ask",
       "Outreach",
-      "Knowledge",
       "Admin",
     ]);
     expect(navFor("edit").map((e) => e.label)).toEqual([
       "Calendar",
       "Todo",
-      "Members",
       "Gallery",
       "Events",
-      "Community",
-      "Knowledge",
+      "Members",
+      "Coffee Chats",
+      "Shoutouts",
+      "Leaderboard",
+      "Notes",
+      "Brain",
+      "Ask",
     ]);
   });
 
@@ -41,7 +49,9 @@ describe("sidebar nav", () => {
 
   it("hides admin-only destinations and hubs from members", () => {
     expect(getHub("outreach", "edit")).toBeUndefined();
-    expect(getHub("outreach", "admin")?.links.map((l) => l.href)).toContain("/interviews");
+    expect(getHub("outreach", "admin")?.links.map((l) => l.href)).toContain(
+      "/interviews",
+    );
     expect(getHub("nope", "admin")).toBeUndefined();
   });
 });

@@ -26,9 +26,8 @@ import type { LucideIcon } from "lucide-react";
 import type { Role } from "@/lib/auth/getSession";
 import { COFFEE_CHAT_SIGNUP_ENABLED } from "@/lib/features";
 
-// The sidebar used to list every destination, eighteen for an admin, and it
-// scrolled on a laptop. Now it lists the screens people open most (Calendar,
-// Todo, Members, Gallery) and four hubs; each hub is a page of cards to the deeper
+// The sidebar used to list every destination in small type. It now shows most
+// of them as big rows and keeps two hubs (Events, Outreach); each hub is a page of cards to the deeper
 // screens. Both the sidebar and the hub pages read this file, so a
 // destination cannot appear in one and be missing from the other.
 
@@ -89,14 +88,16 @@ function hubDefs(role: Role): Hub[] {
       slug: "people",
       href: "/hub/people",
       label: "Community",
-      description: "Getting to know each other: coffee chats, shoutouts and the leaderboard.",
+      description:
+        "Getting to know each other: coffee chats, shoutouts and the leaderboard.",
       icon: HeartHandshakeIcon,
       color: "teal",
       links: [
         {
           href: "/coffee-chats",
           label: "Coffee Chats",
-          description: "Fill a square by grabbing coffee with someone and logging it.",
+          description:
+            "Fill a square by grabbing coffee with someone and logging it.",
           icon: CoffeeIcon,
         },
         {
@@ -117,7 +118,8 @@ function hubDefs(role: Role): Hub[] {
       slug: "outreach",
       href: "/hub/outreach",
       label: "Outreach",
-      description: "People outside the club: speakers, leads, and the people trying to join.",
+      description:
+        "People outside the club: speakers, leads, and the people trying to join.",
       icon: SendIcon,
       color: "coral",
       // Outreach is admin-only end to end: these hold contact details for
@@ -129,13 +131,15 @@ function hubDefs(role: Role): Hub[] {
               {
                 href: "/crm",
                 label: "CRM",
-                description: "Everyone we have reached out to, and what we already said.",
+                description:
+                  "Everyone we have reached out to, and what we already said.",
                 icon: ContactIcon,
               },
               {
                 href: "/external",
                 label: "External",
-                description: "Speaker outreach: every lead, no matter the stage.",
+                description:
+                  "Speaker outreach: every lead, no matter the stage.",
                 icon: UsersIcon,
               },
               {
@@ -147,7 +151,8 @@ function hubDefs(role: Role): Hub[] {
               {
                 href: "/interviews",
                 label: "Interviews",
-                description: "Recruiting interviews: slots, interviewers and decisions.",
+                description:
+                  "Recruiting interviews: slots, interviewers and decisions.",
                 icon: UserRoundCheckIcon,
               },
             ]
@@ -168,7 +173,8 @@ function hubDefs(role: Role): Hub[] {
       slug: "knowledge",
       href: "/hub/knowledge",
       label: "Knowledge",
-      description: "What the club has written down, and a way to ask it questions.",
+      description:
+        "What the club has written down, and a way to ask it questions.",
       icon: LibraryIcon,
       color: "amber",
       links: [
@@ -181,13 +187,15 @@ function hubDefs(role: Role): Hub[] {
         {
           href: "/brain",
           label: "Brain",
-          description: "Retros, notes and everything the club has bothered to write down.",
+          description:
+            "Retros, notes and everything the club has bothered to write down.",
           icon: BrainIcon,
         },
         {
           href: "/ask",
           label: "Ask",
-          description: "Questions about members, events, outreach and the Brain.",
+          description:
+            "Questions about members, events, outreach and the Brain.",
           icon: SparklesIcon,
         },
       ],
@@ -210,25 +218,114 @@ export type NavEntry = {
   icon: LucideIcon;
   /** Path prefixes that light this entry up besides its own href. */
   match: string[];
+  /** Entries sharing a group sit together; the sidebar draws a rule between groups. */
+  group: "daily" | "events" | "people" | "knowledge" | "manage";
 };
 
-/** The sidebar, top to bottom: Calendar, Todo, the hubs, then Admin for admins. */
+/**
+ * The sidebar, top to bottom. Most destinations are their own row again (the
+ * rows are big enough to read at a glance); only Events (past events, check-ins)
+ * and Outreach (admin-only) stay as hubs, because their pages are opened rarely
+ * and belong together.
+ */
 export function navFor(role: Role): NavEntry[] {
+  const hub = (slug: HubSlug): NavEntry[] => {
+    const found = getHub(slug, role);
+    if (!found) return [];
+    return [
+      {
+        href: found.href,
+        label: found.label,
+        icon: found.icon,
+        match: found.links.map((link) => link.href),
+        group: slug === "events" ? "events" : "manage",
+      },
+    ];
+  };
   return [
     // Event detail and the new-event flow are reached from the calendar.
-    { href: "/calendar", label: "Calendar", icon: CalendarDaysIcon, match: ["/events"] },
-    { href: "/todo", label: "Todo", icon: CheckSquareIcon, match: [] },
-    // Opened often enough to earn their own row rather than a hub card.
-    { href: "/members", label: "Members", icon: UsersIcon, match: ["/profile"] },
-    { href: "/photos", label: "Gallery", icon: ImageIcon, match: [] },
-    ...hubsFor(role).map((hub) => ({
-      href: hub.href,
-      label: hub.label,
-      icon: hub.icon,
-      match: hub.links.map((link) => link.href),
-    })),
+    {
+      href: "/calendar",
+      label: "Calendar",
+      icon: CalendarDaysIcon,
+      match: ["/events"],
+      group: "daily",
+    },
+    {
+      href: "/todo",
+      label: "Todo",
+      icon: CheckSquareIcon,
+      match: [],
+      group: "daily",
+    },
+    {
+      href: "/photos",
+      label: "Gallery",
+      icon: ImageIcon,
+      match: [],
+      group: "events",
+    },
+    ...hub("events"),
+    {
+      href: "/members",
+      label: "Members",
+      icon: UsersIcon,
+      match: ["/profile"],
+      group: "people",
+    },
+    {
+      href: "/coffee-chats",
+      label: "Coffee Chats",
+      icon: CoffeeIcon,
+      match: [],
+      group: "people",
+    },
+    {
+      href: "/shoutouts",
+      label: "Shoutouts",
+      icon: MegaphoneIcon,
+      match: [],
+      group: "people",
+    },
+    {
+      href: "/leaderboard",
+      label: "Leaderboard",
+      icon: TrophyIcon,
+      match: [],
+      group: "people",
+    },
+    {
+      href: "/notes",
+      label: "Notes",
+      icon: NotebookPenIcon,
+      match: [],
+      group: "knowledge",
+    },
+    {
+      href: "/brain",
+      label: "Brain",
+      icon: BrainIcon,
+      match: [],
+      group: "knowledge",
+    },
+    {
+      href: "/ask",
+      label: "Ask",
+      icon: SparklesIcon,
+      match: [],
+      group: "knowledge",
+    },
+    ...hub("outreach"),
     ...(role === "admin"
-      ? [{ href: "/admin", label: "Admin", icon: ShieldCheckIcon, match: [] }]
+      ? [
+          {
+            href: "/admin",
+            label: "Admin",
+            icon: ShieldCheckIcon,
+            match: [],
+            group: "manage" as const,
+          },
+        ]
       : []),
   ];
 }
@@ -238,5 +335,7 @@ export function isUnder(pathname: string, prefix: string) {
 }
 
 export function isNavActive(entry: NavEntry, pathname: string) {
-  return [entry.href, ...entry.match].some((prefix) => isUnder(pathname, prefix));
+  return [entry.href, ...entry.match].some((prefix) =>
+    isUnder(pathname, prefix),
+  );
 }

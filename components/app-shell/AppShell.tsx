@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, Fragment } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { SearchIcon, MenuIcon, XIcon } from "lucide-react";
@@ -121,33 +121,39 @@ export function AppShell({
 
   function navList(variant: "drawer" | "sidebar") {
     const drawer = variant === "drawer";
-    return navEntries.map((item) => {
+    return navEntries.map((item, i) => {
       const active = isNavActive(item, pathname);
       const Icon = item.icon;
+      // A hairline between groups, so a long list still reads in chunks.
+      const newGroup = i > 0 && navEntries[i - 1].group !== item.group;
       return (
-        <Link
-          key={item.href}
-          href={item.href}
-          onClick={drawer ? closeDrawer : undefined}
-          aria-current={active ? "page" : undefined}
-          className={cn(
-            "flex items-center gap-4 border-2 px-3 font-display font-medium tracking-wide uppercase transition-[color,background-color,border-color,box-shadow] duration-200 ease-fluid",
-            drawer ? "h-14 text-[16px]" : "h-12 text-[15px]",
-            active
-              ? "border-foreground bg-background text-foreground shadow-mint-sm"
-              : "border-transparent text-foreground/60 hover:border-line hover:text-foreground",
+        <Fragment key={item.href}>
+          {newGroup && (
+            <div aria-hidden="true" className="my-1.5 h-px shrink-0 bg-line" />
           )}
-        >
-          <Icon className="size-5 shrink-0" />
-          <span
+          <Link
+            href={item.href}
+            onClick={drawer ? closeDrawer : undefined}
+            aria-current={active ? "page" : undefined}
             className={cn(
-              "pb-px",
-              active ? "shadow-[inset_0_-2px_0_0_var(--mint)]" : "",
+              "flex items-center gap-4 border-2 px-3 font-display font-medium tracking-wide uppercase transition-[color,background-color,border-color,box-shadow] duration-200 ease-fluid",
+              drawer ? "h-13 text-[16px]" : "h-11 text-[15px]",
+              active
+                ? "border-foreground bg-background text-foreground shadow-mint-sm"
+                : "border-transparent text-foreground/60 hover:border-line hover:text-foreground",
             )}
           >
-            {item.label}
-          </span>
-        </Link>
+            <Icon className="size-5 shrink-0" />
+            <span
+              className={cn(
+                "pb-px",
+                active ? "shadow-[inset_0_-2px_0_0_var(--mint)]" : "",
+              )}
+            >
+              {item.label}
+            </span>
+          </Link>
+        </Fragment>
       );
     });
   }
@@ -165,7 +171,9 @@ export function AppShell({
           className="-ml-1 flex h-14 items-center gap-2.5 px-1"
         >
           <BrandMark className="h-[22px] w-6" />
-          <span className="t-display text-[18px] tracking-tight text-foreground">CEC</span>
+          <span className="t-display text-[18px] tracking-tight text-foreground">
+            CEC
+          </span>
         </Link>
         <Button
           ref={menuButtonRef}
@@ -209,7 +217,11 @@ export function AppShell({
           )}
         >
           <div className="flex shrink-0 items-center justify-between gap-3 border-b border-line px-4 py-2">
-            <Link href="/calendar" onClick={closeDrawer} className="flex min-h-11 items-center">
+            <Link
+              href="/calendar"
+              onClick={closeDrawer}
+              className="flex min-h-11 items-center"
+            >
               {lockup}
             </Link>
             <Button
@@ -225,7 +237,7 @@ export function AppShell({
 
           <div className="shrink-0 px-4 pt-4">{searchForm}</div>
 
-          <nav className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-contain px-4 py-5">
+          <nav className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain px-4 py-5">
             {navList("drawer")}
           </nav>
 
@@ -282,7 +294,7 @@ export function AppShell({
           {/* Seven entries at most, so this fits a laptop without scrolling.
               It still may scroll on a very short window: min-h-0 lets it
               shrink so the account row below stays put. */}
-          <nav className="-mr-2 flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto pr-2 [scrollbar-color:rgba(0,0,0,0.25)_transparent] [scrollbar-width:thin]">
+          <nav className="-mr-2 flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto pr-2 [scrollbar-color:rgba(0,0,0,0.25)_transparent] [scrollbar-width:thin]">
             {navList("sidebar")}
           </nav>
         </div>
@@ -342,7 +354,12 @@ export function AppShell({
         </div>
       </aside>
 
-      <form ref={signOutFormRef} action="/auth/signout" method="post" className="hidden" />
+      <form
+        ref={signOutFormRef}
+        action="/auth/signout"
+        method="post"
+        className="hidden"
+      />
 
       <main
         className="relative min-h-0 min-w-0 flex-1 overflow-x-hidden overflow-y-auto"
