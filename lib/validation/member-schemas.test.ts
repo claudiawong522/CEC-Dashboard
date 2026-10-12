@@ -19,6 +19,7 @@ const validProfile = {
   portfolio_url: "",
   github_url: "",
   show_on_site: true,
+  show_email_on_site: false,
 };
 
 describe("profileSchema", () => {

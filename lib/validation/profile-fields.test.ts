@@ -19,6 +19,7 @@ const draft = {
   portfolio_url: "",
   github_url: "",
   show_on_site: false,
+  show_email_on_site: false,
 };
 
 describe("parseProfileFields", () => {

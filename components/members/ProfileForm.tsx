@@ -51,6 +51,7 @@ type Draft = {
   portfolio_url: string;
   github_url: string;
   show_on_site: boolean;
+  show_email_on_site: boolean;
 };
 
 function toDraft(member: MemberProfile): Draft {
@@ -72,6 +73,7 @@ function toDraft(member: MemberProfile): Draft {
     portfolio_url: member.portfolio_url ?? "",
     github_url: member.github_url ?? "",
     show_on_site: member.show_on_site,
+    show_email_on_site: member.show_email_on_site,
   };
 }
 
@@ -128,6 +130,7 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
       portfolio_url: value.portfolio_url,
       github_url: value.github_url,
       show_on_site: value.show_on_site,
+      show_email_on_site: value.show_email_on_site,
     });
     setErrors(result.fieldErrors ?? {});
     if (!result.ok) {
@@ -298,12 +301,27 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
           <Label>Show on cornellec.com</Label>
           <span className="font-sans text-[11.5px] text-foreground/50">
             Off until you turn it on. When on, everything you fill in here appears on the public
-            members page. Email and netid never do.
+            members page. Email and netid never do, unless you turn on the email button below.
           </span>
         </div>
         <Switch
           checked={draft.show_on_site}
           onCheckedChange={(checked) => set("show_on_site", checked)}
+        />
+      </div>
+
+      <div className="flex items-center justify-between gap-4 border-t border-line pt-4">
+        <div className="flex flex-col gap-0.5">
+          <Label>Email button on cornellec.com</Label>
+          <span className="font-sans text-[11.5px] text-foreground/50">
+            Off until you turn it on. Lets visitors email you from your profile on the members
+            page, which makes your address public.
+          </span>
+        </div>
+        <Switch
+          checked={draft.show_email_on_site}
+          disabled={!draft.show_on_site}
+          onCheckedChange={(checked) => set("show_email_on_site", checked)}
         />
       </div>
     </div>
