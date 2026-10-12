@@ -304,24 +304,25 @@ export function ProfileForm({ member }: { member: MemberProfile }) {
         </div>
         <Switch
           checked={draft.show_on_site}
-          onCheckedChange={(checked) => {
-            set("show_on_site", checked);
-            // Leaving the site takes the Email button with it.
-            if (!checked) set("show_email_on_site", false);
-          }}
+          onCheckedChange={(checked) => set("show_on_site", checked)}
         />
       </div>
 
-      <div className="flex items-center justify-between gap-4 border-t border-line pt-4">
+      <div
+        className={`flex items-center justify-between gap-4 border-t border-line pt-4 transition-opacity duration-200 ease-fluid ${
+          draft.show_on_site ? "" : "opacity-50"
+        }`}
+      >
         <div className="flex flex-col gap-0.5">
           <Label>Email button on cornellec.com</Label>
           <span className="font-sans text-[11.5px] text-foreground/50">
             Off until you turn it on. Lets visitors email you from your profile on the members
-            page, which makes your address public.
+            page, which makes your address public. Only applies while you are shown on the site.
           </span>
         </div>
         <Switch
           checked={draft.show_email_on_site}
+          // Greyed out, but it keeps its setting for when the site is back on.
           disabled={!draft.show_on_site}
           onCheckedChange={(checked) => set("show_email_on_site", checked)}
         />
