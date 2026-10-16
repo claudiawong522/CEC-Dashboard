@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { CornerDownLeftIcon, SparklesIcon } from "lucide-react";
+import { AskAnswer, CITATION_HREF } from "@/components/ask/AskAnswer";
 import { ask } from "@/lib/actions/ask";
 import type { Citation } from "@/lib/ask/tools";
 import { cn } from "@/lib/utils";
@@ -14,17 +15,30 @@ const SUGGESTIONS = [
   "Who have we already reached out to at a VC?",
 ];
 
-// Citations link back to the record they came from, so an answer is checkable
-// rather than something to take on faith. That is the whole reason the tools
-// return ids alongside their text.
-const CITATION_HREF: Record<Citation["kind"], (id: string) => string | null> = {
-  member: (id) => `/members/${id}`,
-  note: (id) => `/brain/${id}`,
-  contact: (id) => `/crm/${id}`,
-  event: (id) => `/events/${id}`,
-  interaction: () => null,
-  shoutout: () => null,
+const KIND_LABEL: Record<Citation["kind"], string> = {
+  member: "Members",
+  event: "Events",
+  note: "Notes",
+  contact: "Contacts",
+  interaction: "Outreach",
+  shoutout: "Shoutouts",
 };
+
+/** One chip per record, grouped by kind in a stable order. Tools can return
+ * the same record twice when the model calls more than one of them. */
+function groupCitations(citations: Citation[]) {
+  const seen = new Set<string>();
+  const groups = new Map<Citation["kind"], Citation[]>();
+  for (const citation of citations) {
+    const key = `${citation.kind}:${citation.id}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    groups.set(citation.kind, [...(groups.get(citation.kind) ?? []), citation]);
+  }
+  return (Object.keys(KIND_LABEL) as Citation["kind"][])
+    .filter((kind) => groups.has(kind))
+    .map((kind) => ({ kind, items: groups.get(kind)! }));
+}
 
 type Answer = {
   question: string;
@@ -113,50 +127,84 @@ export function AskBar() {
         </div>
       )}
 
-      <div className="flex flex-col gap-2.5">
-        {answers.map((entry, index) => (
-          <div
-            key={`${entry.question}-${index}`}
-            className={cn(
-              "flex flex-col gap-2.5 border border-line bg-background p-5 shadow-soft",
-              index > 0 && "opacity-70",
-            )}
-          >
-            <span className="font-sans text-[13px] text-foreground/50">{entry.question}</span>
-            <p className="font-sans text-[14px] leading-[1.75] text-subtle">{entry.answer}</p>
-
-            {entry.citations.length > 0 ? (
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span className="t-eyebrow text-foreground/50">
-                  from
-                </span>
-                {entry.citations.map((citation) => {
-                  const href = CITATION_HREF[citation.kind](citation.id);
-                  const label = (
-                    <span className="border border-line px-2.5 py-1 font-sans text-[12px] text-subtle transition-colors duration-200 ease-fluid">
-                      {citation.label}
-                    </span>
-                  );
-                  return href ? (
-                    <Link
-                      key={citation.id}
-                      href={href}
-                      className="[&>span]:hover:border-foreground [&>span]:hover:text-foreground"
-                    >
-                      {label}
-                    </Link>
-                  ) : (
-                    <span key={citation.id}>{label}</span>
-                  );
-                })}
-              </div>
-            ) : (
-              <span className="t-eyebrow text-foreground/50">
-                {entry.noRecords ? "no records found" : ""}
-              </span>
-            )}
+      <div className="flex flex-col gap-3">
+        {isPending && (
+          <div className="flex flex-col gap-3 border border-line bg-background p-5 shadow-soft" aria-live="polite">
+            <span className="t-eyebrow text-foreground/50">Searching the club&rsquo;s records</span>
+            <div className="flex flex-col gap-2">
+              {[92, 78, 64].map((width) => (
+                <span
+                  key={width}
+                  className="h-3 animate-pulse bg-muted motion-reduce:animate-none"
+                  style={{ width: `${width}%` }}
+                />
+              ))}
+            </div>
           </div>
-        ))}
+        )}
+
+        {answers.map((entry, index) => {
+          const groups = groupCitations(entry.citations);
+          return (
+            <article
+              key={`${entry.question}-${index}`}
+              className={cn(
+                "flex flex-col border border-line bg-background shadow-soft transition-opacity duration-200 ease-fluid",
+                index > 0 && "opacity-70 hover:opacity-100",
+              )}
+            >
+              <header className="flex items-start gap-3 border-b border-line px-5 py-3.5">
+                <SparklesIcon className="mt-[3px] size-3.5 shrink-0 text-mint-dark" />
+                <h2 className="font-sans text-[14px] font-semibold leading-[1.5] text-foreground">
+                  {entry.question}
+                </h2>
+              </header>
+
+              <div className="px-5 py-4">
+                <AskAnswer markdown={entry.answer} citations={entry.citations} />
+              </div>
+
+              {groups.length > 0 ? (
+                <footer className="flex flex-col gap-2.5 border-t border-line bg-muted/25 px-5 py-3.5">
+                  {groups.map(({ kind, items }) => (
+                    <div key={kind} className="flex flex-wrap items-center gap-1.5">
+                      <span className="t-eyebrow mr-1 w-full text-foreground/50 sm:w-20">
+                        {KIND_LABEL[kind]}
+                      </span>
+                      {items.map((citation) => {
+                        const href = CITATION_HREF[citation.kind](citation.id);
+                        const chip =
+                          "border border-line bg-background px-2.5 py-1 font-sans text-[12px] text-subtle max-md:min-h-9 max-md:inline-flex max-md:items-center";
+                        return href ? (
+                          <Link
+                            key={citation.id}
+                            href={href}
+                            className={cn(
+                              chip,
+                              "transition-[border-color,color,box-shadow] duration-200 ease-fluid hover:border-foreground hover:text-foreground hover:shadow-mint-sm",
+                            )}
+                          >
+                            {citation.label}
+                          </Link>
+                        ) : (
+                          <span key={citation.id} className={chip}>
+                            {citation.label}
+                          </span>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </footer>
+              ) : (
+                entry.noRecords && (
+                  <footer className="border-t border-line px-5 py-3">
+                    <span className="t-eyebrow text-foreground/50">No matching records</span>
+                  </footer>
+                )
+              )}
+            </article>
+          );
+        })}
       </div>
 
       <span className="font-sans text-[12px] text-foreground/50">
